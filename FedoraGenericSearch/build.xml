@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id$ -->
+<project name="FedoraGenericSearch" default="buildlocal" basedir=".">
+	<description>Fedora Generic Search Service</description>
+
+	<property name="build.dir" location="../FgsBuild/webapp" />
+	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
+	<property name="project.dir" location="../FgsBuild/eclipseprojects/FedoraGenericSearch" />
+	<property name="tomcat.basename" value="jakarta-tomcat-5.0.28" />
+	<property name="dist.dir" location="dist" />
+	<property name="app.name" value="fedoragsearch" />
+	<property name="war.name" value="${app.name}.war" />
+
+	<target name="prep"
+	          description="prepare">
+		<delete dir="${dist.dir}" />
+		<delete dir="${build.dir}" />
+		<delete dir="${project.dir}" />
+		<copy file="src/html/index.html" todir="${build.dir}" />
+		<copy todir="${build.dir}/css">
+			<fileset dir="src/css"/>
+		</copy>
+		<copy todir="${build.dir}/images">
+			<fileset dir="src/images">
+				<include name="*.png"/>
+				<include name="*.gif"/>
+				<include name="*.jpg"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}">
+			<fileset dir="src/sh"/>
+		</copy>
+		<copy todir="${build.dir}/WEB-INF">
+			<fileset dir="src/WEB-INF"/>
+		</copy>
+		<copy todir="${build.dir}/WEB-INF/lib">
+			<fileset dir="lib"/>
+		</copy>
+		<copy todir="${plugin.dir}">
+			<fileset dir="bin"/>
+		</copy>
+		<delete dir="${project.dir}" />
+		<mkdir dir="${project.dir}" />
+		<copy todir="${project.dir}">
+			<fileset dir="."/>
+		</copy>
+	</target>
+
+	<target name="builddownload"
+			depends="prep, includeengines"
+	        description="build the download">
+        <exec executable="ant">
+            <arg line=" -f ../FgsConfig/build.xml configdownload"/>
+        </exec>
+	    <jar jarfile="${build.dir}/${war.name}" basedir="${build.dir}"/>
+	</target>
+
+	<target name="buildlocal"
+			depends="builddownload"
+	        description="build local">
+        <exec executable="ant">
+            <arg line=" -f ../FgsConfig/build.xml configlocal"/>
+        </exec>
+		<mkdir dir="${dist.dir}" />
+	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
+        <copy file="${dist.dir}/${war.name}" todir="/home/gsp/fedora-2.1.1/server/${tomcat.basename}/webapps"/>
+	</target>
+
+	<target name="builddemo"
+			depends="builddownload"
+	        description="build public">
+        <exec executable="ant">
+            <arg line=" -f ../FgsConfig/build.xml configdemo"/>
+        </exec>
+		<mkdir dir="${dist.dir}" />
+	    <zip zipfile="${build.dir}/eclipseprojects.zip" basedir="../FgsBuild/eclipseprojects"/>
+	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
+		<exec executable="scp">
+        <arg line=" -p ${dist.dir}/${war.name} fedora2@defxws2006.cvt.dk:/home/fedora2/fedora-2.1/server/${tomcat.basename}/webapps"/>
+    </exec>
+
+	</target>
+	
+    <target name="includeengines" depends="">
+        <exec executable="ant">
+            <arg line=" -f ../FgsLucene/build.xml"/>
+        </exec>
+<!--
+        <exec executable="ant">
+            <arg line=" -f ../FgsZebra/build.xml"/>
+        </exec>
+-->
+    </target>
+    	
+</project>

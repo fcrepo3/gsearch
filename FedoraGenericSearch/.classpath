@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/junit.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/commons-discovery.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/saaj.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/axis.jar"/>
+	<classpathentry kind="src" path="/handlingtypes"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/PDFBox-0.7.2.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/serializer.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/xalan.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/fedora-2.1.1-server.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/lucene-core-2.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/workspace3/FedoraGenericSearch/lib/lucene-demos-2.0.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,324 @@
+
+@media all {
+
+body {
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: 90%; 
+  margin: 0;
+  padding: 0;
+  align: center;
+}
+
+h3 {
+  width: 769px;
+  font-size: 130%;
+  font-weight: bold;
+  color: #af1e2d;
+  background-color: #e5eceb;
+  border: solid #d3d3d3 1px;
+  margin-top: 12px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  padding-left: 5px;
+}
+
+h4 {
+  width: 769px;
+  font-size: 110%;
+  font-weight: bold;
+  color: #af1e2d;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  padding-left: 5px;
+}
+
+p {
+  font-size: 90%;
+  margin-left: 20px;
+}
+
+td {
+  font-size: 90%;
+  margin-left: 25px;
+}
+
+li {
+  font-size: 90%;
+  margin-left: 25px;
+}
+
+.headerTitle {
+  margin: 0;
+  padding: 0;
+  font-size: 180%;
+  font-weight: bold;
+  color: white;
+}
+
+.headerSubTitle {
+  padding: 0;
+  font-size: 110%;
+  font-weight: bold;
+  color: white;
+}
+
+#headerArea {
+  height: 150px;
+  width: 784px;
+  background-color: #af1e2d;
+}
+
+#headerText {
+  height: 40px;
+  padding-top: 10px;
+  text-align: center;
+}
+
+.activ-nav {
+  	height: 45px;
+    padding-right: 1px;
+  	background-color: white;
+  	text-align: center;
+  	border-style: outset;
+}
+
+.activ-nav a {
+  color: #af1e2d;
+  font-weight: bold;
+  text-decoration:none;
+}
+
+.activ-nav a:hover {
+  color: #af1e2d;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+#horizontalNavArea {
+  height: 50px;
+  width: 784px;
+  background-color: #af1e2d;
+  padding-bottom: 5px;
+}
+
+.horizontal-nav {
+  	height: 45px;
+    padding-right: 1px;
+    background-color: #af1e2d;
+  	color: white;
+  	text-align: center;
+  	border-style: inset;
+}
+
+.horizontal-nav a {
+  color: white;
+  font-weight: bold;
+  text-decoration:none;
+}
+
+.horizontal-nav a:hover {
+  color: white;
+  font-weight: bold;
+  text-decoration:underline;
+}
+
+
+
+/* ##### DTU things ##### */
+
+.welcomeHeader {
+  display:block;
+  font-size: 120%;
+  font-weight: bold;
+  color: #af1e2d;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.mainHeader {
+  font-size: 120%;
+  font-weight: bold;
+  color: #af1e2d;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+.sectionHeader {
+  font-size: 100%;
+  font-weight: bold;
+  color: #af1e2d;
+  background-color: #e5eceb;
+  border: solid #d3d3d3 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 46px;
+  padding-left: 5px;
+}
+
+.cvTable {
+  margin-left: 45px;
+  padding: 0;
+}
+
+.navImage {
+  height: 80px;
+  margin-left: 10px;
+  vertical-align: center;
+  text-align: center;
+}
+
+.noNavImage {
+  height: 56px;
+  margin-left: 10px;
+  vertical-align: center;
+  text-align: center;
+}
+.popupText {
+  padding-left: 10px;
+}
+
+.label {
+  display: inline;
+}
+
+.logo{
+  display: block;
+  margin: 10px;
+  float: right;
+}
+
+.orgHeaderImage {
+  margin-left: 30px;
+}
+
+.top {
+  vertical-align: top;
+}
+
+/* ##### Common Styles ##### */
+
+a {
+  color: #326F86;
+  background-color: transparent;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 1px 2px 1px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ##### Header ##### */
+
+.superHeader {
+  color: rgb(130,128,154);
+  background-color: rgb(33,50,66);
+  text-align: right;
+  margin: 0;
+  padding: 0.5ex 10px;
+}
+
+.superHeader span {
+  color: rgb(195,196,210);
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.superHeader a {
+  color: rgb(195,196,210);
+  background-color: transparent;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 0.25ex 0 0;
+}
+
+.superHeader a:hover {
+  color: rgb(193,102,90);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.midHeader {
+  color: white;
+  background-color: rgb(61,92,122);
+  margin: 0;
+  padding: 0.26ex 10px;
+}
+.headerLinks {
+  text-align: right;
+  margin: 0;
+  padding: 0 0 2ex 0;
+  position: absolute;
+  right: 1.5em;
+  top: 3.5em;
+}
+
+.headerLinks a {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 0 0.5ex 0;
+  display: block;
+}
+
+.headerLinks a:hover {
+  color: rgb(195,196,210);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.subHeader {
+  color: white;
+  background-color: rgb(117,144,174);
+  margin: 0;
+  padding: 0.5ex 10px;
+}
+
+.subHeader a, .subHeader .highlight {
+  color: white;
+  background-color: transparent;
+  font-size: 110%;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 0.25ex 0 0;
+}
+
+.subHeader a:hover, .subHeader .highlight {
+  color: rgb(255,204,0);
+  background-color: transparent;
+  text-decoration: none;
+}
+.filler {  /* use with an empty <p> element to add padding to the end of a text box */
+  border: 1px solid white;
+}
+ 
+.noBorderOnLeft {
+  border-left: none;
+}
+
+.dividingBorderAbove {
+  border-top: 1px solid rgb(204,204,204);
+}
+
+} /* @media all */
+
+@media print {
+
+body {
+  font-family: "trebuchet ms", verdana, helvetica, arial, sans-serif;
+  width: 60%;
+  margin: 0;
+  padding: 0;
+}
+
+.unprintable {
+  visibility: hidden;
+}
+
+}

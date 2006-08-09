@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id$ -->
+<project name="FedoraGenericSearch" default="pluginbuild" basedir=".">
+	<description>Fedora Generic Search Service plugin for the Lucene engine</description>
+
+	<property name="build.dir" location="../FgsBuild/webapp" />
+	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
+	<property name="project.dir" location="../FgsBuild/eclipseprojects/FgsLucene" />
+
+	<target name="pluginbuild"
+	        description="build the plugin">
+		<delete dir="${plugin.dir}/dk/defxws/fgslucene" />
+		<mkdir dir="${plugin.dir}/dk/defxws/fgslucene" />
+		<copy todir="${plugin.dir}">
+			<fileset dir="bin"/>
+		</copy>
+		<delete dir="${project.dir}" />
+		<mkdir dir="${project.dir}" />
+		<copy todir="${project.dir}">
+			<fileset dir="."/>
+		</copy>
+	</target>
+
+</project>
