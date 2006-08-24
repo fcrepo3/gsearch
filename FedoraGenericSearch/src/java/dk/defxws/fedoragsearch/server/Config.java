@@ -608,6 +608,10 @@ public class Config {
         return getIndexProps(indexName).getProperty("fgsindex.mimeTypes");
     }
     
+    public String getIndexBase(String indexName) {
+        return getIndexProps(indexName).getProperty("fgsindex.indexBase");
+    }
+    
     public String getIndexDir(String indexName) {
         return getIndexProps(indexName).getProperty("fgsindex.indexDir");
     }

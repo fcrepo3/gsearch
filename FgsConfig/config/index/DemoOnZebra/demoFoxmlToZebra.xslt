@@ -36,12 +36,12 @@
 -->
 
 	<xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
-	<xsl:variable name="docBoost" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
+	<xsl:variable name="rank" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
 	
 	<xsl:template match="/">
 		<IndexDocument> 
-			<xsl:attribute name="boost">
-				<xsl:value-of select="$docBoost"/>
+			<xsl:attribute name="rank">
+				<xsl:value-of select="$rank"/>
 			</xsl:attribute>
 		<!-- The following allows only active demo FedoraObjects to be indexed. -->
 		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
@@ -56,11 +56,11 @@
 
 	<xsl:template match="/foxml:digitalObject" mode="activeDemoFedoraObject">
 			<!-- The PID field must exist and be UN_TOKENIZED -->
-			<IndexField IFname="PID" index="UN_TOKENIZED" store="YES" termVector="NO" boost="2.5">
+			<IndexField IFname="PID">
 				<xsl:value-of select="$PID"/>
 			</IndexField>
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
-				<IndexField index="UN_TOKENIZED" store="YES" termVector="NO">
+				<IndexField>
 					<xsl:attribute name="IFname"> 
 						<xsl:value-of select="concat('property.', substring-after(@NAME,'#'))"/>
 					</xsl:attribute>
@@ -68,9 +68,9 @@
 				</IndexField>
 			</xsl:for-each>
 			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/oai_dc:dc/*">
-				<IndexField index="TOKENIZED" store="YES" termVector="YES">
+				<IndexField>
 					<xsl:attribute name="IFname">
-						<xsl:value-of select="concat('dc.', substring-after(name(),':'))"/>
+						<xsl:value-of select="name()"/>
 					</xsl:attribute>
 					<xsl:value-of select="text()"/>
 				</IndexField>
