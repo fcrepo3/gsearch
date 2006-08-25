@@ -72,7 +72,9 @@
 		<replace file="${plugin.dir}/config/index/SmileyDemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="smileyDemoFoxmlToLucene"/>
 		<replace file="${plugin.dir}/config/index/SindapDemoOnLucene/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/sindapDemoOnLucene"/>
 		<replace file="${plugin.dir}/config/index/SindapDemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="sindapFoxmlToLucene"/>
-		<replace file="${plugin.dir}/config/index/DemoOnZebra/index.properties" token="INDEXBASE" value="http://localhost:9999/"/>
+		<replace file="${plugin.dir}/config/index/DemoOnZebra/index.properties" token="INDEXBASE" value="http://localhost:9999"/>
+		<replace file="${plugin.dir}/config/index/DemoOnZebra/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/demoOnZebra/db"/>
+		
 	</target>
 
 	<target name="configdemo"

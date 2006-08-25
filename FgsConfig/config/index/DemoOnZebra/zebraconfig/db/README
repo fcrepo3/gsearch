@@ -1,0 +1,60 @@
+$Id$
+
+Instructions on zebra configuration
+-----------------------------------
+
+Copy the .../zebraconfig/ directory to the directory 
+specified in index.properties/fgsindex.indexDir,
+which may not be a subdirectory of your web server :
+
+  cp .../zebraconfig/* <indexDir>
+  
+Files you must/may configure:
+
+1 db/zebra.cfg:
+
+    The file is used for zebraidx calls, and indirectly
+      for zebrasrv start by yazserver.xml.
+    You do not need to change this default configuration. 
+    See the documentation for options.
+
+2 db/yazserver.xml:
+
+    The file is used for zebrasrv start.
+    The port number must be set to the same as 
+      in index.properties/fgsindex.indexBase.
+    The references to zebra.cfg, filter_fgs_conf.xml,
+      sru2.xsl, and to cql2pqf.txt must be valid.
+
+3 db/cql2pqf.txt
+
+    These are zebra's rules for translation 
+      from cql to internal pqf query format.
+    The file must have a line per index field.
+    By default it lists dc, property, and DS indexes.
+
+4 db/filter_fgs_conf.xml
+
+    You should not change this default configuration. 
+    It refers to fgs2index.xsl
+    
+5 fgs2index.xsl
+    
+    You should not change this default configuration. 
+    
+6 sru2.xsl
+    
+    You should not change this default configuration. 
+    
+    
+For Zebra download, see http://www.indexdata./zebra/.
+
+Alternative download as debian package:
+
+  apt-get install idzebra-2.0 libidzebra-2.0-mod-alvis yaz
+
+Zebra documentation is at http://www.indexdata./zebra/doc/zebra.pdf
+
+Start the zebra server from the directory index.properties/fgsindex.indexDir with
+
+  zebrasrv-2.0 -f db/yazserver.xml

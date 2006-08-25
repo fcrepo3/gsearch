@@ -85,11 +85,11 @@
         <exec executable="ant">
             <arg line=" -f ../FgsLucene/build.xml"/>
         </exec>
-<!--
+
         <exec executable="ant">
             <arg line=" -f ../FgsZebra/build.xml"/>
         </exec>
--->
+
     </target>
     	
 </project>
