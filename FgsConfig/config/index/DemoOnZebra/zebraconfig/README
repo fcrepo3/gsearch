@@ -4,8 +4,8 @@ Instructions on zebra configuration
 -----------------------------------
 
 Copy the .../zebraconfig/ directory to the directory 
-specified in index.properties/fgsindex.indexDir,
-which may not be a subdirectory of your web server :
+that you specified in index.properties/fgsindex.indexDir
+(which may not be a subdirectory of your web server) :
 
   cp .../zebraconfig/* <indexDir>
   
@@ -16,12 +16,12 @@ Files you must/may configure:
     The file is used for zebraidx calls, and indirectly
       for zebrasrv start by yazserver.xml.
     You do not need to change this default configuration. 
-    See the documentation for options.
+    See the Zebra documentation for options.
 
 2 db/yazserver.xml:
 
     The file is used for zebrasrv start.
-    The port number must be set to the same as 
+    The host and port number must be set to the same as 
       in index.properties/fgsindex.indexBase.
     The references to zebra.cfg, filter_fgs_conf.xml,
       sru2.xsl, and to cql2pqf.txt must be valid.
@@ -34,17 +34,11 @@ Files you must/may configure:
     By default it lists dc, property, and DS indexes.
 
 4 db/filter_fgs_conf.xml
-
-    You should not change this default configuration. 
-    It refers to fgs2index.xsl
+5 db/fgs2index.xsl
+6 db/sru2.xsl
     
-5 fgs2index.xsl
-    
-    You should not change this default configuration. 
-    
-6 sru2.xsl
-    
-    You should not change this default configuration. 
+    You should not change these default configuration files
+    unless you have a special need and special insight. 
     
     
 For Zebra download, see http://www.indexdata./zebra/.

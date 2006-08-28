@@ -1,0 +1,122 @@
+#! /bin/sh
+
+# Run the zebra operations for fedoragsearch
+
+get_timestamp(){
+    echo "`date '+20%y-%m-%d %T'`"
+}
+
+usage(){
+    echo "Usage:"
+    echo "    runfgszebra createEmpty"
+    echo "    runfgszebra updatePid <pid>"
+    echo "    runfgszebra update"
+    echo "    runfgszebra deletePid <pid>"
+}
+
+kill_process(){
+    export PID=`ps ax | grep "$1"  | grep -v grep | perl -ne '$_ =~ /^(.{6})/; print $1'`
+    echo "kill '$1' PID=$PID"
+    kill -9 $PID
+}
+
+if [ $# \< 1 ] ; then
+    usage
+    exit 1
+fi;
+    
+if [ ! -f db/lock/zebrasrv.pid ] ; then
+
+  echo "<`get_timestamp`> zebrasrv-2.0 -f db/yazserver.xml -l server.log &"
+#  zebrasrv-2.0 -f db/yazserver.xml -l server.log &
+  zebrasrv-2.0 -f db/yazserver.xml &
+    
+fi;
+
+case "$1" in
+
+  createEmpty)
+
+    if [ ! $# == 1 ] ; then
+        usage
+        exit 1
+    fi;
+  
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg init"
+    zebraidx-2.0 -c db/zebra.cfg init
+
+    ;;
+
+  updatePid)
+
+    if [ ! $# == 2 ] ; then
+        usage
+        exit 1
+    fi;
+  
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update db/tmp/$2"
+    zebraidx-2.0 -c db/zebra.cfg update db/tmp/$2
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
+    zebraidx-2.0 -c db/zebra.cfg commit
+  
+    ;;
+
+  update)
+
+    if [ ! $# == 1 ] ; then
+        usage
+        exit 1
+    fi;
+  
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update db/tmp"
+    zebraidx-2.0 -c db/zebra.cfg update db/tmp
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
+    zebraidx-2.0 -c db/zebra.cfg commit
+  
+    ;;
+
+  deletePid)
+
+    if [ ! $# == 2 ] ; then
+        usage
+        exit 1
+    fi;
+    rm db/tmp/*
+    echo "<IndexDocument >" >> db/tmp/$2
+    echo "<IndexField IFname=\"PID\">" >> db/tmp/$2
+    echo "$2" | sed -e s/_/:/ >> db/tmp/$2
+    echo "</IndexField>" >> db/tmp/$2
+    echo "</IndexDocument>" >> db/tmp/$2
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg delete db/tmp/$2"
+    zebraidx-2.0 -c db/zebra.cfg delete db/tmp/$2
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
+    zebraidx-2.0 -c db/zebra.cfg commit
+  
+    ;;
+
+  stop)
+
+#    kill_process "runfgszebra"
+
+    ;;
+
+  test)
+
+#    $0 createEmpty
+#    sleep 1
+    export XSLTPATH=/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28/webapps/fedoragsearch/WEB-INF/classes/config/index/DemoOnLucene/demoFoxmlToLucene.xslt
+    export OBJECTPATH=/home/gsp/fedora-2.1.1/data/objects/2006/0516/12/24
+    xsltproc $XSLTPATH $OBJECTPATH/$2 > db/tmp/$2
+    $0 fromPid $2
+
+    ;;
+
+  *)
+    get_timestamp ;
+    usage ;
+    exit 1;
+esac
+
+exit 0
+
+

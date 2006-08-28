@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<!-- this file configures the SRU/SRW explain response -->
+<!-- see: http://explain.z3950.org/dtd/commentary.html -->
+<!-- validate this using zeerex-2.0.xsd -->
+<!-- Extensions see: http://explain.z3950.org/dtd/extensions.html -->
+
+<explain xmlns="http://explain.z3950.org/dtd/2.0/">
+
+  <!-- try stylesheet url: http://./?stylesheet=docpath/sru.xsl -->
+
+  <!-- MARC: How do I say that I talk _all_ protocols on the same port ?? -->
+  <!-- MIKE: There's no way to do that with ZeeRex Proper.  That's
+       precisely the problem we run into.  I think the solution you've
+       chosen here is perfectly suitable, though: it can hardly be
+       misinterpreted. -->
+  <serverInfo protocol="SRW/SRU/Z39.50">
+
+    <host>localhost</host>
+
+    <port>1313</port>
+
+    <!-- MARC: remember to ask Adam why 'Default' and not 'alvis' as the id 
+         in yazserver.xml suggests ?? What's going wrong in Zebra ?? --> 
+    <!-- <database numRecs="1313" lastUpdate="2006-03-15 09-05-33">
+         Default</database> -->
+    <database>Default</database>
+
+        <!--<authentication>
+      <user>azaroth</user>
+      <group>agroup</group>
+      <password>squirrelfish</password>
+    </authentication>-->
+  </serverInfo>
+
+  <databaseInfo>
+
+    <title lang="en" primary="true">ALVIS test SRU/SRW/Z39.50 server</title>
+
+    <description lang="en" primary="true">
+      ALVIS Biological Test Corpus Crawled Only
+    </description>
+
+    <author>Marc Cromme, Mike Taylor, Index Data Aps, 
+            http://www.indexdata.dk</author>
+
+    <contact>Marc Cromme, marc(at)indexdata(dot)com</contact>
+
+    <!--<langUsage codes="en fr">
+        The records are in English and French.
+        </langUsage>  -->
+    <!-- <extend>Partially crawled web data</extend> -->
+   
+    <history>
+      Implemented under the EU 6th Framework Project ALVIS
+      http://www.alvis.info
+    </history>
+
+    <implementation  identifier="zebra" version="1.4">
+      <title>Index Data YAZ/ZEBRA http://www.indexdata.dk/zebra</title>
+    </implementation>
+    
+    <links> 
+      <!--<link type="www">http://localhost:1313</link>-->
+      <link type="z39.50">http://localhost:1313</link>
+      <link type="srw">http://localhost:1313</link>
+      <link type="sru">http://localhost:1313</link>
+      <!--<link type="oai"></link>
+      <link type="rss"></link>
+      <link type="icon"></link> -->
+    </links>
+    
+  </databaseInfo>
+
+  <!--
+  <metaInfo>
+    <dateModified>2002-03-29 19:00:00</dateModified>
+    <aggregatedFrom> z39.50r://gondolin.hist.liv.ac.uk:210/IR-Explain-1?
+                   id=ghlau-1;esn=F;rs=XML </aggregatedFrom>
+    <dateAggregated>2002-03-30 06:30:00</dateAggregated>
+  </metaInfo>
+  -->
+
+
+  <indexInfo>
+    <set name="cql" identifier="info:srw/cql-context-set/1/cql-v1.1">
+      <title>CQL Standard Set</title>
+    </set>
+    <set name="rec" identifier="info:srw/cql-context-set/2/rec-1.0">
+      <title>Record Standard Set</title>
+    </set>
+    <set name="alvis" identifier="http://indexdata.dk/zebra/xslt/1">
+      <title>Alvis Set</title>
+    </set>
+    <set name="dc" identifier="info:srw/cql-context-set/1/dc-v1.1">
+      <title>Dublin Core Set</title>
+    </set>
+    <set name="bib1" identifier="1.2.840.10003.3.1">
+      <title>BIB-1 Z39.50 Standard Set</title>
+    </set>
+
+
+    <!-- CQL standard index -->
+    <index search="true" scan="true" sort="false">
+      <title lang="en">CQL Server Choice</title>
+      <map><name set="cql">serverChoice</name></map>
+      <map>
+        <attr type="1" set="bib1">text</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">CQL All</title>
+      <map><name set="cql">all</name></map>
+      <map>
+        <attr type="1" set="bib1">text</attr>
+      </map>
+    </index>
+
+    <!-- Record ID index -->
+    <index search="true" scan="true" sort="false">
+      <title lang="en">Record ID</title>
+      <map><name set="rec">id</name></map>
+      <map>
+        <attr type="1" set="bib1">rec:id</attr>
+        <attr type="4" set="bib1">3</attr>
+      </map>
+    </index>
+
+    <!-- Alvis indexes -->
+    <index search="true" scan="true" sort="false">
+      <title lang="en">Alvis Date Modified</title>
+      <map><name set="alvis">date-modified</name></map>
+      <map>
+        <attr type="1" set="bib1"></attr>
+        <attr type="4" set="bib1"></attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">Alvis Date Checked</title>
+      <map><name set="alvis">date-checked</name></map>
+      <map>
+        <attr type="1" set="bib1">rec:id</attr>
+        <attr type="4" set="bib1">5</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">Alvis Identifier Url</title>
+      <map><name set="alvis">identifier-url</name></map>
+      <map>
+        <attr type="1" set="bib1">ac:identifier-url</attr>
+        <attr type="4" set="bib1">3</attr>
+      </map>
+    </index>
+    <!--<index search="true" scan="true" sort="false">
+      <title lang="en">Alvis Identifier Server</title>
+      <map><name set="alvis">identifier-server</name></map>
+      <map>
+        <attr type="1" set="bib1">ac:identifier-server</attr>
+        <attr type="4" set="bib1">3</attr>
+      </map>
+    </index> -->
+    <index search="true" scan="true" sort="false">
+      <title lang="en">Alvis Topic Class</title>
+      <map><name set="alvis">topic-class</name></map>
+      <map>
+        <attr type="1" set="bib1">an:topic-class</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">Alvis Language</title>
+      <map><name set="alvis">language</name></map>
+      <map>
+        <attr type="1" set="bib1">an:language</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">Alvis Wpcats</title>
+      <map><name set="alvis">wpcats</name></map>
+      <map>
+        <attr type="1" set="bib1">wpcats</attr>
+      </map>
+    </index>
+
+    <!-- Dublin Core Indexes -->
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Title</title>
+      <map><name set="dc">title</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:title</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Creator</title>
+      <map><name set="dc">creator</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:creator</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Subject</title>
+      <map><name set="dc">subject</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:subject</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Description</title>
+      <map><name set="dc">description</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:description</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Publisher</title>
+      <map><name set="dc">publisher</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:publisher</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Contributor</title>
+      <map><name set="dc">contributor</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:contributor</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Date</title>
+      <map><name set="dc">date</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:date</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Type</title>
+      <map><name set="dc">type</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:type</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Format</title>
+      <map><name set="dc">format</name></map>
+      <map>
+        <attr type="1" set="bib1"></attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Identifier</title>
+      <map><name set="dc">identifier</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:identifier</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Source</title>
+      <map><name set="dc">source</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:source</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Language</title>
+      <map><name set="dc">language</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:language</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Relation</title>
+      <map><name set="dc">relation</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:relation</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Coverage</title>
+      <map><name set="dc">coverage</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:coverage</attr>
+      </map>
+    </index>
+    <index search="true" scan="true" sort="false">
+      <title lang="en">DC Rights</title>
+      <map><name set="dc">rights</name></map>
+      <map>
+        <attr type="1" set="bib1">dc:rights</attr>
+      </map>
+    </index>
+
+  </indexInfo>
+
+  <!-- Z39.50 stuff ... not allowed in one and the same explain together with 
+       <schemaInfo>, sic ..
+  <recordInfo>
+    <recordSyntax identifier="1.2.840.10003.5.109.10">
+      <elementSet name="F">
+        <title lang="en" primary="true">Full XML Record</title>
+      </elementSet>
+    </recordSyntax>
+  </recordInfo>
+  -->
+
+  <schemaInfo>
+
+    <schema identifier="http://www.loc.gov/zing/srw/dcschema/v1.0/"
+            location="http://www.loc.gov/zing/srw/dc.xsd" 
+            name="dc"
+            retrieve="true">
+      <title lang="en">Dublin Core</title>
+    </schema>
+
+    <schema identifier="http://indexdata.dk/dc-short"
+            location="" 
+            name="dc-short"
+            retrieve="true">
+      <title lang="en">Dublin Core Short Form</title>
+    </schema>
+
+    <!--<schema identifier="http://indexdata.dk/snippet"
+            location="" 
+            name="snippet"
+            retrieve="true">
+      <title lang="en">Snippet - Not Implemented</title>
+    </schema> -->
+
+    <!--<schema identifier="http://indexdata.dk/help"
+            location="" 
+            name="help"
+            retrieve="true">
+      <title lang="en">Help - Not Implemented</title>
+    </schema> -->
+
+    <schema identifier="http://indexdata.dk/pretty"
+            location="" 
+            name="pretty"
+            retrieve="true">
+      <title lang="en">Pretty</title>
+    </schema>
+
+    <schema identifier="http://indexdata.dk/D9.1"
+            location="" 
+            name="D9.1"
+            retrieve="true">
+      <title lang="en">Alvis D9.1 Schema</title>
+    </schema>
+
+    <schema identifier="http://alvis.info/enriched/"
+            location="http://project.alvis.info/alvis_docs/alvis-document.xsd" 
+            name="alvis"
+            retrieve="true">
+      <title lang="en">Alvis Enriched</title>
+    </schema>
+
+    <schema identifier="http://indexdata.dk/zebra/xslt/1"
+            location="" 
+            name="index"
+            retrieve="true">
+      <title lang="en">Zebra Indexing</title>
+    </schema>
+
+  </schemaInfo>
+
+ 
+  <configInfo>
+
+    <!-- MARC: the biiiig question is: how do I know which settings may go
+         inside a <default>, a <setting> or a <supports> ?? The zeerex-2.0.xsd
+         seeems totally indifferent ?? -->
+    <!-- MIKE: you know about the (brief) descriptions at
+	 http://explain.z3950.org/dtd/commentary.html#8
+	 right? -->
+    <!-- MARC: yes, this enabled me to write the stuff in the first place
+         But there are merely hints there in the textual descritions, nothing 
+         affirmative. It would be at least nice to have a column in this table
+         indicating if a <default>, a <setting> or a <supports> is meaningful.
+         Still better, it should be part of the DTD and XML Schema validation. 
+    -->
+    <!-- MIKE: You're right that the documentation is inadequate in
+	 this respect.  You might try Z39.92 and see if it's more
+	 explicit.  A DTD can't control content IIRC, though a Schema
+	 can. At present, the Schema is generated from a DTD. -->
+
+    <!-- searchRetrieve settings -->
+
+    <!-- default context set -->
+    <default type="contextSet">cql</default>
+
+    <default type="index">all</default>
+
+    <!-- default relation -->
+    <default type="relation">=</default>
+
+    <!-- relation supported by the server or index -->
+    <!-- MARC: when it says 'server or index' does this mean that 
+         this particular element may be inside <index><configInfo> ?? -->
+    <!-- MIKE: yes.  But don't feel obliged to do that -->
+    <!-- MARC: and when it's inside an index, are those named in the 
+         general <configInfo> section overruled ??
+         Does this index then also need to support those from the general 
+         section which are not overruled ? -->
+    <!-- MIKE: Yeesh, this is a bit smelly.  Probably worth raising
+         on-list.  My guess is that no-one has even used <configInfo>
+	 within <index>, so it's not a real issue -->
+    <!-- MIKE: by the way, I think it's a bug that "relation" along of
+	 all the type="xxx" values appears twice in the table at the
+	 end of the documentation -->
+    <supports type="relation">&lt;</supports> <!-- 2=1 OK -->
+    <supports type="relation">&lt;=</supports> <!-- 2=2 OK -->
+    <supports type="relation">=</supports> <!-- 2=3 OK -->
+    <supports type="relation">&gt;=</supports> <!-- 2=4 OK -->
+    <supports type="relation">&gt;</supports> <!-- 2=5 OK -->
+    <!-- <supports type="relation">&lt;&gt;</supports> --><!-- 2=6 DEAD !!! -->
+    <!-- <supports type="relation">all</supports> --><!-- 2=3 OK -->
+    <!-- <supports type="relation">any</supports> --><!-- 2=3 OK -->
+
+    <!-- relation modifier supported by the server or index -->
+    <!-- MARC: how do I express that these relation modifers only make 
+         sense (in my implementation) together with the '=' relation ?? --> 
+    <!-- MIKE: you can't.  Don't worry about it -->
+    <!-- MARC: So I promise that you can use 'title <>/stem fish' , but it 
+         really defaults to  'title =/stem  fish' ??? And nobody cares ???-->
+    <!-- MIKE: no, it doesn't _default_ to anything.  You say that the
+	 server supports /stem, and it's true, it does.  But if
+	 someone tries to use it on <>, then that will be rejected
+	 (there's a diagnostic).  Doesn't seem unreasonable to me.
+	 ZeeRex has to strike a balance between simplicity and
+	 expressiveness, and the lesson the Z39.50's Explain Classic
+	 is that it's _way_ easy to go too far towards expressiveness
+	 ... and then no-one implements it at all -->
+    <!-- <supports type="relationModifier">relevant</supports> --><!-- 2=102 OK, makes no difference .. sic -->
+    <!-- <supports type="relationModifier">phonetic</supports> --> <!-- 2=100 DEAD -->
+    <!-- <supports type="relationModifier">stem</supports> --> <!-- 2=101 DEAD !! -->
+
+    <!-- support proximity (Empty) -->
+    <!-- <supports type="proximity"></supports> --> <!-- DEAD,  title = (house prox/distance=1/unit=word  the) FAILS -->
+
+
+    <!-- proximity modifier supported by the server or index 
+         (relation, distance, unit, ordering) -->
+    <!-- <supports type="proximityModifier"></supports> -->
+
+    <!-- boolean modifier supported by the server or index -->
+    <!-- <supports type="booleanModifier"></supports> -->
+
+    <!-- masking character supported (* or ?) -->
+    <supports type="maskingCharacter">*</supports>
+    <supports type="maskingCharacter">?</supports>
+
+    <!-- anchoring supported? (^ character) -->
+    <!-- MARC: how do I express that I only support left anchoring in 
+         the beginning of the field ( bib1 3=1 ), but no right anchoring ?? -->
+    <!-- MIKE: You can't.  The ZeeRex documentation should be changed
+	 to allow this, as <supports type="anchoring">left</supports> -->
+    <!-- <supports type="anchoring"></supports> -->
+
+    <!-- empty terms supported (Empty) -->
+    <!-- MARC: what's the use case of this ?? -->
+    <!-- MIKE: lots of uses!  For example, scanning from the very
+	 start of the index with 'scan @attr 1=text ""'.  Or searching
+	 for bibliographic records with no title, etc. -->
+    <!-- MARC: I see, and we can if we always use '""' 
+         (the empty string), as in 'scan @attr 1=text ""' -->
+    <supports type="emptyTerm"></supports>
+
+
+    <!-- sorting settings -->
+
+    <!-- default schema used in sorting, in short name form -->
+    <!-- <default type="sortSchema"></default> -->
+    <!-- MIKE: deprecated -->
+
+    <!-- server support sort -->
+    <!-- MARC: why stating this redundant info here?? it's already in the 
+         <index sort="true" attribute -->
+    <!-- MIKE: that's not quite the same thing.  This is saying
+         whether the server can do sorting at all.  Since
+	 sort="true|false" attributes can be omitted entirely from
+	 indexes, you can't deduce from a set of <index> elements
+	 without sorting specified that the server doesn't support
+	 sorting -->
+    <!-- MARC: which ought to be the same thing than saying that sorting is 
+         _not_ possible. In short,  one simple <index sort="true" attribute
+         should be enough to tell that sorting _is_ possible. Or we have the 
+         same discussion about overruling general sorting capabilities in 
+         specific indexes ?? Quite confusing ... -->
+    <!-- MIKE: no, within an <index>, saying sort="true" means that
+	 you can sort on it, sort="false" means that you can't, and
+	 not saying anything means you're not saying anything.  Three
+	 different cases.   That's as it should be, since Explain
+	 records might be auto-generated by systems that can't do the
+	 necessary probes.  So a ZeeRex record might not have "sort"
+	 attributes on any of its <index>es, but still say that
+	 sorting is supported.  The client (or user) has to experiment
+	 to find out what indexes support it.  Check the mailing list
+	 archives if you want a rationale, I forget the details. -->
+    <!-- <supports type="sort"></supports> -->
+
+    <!-- supported sortmodifier (ascending, missingValue, caseSensitive) -->
+    <!-- <supports type="sortModifier"></supports> -->
+    <!-- MIKE: this is for the new CQL "sortby" sorting, which Zebra
+	 doesn't yet do at all, so you're right to omit this for now. -->
+
+    <!-- presentation settings --> 
+
+    <!-- default number of records that a server will return at once  -->
+    <default type="numberOfRecords">0</default>
+
+    <!-- default schema used for retrieved records -->
+    <default type="retrieveSchema">index</default>
+    <!-- MIKE: That's not what I get by default.  A URL such as
+http://localhost:1313/Default?version=1.1&operation=searchRetrieve&query=1&maximumRecords=10
+         gives me a weird sort of hybrid record with <metadata>
+	 sections and <z:index> elements.  Unfortunately, the SRU
+	 response doesn't see to explicitly state what schema is
+	 used. -->
+     <!-- MARC: Right, the default seems to be the 'index' schema. I have to 
+          talk to Adam to get a better way to choose the default schema -->
+
+    <!-- default stylesheet URL, or if stylesheets are supported -->
+    <!-- MARC: here I want to express: no default, but you kan use this 
+         and only this one - should I use 'setting' ?? -->
+    <!-- MIKE: There is no way to say this at present, but what you
+	 suggest is sensible.  Please suggest it to the list -->
+    <setting type="stylesheet">docpath/sru.xsl</setting>
+
+    <!-- default record packing returned (string or xml) -->
+    <default type="recordPacking">xml</default>
+
+    <!-- maximum number of records that a server will return at once -->
+    <!-- <setting type="maximumRecords">1000</setting> -->
+
+    <!-- support result sets (Empty) -->
+    <!-- MARC: this one is for result sets in Z39.50, right ?? -->
+    <!-- MIKE: No, this also applies for SRU -->
+    <!-- MARC: Rrrrriiiight! That's why the section about this is called
+         <schemaInfo>, and the word resultSet never appears in a SRU Explain.
+         Very intuitive! -->
+    <!-- MIKE: I don't understand what point you're making.  SRU, like
+	 Z39.50, has specifications for how to do result sets.  But I
+	 don't know whether Zebra supports them or not -->
+    <!-- MARC: open question, then, I'll better comment out -->
+    <!-- <supports type="resultSets"></supports>  --> 
+
+    <!-- XPath retrieval supported -->
+    <!-- <supports type="recordXPath"></supports> -->
+
+
+    <!-- scan settings -->
+
+    <!-- scan operation supported -->
+    <supports type="scan"></supports>
+
+    <!-- default number of terms to be returned in scan -->
+    <default type="numberOfTerms">20</default>
+
+
+
+    <!-- other server settings -->
+
+    <!-- older version of the protocol supported  -->
+    <!-- MARC: why only older versions of the protocol ?? It seems 
+         natural just to list what you understand, including the one the
+         client sucesfully used --> 
+    <!-- MIKE: it may seem natural, but it ain't what it means! -->
+    <!-- MARC: but makes sense, and makes determining the list of protocol 
+         versions easier in a thin client -->
+    <!-- MIKE: if you want to change the meaning of this, then propose
+	 it on-list.  I doubt you'll get much support.  Thin clients
+	 won't use this anyway, they will just speak one version and
+	 hope for the best -->
+    <!-- <supports type="version">1.1</supports> -->
+
+    <!-- number of seconds that a result set will be maintained for -->
+    <setting type="resultSetTTL">0</setting>
+
+    <!-- A type of extraRequestData available in the
+         searchRetrieveRequest. The extra*Data fields are represented as two
+         space separated words, the first the identifier for the extension and
+         the second the individual element name from the extension. If there is
+         only one word, then it is the extension id and all elements from
+         within are supported. -->
+    <!-- <supports type="extraSearchData"></supports> -->
+    <!-- MIKE: we could explain x-pquery here -->
+    <!-- MARC: I talked to Adam about this. We should make a new 'x-type'
+         with possible values PQF, CQL, CCL , .. such that 'query' still is
+         obligatory, and carries the query string, be it PQF, CCL, or CQL. -->
+    <!-- MIKE: Yes, that would be _much_ better -->
+
+    <!-- A type of extraRequestData available in the explainRequest -->
+    <!-- <supports type="extraExplainData"></supports> -->
+
+    <!-- A type of extraRequestData available in the scanRequest -->
+    <!-- <supports type="extraScanData"></supports> -->
+    <!-- MIKE: we could explain x-pscan here -->
+    <!-- MARC: re-use of 'x-type' here .. drop 'x-pscan' -->
+
+    <!-- The URI identifier of a supported profile -->
+    <!-- MARC: what's this ?? -->
+    <!-- <supports type="profile"></supports> -->
+    <!-- MIKE: this is a very good thing, which we should use when the
+	 time is right.  A "profile" is a complete set of
+	 specifications for using Z39.50 and/or SRU within a
+	 particular application domain.  We should write a (brief)
+	 "Alvis Profile for SRU", assign it an opaque identifier URI,
+	 and point to it here.  (Not today, though!) -->
+    <!-- MARC: so this is some HTML prosa text ?? -->
+    <!-- MIKE: see for example
+	http://zthes2.z3950.org/srw/zthes-srw-1.0.html
+	-->
+  </configInfo>
+   
+</explain>
