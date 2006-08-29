@@ -312,50 +312,50 @@ public class Config {
                     checkResultStylesheet("index/"+indexName, props, 
                     "fgsindex.defaultGetIndexInfoResultXslt");
                     
-//                  Check indexDir for lucene
+//                  Check indexDir
+                    String indexDir = props.getProperty("fgsindex.indexDir"); 
+                    File indexDirFile = new File(indexDir);
+                    if (indexDirFile == null) {
+                    	errors.append("\n*** config/index/"+indexName+" fgsindex.indexDir="
+                    			+ indexDir + " must exist as a directory");
+                    }
+
+//                  	Check analyzer class for lucene
                     if (operationsImpl.indexOf("fgslucene")>-1) {
-                        String indexDir = props.getProperty("fgsindex.indexDir"); 
-                        File indexDirFile = new File(indexDir);
-                        if (indexDirFile == null) {
-                            errors.append("\n*** config/index/"+indexName+" fgsindex.indexDir="
-                                    + indexDir + " must exist as a directory");
-                        }
-                    }
-                    
-//                  Check analyzer class
-                    String analyzer = props.getProperty("fgsindex.analyzer"); 
-                    if (analyzer == null || analyzer.equals("")) {
-                        errors.append("\n*** config/index/" + indexName
-                                +": fgsindex.analyzer must be set in config/index/ "
-                                + indexName + ".properties");
-                    }
-                    try {
-                        Class analyzerClass = Class.forName(analyzer);
-                        try {
-                            Analyzer a = (Analyzer) analyzerClass
-                            .getConstructor(new Class[] {})
-                            .newInstance(new Object[] {});
-                        } catch (InstantiationException e) {
-                            errors.append("\n*** config/index/"+indexName+" "+analyzer
-                                    + ": fgsindex.analyzer="+analyzer
-                                    + ": instantiation error.\n"+e.toString());
-                        } catch (IllegalAccessException e) {
-                            errors.append("\n*** config/index/"+indexName+" "+analyzer
-                                    + ": fgsindex.analyzer="+analyzer
-                                    + ": instantiation error.\n"+e.toString());
-                        } catch (InvocationTargetException e) {
-                            errors.append("\n*** config/index/"+indexName+" "+analyzer
-                                    + ": fgsindex.analyzer="+analyzer
-                                    + ": instantiation error.\n"+e.toString());
-                        } catch (NoSuchMethodException e) {
-                            errors.append("\n*** config/index/"+indexName+" "+analyzer
-                                    + ": fgsindex.analyzer="+analyzer
-                                    + ": instantiation error:\n"+e.toString());
-                        }
-                    } catch (ClassNotFoundException e) {
-                        errors.append("\n*** config/index/" + indexName
-                                + ": fgsindex.analyzer="+analyzer
-                                + ": class not found:\n"+e.toString());
+                    	String analyzer = props.getProperty("fgsindex.analyzer"); 
+                    	if (analyzer == null || analyzer.equals("")) {
+                    		errors.append("\n*** config/index/" + indexName
+                    				+": fgsindex.analyzer must be set in config/index/ "
+                    				+ indexName + ".properties");
+                    	}
+                    	try {
+                    		Class analyzerClass = Class.forName(analyzer);
+                    		try {
+                    			Analyzer a = (Analyzer) analyzerClass
+                    			.getConstructor(new Class[] {})
+                    			.newInstance(new Object[] {});
+                    		} catch (InstantiationException e) {
+                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    					+ ": fgsindex.analyzer="+analyzer
+                    					+ ": instantiation error.\n"+e.toString());
+                    		} catch (IllegalAccessException e) {
+                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    					+ ": fgsindex.analyzer="+analyzer
+                    					+ ": instantiation error.\n"+e.toString());
+                    		} catch (InvocationTargetException e) {
+                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    					+ ": fgsindex.analyzer="+analyzer
+                    					+ ": instantiation error.\n"+e.toString());
+                    		} catch (NoSuchMethodException e) {
+                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    					+ ": fgsindex.analyzer="+analyzer
+                    					+ ": instantiation error:\n"+e.toString());
+                    		}
+                    	} catch (ClassNotFoundException e) {
+                    		errors.append("\n*** config/index/" + indexName
+                    				+ ": fgsindex.analyzer="+analyzer
+                    				+ ": class not found:\n"+e.toString());
+                    	}
                     }
                     
 //                  Check defaultQueryFields - how can we check this?

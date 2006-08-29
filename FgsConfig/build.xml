@@ -39,7 +39,7 @@
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="SOAPPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="WEBSERVERPATH" value="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="REPOSNAMES" value="DemoAtDtu SindapAtDtu"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="INDEXNAMES" value="DemoOnLucene SmileyDemoOnLucene SindapDemoOnLucene"/>
+		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="INDEXNAMES" value="DemoOnLucene SmileyDemoOnLucene SindapDemoOnLucene DemoOnZebra"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="demoUpdateIndexToHtml"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="demoGfindObjectsToHtml"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="demoBrowseIndexToHtml"/>
@@ -73,7 +73,7 @@
 		<replace file="${plugin.dir}/config/index/SindapDemoOnLucene/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/sindapDemoOnLucene"/>
 		<replace file="${plugin.dir}/config/index/SindapDemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="sindapFoxmlToLucene"/>
 		<replace file="${plugin.dir}/config/index/DemoOnZebra/index.properties" token="INDEXBASE" value="http://localhost:9999"/>
-		<replace file="${plugin.dir}/config/index/DemoOnZebra/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/demoOnZebra/db"/>
+		<replace file="${plugin.dir}/config/index/DemoOnZebra/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/demoOnZebra"/>
 		
 	</target>
 
@@ -85,7 +85,7 @@
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="SOAPPASS" value="we4Yahgo"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="REPOSNAMES" value="DemoAtDtu SindapAtDtu"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="INDEXNAMES" value="DemoOnLucene SmileyDemoOnLucene SindapDemoOnLucene"/>
+		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="INDEXNAMES" value="DemoOnLucene SmileyDemoOnLucene SindapDemoOnLucene DemoOnZebra"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="demoUpdateIndexToHtml"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="demoBrowseIndexToHtml"/>
 		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="demoGfindObjectsToHtml"/>

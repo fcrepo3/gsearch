@@ -37,10 +37,10 @@ case "$1" in
 
   createEmpty)
 
-    if [ ! $# == 1 ] ; then
-        usage
-        exit 1
-    fi;
+#    if [ ! $# == 1 ] ; then
+#        usage
+#        exit 1
+#    fi;
   
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg init"
     zebraidx-2.0 -c db/zebra.cfg init
@@ -48,47 +48,36 @@ case "$1" in
     ;;
 
   updatePid)
-
-    if [ ! $# == 2 ] ; then
-        usage
-        exit 1
-    fi;
   
-    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update db/tmp/$2"
-    zebraidx-2.0 -c db/zebra.cfg update db/tmp/$2
+    export FILENAME=`echo "$2" | sed -e s/:/_/`
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update temp_records/$FILENAME"
+    zebraidx-2.0 -c db/zebra.cfg update temp_records/$FILENAME
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
     zebraidx-2.0 -c db/zebra.cfg commit
   
     ;;
 
   update)
-
-    if [ ! $# == 1 ] ; then
-        usage
-        exit 1
-    fi;
   
-    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update db/tmp"
-    zebraidx-2.0 -c db/zebra.cfg update db/tmp
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update temp_records"
+    zebraidx-2.0 -c db/zebra.cfg update temp_records
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
     zebraidx-2.0 -c db/zebra.cfg commit
   
     ;;
 
   deletePid)
-
-    if [ ! $# == 2 ] ; then
-        usage
-        exit 1
-    fi;
-    rm db/tmp/*
-    echo "<IndexDocument >" >> db/tmp/$2
-    echo "<IndexField IFname=\"PID\">" >> db/tmp/$2
-    echo "$2" | sed -e s/_/:/ >> db/tmp/$2
-    echo "</IndexField>" >> db/tmp/$2
-    echo "</IndexDocument>" >> db/tmp/$2
-    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg delete db/tmp/$2"
-    zebraidx-2.0 -c db/zebra.cfg delete db/tmp/$2
+  
+    export FILENAME=`echo "$2" | sed -e s/:/_/`
+    rm temp_records/*
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> temp_records/$FILENAME
+    echo "<IndexDocument >" >> temp_records/$FILENAME
+    echo "<IndexField IFname=\"PID\">" >> temp_records/$FILENAME
+    echo "$2" >> temp_records/$FILENAME
+    echo "</IndexField>" >> temp_records/$FILENAME
+    echo "</IndexDocument>" >> temp_records/$FILENAME
+    echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg delete temp_records/$FILENAME"
+    zebraidx-2.0 -c db/zebra.cfg delete temp_records/$FILENAME
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
     zebraidx-2.0 -c db/zebra.cfg commit
   
@@ -106,8 +95,8 @@ case "$1" in
 #    sleep 1
     export XSLTPATH=/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28/webapps/fedoragsearch/WEB-INF/classes/config/index/DemoOnLucene/demoFoxmlToLucene.xslt
     export OBJECTPATH=/home/gsp/fedora-2.1.1/data/objects/2006/0516/12/24
-    xsltproc $XSLTPATH $OBJECTPATH/$2 > db/tmp/$2
-    $0 fromPid $2
+    xsltproc $XSLTPATH $OBJECTPATH/$2 > temp_records/$2
+    $0 updatePid $2
 
     ;;
 

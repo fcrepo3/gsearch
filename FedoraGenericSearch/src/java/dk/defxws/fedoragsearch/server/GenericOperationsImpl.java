@@ -213,27 +213,31 @@ public class GenericOperationsImpl implements Operations {
         foxmlRecord = stub.export(pid, "foxml1.0", "public", config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
     }
     
-    public StringBuffer getDatastreamText(
+    public String getDatastreamText(
             String pid,
             String repositoryName,
             String dsId)
     throws GenericSearchException {
         if (logger.isDebugEnabled())
             logger.debug("getDatastreamText" +
-                    " pid="+pid+" dsId="+dsId);
+            		" pid="+pid+" repositoryName="+repositoryName+" dsId="+dsId);
         StringBuffer dsBuffer = new StringBuffer();
         String mimetype = "";
         ds = null;
         if (dsId != null) {
             try {
-                MIMETypedStream mts = (new FedoraAPIABindingSOAPHTTPStub(
-                        new java.net.URL(config.getFedoraSoap(repositoryName)+"/access"), null)).getDatastreamDissemination(pid, dsId, null, config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+            	java.net.URL url = new java.net.URL(config.getFedoraSoap(repositoryName)+"/access");
+                if (url==null) return "";
+            	FedoraAPIABindingSOAPHTTPStub stub = new FedoraAPIABindingSOAPHTTPStub(url, null);
+                if (stub==null) return "";
+                MIMETypedStream mts = stub.getDatastreamDissemination(pid, dsId, null, config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+                if (mts==null) return "";
                 ds = mts.getStream();
                 mimetype = mts.getMIMEType();
             } catch (AxisFault e) {
                 if (e.getFaultString().indexOf("DatastreamNotFoundException")>-1 ||
                         e.getFaultString().indexOf("DefaulAccess")>-1)
-                    return new StringBuffer();
+                    return new String();
                 else
                     throw new GenericSearchException(e.getFaultString()+": "+e.toString());
             } catch (MalformedURLException e) {
@@ -251,7 +255,7 @@ public class GenericOperationsImpl implements Operations {
                     " dsId="+dsId+
                     " mimetype="+mimetype+
                     " dsBuffer="+dsBuffer.toString());
-        return dsBuffer;
+        return dsBuffer.toString();
     }
     
     public StringBuffer getFirstDatastreamText(
