@@ -33,6 +33,7 @@
 -->
 
 	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
+	<xsl:param name="OPERATIONSIMPL" select="null"/>
 	
 	<xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
 	<xsl:variable name="rank" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
@@ -69,7 +70,7 @@
 			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/oai_dc:dc/*">
 				<IndexField>
 					<xsl:attribute name="IFname">
-						<xsl:value-of select="name()"/>
+						<xsl:value-of select="concat('dc.', substring-after(name(),':'))"/>
 					</xsl:attribute>
 					<xsl:value-of select="text()"/>
 				</IndexField>
@@ -84,7 +85,7 @@
 			     
 			<!-- uncomment it, if you wish, it takes time, even if the foxml has no DS2. -->
 			<IndexField IFname="DS2.text" dsId="DS2">
-				<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, 'DS2')"/>
+				<xsl:value-of select="exts:getDatastreamText($OPERATIONSIMPL, $PID, $REPOSITORYNAME, 'DS2')"/>
 			</IndexField>
 
 			

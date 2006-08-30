@@ -26,7 +26,6 @@
     <docpath>./db/</docpath>
 
     <!-- default SRU XSLT stylesheet -->
-    <stylesheet>db/sru2.xsl</stylesheet> 
 
     <!-- explain message - send in SRW Explain
          - yes, we understand Z39.50 and SRW on the same port !! -->

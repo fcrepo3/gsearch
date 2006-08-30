@@ -22,7 +22,7 @@
   <xsl:template match="/IndexDocument">
 
     <z:record id="{IndexField[@IFname='PID']/text()}" 
-              rank="{@boost}" 
+              rank="{@rank}" 
               type="update">
 
     <xsl:apply-templates/>

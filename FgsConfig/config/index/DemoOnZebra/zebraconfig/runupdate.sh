@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Run the zebra operations for fedoragsearch
+# Run the fedoragsearch updateIndex operation on zebra
 
 get_timestamp(){
     echo "`date '+20%y-%m-%d %T'`"
@@ -8,10 +8,10 @@ get_timestamp(){
 
 usage(){
     echo "Usage:"
-    echo "    runfgszebra createEmpty"
-    echo "    runfgszebra updatePid <pid>"
-    echo "    runfgszebra update"
-    echo "    runfgszebra deletePid <pid>"
+    echo "    runupdate createEmpty"
+    echo "    runupdate updatePid <pid>"
+    echo "    runupdate update"
+    echo "    runupdate deletePid <pid>"
 }
 
 kill_process(){
@@ -28,8 +28,7 @@ fi;
 if [ ! -f db/lock/zebrasrv.pid ] ; then
 
   echo "<`get_timestamp`> zebrasrv-2.0 -f db/yazserver.xml -l server.log &"
-#  zebrasrv-2.0 -f db/yazserver.xml -l server.log &
-  zebrasrv-2.0 -f db/yazserver.xml &
+  zebrasrv-2.0 -f db/yazserver.xml -l server.log &
     
 fi;
 
@@ -43,7 +42,7 @@ case "$1" in
 #    fi;
   
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg init"
-    zebraidx-2.0 -c db/zebra.cfg init
+    zebraidx-2.0 -l indexer.log -c db/zebra.cfg init
 
     ;;
 
@@ -51,18 +50,20 @@ case "$1" in
   
     export FILENAME=`echo "$2" | sed -e s/:/_/`
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update temp_records/$FILENAME"
-    zebraidx-2.0 -c db/zebra.cfg update temp_records/$FILENAME
+    zebraidx-2.0 -l indexer.log -c db/zebra.cfg update temp_records/$FILENAME
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
-    zebraidx-2.0 -c db/zebra.cfg commit
+    zebraidx-2.0 -l indexer.log -c db/zebra.cfg commit
+    rm temp_records/*
   
     ;;
 
   update)
   
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg update temp_records"
-    zebraidx-2.0 -c db/zebra.cfg update temp_records
+    zebraidx-2.0 -l indexer.log -c db/zebra.cfg update temp_records
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
-    zebraidx-2.0 -c db/zebra.cfg commit
+    zebraidx-2.0 -l indexer.log -c db/zebra.cfg commit
+    rm temp_records/*
   
     ;;
 
@@ -77,15 +78,16 @@ case "$1" in
     echo "</IndexField>" >> temp_records/$FILENAME
     echo "</IndexDocument>" >> temp_records/$FILENAME
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg delete temp_records/$FILENAME"
-    zebraidx-2.0 -c db/zebra.cfg delete temp_records/$FILENAME
+    zebraidx-2.0 -l indexer.log -c db/zebra.cfg delete temp_records/$FILENAME
     echo "<`get_timestamp`> zebraidx-2.0 -c db/zebra.cfg commit"
-    zebraidx-2.0 -c db/zebra.cfg commit
+    zebraidx-2.0 -l indexer.log -c db/zebra.cfg commit
+    rm temp_records/*
   
     ;;
 
   stop)
 
-#    kill_process "runfgszebra"
+#    kill_process "runupdate"
 
     ;;
 
