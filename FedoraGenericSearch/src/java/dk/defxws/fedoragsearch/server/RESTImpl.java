@@ -188,7 +188,7 @@ public class RESTImpl extends HttpServlet {
             restXslt = config.getDefaultGetRepositoryInfoRestXslt();
         }
         GenericOperationsImpl ops = new GenericOperationsImpl();
-        ops.init(config);
+        ops.init(indexName, config);
         String result = ops.getRepositoryInfo(repositoryName, resultPageXslt);
         return result;
     }
@@ -212,7 +212,7 @@ public class RESTImpl extends HttpServlet {
         String value = request.getParameter(PARAM_VALUE);
         String indexXslt = request.getParameter(PARAM_INDEXXSLT);
         GenericOperationsImpl ops = new GenericOperationsImpl();
-        ops.init(config);
+        ops.init(indexName, config);
         String result = ops.updateIndex(action, value, repositoryName, indexName, indexXslt, resultPageXslt);
         return result;
     }

@@ -71,7 +71,7 @@ public class SOAPImpl implements Operations {
                     " repositoryName="+repositoryName+
                     " resultPageXslt="+resultPageXslt);
         GenericOperationsImpl ops = (new GenericOperationsImpl());
-        ops.init(Config.getCurrentConfig());
+        ops.init("", Config.getCurrentConfig());
         return ops.getRepositoryInfo(repositoryName, resultPageXslt);
     }
     
@@ -104,7 +104,7 @@ public class SOAPImpl implements Operations {
                     " indexXslt="+indexXslt+
                     " resultPageXslt="+resultPageXslt);
         GenericOperationsImpl ops = (new GenericOperationsImpl());
-        ops.init(Config.getCurrentConfig());
+        ops.init(indexName, Config.getCurrentConfig());
         String result = ops.updateIndex(action, value, repositoryName, indexName, indexXslt, resultPageXslt);
         return result;
     }

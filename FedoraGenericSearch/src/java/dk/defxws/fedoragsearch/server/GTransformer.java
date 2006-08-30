@@ -94,7 +94,7 @@ public class GTransformer {
      *
      * @throws TransformerConfigurationException, TransformerException.
      */
-    public StringBuffer transform(String xsltName, StreamSource sourceStream, String[] params) 
+    public StringBuffer transform(String xsltName, StreamSource sourceStream, Object[] params) 
     throws GenericSearchException {
         if (logger.isDebugEnabled())
             logger.debug("xsltName="+xsltName);
@@ -102,7 +102,7 @@ public class GTransformer {
         for (int i=0; i<params.length; i=i+2) {
             Object value = params[i+1];
             if (value==null) value = "";
-            transformer.setParameter(params[i], value);
+            transformer.setParameter((String)params[i], value);
         }
         transformer.setParameter("DATETIME", new Date());
         StreamResult destStream = new StreamResult(new StringWriter());
@@ -115,6 +115,30 @@ public class GTransformer {
 //      if (logger.isDebugEnabled())
 //      logger.debug("sw="+sw.getBuffer().toString());
         return sw.getBuffer();
+    }
+    
+    /**
+     * 
+     *
+     * @throws TransformerConfigurationException, TransformerException.
+     */
+    public void transformToFile(String xsltName, StreamSource sourceStream, Object[] params, String filePath) 
+    throws GenericSearchException {
+        if (logger.isDebugEnabled())
+            logger.debug("xsltName="+xsltName);
+        Transformer transformer = getTransformer(xsltName);
+        for (int i=0; i<params.length; i=i+2) {
+            Object value = params[i+1];
+            if (value==null) value = "";
+            transformer.setParameter((String)params[i], value);
+        }
+        transformer.setParameter("DATETIME", new Date());
+        StreamResult destStream = new StreamResult(new File(filePath));
+        try {
+            transformer.transform(sourceStream, destStream);
+        } catch (TransformerException e) {
+            throw new GenericSearchException("transform "+xsltName+".xslt:\n", e);
+        }
     }
     
     /**

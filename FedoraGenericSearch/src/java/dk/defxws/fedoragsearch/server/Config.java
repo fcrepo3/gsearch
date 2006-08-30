@@ -660,7 +660,7 @@ public class Config {
             throw new ConfigException(operationsImpl
                     + ": instantiation error.\n", e);
         }
-        ops.init(this);
+        ops.init(indexName, this);
         return ops;
     }
     
