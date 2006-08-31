@@ -228,11 +228,11 @@ public class GenericOperationsImpl implements Operations {
         ds = null;
         if (dsId != null) {
             try {
-            	java.net.URL url = new java.net.URL(Config.getCurrentConfig().getFedoraSoap(repositoryName)+"/access");
+            	java.net.URL url = new java.net.URL(config.getFedoraSoap(repositoryName)+"/access");
                 if (url==null) return "";
             	FedoraAPIABindingSOAPHTTPStub stub = new FedoraAPIABindingSOAPHTTPStub(url, null);
                 if (stub==null) return "";
-                MIMETypedStream mts = stub.getDatastreamDissemination(pid, dsId, null, Config.getCurrentConfig().getFedoraUser(repositoryName), Config.getCurrentConfig().getFedoraPass(repositoryName));
+                MIMETypedStream mts = stub.getDatastreamDissemination(pid, dsId, null, config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
                 if (mts==null) return "";
                 ds = mts.getStream();
                 mimetype = mts.getMIMEType();

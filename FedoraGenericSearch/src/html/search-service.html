@@ -1,0 +1,257 @@
+
+	<html>
+		<head>
+			<title>Fedora Generic Search Service</title>
+			<link rel="stylesheet" type="text/css" href="css/docstyle.css"/>
+			<style type="text/css">
+				ol {
+				list-style: square outside none;
+    			padding-top: 6px;
+				}
+				ol ol {
+				list-style: disc outside none;
+    			padding-top: 6px;
+				margin-bottom: 10px;
+				}
+				li.MsoNormal {
+				mso-style-parent:"";
+				margin-bottom:.0001pt;
+				font-size:12.0pt;
+				font-family:"Times New Roman";
+				margin-left:0in; margin-right:0in; margin-top:0in
+				}
+			</style>
+		</head>
+		<body>
+			<div id="header">
+				<a href="" id="logo"></a>
+				<div id="title">
+				<h1>Fedora Generic Search Service</h1>
+				<h2>Fedora Release 2.2</h2>
+				</div>
+			</div>
+			<div class="toc">
+				<p><b>Table of Contents</b></p>
+				<dl>
+				<dt><a href="#about">About This Service</a></dt>
+				<dt><a href="#installation">Installation</a></dt>
+				<dt><a href="#config">Configuration</a></dt>
+				<dt><a href="additional">Additonal Information</a></dt>
+				</dl>
+			</div>
+			<div>
+			<a name="about"><h2>About This Service</h2></a>
+				<p>The Fedora Generic Search Service is part of the 
+				<a href="http://www.fedora.info/download/2.1/userdocs/server/features/serviceframework.htm">
+				Fedora Service Framework</a>. It was developed by
+				<a href="mailto:gsp@dtv.dk">Gert Schmeltz Pedersen</a>
+				at the Technical University of Denmark,
+				with feedback and contributions from members
+				of the Fedora community.</p>
+				<p>The service has the following features:</p>
+				<ul>
+				<li>Indexing of Fedora FOXML records, 
+				including the text contents of datastreams
+				and the results of disseminator calls.</li>
+				<li>Search in the index.</li>
+				<li>Plugin of selected search engines,
+				so far 
+				<a href="http://lucene.apache.org/">Lucene</a> and
+				<a href="http://www.indexdata.dk/zebra/">Zebra</a>.</li>
+				<li></li>
+				</ul>
+				<p>The following figure is explained below:
+				<p><img src="images/fgs-model.png"/></p>
+				<p>The model includes:</p>
+				<ul>
+				<li>A REST client running in a user's browser
+				may combine accesses to Fedora and to the Search Service.</li>
+				<li>A SOAP client running anywhere may do the same.</li>
+				<li>The Search Service implements a generic set of operations:
+				<ul>
+					<li><b>updateIndex (API-M)</b> - indexing the contents of the Fedora repository.</li>
+					<li><b>gfindObjects (API-A)</b> - search similar to Fedora findObjects.</li>
+					<li><b>browseIndex (API-A)</b> - browsing terms in a given index.</li>
+					<li><b>getRepositoryInfo (API-A)</b> - describing the properties of the repository in question,
+					<li><b>getIndexInfo (API-A)</b> - describing the properties of the index in question.</li>
+				</ul>
+				</li>
+				<li>Engine specific implementations of the operations will receive
+				client requests, communicate with the engine indexer and search server,
+				and return the responses in the appropriate form to the clients.</li>
+				</ul>
+				<p>The Search Service may run in a separate
+				web server and may index more than one Fedora repository,
+				and it may update more than one index in parallel.</p>
+				
+			</div>
+			<a name="installation"><h2>Installation</h2></a>
+				<p>To install the service:</p>
+				<ul>
+					<li> <a href="fedoragsearch.war">
+				Download the web application (.war) file</a>, which you copy 
+				into the webapps directory of a web server.</li>
+					<li>Edit the configuration settings.</li>
+				</ul>
+				
+				
+
+			<a name="config"><h2>Configuration</h2></a>
+				<ul>
+					<li>
+						Edit the configuration files in 
+						.../webapps/fedoragsearch/WEB-INF/classes/config/:
+						<pre>
+fedoragsearch.properties:
+	fedoragsearch.soapBase         = http://&lt;HOSTPORT&gt;/fedoragsearch/services (e.g. http://localhost:8080)
+	fedoragsearch.soapUser         = &lt;SOAPUSER&gt;
+	fedoragsearch.soapPass         = &lt;SOAPPASSWORD&gt;
+	fedoragsearch.deployFile       = &lt;WEBSERVERPATH&gt;/webapps/fedoragsearch/WEB-INF/classes/config/deploy.wsdd
+	fedoragsearch.mimeTypes        = &lt;a sequence of mimeTypes&gt;
+	                                 The first accessible mimeType will decide, 
+	                                 which of the datastreams is fetched and indexed.
+	                                 Currently "text/plain text/html application/pdf" are implemented.
+	fedoragsearch.repositoryNames  = &lt;REPOSNAMES&gt;
+	fedoragsearch.indexNames	   = &lt;INDEXNAMES&gt;
+	                                 
+For each repository:
+
+repository/&lt;REPOSITORYNAME&gt;/repository.properties:
+	fedoragsearch.soapBase         = http://&lt;HOSTPORT&gt;/fedora/services (e.g. http://localhost:8080)
+	fedoragsearch.fedoraUser       = &lt;FEDORAUSER&gt;
+	fedoragsearch.fedoraPass       = &lt;FEDORAPASSWORD&gt;
+	fedoragsearch.fedoraObjectDir  = &lt;absolute path to FedoraObjects directory with FOXML files&gt;
+	
+For each index:
+
+index/&lt;INDEXNAME&gt;/index.properties:
+	fedoragsearch.indexDir           = &lt;path to Lucene index directory, which must exist&gt;
+
+.../webapps/fedoragsearch/WEB-INF/classes/log4j.xml:
+    &lt;param name="File" value="/&lt;LOGPATH&gt;/fedoragsearch.log"/&gt; /LOGPATH must exist
+						</pre>
+						Edit the three files rest/demo*.xslt,
+						and the file index/DemoOnLucene/demoFoxmlToLucene.xslt,
+						where the xsl:include elements
+						shall have absolute paths instead of relative paths.
+					</li>
+                    <li>
+						Then you may restart fedoragsearch and call http://&lt;HOSTPORT&gt;/fedoragsearch/rest in order to index and search.
+					</li>
+                    <li>
+						Try the demo command line client. Change directory to 
+	<pre>.../webapps/fedoragsearch/client/</pre>
+						make the file executable, and run
+	<pre>sh runRESTClient.sh</pre>
+						then you will get the usage instruction.
+					</li>
+                    <li>
+						Tailor the demos for your own purpose by editing
+						renamed copies of the demo xslt stylesheets in 
+	<pre>.../webapps/fedoragsearch/WEB-INF/classes/config/rest/</pre>
+						Then edit fedoragsearch.properties.
+					</li>
+                    <li>
+						Tailor the demo Lucene indexing stylesheet for your own purpose by editing
+						a renamed copy of the demo xslt stylesheet in 
+	<pre>.../webapps/fedoragsearch/WEB-INF/classes/config/index/&lt;INDEXNAME&gt;/demoFoxmlToLucene.xslt</pre>
+						The options for tailoring include fields from other metadata datastreams 
+						than DC, field types and field boosts,
+						see the stylesheet for options. Then edit index.properties.
+					</li>
+                    <li>
+						Inspect the Lucene index with <a href="http://www.getopt.org/luke/">Luke</a>.
+					</li>
+                    <li>You may tailor the highlight of search terms in demo.css.
+					</li>
+				</ul>
+				
+			<a name="additional"><h2>Additonal Information (to be edited)</h2></a>
+				<p><img src="images/fgs-arch.png"/></p>
+				<ul>
+					<li>
+					In the prototype all engine specific operations return 
+					an engine specific xml answer, which is transformed 
+					by an engine-specific xslt stylesheet into result page xml.
+					For a SOAP request this is the answer.
+					For a REST request this is transformed to an html answer.
+					There may be any number of xslt stylesheets to select from,
+					the default ones are selected in the properties file.
+					Selecting a copy stylesheet or none will allow the transfer
+					of an answer untransformed. An alternative result page format 
+					is <a href="http://opensearch.a9.com/">OpenSearch</a>, 
+					which is an RSS2.0 extension.
+					</li>
+					<li>The prototype implementation has parameters to allow clients 
+					to select index by name and xslt stylesheets by name. 
+					In a real application these values will be determined 
+					by the developer in the code,
+					or by the administrator in the properties file.
+					</li>
+					<li>The prototype implementation has OperationsImpl classes
+					for Zebra and for Lucene. The DEF-XWS Eprints application
+					has indexes for both engines, therefore similar searches 
+					may be compared.
+					</li>
+					<li>Sample search for Zebra: metal
+					</li>
+					<li>Sample search for Lucene: description:metal
+					</li>
+				</ul>
+				<p><img src="images/fgs-arch-indexing.png"/></p>
+				<ul>
+					<li>Objects in the Fedora repository are exported
+					in FOXML format, transformed into an appropriate 
+					document format by the indexing stylesheet, and
+					indexed by the engine in question. The XML datastreams
+					are indexed as decided in the stylesheet. 
+					One managed or external datastream may be indexed 
+					per FedoraObject (which one is configurable), 
+					assuming that they contain the same text in different
+					mimetypes.
+					Only Active FedoraObjects are indexed, 
+					not Inactive nor Deleted ones,
+					not bDefs, not bMechs.
+					</li>
+					<li>The following updateIndex actions are available:
+					<ul>
+						<li><b>createEmpty</b> - clearing the index.</li>
+						<li><b>fromFoxmlFiles ( filePath )</b> - indexing FOXML records;
+						filePath may be null, in which case the configured
+						Fedora Object Directory is used, so that the whole 
+						of the Fedora registry is indexed.</li>
+						<li><b>fromPid ( PID )</b> - indexing one FOXML record,
+						as exported by Fedora API-M; in case a previous
+						index document with the same PID exists, it is first deleted.
+						This is the incremental update operation that shall be called after 
+						all of Fedora's API-M operations that modifies a FedoraObject.</li>
+						<li><b>deletePid ( PID )</b> - deleting one index document.</li>
+					</ul>
+					</li>
+				</ul>
+				<p>The latest development adds the possibility to index
+				many repositories in one or more indexes in parallel, as illustrated here:</p>
+				<p><img src="images/fgs-manytomany.png"/></p>
+				<p>
+				<p>The SOAP service operations are deployed with the .war file and 
+				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
+
+  <div id="footer">
+    <div id="copyright">
+      Copyright &#xA9; 2006 Technical University of Denmark, Fedora Project
+    </div>
+
+    <div id="lastModified">
+      Last Modified <script type="text/javascript">
+      //<![CDATA[
+            var cvsDate = "$Date$";
+            var parts = cvsDate.split(" ");
+            var modifiedDate = parts[1];
+            document.write(modifiedDate);
+      //]]>
+      </script>
+		by Gert Schmeltz Pedersen
+    </div>
+  </div>
+		</body>
+	</html>
