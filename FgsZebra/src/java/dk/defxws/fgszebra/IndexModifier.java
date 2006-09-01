@@ -107,8 +107,13 @@ public class IndexModifier {
 	/**
 	 */
 	void setCounts(int[] counts) throws GenericSearchException {
+		String line = counts[0]+"/"+counts[1]+"/"+counts[2]+"\n";
+		if (logger.isDebugEnabled())
+			logger.debug("setCounts="+line);
 		try {
-			(new BufferedWriter(new FileWriter(indexDir+"/counts"))).write(counts[0]+"/"+counts[1]+"/"+counts[2]+"\n");
+			BufferedWriter bw = new BufferedWriter(new FileWriter(indexDir+"/counts"));
+			bw.write(line);
+			bw.close();
 		} catch (IOException e) {
 			throw new GenericSearchException("setCounts error ", e);
 		}
@@ -120,10 +125,16 @@ public class IndexModifier {
 		int[] counts = {0, 0, 0};
 		String countsline = "0/0/0";
 		try {
-			countsline = (new BufferedReader(new FileReader(indexDir+"/counts"))).readLine();
+			BufferedReader br = new BufferedReader(new FileReader(indexDir+"/counts"));
+			countsline = br.readLine();
+			br.close();
 		} catch (FileNotFoundException e) {
+			throw new GenericSearchException("getCounts error ", e);
 		} catch (IOException e) {
+			throw new GenericSearchException("getCounts error ", e);
 		}
+		if (logger.isDebugEnabled())
+			logger.debug("getCounts="+countsline);
 		if (countsline == null || countsline.indexOf("/") == -1) {
 			return counts;
 		}

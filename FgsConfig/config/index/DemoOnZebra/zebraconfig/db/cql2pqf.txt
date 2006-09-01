@@ -37,21 +37,31 @@ index.alvis.language			= 1=an:language
 index.alvis.wpcats			= 1=wpcats
 
 
+index.PID                               = 1=PID
+index.repositoryName                    = 1=repositoryName
+index.property.contentModel             = 1=property.contentModel
+index.property.createdDate              = 1=property.createdDate
+index.property.label                    = 1=property.label
+index.property.lastModifiedDate         = 1=property.lastModifiedDate
+index.property.state                    = 1=property.state
+index.property.type                     = 1=property.type
 index.dc.title                          = 1=dc.title
-index.dc.creator			= 1=dc.creator
-index.dc.subject			= 1=dc.subject
-index.dc.description			= 1=dc.description
-index.dc.publisher			= 1=dc.publisher
-index.dc.contributor			= 1=dc.contributor
-index.dc.date                 		= 1=dc.date
-index.dc.type                 		= 1=dc.type
+index.dc.creator			            = 1=dc.creator
+index.dc.subject			            = 1=dc.subject
+index.dc.description		         	= 1=dc.description
+index.dc.publisher			            = 1=dc.publisher
+index.dc.contributor					= 1=dc.contributor
+index.dc.date                 			= 1=dc.date
+index.dc.type                 			= 1=dc.type
 index.dc.format                        	= 1=dc.format
 index.dc.identifier                     = 1=dc.identifier
 index.dc.source                         = 1=dc.source
-index.dc.language			= 1=dc.language
+index.dc.language						= 1=dc.language
 index.dc.relation                       = 1=dc.relation
 index.dc.coverage                       = 1=dc.coverage
 index.dc.rights                         = 1=dc.rights
+index.DS1.text                          = 1=DS1.text
+index.DS2.text                          = 1=DS2.text
 
 
 # Relation attributes are selected according to the CQL relation by
