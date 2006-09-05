@@ -16,9 +16,16 @@
 
 	<xsl:include href="WEBSERVERPATH/webapps/fedoragsearch/WEB-INF/classes/config/rest/demoCommon.xslt"/>
 
+							<xsl:variable name="EQCHAR">
+								<xsl:choose>
+									<xsl:when test="$INDEXNAME = 'DemoOnZebra'">=</xsl:when>
+									<xsl:otherwise>:</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
+							
 	<xsl:template name="opSpecifics">
 		
-		<h2>browseIndex</h2>
+		<h2>browseIndex</h2><xsl:value-of select="$EQCHAR"/>
 			<form method="get" action="rest">
 				<table border="3" cellpadding="5" cellspacing="0">
 					<tr>
@@ -141,7 +148,7 @@
 				<xsl:value-of select="@no"/>.
 				<a>
 					<xsl:variable name="TERM" select="text()"/>
-					<xsl:variable name="QUERYSTRING" select="concat('operation=gfindObjects', '&amp;', 'indexName=', $INDEXNAME, '&amp;', 'query=', $FIELDNAME, ':', $TERM)"/>
+					<xsl:variable name="QUERYSTRING" select="concat('operation=gfindObjects', '&amp;', 'indexName=', $INDEXNAME, '&amp;', 'query=', $FIELDNAME, $EQCHAR, $TERM)"/>
 					<xsl:attribute name="href">/fedoragsearch/rest?<xsl:value-of select="$QUERYSTRING"/>
 					</xsl:attribute>
 					<xsl:value-of select="$TERM"/>

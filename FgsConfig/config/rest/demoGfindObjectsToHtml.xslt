@@ -203,11 +203,11 @@
 					</td>
 					<td>
 						<span class="hittitle">
-							<xsl:copy-of select="//field[@name='dc.title']/node()"/>
+							<xsl:copy-of select="field[@name='dc.title']/node()"/>
 						</span>
 					</td>
 				</tr>
-				<xsl:for-each select="//field[@snippet='yes']">
+				<xsl:for-each select="field[@snippet='yes']">
 				  <xsl:if test="@name!='dc.title'">
 					<tr>
 						<td width="100" valign="top">
@@ -226,15 +226,8 @@
 			</table>
 		</td></tr>
 	</xsl:template>
+
+  <!-- disable all default text node output -->
+  <xsl:template match="text()"/>
 	
 </xsl:stylesheet>	
-
-
-
-
-
-				
-
-
-
-

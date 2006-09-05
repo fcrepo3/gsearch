@@ -13,19 +13,19 @@
 
 	<xsl:param name="STARTTERM" select="query" />
 	<xsl:param name="INDEXNAME" select="indexName" />
+	<xsl:param name="FIELDNAME" select="fieldName" />
 	<xsl:param name="TERMPAGESIZE" select="10" />
 	<xsl:param name="RESULTPAGEXSLT" select="resultPageXslt" />
 	<xsl:param name="DATETIME" select="none" />
 
 	<xsl:template match="/zs:scanResponse">
-		<xsl:variable name="FIELDNAME" select="@fieldName" />
-		<xsl:variable name="TERMTOTAL" select="@termTotal" />
+		<xsl:variable name="TERMTOTAL" select="99999" />
 		<resultPage dateTime="{$DATETIME}" indexName="{$INDEXNAME}">
 			<browseIndex startTerm="{$STARTTERM}"
 				fieldName="{$FIELDNAME}" termPageSize="{$TERMPAGESIZE}"
 				resultPageXslt="{$RESULTPAGEXSLT}" termTotal="{$TERMTOTAL}">
 				<fields>
-					<field>PID</field>
+					<field>fgs.PID</field>
 					<field>dc.creator</field>
 					<field>dc.description</field>
 					<field>dc.format</field>
@@ -35,14 +35,14 @@
 					<field>dc.rights</field>
 					<field>dc.subject</field>
 					<field>dc.title</field>
-					<field>property.contentModel</field>
-					<field>property.createdDate</field>
-					<field>property.label</field>
-					<field>property.lastModifiedDate</field>
-					<field>property.state</field>
-					<field>property.type</field>
-					<field>repositoryName</field>
-					<field>DS2.text</field>
+					<field>fgs.contentModel</field>
+					<field>fgs.createdDate</field>
+					<field>fgs.label</field>
+					<field>fgs.lastModifiedDate</field>
+					<field>fgs.state</field>
+					<field>fgs.type</field>
+					<field>fgs.repositoryName</field>
+					<field>fgs.DS2</field>
 				</fields>
 				<terms>
 					<xsl:for-each select="zs:terms/zs:term">

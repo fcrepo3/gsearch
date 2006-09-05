@@ -31,11 +31,14 @@
 				<objects>
 				  <xsl:for-each select="zs:records/zs:record">
 					<object>
+						<xsl:attribute name="PID">
+							<xsl:value-of select="zs:recordData/z:record/@id"/>
+						</xsl:attribute>
 						<xsl:attribute name="no">
 							<xsl:value-of select="zs:recordPosition"/>
 						</xsl:attribute>
 						<xsl:attribute name="score">
-							<xsl:value-of select="@rank"/>
+							<xsl:value-of select="zs:recordData/z:record/@rank"/>
 						</xsl:attribute>
         				<xsl:apply-templates select="zs:recordData/z:record"/>
 					</object>
@@ -51,8 +54,8 @@
 				<xsl:value-of select="translate(@name,':', '.')" />
 			</xsl:attribute>
 			<xsl:value-of select="text()" />
-			<xsl:apply-templates/>
 		</field>
+		<xsl:apply-templates/>
 	</xsl:template>
 
   <!-- disable all default text node output -->
