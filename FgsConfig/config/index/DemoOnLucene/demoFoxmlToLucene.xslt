@@ -40,6 +40,9 @@
 	
 	<xsl:template match="/">
 		<IndexDocument> 
+			<xsl:attribute name="PID">
+				<xsl:value-of select="$PID"/>
+			</xsl:attribute>
 			<xsl:attribute name="boost">
 				<xsl:value-of select="$docBoost"/>
 			</xsl:attribute>
@@ -55,14 +58,13 @@
 	</xsl:template>
 
 	<xsl:template match="/foxml:digitalObject" mode="activeDemoFedoraObject">
-			<!-- The PID field must exist and be UN_TOKENIZED -->
 			<IndexField IFname="PID" index="UN_TOKENIZED" store="YES" termVector="NO" boost="2.5">
 				<xsl:value-of select="$PID"/>
 			</IndexField>
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
 				<IndexField index="UN_TOKENIZED" store="YES" termVector="NO">
 					<xsl:attribute name="IFname"> 
-						<xsl:value-of select="concat('property.', substring-after(@NAME,'#'))"/>
+						<xsl:value-of select="concat('fgs.', substring-after(@NAME,'#'))"/>
 					</xsl:attribute>
 					<xsl:value-of select="@VALUE"/>
 				</IndexField>
@@ -84,7 +86,7 @@
 			     can be handled, the text becomes the value of the IndexField. -->
 			     
 			<!-- uncomment it, if you wish, it takes time, even if the foxml has no DS2. -->
-			<IndexField IFname="DS2.text" dsId="DS2" index="TOKENIZED" store="YES" termVector="NO">
+			<IndexField IFname="fgs.DS2" dsId="DS2" index="TOKENIZED" store="YES" termVector="NO">
 			</IndexField>
 			
 			
@@ -95,7 +97,7 @@
 			     but with supposedly identical text, so only one of them should be indexed. -->
 			     
 			<!-- uncomment it, if you wish, it takes time, even if the foxml has no datastreams.
-			<IndexField IFname="DS.first.text" dsMimetypes="" index="TOKENIZED" store="YES" termVector="NO">
+			<IndexField IFname="fgs.DS.first.text" dsMimetypes="" index="TOKENIZED" store="YES" termVector="NO">
 			</IndexField>
 			-->
 
@@ -104,7 +106,7 @@
 			     parameters format is 'name=value name2=value2'-->
 			     
 			<!-- uncomment it, if you wish, it takes time, even if the foxml has no disseminators.
-			<IndexField IFname="Diss.text" index="TOKENIZED" store="YES" termVector="NO"
+			<IndexField IFname="fgs.Diss.text" index="TOKENIZED" store="YES" termVector="NO"
 						bDefPid="demo:19" methodName="getPDF" parameters="" asOfDateTime="" >
 			</IndexField>
 			-->
@@ -118,7 +120,7 @@
 			-->
 
 			<!-- This is an example of calling an extension function, see Apache Xalan, maybe used for filters.
-			<IndexField IFname="DS" index="TOKENIZED" store="YES" termVector="NO">
+			<IndexField IFname="fgs.DS" index="TOKENIZED" store="YES" termVector="NO">
 				<xsl:value-of select="exts:someMethod($PID)"/>
 			</IndexField>
 			-->

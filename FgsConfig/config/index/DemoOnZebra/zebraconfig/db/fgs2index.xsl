@@ -21,7 +21,7 @@
   <!-- match on alvis xml record -->
   <xsl:template match="/IndexDocument">
 
-    <z:record id="{IndexField[@IFname='PID']/text()}" 
+    <z:record id="{@PID}" 
               rank="{@rank}" 
               type="update">
 
@@ -35,6 +35,7 @@
 
     <z:index name="{@IFname}">
         <xsl:value-of select="text()"/>
+        <xsl:apply-templates/>
     </z:index>
 
   </xsl:template>

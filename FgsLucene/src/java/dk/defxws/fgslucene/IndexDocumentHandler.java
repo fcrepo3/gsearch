@@ -114,6 +114,8 @@ public class IndexDocumentHandler extends DefaultHandler {
                 String aName = attrs.getLocalName(i);
                 if ("".equals(aName)) { aName = attrs.getQName(i); }
                 String val = attrs.getValue(i);
+                if (aName=="PID")
+                	pid = val.trim();
                 if (aName=="boost")
                     try {
                         docboost = Float.parseFloat(val);
@@ -193,8 +195,8 @@ public class IndexDocumentHandler extends DefaultHandler {
                             if (boost > Float.MIN_VALUE) f.setBoost(boost);
                             indexDocument.add(f);
                         }
-                        if (fieldName.equals("PID"))
-                            pid = ebs;
+//                        if (fieldName.equals("fgs.PID"))
+//                            pid = ebs;
         }
     }
     

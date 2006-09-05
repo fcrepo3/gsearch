@@ -182,7 +182,16 @@
 							<xsl:value-of select="'. '"/>
 						</span>
 						<a>
-							<xsl:variable name="PIDVALUE" select="field[@name='PID']/text()"/>
+							<xsl:variable name="PIDVALUE">
+								<xsl:choose>
+									<xsl:when test="@PID">
+								 		<xsl:value-of select="@PID"/>
+									</xsl:when>
+									<xsl:otherwise>
+								 		<xsl:value-of select="field[@name='PID']/text()"/>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:variable>
 							<xsl:attribute name="href">/fedora/get/<xsl:value-of select="$PIDVALUE"/>
 							</xsl:attribute>
 							<xsl:value-of select="$PIDVALUE"/>
@@ -194,11 +203,11 @@
 					</td>
 					<td>
 						<span class="hittitle">
-							<xsl:copy-of select="field[@name='dc.title']/node()"/>
+							<xsl:copy-of select="//field[@name='dc.title']/node()"/>
 						</span>
 					</td>
 				</tr>
-				<xsl:for-each select="field[@snippet='yes']">
+				<xsl:for-each select="//field[@snippet='yes']">
 				  <xsl:if test="@name!='dc.title'">
 					<tr>
 						<td width="100" valign="top">

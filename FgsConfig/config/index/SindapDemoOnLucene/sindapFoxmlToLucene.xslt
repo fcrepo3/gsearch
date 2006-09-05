@@ -16,6 +16,9 @@
 	
 	<xsl:template match="/">
 		<IndexDocument> 
+			<xsl:attribute name="PID">
+				<xsl:value-of select="$PID"/>
+			</xsl:attribute>
 		<!-- The following allows only active FedoraObjects to be indexed. -->
 		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
 			<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' and @VALUE='FedoraObject']">
@@ -32,7 +35,7 @@
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
 				<IndexField index="UN_TOKENIZED" store="YES" termVector="NO">
 					<xsl:attribute name="IFname"> 
-						<xsl:value-of select="concat('property.', substring-after(@NAME,'#'))"/>
+						<xsl:value-of select="concat('fgs.', substring-after(@NAME,'#'))"/>
 					</xsl:attribute>
 					<xsl:value-of select="@VALUE"/>
 				</IndexField>
@@ -49,7 +52,7 @@
 			<!-- a datastream identified in dsId is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the IndexField. -->
 			     
-			<IndexField IFname="DS1.text" dsId="DS1" index="TOKENIZED" store="YES" termVector="NO">
+			<IndexField IFname="fgs.DS1.text" dsId="DS1" index="TOKENIZED" store="YES" termVector="NO">
 			</IndexField>
 			
 			

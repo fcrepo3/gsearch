@@ -61,7 +61,7 @@ public class GenericOperationsImpl implements Operations {
     
     public String gfindObjects(
             String query,
-            long hitPageStart,
+            int hitPageStart,
             int hitPageSize,
             int snippetsMax,
             int fieldMaxLength,

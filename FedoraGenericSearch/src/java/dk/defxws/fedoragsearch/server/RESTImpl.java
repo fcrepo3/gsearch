@@ -132,9 +132,9 @@ public class RESTImpl extends HttpServlet {
         if (query==null || query.equals("")) {
             return "<resultPage/>";
         }
-        long hitPageStart = config.getDefaultGfindObjectsHitPageStart();
+        int hitPageStart = config.getDefaultGfindObjectsHitPageStart();
         try {
-            hitPageStart = Long.parseLong(request.getParameter(PARAM_HITPAGESTART));
+            hitPageStart = Integer.parseInt(request.getParameter(PARAM_HITPAGESTART));
         } catch (NumberFormatException nfe) {
         }
         int hitPageSize = config.getDefaultGfindObjectsHitPageSize();

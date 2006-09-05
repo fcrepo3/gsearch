@@ -37,14 +37,7 @@
 						<xsl:attribute name="score">
 							<xsl:value-of select="@rank"/>
 						</xsl:attribute>
-						<xsl:for-each select="zs:recordData/z:record/z:index">
-							<field>
-								<xsl:attribute name="name">
-									<xsl:value-of select="@name"/>
-								</xsl:attribute>
-								<xsl:value-of select="text()"/>
-							</field>
-						</xsl:for-each>
+        				<xsl:apply-templates select="zs:recordData/z:record"/>
 					</object>
 				  </xsl:for-each>
 				</objects>
@@ -52,13 +45,17 @@
 	 	</resultPage>
 	</xsl:template>
 	
+	<xsl:template match="z:index">
+		<field>
+			<xsl:attribute name="name">
+				<xsl:value-of select="translate(@name,':', '.')" />
+			</xsl:attribute>
+			<xsl:value-of select="text()" />
+			<xsl:apply-templates/>
+		</field>
+	</xsl:template>
+
+  <!-- disable all default text node output -->
+  <xsl:template match="text()"/>
+  
 </xsl:stylesheet>	
-
-
-
-
-				
-
-
-
-
