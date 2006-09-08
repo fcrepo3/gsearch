@@ -22,6 +22,8 @@ import javax.servlet.ServletException;
 
 import org.apache.log4j.Logger;
 
+import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
+
 /**
  * servlet for REST calls, calls the operationsImpl
  * 
@@ -78,7 +80,7 @@ public class RESTImpl extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException { 
         config = Config.getCurrentConfig();
-        StringBuffer resultXml = null;
+        StringBuffer resultXml = new StringBuffer("<resultPage/>");
         String operation = request.getParameter(PARAM_OPERATION);
         if (logger.isInfoEnabled())
             logger.info("request="+request.getQueryString());
@@ -86,6 +88,9 @@ public class RESTImpl extends HttpServlet {
         indexName = request.getParameter(PARAM_INDEXNAME);
         resultPageXslt = request.getParameter(PARAM_RESULTPAGEXSLT);
         restXslt = request.getParameter(PARAM_RESTXSLT);
+        String[] params = new String[2];
+        params[0] = "ERRORMESSAGE";
+        params[1] = "";
         try {
             if (OP_GFINDOBJECTS.equals(operation)) {
                 resultXml = new StringBuffer(gfindObjects(request, response));
@@ -98,19 +103,22 @@ public class RESTImpl extends HttpServlet {
             } else if (OP_BROWSEINDEX.equals(operation)) {
                 resultXml = new StringBuffer(browseIndex(request, response));
             } else {
-                resultXml = new StringBuffer("<resultPage/>");
+//                resultXml = new StringBuffer("<resultPage/>");
                 if (restXslt==null || restXslt.equals("")) 
                     restXslt = config.getDefaultGfindObjectsRestXslt();
                 if ("configure".equals(operation)) {
                     Config.configure();
                 } else if (operation!=null && !"".equals(operation)) {
-                    throw new ServletException("ERROR: operation "+operation+" is unknown!");
+//                    throw new ServletException("ERROR: operation "+operation+" is unknown!");
+                    throw new GenericSearchException("ERROR: operation "+operation+" is unknown!");
                 }
             }
-            resultXml = (new GTransformer()).transform("rest/"+restXslt, resultXml);
         } catch (java.rmi.RemoteException e) {
-            throw new ServletException("ERROR: \n", e);
+//            throw new ServletException("ERROR: \n", e);
+            params[1] = e.toString();
+            logger.error(e);
         }
+        resultXml = (new GTransformer()).transform("rest/"+restXslt, resultXml, params);
         
         if (restXslt.indexOf(CONTENTTYPEHTML)>=0)
             response.setContentType("text/html; charset=UTF-8");

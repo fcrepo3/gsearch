@@ -38,6 +38,10 @@
 					</tr>
 				</table>
 				<p/>
+				<xsl:if test="$ERRORMESSAGE">
+					<xsl:call-template name="error"/>
+	 			</xsl:if>
+        		<xsl:apply-templates select="error"/>
 				<xsl:call-template name="opSpecifics"/>
 				<div id="footer">
    					<div id="copyright">
@@ -60,7 +64,15 @@
 		</html>
 	</xsl:template>
 	
-	<xsl:template match="error">
+	<xsl:template name="error">
+		<p>
+			<font color="red">
+				<xsl:value-of select="$ERRORMESSAGE"/>
+			</font>
+		</p>			
+	</xsl:template>
+	
+	<xsl:template match="message">
 		<p>
 			<font color="red">
 				<xsl:value-of select="./text()"/>

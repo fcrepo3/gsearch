@@ -5,6 +5,8 @@
 <!-- This xslt stylesheet presents a browseIndex page.
 -->
 	<xsl:output method="html" indent="yes" encoding="UTF-8"/>
+
+	<xsl:param name="ERRORMESSAGE" select="''"/>
 	
 	<xsl:variable name="FIELDNAME" select="/resultPage/browseIndex/@fieldName"/>
 	<xsl:variable name="INDEXNAME" select="/resultPage/@indexName"/>

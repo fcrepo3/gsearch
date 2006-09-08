@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -38,10 +39,15 @@ public class IndexModifier {
 	private static final Logger logger =
 		Logger.getLogger(IndexModifier.class);
 	private String indexDir;
+	private static Hashtable oneIndexModifierPerIndexDir = new Hashtable();
 
 	/**
 	 */
 	public IndexModifier(String indexDir, boolean create) throws GenericSearchException {
+		if (null != oneIndexModifierPerIndexDir.get(indexDir)) {
+			throw new GenericSearchException("Index modification busy on indexDir="+indexDir);
+		}
+		oneIndexModifierPerIndexDir.put(indexDir, this);
 		this.indexDir = indexDir;
 		if (create) {
 
@@ -148,6 +154,7 @@ public class IndexModifier {
 	/**
 	 */
 	void close() throws GenericSearchException {
+		oneIndexModifierPerIndexDir.remove(indexDir);
 	}
 
 }

@@ -23,6 +23,7 @@
 		<xsl:variable name="HITTOTAL" select="zs:numberOfRecords"/>
 	 	<resultPage dateTime="{$DATETIME}"
 	 				indexName="{$INDEXNAME}">
+        	<xsl:apply-templates select="zs:diagnostics"/>
 	 		<gfindObjects 	query="{$QUERY}"
 	 						hitPageStart="{$HITPAGESTART}"
 	 						hitPageSize="{$HITPAGESIZE}"
@@ -56,6 +57,14 @@
 			<xsl:value-of select="text()" />
 		</field>
 		<xsl:apply-templates/>
+	</xsl:template>
+	
+	<xsl:template match="diagnostic">
+		<error>
+			<message>
+				./text()
+			</message>
+		</error>
 	</xsl:template>
 
   <!-- disable all default text node output -->

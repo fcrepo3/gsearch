@@ -119,7 +119,7 @@
 			<xsl:call-template name="example-of-xml-not-inline"/>
 			-->
 
-			<!-- This is an example of calling an extension function, see Apache Xalan, maybe used for filters.
+			<!-- This is an example of calling an extension function, see Apache Xalan, may be used for filters.
 			<IndexField IFname="fgs.DS" index="TOKENIZED" store="YES" termVector="NO">
 				<xsl:value-of select="exts:someMethod($PID)"/>
 			</IndexField>

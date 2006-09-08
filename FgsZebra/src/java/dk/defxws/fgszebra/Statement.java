@@ -110,6 +110,8 @@ public class Statement {
 		throws GenericSearchException {
 		ResultSet rs = null;
 		URL url = null;
+		String st = startTerm;
+		if (st==null || st.trim().equals("")) st = "!";
 		try {
 			url =
 				new URL(
@@ -118,7 +120,7 @@ public class Statement {
 						+ "&maximumTerms="
 						+ maxResults
 						+ "&scanClause="
-						+ URLEncoder.encode(fieldName+"="+startTerm, "UTF-8"));
+						+ URLEncoder.encode(fieldName+"="+st.trim(), "UTF-8"));
 		} catch (MalformedURLException e) {
 			throw new GenericSearchException(e.toString());
 		} catch (UnsupportedEncodingException e) {

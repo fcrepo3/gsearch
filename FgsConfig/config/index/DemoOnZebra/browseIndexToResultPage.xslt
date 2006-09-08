@@ -21,6 +21,7 @@
 	<xsl:template match="/zs:scanResponse">
 		<xsl:variable name="TERMTOTAL" select="99999" />
 		<resultPage dateTime="{$DATETIME}" indexName="{$INDEXNAME}">
+        	<xsl:apply-templates select="zs:diagnostics"/>
 			<browseIndex startTerm="{$STARTTERM}"
 				fieldName="{$FIELDNAME}" termPageSize="{$TERMPAGESIZE}"
 				resultPageXslt="{$RESULTPAGEXSLT}" termTotal="{$TERMTOTAL}">
@@ -60,6 +61,14 @@
 				</terms>
 			</browseIndex>
 		</resultPage>
+	</xsl:template>
+	
+	<xsl:template match="diagnostic">
+		<error>
+			<message>
+				./text()
+			</message>
+		</error>
 	</xsl:template>
 
 </xsl:stylesheet>
