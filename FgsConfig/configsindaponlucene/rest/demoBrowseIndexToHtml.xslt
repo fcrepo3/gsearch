@@ -16,7 +16,7 @@
 	<xsl:variable name="PAGELASTNO" select="/resultPage/browseIndex/terms/term[position()=last()]/@no"/>
 	<xsl:variable name="PAGELASTTERM" select="/resultPage/browseIndex/terms/term[position()=last()]/text()"/>
 
-	<xsl:include href="WEBSERVERPATH/webapps/fedoragsearch/WEB-INF/classes/config/rest/demoCommon.xslt"/>
+	<xsl:include href="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28/webapps/fedoragsearch/WEB-INF/classes/config/rest/demoCommon.xslt"/>
 
 	<xsl:variable name="EQCHAR">
 		<xsl:choose>
@@ -39,56 +39,6 @@
 							</select>
 							<xsl:text> </xsl:text>Term page size: <input type="text" name="termPageSize" size="4" value="{$TERMPAGESIZE}"/> 
 							<xsl:text> </xsl:text><input type="submit" value="Browse"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<xsl:text> </xsl:text>Index name: 
-								<select name="indexName">
-									<xsl:choose>
-										<xsl:when test="$INDEXNAME='DemoOnZebra'">
-											<option value="DemoOnLucene">DemoOnLucene</option>
-											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
-											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
-											<option value="DemoOnZebra" selected="true">DemoOnZebra</option>
-										</xsl:when>
-										<xsl:when test="$INDEXNAME='DemoOnLucene'">
-											<option value="DemoOnLucene" selected="true">DemoOnLucene</option>
-											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
-											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
-											<option value="DemoOnZebra">DemoOnZebra</option>
-										</xsl:when>
-										<xsl:when test="$INDEXNAME='SmileyDemoOnLucene'">
-											<option value="DemoOnLucene">DemoOnLucene</option>
-											<option value="SmileyDemoOnLucene" selected="true">SmileyDemoOnLucene</option>
-											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
-											<option value="DemoOnZebra">DemoOnZebra</option>
-										</xsl:when>
-										<xsl:when test="$INDEXNAME='SindapDemoOnLucene'">
-											<option value="DemoOnLucene">DemoOnLucene</option>
-											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
-											<option value="SindapDemoOnLucene" selected="true">SindapDemoOnLucene</option>
-											<option value="DemoOnZebra">DemoOnZebra</option>
-										</xsl:when>
-										<xsl:otherwise>
-											<option value="DemoOnLucene">DemoOnLucene</option>
-											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
-											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
-											<option value="DemoOnZebra">DemoOnZebra</option>
-										</xsl:otherwise>
-									</xsl:choose>
-								</select>
-							<xsl:text> </xsl:text>restXslt: 
-								<select name="restXslt">
-									<option value="demoBrowseIndexToHtml">demoBrowseIndexToHtml</option>
-									<option value="copyXml">no transformation</option>
-								</select>
-							<xsl:text> </xsl:text>resultPageXslt: 
-								<select name="resultPageXslt">
-									<option value="browseIndexToResultPage">browseIndexToResultPage</option>
-									<option value="copyXml">no transformation</option>
-								</select>
-							<xsl:text> </xsl:text>
 						</td>
 					</tr>
 				</table>

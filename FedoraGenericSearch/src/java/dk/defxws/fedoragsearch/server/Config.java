@@ -17,8 +17,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -31,13 +29,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.client.AdminClient;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
-import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIMBindingSOAPHTTPStub;
 
 /**
  * Reads and checks the configuration files,
@@ -51,6 +47,8 @@ public class Config {
     
     private static Config currentConfig = null;
     
+    private String configName = null;
+    
     private Properties fgsProps = null;
     
     private Hashtable repositoryNameToProps = null;
@@ -60,6 +58,8 @@ public class Config {
     private Hashtable indexNameToProps = null;
     
     private String defaultIndexName = null;
+    
+    private Hashtable transformers = null;
     
     private int maxPageSize = 50;
     
@@ -77,33 +77,35 @@ public class Config {
     
     private final Logger logger = Logger.getLogger(Config.class);
     
-    public static void configure() throws ConfigException {
-        currentConfig = (new Config());
+    public static void configure(String configName) throws ConfigException {
+        currentConfig = (new Config(configName));
     }
     
     public static Config getCurrentConfig() throws ConfigException {
         if (currentConfig == null)
-            currentConfig = (new Config());
+            currentConfig = (new Config("config"));
         return currentConfig;
     }
     
-    public Config() throws ConfigException {
+    public Config(String configNameIn) throws ConfigException {
+    	configName = configNameIn;
         errors = new StringBuffer();
+        transformers = new Hashtable();
         
 //      Read and set fedoragsearch properties
         try {
             InputStream propStream = Config.class
-            .getResourceAsStream("/config/fedoragsearch.properties");
+            .getResourceAsStream("/"+configName+"/fedoragsearch.properties");
             if (propStream == null) {
                 throw new ConfigException(
-                "*** config/fedoragsearch.properties not found in classpath");
+                "*** "+configName+"/fedoragsearch.properties not found in classpath");
             }
             fgsProps = new Properties();
             fgsProps.load(propStream);
             propStream.close();
         } catch (IOException e) {
             throw new ConfigException(
-                    "*** Error loading config/fedoragsearch.properties:\n" + e.toString());
+                    "*** Error loading "+configName+"/fedoragsearch.properties:\n" + e.toString());
         }
         
         if (logger.isDebugEnabled())
@@ -171,19 +173,19 @@ public class Config {
                 defaultRepositoryName = repositoryName;
             try {
                 InputStream propStream = Config.class
-                .getResourceAsStream("/config/repository/" + repositoryName + "/repository.properties");
+                .getResourceAsStream("/"+configName+"/repository/" + repositoryName + "/repository.properties");
                 if (propStream != null) {
                     Properties props = new Properties();
                     props.load(propStream);
                     propStream.close();
                     
                     if (logger.isDebugEnabled())
-                        logger.debug("/config/repository/" + repositoryName + "/repository.properties=" + props.toString());
+                        logger.debug("/"+configName+"/repository/" + repositoryName + "/repository.properties=" + props.toString());
                     
 //                  Check repositoryName
                     String propsRepositoryName = props.getProperty("fgsrepository.repositoryName");
                     if (!repositoryName.equals(propsRepositoryName)) {
-                        errors.append("\n*** config/repository/" + repositoryName +
+                        errors.append("\n*** "+configName+"/repository/" + repositoryName +
                                 ": fgsrepository.repositoryName must be=" + repositoryName);
                     }
                     
@@ -198,13 +200,13 @@ public class Config {
 //                  new java.net.URL(fedoraSoap+"/management"), null);
 //                  stub.describeUser(fedoraUser, fedoraPass);
 //                  } catch (AxisFault e) {
-//                  errors.append("\n*** config/repository/" + repositoryName +
+//                  errors.append("\n*** "+configName+"/repository/" + repositoryName +
 //                  ": Access to " + fedoraSoap + " failed:\n" + e.toString());
 //                  } catch (MalformedURLException e) {
-//                  errors.append("\n*** config/repository/" + repositoryName +
+//                  errors.append("\n*** "+configName+"/repository/" + repositoryName +
 //                  ": Access to " + fedoraSoap + "failed:\n" + e.toString());
 //                  } catch (RemoteException e) {
-//                  errors.append("\n*** config/repository/" + repositoryName
+//                  errors.append("\n*** "+configName+"/repository/" + repositoryName
 //                  + ": Access to " + fedoraSoap + " failed:\n" + e.toString());
 //                  }
                     
@@ -212,7 +214,7 @@ public class Config {
                     String fedoraObjectDirName = props.getProperty("fgsrepository.fedoraObjectDir");
                     File fedoraObjectDir = new File(fedoraObjectDirName);
                     if (fedoraObjectDir == null) {
-                        errors.append("\n*** config/repository/" + repositoryName
+                        errors.append("\n*** "+configName+"/repository/" + repositoryName
                                 + ": fgsrepository.fedoraObjectDir="
                                 + fedoraObjectDirName + " not found");
                     }
@@ -227,11 +229,11 @@ public class Config {
                     repositoryNameToProps.put(repositoryName, props);
                 }
                 else {
-                    errors.append("\n*** config/repository/" + repositoryName
+                    errors.append("\n*** "+configName+"/repository/" + repositoryName
                             + "/repository.properties not found in classpath");
                 }
             } catch (IOException e) {
-                errors.append("\n*** Error loading config/repository/" + repositoryName
+                errors.append("\n*** Error loading "+configName+"/repository/" + repositoryName
                         + ".properties:\n" + e.toString());
             }
         }
@@ -247,7 +249,7 @@ public class Config {
                 defaultIndexName = indexName;
             try {
                 InputStream propStream = Config.class
-                .getResourceAsStream("/config/index/" + indexName + "/index.properties");
+                .getResourceAsStream("/"+configName+"/index/" + indexName + "/index.properties");
                 if (propStream != null) {
                     Properties props = new Properties();
                     props = new Properties();
@@ -255,20 +257,20 @@ public class Config {
                     propStream.close();
                     
                     if (logger.isDebugEnabled())
-                        logger.debug("/config/index/" + indexName + "/index.properties=" + props.toString());
+                        logger.debug("/"+configName+"/index/" + indexName + "/index.properties=" + props.toString());
                     
 //                  Check indexName
                     String propsIndexName = props.getProperty("fgsindex.indexName");
                     if (!indexName.equals(propsIndexName)) {
-                        errors.append("\n*** config/index/" + indexName
+                        errors.append("\n*** "+configName+"/index/" + indexName
                                 + ": fgsindex.indexName must be=" + indexName);
                     }
                     
 //                  Check operationsImpl class
                     String operationsImpl = props.getProperty("fgsindex.operationsImpl");
                     if (operationsImpl == null || operationsImpl.equals("")) {
-                        errors.append("\n*** config/index/" + indexName
-                                + ": fgsindex.operationsImpl must be set in config/index/ "
+                        errors.append("\n*** "+configName+"/index/" + indexName
+                                + ": fgsindex.operationsImpl must be set in "+configName+"/index/ "
                                 + indexName + ".properties");
                     }
                     try {
@@ -278,24 +280,24 @@ public class Config {
                             .getConstructor(new Class[] {})
                             .newInstance(new Object[] {});
                         } catch (InstantiationException e) {
-                            errors.append("\n*** config/index/"+indexName
+                            errors.append("\n*** "+configName+"/index/"+indexName
                                     + ": fgsindex.operationsImpl="+operationsImpl
                                     + ": instantiation error.\n"+e.toString());
                         } catch (IllegalAccessException e) {
-                            errors.append("\n*** config/index/"+indexName
+                            errors.append("\n*** "+configName+"/index/"+indexName
                                     + ": fgsindex.operationsImpl="+operationsImpl
                                     + ": instantiation error.\n"+e.toString());
                         } catch (InvocationTargetException e) {
-                            errors.append("\n*** config/index/"+indexName
+                            errors.append("\n*** "+configName+"/index/"+indexName
                                     + ": fgsindex.operationsImpl="+operationsImpl
                                     + ": instantiation error.\n"+e.toString());
                         } catch (NoSuchMethodException e) {
-                            errors.append("\n*** config/index/"+indexName
+                            errors.append("\n*** "+configName+"/index/"+indexName
                                     + ": fgsindex.operationsImpl="+operationsImpl
                                     + ": instantiation error.\n"+e.toString());
                         }
                     } catch (ClassNotFoundException e) {
-                        errors.append("\n*** config/index/" + indexName
+                        errors.append("\n*** "+configName+"/index/" + indexName
                                 + ": fgsindex.operationsImpl="+operationsImpl
                                 + ": class not found.\n"+e);
                     }
@@ -316,7 +318,7 @@ public class Config {
                     String indexDir = props.getProperty("fgsindex.indexDir"); 
                     File indexDirFile = new File(indexDir);
                     if (indexDirFile == null) {
-                    	errors.append("\n*** config/index/"+indexName+" fgsindex.indexDir="
+                    	errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.indexDir="
                     			+ indexDir + " must exist as a directory");
                     }
 
@@ -324,8 +326,8 @@ public class Config {
                     if (operationsImpl.indexOf("fgslucene")>-1) {
                     	String analyzer = props.getProperty("fgsindex.analyzer"); 
                     	if (analyzer == null || analyzer.equals("")) {
-                    		errors.append("\n*** config/index/" + indexName
-                    				+": fgsindex.analyzer must be set in config/index/ "
+                    		errors.append("\n*** "+configName+"/index/" + indexName
+                    				+": fgsindex.analyzer must be set in "+configName+"/index/ "
                     				+ indexName + ".properties");
                     	}
                     	try {
@@ -335,24 +337,24 @@ public class Config {
                     			.getConstructor(new Class[] {})
                     			.newInstance(new Object[] {});
                     		} catch (InstantiationException e) {
-                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
                     					+ ": fgsindex.analyzer="+analyzer
                     					+ ": instantiation error.\n"+e.toString());
                     		} catch (IllegalAccessException e) {
-                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
                     					+ ": fgsindex.analyzer="+analyzer
                     					+ ": instantiation error.\n"+e.toString());
                     		} catch (InvocationTargetException e) {
-                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
                     					+ ": fgsindex.analyzer="+analyzer
                     					+ ": instantiation error.\n"+e.toString());
                     		} catch (NoSuchMethodException e) {
-                    			errors.append("\n*** config/index/"+indexName+" "+analyzer
+                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
                     					+ ": fgsindex.analyzer="+analyzer
                     					+ ": instantiation error:\n"+e.toString());
                     		}
                     	} catch (ClassNotFoundException e) {
-                    		errors.append("\n*** config/index/" + indexName
+                    		errors.append("\n*** "+configName+"/index/" + indexName
                     				+ ": fgsindex.analyzer="+analyzer
                     				+ ": class not found:\n"+e.toString());
                     	}
@@ -364,11 +366,11 @@ public class Config {
                     indexNameToProps.put(indexName, props);
                 }
                 else {
-                    errors.append("\n*** config/index/" + indexName
+                    errors.append("\n*** "+configName+"/index/" + indexName
                             + "/index.properties not found in classpath");
                 }
             } catch (IOException e) {
-                errors.append("\n*** Error loading config/index/" + indexName
+                errors.append("\n*** Error loading "+configName+"/index/" + indexName
                         + "/index.properties:\n"+e.toString());
             }
             if (errors.length()>0)
@@ -378,32 +380,35 @@ public class Config {
     
     private void checkRestStylesheet(String propName) {
         String propValue = fgsProps.getProperty(propName);
-        String xsltPathName = "/config/rest/"+propValue+".xslt";
-        InputStream stylesheet = null;
-        stylesheet = Config.class.getResourceAsStream(xsltPathName);
+        String configPath = "/"+configName+"/rest/"+propValue+".xslt";
+        InputStream stylesheet = Config.class.getResourceAsStream(configPath);
+        if (stylesheet==null) {
+            String configPathCommon = "/"+configName+"/common/"+propValue+".xslt";
+            stylesheet = Config.class.getResourceAsStream(configPathCommon);
+        }
         if (stylesheet==null) {
             errors.append("\n*** Rest stylesheet "+propName+"="+propValue+" not found");
         } else
-            checkStylesheet(xsltPathName, stylesheet);
+            checkStylesheet(configPath, stylesheet);
     }
     
-    private void checkResultStylesheet(String configPath, Properties props, String propName) {
+    private void checkResultStylesheet(String xsltPath, Properties props, String propName) {
         String propValue = props.getProperty(propName);
-        String xsltPathName = "/config/"+configPath+"/"+propValue+".xslt";
-        InputStream stylesheet = Config.class.getResourceAsStream(xsltPathName);
+        String configPath = "/"+configName+"/"+xsltPath+"/"+propValue+".xslt";
+        InputStream stylesheet = Config.class.getResourceAsStream(configPath);
         if (stylesheet==null) {
-            xsltPathName = "/config/index/common/"+propValue+".xslt";
-            stylesheet = Config.class.getResourceAsStream(xsltPathName);
+        	String configPathCommon = "/"+configName+"/common/"+propValue+".xslt";
+            stylesheet = Config.class.getResourceAsStream(configPathCommon);
         }
         if (stylesheet==null) {
             errors.append("\n*** Result stylesheet "+configPath + ": " 
                     + propName + "=" + propValue + " not found");
         }
         else
-            checkStylesheet(xsltPathName, stylesheet);
+            checkStylesheet(configPath, stylesheet);
     }
     
-    private void checkStylesheet(String xsltPathName, InputStream stylesheet) {
+    private void checkStylesheet(String configPath, InputStream stylesheet) {
         Transformer transformer = null;
         try {
             TransformerFactory tfactory = TransformerFactory.newInstance();
@@ -416,13 +421,26 @@ public class Config {
             try {
                 transformer.transform(new StreamSource(sr), destStream);
             } catch (TransformerException e) {
-                errors.append("\n*** Stylesheet "+xsltPathName+" error:\n"+e.toString());
+                errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
             }
+            transformers.put(configPath, transformer);
+            if (logger.isDebugEnabled())
+                logger.debug("transformer for " + configPath);
         } catch (TransformerConfigurationException e) {
-            errors.append("\n*** Stylesheet "+xsltPathName+" error:\n"+e.toString());
+            errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
         } catch (TransformerFactoryConfigurationError e) {
-            errors.append("\n*** Stylesheet "+xsltPathName+" error:\n"+e.toString());
+            errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
         }
+    }
+    
+    public Transformer getTransformer(String xsltPathName) 
+    throws ConfigException {
+    	Transformer transformer = null;
+    	String configPath = "/"+configName+"/"+xsltPathName+".xslt";
+    	transformer = (Transformer)transformers.get(configPath);
+        if (transformer==null)
+            throw new ConfigException(xsltPathName+" not found.");
+    	return transformer;
     }
     
     private void checkMimeTypes(String repositoryName, Properties props, String propName) {

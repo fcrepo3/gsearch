@@ -277,6 +277,47 @@ public class RESTClient {
         return "";
     }
     
+    public String configure(
+            String restUrl,
+            String configName) {
+        URL url = null;
+        try {
+            url =
+                new URL(
+                        restUrl
+                        + "?operation=configure"
+                        + "&configName=" + configName);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return "";
+        }
+        URLConnection conn = null;
+        try {
+            conn = url.openConnection();
+            conn.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+        content = null;
+        try {
+            content = conn.getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+        System.out.println((InputStream) content);
+        String line;
+        BufferedReader br = new BufferedReader(new InputStreamReader((InputStream)content));
+        try {
+            while ((line = br.readLine())!=null)
+                System.out.println(line);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return "";
+    }
+    
     public static void main(String[] args) {
         try {
             System.out.println("Args");
@@ -395,6 +436,14 @@ public class RESTClient {
                                 String result = client.getIndexInfo(restUrl, indexName, resultPageXslt);
                                 System.out.println(result);
                             }
+                            else
+                                if ("configure".equals(op) ) {
+                                    String configName = "";
+                                    if (args.length>2)
+                                    	configName = args[2];
+                                    String result = client.configure(restUrl, configName);
+                                    System.out.println(result);
+                                }
                             else {
                                 System.out.println("!!! Error in operation name: "+op+" !!!");
                                 usage();
@@ -416,6 +465,7 @@ public class RESTClient {
         System.out.println("host:port gfindObjects query [indexName [hitPageStart [hitPageSize [snippetsMax [fieldMaxLength [resultPageXslt]]]]]]");
         System.out.println("host:port getRepositoryInfo [repositoryName [resultPageXslt]]");
         System.out.println("host:port getIndexInfo [indexName [resultPageXslt]]");
+//        System.out.println("host:port configure [configName]");
         System.exit(1);
     }
     

@@ -67,8 +67,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 			logger.debug("resultSet.getResultXml()="+resultSet.getResultXml());
 		params[10] = "RESULTPAGEXSLT";
 		params[11] = resultPageXslt;
-		StringBuffer sb = (new GTransformer()).transform(
-				config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt),
+        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
+        StringBuffer sb = (new GTransformer()).transform(
+        		config.getTransformer(xsltPath), 
+        		xsltPath,
 				new StreamSource(resultSet.getResultXml()),
 				params);
 		return sb.toString();
@@ -92,8 +94,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 			logger.debug("resultSet.getResultXml()="+resultSet.getResultXml());
 		params[10] = "RESULTPAGEXSLT";
 		params[11] = resultPageXslt;
-		StringBuffer sb = (new GTransformer()).transform(
-				config.getIndexName(indexName)+"/"+config.getBrowseIndexResultXslt(indexName, resultPageXslt),
+        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getBrowseIndexResultXslt(indexName, resultPageXslt);
+        StringBuffer sb = (new GTransformer()).transform(
+        		config.getTransformer(xsltPath), 
+        		xsltPath,
 				new StreamSource(resultSet.getResultXml()),
 				params);
 		return sb.toString();
@@ -114,8 +118,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 		} catch (IOException e) {
 			throw new GenericSearchException("Error "+indexInfoPath+" not found in classpath", e);
 		}
-		StringBuffer sb = (new GTransformer()).transform(
-				config.getIndexName(indexName)+"/"+config.getIndexInfoResultXslt(indexName, resultPageXslt), 
+        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getIndexInfoResultXslt(indexName, resultPageXslt);
+        StringBuffer sb = (new GTransformer()).transform(
+        		config.getTransformer(xsltPath), 
+        		xsltPath,
 				new StreamSource(infoStream),
 				new String[] {});
 		return sb.toString();
@@ -191,8 +197,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 		params[9] = indexName;
 		params[10] = "RESULTPAGEXSLT";
 		params[11] = resultPageXslt;
-		StringBuffer sb = (new GTransformer()).transform(
-				config.getIndexName(indexName)+"/"+config.getUpdateIndexResultXslt(indexName, resultPageXslt),
+        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getUpdateIndexResultXslt(indexName, resultPageXslt);
+        StringBuffer sb = (new GTransformer()).transform(
+        		config.getTransformer(xsltPath), 
+        		xsltPath,
 				resultXml,
 				params);
 		return sb.toString();
@@ -278,8 +286,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 			String indexDocXslt)
 	throws java.rmi.RemoteException {
 		StringBuffer sb = null;
+        String xsltPath = "index/"+indexName+"/"+config.getUpdateIndexDocXslt(indexName, indexDocXslt);
 		(new GTransformer()).transformToFile(
-				indexName+"/"+config.getUpdateIndexDocXslt(indexName, indexDocXslt), 
+        		config.getTransformer(xsltPath), 
+        		xsltPath,
 				new StreamSource(foxmlStream),
 				new Object[] {"REPOSITORYNAME", repositoryName,
 					"OPERATIONSIMPL", this},

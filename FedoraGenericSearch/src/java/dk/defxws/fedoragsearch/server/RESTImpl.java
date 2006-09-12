@@ -103,11 +103,14 @@ public class RESTImpl extends HttpServlet {
             } else if (OP_BROWSEINDEX.equals(operation)) {
                 resultXml = new StringBuffer(browseIndex(request, response));
             } else {
-//                resultXml = new StringBuffer("<resultPage/>");
+                resultXml = new StringBuffer("<resultPage/>");
                 if (restXslt==null || restXslt.equals("")) 
                     restXslt = config.getDefaultGfindObjectsRestXslt();
                 if ("configure".equals(operation)) {
-                    Config.configure();
+                    String configName = request.getParameter("configName");
+                    if (configName==null || configName.equals(""))
+                    	configName = "config";
+                    Config.configure(configName);
                 } else if (operation!=null && !"".equals(operation)) {
 //                    throw new ServletException("ERROR: operation "+operation+" is unknown!");
                     throw new GenericSearchException("ERROR: operation "+operation+" is unknown!");
@@ -118,7 +121,9 @@ public class RESTImpl extends HttpServlet {
             params[1] = e.toString();
             logger.error(e);
         }
-        resultXml = (new GTransformer()).transform("rest/"+restXslt, resultXml, params);
+        resultXml = (new GTransformer()).transform(
+        				config.getTransformer("rest/"+restXslt), 
+        				"rest/"+restXslt, resultXml, params);
         
         if (restXslt.indexOf(CONTENTTYPEHTML)>=0)
             response.setContentType("text/html; charset=UTF-8");

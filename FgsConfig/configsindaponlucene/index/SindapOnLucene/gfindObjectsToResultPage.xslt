@@ -2,7 +2,6 @@
 <xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:zs="http://www.loc.gov/zing/srw/"
-		xmlns:zd="http://www.loc.gov/zing/srw/diagnostic/"
 		xmlns:z="http://indexdata.dk/zebra/xslt/1"
 		xmlns:foxml="info:fedora/fedora-system:def/foxml#"
 		xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -20,12 +19,11 @@
 	<xsl:param name="RESULTPAGEXSLT" select="resultPageXslt"/>
 	<xsl:param name="DATETIME" select="none"/>
 
-    <xsl:template match="text()"/>
-
 	<xsl:template match="zs:searchRetrieveResponse">
 		<xsl:variable name="HITTOTAL" select="zs:numberOfRecords"/>
 	 	<resultPage dateTime="{$DATETIME}"
 	 				indexName="{$INDEXNAME}">
+			<error><message><xsl:value-of select="zs:diagnostics"/></message></error>
         	<xsl:apply-templates select="zs:diagnostics"/>
 	 		<gfindObjects 	query="{$QUERY}"
 	 						hitPageStart="{$HITPAGESTART}"
@@ -62,11 +60,10 @@
 		<xsl:apply-templates/>
 	</xsl:template>
 	
-	<xsl:template match="zd:diagnostic">
+	<xsl:template match="diagnostic">
 		<error>
 			<message>
-				(<xsl:value-of select="zd:uri"/>)
-				<xsl:value-of select="zd:message"/>
+				<xsl:value-of select="message"/>
 			</message>
 		</error>
 	</xsl:template>

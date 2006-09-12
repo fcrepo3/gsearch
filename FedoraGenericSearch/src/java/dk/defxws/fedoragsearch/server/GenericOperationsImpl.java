@@ -138,9 +138,11 @@ public class GenericOperationsImpl implements Operations {
         } catch (IOException e) {
             throw new GenericSearchException("Error "+repositoryInfoPath+" not found in classpath", e);
         }
+        String xsltPath = "repository/"+config.getRepositoryName(repositoryName)+"/"
+        		+config.getRepositoryInfoResultXslt(repositoryName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-                config.getRepositoryName(repositoryName)
-                +"/"+config.getRepositoryInfoResultXslt(repositoryName, resultPageXslt), 
+        		config.getTransformer(xsltPath), 
+        		xsltPath,
                 new StreamSource(repositoryStream),
                 new String[] {});
         return sb.toString();
