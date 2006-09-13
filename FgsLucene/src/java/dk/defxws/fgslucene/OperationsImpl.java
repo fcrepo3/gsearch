@@ -34,6 +34,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
+import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 /**
@@ -72,9 +73,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             logger.debug("resultSet.getResultXml()="+resultSet.getResultXml());
         params[10] = "RESULTPAGEXSLT";
         params[11] = resultPageXslt;
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
                 resultSet.getResultXml(),
                 params);
@@ -151,9 +151,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             logger.debug("resultXml="+resultXml);
         params[10] = "RESULTPAGEXSLT";
         params[11] = resultPageXslt;
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getBrowseIndexResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getBrowseIndexResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
                 resultXml,
                 params);
@@ -166,7 +165,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws java.rmi.RemoteException {
         super.getIndexInfo(indexName, resultPageXslt);
         InputStream infoStream =  null;
-        String indexInfoPath = "/config/index/"+config.getIndexName(indexName)+"/indexInfo.xml";
+        String indexInfoPath = "/"+config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/indexInfo.xml";
         try {
             infoStream =  OperationsImpl.class.getResourceAsStream(indexInfoPath);
             if (infoStream == null) {
@@ -175,9 +174,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         } catch (IOException e) {
             throw new GenericSearchException("Error "+indexInfoPath+" not found in classpath", e);
         }
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getIndexInfoResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getIndexInfoResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
                 new StreamSource(infoStream),
                 new String[] {});
@@ -266,9 +264,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         params[9] = indexName;
         params[10] = "RESULTPAGEXSLT";
         params[11] = resultPageXslt;
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getUpdateIndexResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getUpdateIndexResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
                 resultXml,
                 params);
@@ -294,6 +291,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             StringBuffer resultXml,
             String indexDocXslt)
     throws java.rmi.RemoteException {
+        if (logger.isDebugEnabled())
+            logger.debug("fromFoxmlFiles filePath="+filePath+" repositoryName="+repositoryName+" indexName="+indexName);
         File objectDir = null;
         if (filePath==null || filePath.equals(""))
             objectDir = config.getFedoraObjectDir(repositoryName);
@@ -309,6 +308,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexDocXslt)
     throws java.rmi.RemoteException
     {
+        if (logger.isDebugEnabled())
+            logger.debug("indexDocs file="+file+" repositoryName="+repositoryName+" indexName="+indexName);
         if (file.isDirectory())
         {
             String[] files = file.list();
@@ -335,7 +336,11 @@ public class OperationsImpl extends GenericOperationsImpl {
             StringBuffer resultXml,
             String indexDocXslt)
     throws java.rmi.RemoteException {
-        getFoxmlFromPid(pid, repositoryName);
+        try {
+			getFoxmlFromPid(pid, repositoryName);
+		} catch (java.rmi.RemoteException e) {
+			throw new FedoraObjectNotFoundException("Fedora Object "+pid+" not found at "+repositoryName);
+		}
         indexDoc(pid, repositoryName, indexName, new ByteArrayInputStream(foxmlRecord), resultXml, indexDocXslt);
     }
     
@@ -347,6 +352,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             int deleted = modifier.deleteDocuments(new Term("PID", pid));
             deleteTotal += deleted;
             docCount = modifier.docCount();
+            logger.info("indexDoc="+pid+" docCount="+docCount);
         } catch (IOException e) {
             throw new GenericSearchException("Update deletePid error pid="+pid, e);
         }
@@ -361,9 +367,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexDocXslt)
     throws java.rmi.RemoteException {
         IndexDocumentHandler hdlr = null;
-        String xsltPath = "index/"+indexName+"/"+config.getUpdateIndexDocXslt(indexName, indexDocXslt);
+        String xsltPath = config.getConfigName()+"/index/"+indexName+"/"+config.getUpdateIndexDocXslt(indexName, indexDocXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath, 
                 new StreamSource(foxmlStream),
                 new String[] {});
@@ -390,6 +395,7 @@ public class OperationsImpl extends GenericOperationsImpl {
                     deleteTotal-= deleted;
                 }
                 else insertTotal++;
+                logger.info("indexDoc="+hdlr.getPid()+" docCount="+modifier.docCount());
             }
         } catch (IOException e) {
             throw new GenericSearchException("Update error pidOrFilename="+pidOrFilename, e);

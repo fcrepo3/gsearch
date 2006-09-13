@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 
+import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 /**
@@ -50,131 +51,24 @@ public class GTransformer {
      *
      * @throws TransformerConfigurationException, TransformerException.
      */
-    public Transformer getTransformer(String xsltName) 
-    throws GenericSearchException {
+    public Transformer getTransformer(String xsltPath) 
+    throws ConfigException {
         Transformer transformer = null;
-        String xsltPathName = "/config/"+xsltName+".xslt";
-        if (!"rest/".equals(xsltName.substring(0, 5)))
-            xsltPathName = "/config/index/"+xsltName+".xslt";
+        String xsltPathName = "/"+xsltPath+".xslt";
         try {
-            InputStream is = null;
-            is = GTransformer.class.getResourceAsStream(xsltPathName);
-            if (is==null) {
-                xsltPathName = "/config/common"+xsltName.substring(xsltName.indexOf("/"))+".xslt";
-                is = GTransformer.class.getResourceAsStream(xsltPathName);
+            InputStream stylesheet = Config.class.getResourceAsStream(xsltPathName);
+            if (stylesheet==null) {
+                throw new ConfigException(xsltPathName+" not found");
             }
             TransformerFactory tfactory = TransformerFactory.newInstance();
-            StreamSource xslt = new StreamSource(is);
+            StreamSource xslt = new StreamSource(stylesheet);
             transformer = tfactory.newTransformer(xslt);
         } catch (TransformerConfigurationException e) {
-            throw new GenericSearchException("getTransformer "+xsltPathName+":\n", e);
+            throw new ConfigException("getTransformer "+xsltPathName+":\n", e);
         } catch (TransformerFactoryConfigurationError e) {
-            throw new GenericSearchException("getTransformerFactory "+xsltPathName+":\n", e);
+            throw new ConfigException("getTransformerFactory "+xsltPathName+":\n", e);
         }
         return transformer;
-    }
-    
-    /**
-     * 
-     *
-     * @throws TransformerConfigurationException, TransformerException.
-     */
-    public void transform(Transformer transformer, String xsltName, StreamSource sourceStream, StreamResult destStream) 
-    throws GenericSearchException {
-//        Transformer transformer = getTransformer(xsltName);
-        try {
-            transformer.transform(sourceStream, destStream);
-        } catch (TransformerException e) {
-            throw new GenericSearchException("transform "+xsltName+".xslt:\n", e);
-        }
-    }
-    
-    /**
-     * 
-     *
-     * @throws TransformerConfigurationException, TransformerException.
-     */
-    public StringBuffer transform(Transformer transformer, String xsltName, StreamSource sourceStream, Object[] params) 
-    throws GenericSearchException {
-        if (logger.isDebugEnabled())
-            logger.debug("xsltName="+xsltName);
-//        Transformer transformer = getTransformer(xsltName);
-        for (int i=0; i<params.length; i=i+2) {
-            Object value = params[i+1];
-            if (value==null) value = "";
-            transformer.setParameter((String)params[i], value);
-        }
-        transformer.setParameter("DATETIME", new Date());
-        StreamResult destStream = new StreamResult(new StringWriter());
-        try {
-            transformer.transform(sourceStream, destStream);
-        } catch (TransformerException e) {
-            throw new GenericSearchException("transform "+xsltName+".xslt:\n", e);
-        }
-        StringWriter sw = (StringWriter)destStream.getWriter();
-//      if (logger.isDebugEnabled())
-//      logger.debug("sw="+sw.getBuffer().toString());
-        return sw.getBuffer();
-    }
-    
-    /**
-     * 
-     *
-     * @throws TransformerConfigurationException, TransformerException.
-     */
-    public void transformToFile(Transformer transformer, String xsltName, StreamSource sourceStream, Object[] params, String filePath) 
-    throws GenericSearchException {
-        if (logger.isDebugEnabled())
-            logger.debug("xsltName="+xsltName);
-//        Transformer transformer = getTransformer(xsltName);
-        for (int i=0; i<params.length; i=i+2) {
-            Object value = params[i+1];
-            if (value==null) value = "";
-            transformer.setParameter((String)params[i], value);
-        }
-        transformer.setParameter("DATETIME", new Date());
-        StreamResult destStream = new StreamResult(new File(filePath));
-        try {
-            transformer.transform(sourceStream, destStream);
-        } catch (TransformerException e) {
-            throw new GenericSearchException("transform "+xsltName+".xslt:\n", e);
-        }
-    }
-    
-    /**
-     * 
-     *
-     * @throws TransformerConfigurationException, TransformerException.
-     */
-    public StringBuffer transform(Transformer transformer, String xsltName, StreamSource sourceStream) 
-    throws GenericSearchException {
-        return transform(transformer, xsltName, sourceStream, new String[]{});
-    }
-    
-    /**
-     * 
-     *
-     * @throws TransformerConfigurationException, TransformerException.
-     */
-    public StringBuffer transform(Transformer transformer, String xsltName, StringBuffer sb, String[] params) 
-    throws GenericSearchException {
-//      if (logger.isDebugEnabled())
-//      logger.debug("sb="+sb);
-        StringReader sr = new StringReader(sb.toString());
-        StringBuffer result = transform(transformer, xsltName, new StreamSource(sr), params);
-//      if (logger.isDebugEnabled())
-//      logger.debug("xsltName="+xsltName+" result="+result);
-        return result;
-    }
-    
-    /**
-     * 
-     *
-     * @throws TransformerConfigurationException, TransformerException.
-     */
-    public StringBuffer transform(Transformer transformer, String xsltName, StringBuffer sb) 
-    throws GenericSearchException {
-        return transform(transformer, xsltName, sb, new String[]{});
     }
     
     /**

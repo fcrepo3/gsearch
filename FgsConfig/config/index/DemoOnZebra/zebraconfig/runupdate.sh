@@ -72,7 +72,7 @@ case "$1" in
     export FILENAME=`echo "$2" | sed -e s/:/_/`
     rm temp_records/*
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> temp_records/$FILENAME
-    echo "<IndexDocument >" >> temp_records/$FILENAME
+    echo "<IndexDocument PID=\"$2\">" >> temp_records/$FILENAME
     echo "<IndexField IFname=\"PID\">" >> temp_records/$FILENAME
     echo "$2" >> temp_records/$FILENAME
     echo "</IndexField>" >> temp_records/$FILENAME

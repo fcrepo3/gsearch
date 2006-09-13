@@ -11,19 +11,13 @@
  */
 package dk.defxws.fgszebra;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -31,7 +25,6 @@ import org.apache.log4j.Logger;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
-import dk.defxws.fedoragsearch.server.Config;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 /**
@@ -67,9 +60,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 			logger.debug("resultSet.getResultXml()="+resultSet.getResultXml());
 		params[10] = "RESULTPAGEXSLT";
 		params[11] = resultPageXslt;
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
 				new StreamSource(resultSet.getResultXml()),
 				params);
@@ -94,9 +86,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 			logger.debug("resultSet.getResultXml()="+resultSet.getResultXml());
 		params[10] = "RESULTPAGEXSLT";
 		params[11] = resultPageXslt;
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getBrowseIndexResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getBrowseIndexResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
 				new StreamSource(resultSet.getResultXml()),
 				params);
@@ -118,9 +109,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 		} catch (IOException e) {
 			throw new GenericSearchException("Error "+indexInfoPath+" not found in classpath", e);
 		}
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getIndexInfoResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getIndexInfoResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
 				new StreamSource(infoStream),
 				new String[] {});
@@ -197,9 +187,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 		params[9] = indexName;
 		params[10] = "RESULTPAGEXSLT";
 		params[11] = resultPageXslt;
-        String xsltPath = "index/"+config.getIndexName(indexName)+"/"+config.getUpdateIndexResultXslt(indexName, resultPageXslt);
+        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getUpdateIndexResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
 				resultXml,
 				params);
@@ -274,7 +263,9 @@ public class OperationsImpl extends GenericOperationsImpl {
 		insertTotal += dcounts[0];
 		updateTotal += dcounts[1];
 		deleteTotal += dcounts[2];
+		docCount = insertTotal - deleteTotal;
 		resultXml.append("<delete>"+pid+"</delete>\n");
+        logger.info("indexDoc="+pid+" docCount="+docCount);
 	}
 
 	private void indexDoc(
@@ -286,9 +277,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 			String indexDocXslt)
 	throws java.rmi.RemoteException {
 		StringBuffer sb = null;
-        String xsltPath = "index/"+indexName+"/"+config.getUpdateIndexDocXslt(indexName, indexDocXslt);
+        String xsltPath = config.getConfigName()+"/index/"+indexName+"/"+config.getUpdateIndexDocXslt(indexName, indexDocXslt);
 		(new GTransformer()).transformToFile(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
 				new StreamSource(foxmlStream),
 				new Object[] {"REPOSITORYNAME", repositoryName,
@@ -298,7 +288,9 @@ public class OperationsImpl extends GenericOperationsImpl {
 		insertTotal += icounts[0];
 		updateTotal += icounts[1];
 		deleteTotal += icounts[2];
+		docCount = insertTotal - deleteTotal;
 		resultXml.append("<insert>"+pidOrFilename+"</insert>\n");
+        logger.info("indexDoc="+pidOrFilename+" docCount="+docCount);
 	}
 
 }

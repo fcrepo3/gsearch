@@ -88,8 +88,9 @@ public class IndexModifier {
 			BufferedReader br = new BufferedReader(isr);
 			String line = "";
 			while ((line = br.readLine()) != null) {
-				if (logger.isDebugEnabled())
-					logger.debug("runupdate line="+line);
+				if (line.indexOf("Records:") > -1 || line.indexOf("temp_records/sb") > -1)
+					if (logger.isDebugEnabled())
+						logger.debug("runupdate line="+line);
 				int i = line.indexOf("Records:");
 				if (i  > -1) {
 					int j = line.indexOf("i/u/d");

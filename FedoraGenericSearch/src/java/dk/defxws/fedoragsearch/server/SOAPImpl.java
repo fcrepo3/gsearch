@@ -33,7 +33,7 @@ public class SOAPImpl implements Operations {
             String indexName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
-        if (logger.isDebugEnabled())
+        if (logger.isInfoEnabled())
             logger.debug("gfindObjects" +
                     " query="+query+
                     " hitPageStart="+hitPageStart+
@@ -51,7 +51,7 @@ public class SOAPImpl implements Operations {
             String indexName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
-        if (logger.isDebugEnabled())
+        if (logger.isInfoEnabled())
             logger.debug("browseIndex" +
                     " startTerm="+startTerm+
                     " termPageSize="+termPageSize+
@@ -66,7 +66,7 @@ public class SOAPImpl implements Operations {
             String repositoryName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
-        if (logger.isDebugEnabled())
+        if (logger.isInfoEnabled())
             logger.debug("getRepositoryInfo" +
                     " repositoryName="+repositoryName+
                     " resultPageXslt="+resultPageXslt);
@@ -79,7 +79,7 @@ public class SOAPImpl implements Operations {
             String indexName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
-        if (logger.isDebugEnabled())
+        if (logger.isInfoEnabled())
             logger.debug("getIndexInfo" +
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
@@ -95,7 +95,7 @@ public class SOAPImpl implements Operations {
             String indexXslt,
             String resultPageXslt)
     throws java.rmi.RemoteException {
-        if (logger.isDebugEnabled())
+        if (logger.isInfoEnabled())
             logger.debug("updateIndex" +
                     " action="+action+
                     " value="+value+

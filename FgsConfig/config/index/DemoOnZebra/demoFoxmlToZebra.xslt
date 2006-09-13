@@ -35,6 +35,10 @@
 	<xsl:variable name="rank" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
 	
 	<xsl:template match="/">
+		<!-- The following allows only active demo FedoraObjects to be indexed. -->
+		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
+			<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' and @VALUE='FedoraObject']">
+				<xsl:if test="starts-with($PID,'demo')">
 		<IndexDocument> 
 			<xsl:attribute name="PID">
 				<xsl:value-of select="$PID"/>
@@ -42,15 +46,11 @@
 			<xsl:attribute name="rank">
 				<xsl:value-of select="$rank"/>
 			</xsl:attribute>
-		<!-- The following allows only active demo FedoraObjects to be indexed. -->
-		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
-			<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' and @VALUE='FedoraObject']">
-				<xsl:if test="starts-with($PID,'demo')">
 					<xsl:apply-templates mode="activeDemoFedoraObject"/>
+		</IndexDocument>
 				</xsl:if>
 			</xsl:if>
 		</xsl:if>
-		</IndexDocument>
 	</xsl:template>
 
 	<xsl:template match="/foxml:digitalObject" mode="activeDemoFedoraObject">

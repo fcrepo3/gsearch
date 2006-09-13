@@ -120,10 +120,11 @@ public class RESTImpl extends HttpServlet {
 //            throw new ServletException("ERROR: \n", e);
             params[1] = e.toString();
             logger.error(e);
+            e.printStackTrace();
         }
         resultXml = (new GTransformer()).transform(
-        				config.getTransformer("rest/"+restXslt), 
-        				"rest/"+restXslt, resultXml, params);
+        				config.getConfigName()+"/rest/"+restXslt, 
+        				resultXml, params);
         
         if (restXslt.indexOf(CONTENTTYPEHTML)>=0)
             response.setContentType("text/html; charset=UTF-8");

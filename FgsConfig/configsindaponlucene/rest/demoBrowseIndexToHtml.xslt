@@ -54,7 +54,7 @@
 							<td><xsl:value-of select="$TERMTOTAL"/> terms found.
 							</td>
 	 					</xsl:if>
-					  <xsl:if test="$TERMTOTAL > $PAGELASTNO">
+					  <xsl:if test="$PAGELASTNO='' or $PAGELASTNO=' ' or $TERMTOTAL > $PAGELASTNO">
 	 					<td>
 						<form method="get" action="rest">
 							<input type="hidden" name="operation" value="browseIndex"/>

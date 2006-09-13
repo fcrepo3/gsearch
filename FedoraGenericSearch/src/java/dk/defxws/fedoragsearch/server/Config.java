@@ -59,8 +59,6 @@ public class Config {
     
     private String defaultIndexName = null;
     
-    private Hashtable transformers = null;
-    
     private int maxPageSize = 50;
     
     private int defaultGfindObjectsHitPageStart = 1;
@@ -90,7 +88,6 @@ public class Config {
     public Config(String configNameIn) throws ConfigException {
     	configName = configNameIn;
         errors = new StringBuffer();
-        transformers = new Hashtable();
         
 //      Read and set fedoragsearch properties
         try {
@@ -383,10 +380,6 @@ public class Config {
         String configPath = "/"+configName+"/rest/"+propValue+".xslt";
         InputStream stylesheet = Config.class.getResourceAsStream(configPath);
         if (stylesheet==null) {
-            String configPathCommon = "/"+configName+"/common/"+propValue+".xslt";
-            stylesheet = Config.class.getResourceAsStream(configPathCommon);
-        }
-        if (stylesheet==null) {
             errors.append("\n*** Rest stylesheet "+propName+"="+propValue+" not found");
         } else
             checkStylesheet(configPath, stylesheet);
@@ -397,10 +390,6 @@ public class Config {
         String configPath = "/"+configName+"/"+xsltPath+"/"+propValue+".xslt";
         InputStream stylesheet = Config.class.getResourceAsStream(configPath);
         if (stylesheet==null) {
-        	String configPathCommon = "/"+configName+"/common/"+propValue+".xslt";
-            stylesheet = Config.class.getResourceAsStream(configPathCommon);
-        }
-        if (stylesheet==null) {
             errors.append("\n*** Result stylesheet "+configPath + ": " 
                     + propName + "=" + propValue + " not found");
         }
@@ -409,6 +398,8 @@ public class Config {
     }
     
     private void checkStylesheet(String configPath, InputStream stylesheet) {
+        if (logger.isDebugEnabled())
+            logger.debug("checkStylesheet for " + configPath);
         Transformer transformer = null;
         try {
             TransformerFactory tfactory = TransformerFactory.newInstance();
@@ -423,24 +414,11 @@ public class Config {
             } catch (TransformerException e) {
                 errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
             }
-            transformers.put(configPath, transformer);
-            if (logger.isDebugEnabled())
-                logger.debug("transformer for " + configPath);
         } catch (TransformerConfigurationException e) {
             errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
         } catch (TransformerFactoryConfigurationError e) {
             errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
         }
-    }
-    
-    public Transformer getTransformer(String xsltPathName) 
-    throws ConfigException {
-    	Transformer transformer = null;
-    	String configPath = "/"+configName+"/"+xsltPathName+".xslt";
-    	transformer = (Transformer)transformers.get(configPath);
-        if (transformer==null)
-            throw new ConfigException(xsltPathName+" not found.");
-    	return transformer;
     }
     
     private void checkMimeTypes(String repositoryName, Properties props, String propName) {
@@ -458,6 +436,10 @@ public class Config {
                 errors.append("\n*** "+repositoryName+":"+propName+": MimeType "+mimeType+" is not handled.");
             }
         }
+    }
+    
+    public String getConfigName() {
+        return configName;
     }
     
     public String getSoapBase() {

@@ -129,7 +129,7 @@ public class GenericOperationsImpl implements Operations {
                     " repositoryName="+repositoryName+
                     " resultPageXslt="+resultPageXslt);
         InputStream repositoryStream =  null;
-        String repositoryInfoPath = "/config/repository/"+config.getRepositoryName(repositoryName)+"/repositoryInfo.xml";
+        String repositoryInfoPath = "/"+config.getConfigName()+"/repository/"+config.getRepositoryName(repositoryName)+"/repositoryInfo.xml";
         try {
             repositoryStream =  this.getClass().getResourceAsStream(repositoryInfoPath);
             if (repositoryStream == null) {
@@ -138,10 +138,10 @@ public class GenericOperationsImpl implements Operations {
         } catch (IOException e) {
             throw new GenericSearchException("Error "+repositoryInfoPath+" not found in classpath", e);
         }
-        String xsltPath = "repository/"+config.getRepositoryName(repositoryName)+"/"
+        String xsltPath = config.getConfigName()
+        		+"/repository/"+config.getRepositoryName(repositoryName)+"/"
         		+config.getRepositoryInfoResultXslt(repositoryName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
-        		config.getTransformer(xsltPath), 
         		xsltPath,
                 new StreamSource(repositoryStream),
                 new String[] {});
@@ -161,7 +161,7 @@ public class GenericOperationsImpl implements Operations {
     public String updateIndex(
             String action,
             String value,
-            String repositoryName,
+            String repositoryNameParam,
             String indexNames,
             String indexDocXslt,
             String resultPageXslt)
@@ -170,11 +170,14 @@ public class GenericOperationsImpl implements Operations {
             logger.debug("updateIndex" +
                     " action="+action+
                     " value="+value+
-                    " repositoryName="+repositoryName+
+                    " repositoryName="+repositoryNameParam+
                     " indexNames="+indexNames+
                     " indexDocXslt="+indexDocXslt+
                     " resultPageXslt="+resultPageXslt);
         StringBuffer resultXml = new StringBuffer(); 
+        String repositoryName = repositoryNameParam;
+        if (repositoryNameParam==null || repositoryNameParam.equals(""))
+        	repositoryName = config.getRepositoryName(repositoryName);
         resultXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         resultXml.append("<resultPage");
         resultXml.append(" operation=\"updateIndex\"");
@@ -204,7 +207,8 @@ public class GenericOperationsImpl implements Operations {
         
         if (logger.isDebugEnabled())
             logger.debug("getFoxmlFromPid" +
-                    " pid="+pid);
+                    " pid="+pid +
+                    " repositoryName="+repositoryName);
         FedoraAPIMBindingSOAPHTTPStub stub = null;
         try {
             stub = new FedoraAPIMBindingSOAPHTTPStub(
