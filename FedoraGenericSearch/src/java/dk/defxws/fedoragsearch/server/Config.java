@@ -628,7 +628,11 @@ public class Config {
     throws ConfigException {
         GenericOperationsImpl ops = null;
         String indexName = getIndexName(indexNameParam);
-        String operationsImpl = (String)getIndexProps(indexName).getProperty("fgsindex.operationsImpl");
+        Properties indexProps = getIndexProps(indexName);
+        if (indexProps == null)
+            throw new ConfigException("The indexName " + indexName
+                    + " is not configured.\n");
+        String operationsImpl = (String)indexProps.getProperty("fgsindex.operationsImpl");
         if (operationsImpl == null)
             throw new ConfigException("The indexName " + indexName
                     + " is not configured.\n");

@@ -2,73 +2,87 @@
 <xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:zs="http://www.loc.gov/zing/srw/"
-		xmlns:z="http://indexdata.dk/zebra/xslt/1"
 		xmlns:foxml="info:fedora/fedora-system:def/foxml#"
 		xmlns:dc="http://purl.org/dc/elements/1.1/">
 		
 <!-- This xslt stylesheet generates the resultPage
-     from a Zebra search.
+     from a Lucene search.
 -->
 	
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 	
 	<xsl:param name="QUERY" select="query"/>
-	<xsl:param name="INDEXNAME" select="indexName"/>
 	<xsl:param name="HITPAGESTART" select="1"/>
 	<xsl:param name="HITPAGESIZE" select="10"/>
 	<xsl:param name="RESULTPAGEXSLT" select="resultPageXslt"/>
 	<xsl:param name="DATETIME" select="none"/>
 
-	<xsl:template match="zs:searchRetrieveResponse">
-		<xsl:variable name="HITTOTAL" select="zs:numberOfRecords"/>
+	<xsl:template match="lucenesearch">
+		<xsl:variable name="INDEXNAME" select="@indexName"/>
+		<xsl:variable name="HITTOTAL" select="@hitTotal"/>
 	 	<resultPage dateTime="{$DATETIME}"
 	 				indexName="{$INDEXNAME}">
-			<error><message><xsl:value-of select="zs:diagnostics"/></message></error>
-        	<xsl:apply-templates select="zs:diagnostics"/>
 	 		<gfindObjects 	query="{$QUERY}"
 	 						hitPageStart="{$HITPAGESTART}"
 	 						hitPageSize="{$HITPAGESIZE}"
 	 						resultPageXslt="{$RESULTPAGEXSLT}"
 	 						hitTotal="{$HITTOTAL}">
 				<objects>
-				  <xsl:for-each select="zs:records/zs:record">
+				<xsl:for-each select="hit">
 					<object>
-						<xsl:attribute name="PID">
-							<xsl:value-of select="zs:recordData/z:record/@id"/>
-						</xsl:attribute>
 						<xsl:attribute name="no">
-							<xsl:value-of select="zs:recordPosition"/>
+							<xsl:value-of select="@no"/>
 						</xsl:attribute>
 						<xsl:attribute name="score">
-							<xsl:value-of select="zs:recordData/z:record/@rank"/>
+							<xsl:value-of select="@score"/>
 						</xsl:attribute>
-        				<xsl:apply-templates select="zs:recordData/z:record"/>
+						<xsl:copy-of select="node()"/>
+						<!--
+						<xsl:choose>
+							<xsl:when test="dc.title">
+								<field name="title"><xsl:value-of select="dc.title/node()"/>
+								</field>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:choose>
+							<xsl:when test="dc.description">
+								<xsl:variable name="SNIPPET" select="dc.description"/>
+								<xsl:choose>
+									<xsl:when test="string-length($SNIPPET)>50">
+										<field name="snippet"><xsl:value-of select="concat(substring($SNIPPET, 1, 50), '...')"/></field>
+									</xsl:when>
+									<xsl:otherwise>
+										<field name="snippet"><xsl:value-of select="$SNIPPET"/></field>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:variable name="SNIPPET" select="description"/>
+								<xsl:choose>
+									<xsl:when test="string-length($SNIPPET)>500">
+										<field name="snippet"><xsl:value-of select="concat(substring($SNIPPET, 1, 50), '...')"/></field>
+									</xsl:when>
+									<xsl:otherwise>
+										<field name="snippet"><xsl:copy-of select="$SNIPPET"/></field>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
+						-->
 					</object>
-				  </xsl:for-each>
+				</xsl:for-each>
 				</objects>
 			</gfindObjects>
 	 	</resultPage>
 	</xsl:template>
 	
-	<xsl:template match="z:index">
-		<field>
-			<xsl:attribute name="name">
-				<xsl:value-of select="translate(@name,':', '.')" />
-			</xsl:attribute>
-			<xsl:value-of select="text()" />
-		</field>
-		<xsl:apply-templates/>
-	</xsl:template>
-	
-	<xsl:template match="diagnostic">
-		<error>
-			<message>
-				<xsl:value-of select="message"/>
-			</message>
-		</error>
-	</xsl:template>
-
-  <!-- disable all default text node output -->
-  <xsl:template match="text()"/>
-  
 </xsl:stylesheet>	
+
+
+
+
+				
+
+
+
+

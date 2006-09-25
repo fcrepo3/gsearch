@@ -85,9 +85,13 @@ public class RESTImpl extends HttpServlet {
         if (logger.isInfoEnabled())
             logger.info("request="+request.getQueryString());
         repositoryName = request.getParameter(PARAM_REPOSITORYNAME);
+        if (repositoryName==null) repositoryName="";
         indexName = request.getParameter(PARAM_INDEXNAME);
+        if (indexName==null) indexName="";
         resultPageXslt = request.getParameter(PARAM_RESULTPAGEXSLT);
+        if (resultPageXslt==null) resultPageXslt="";
         restXslt = request.getParameter(PARAM_RESTXSLT);
+        if (restXslt==null) restXslt="";
         String[] params = new String[2];
         params[0] = "ERRORMESSAGE";
         params[1] = "";
@@ -118,7 +122,8 @@ public class RESTImpl extends HttpServlet {
             }
         } catch (java.rmi.RemoteException e) {
 //            throw new ServletException("ERROR: \n", e);
-            params[1] = e.toString();
+//            params[1] = e.toString();
+            params[1] = e.getMessage();
             logger.error(e);
             e.printStackTrace();
         }
@@ -223,8 +228,11 @@ public class RESTImpl extends HttpServlet {
             restXslt = config.getDefaultUpdateIndexRestXslt();
         }
         String action = request.getParameter(PARAM_ACTION);
+        if (action==null) action="";
         String value = request.getParameter(PARAM_VALUE);
+        if (value==null) value="";
         String indexXslt = request.getParameter(PARAM_INDEXXSLT);
+        if (indexXslt==null) indexXslt="";
         GenericOperationsImpl ops = new GenericOperationsImpl();
         ops.init(indexName, config);
         String result = ops.updateIndex(action, value, repositoryName, indexName, indexXslt, resultPageXslt);
