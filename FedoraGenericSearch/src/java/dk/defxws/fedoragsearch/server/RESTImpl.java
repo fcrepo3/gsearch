@@ -14,6 +14,7 @@ package dk.defxws.fedoragsearch.server;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Date;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +39,7 @@ public class RESTImpl extends HttpServlet {
     private Config config;
     
     private static final String PARAM_RESTXSLT = "restXslt";
-    private static final String PARAM_INDEXXSLT = "indexXslt";
+    private static final String PARAM_INDEXDOCXSLT = "indexDocXslt";
     private static final String PARAM_RESULTPAGEXSLT = "resultPageXslt";
     
     private String repositoryName;
@@ -79,6 +80,7 @@ public class RESTImpl extends HttpServlet {
     /** Process http request */
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException { 
+    	Date startTime = new Date();
         config = Config.getCurrentConfig();
         StringBuffer resultXml = new StringBuffer("<resultPage/>");
         String operation = request.getParameter(PARAM_OPERATION);
@@ -92,9 +94,11 @@ public class RESTImpl extends HttpServlet {
         if (resultPageXslt==null) resultPageXslt="";
         restXslt = request.getParameter(PARAM_RESTXSLT);
         if (restXslt==null) restXslt="";
-        String[] params = new String[2];
+        String[] params = new String[4];
         params[0] = "ERRORMESSAGE";
         params[1] = "";
+        params[2] = "TIMEUSEDMS";
+        params[3] = "";
         try {
             if (OP_GFINDOBJECTS.equals(operation)) {
                 resultXml = new StringBuffer(gfindObjects(request, response));
@@ -127,6 +131,7 @@ public class RESTImpl extends HttpServlet {
             logger.error(e);
             e.printStackTrace();
         }
+        params[3] = Long.toString((new Date()).getTime() - startTime.getTime());
         resultXml = (new GTransformer()).transform(
         				config.getConfigName()+"/rest/"+restXslt, 
         				resultXml, params);
@@ -231,11 +236,11 @@ public class RESTImpl extends HttpServlet {
         if (action==null) action="";
         String value = request.getParameter(PARAM_VALUE);
         if (value==null) value="";
-        String indexXslt = request.getParameter(PARAM_INDEXXSLT);
-        if (indexXslt==null) indexXslt="";
+        String indexDocXslt = request.getParameter(PARAM_INDEXDOCXSLT);
+        if (indexDocXslt==null) indexDocXslt="";
         GenericOperationsImpl ops = new GenericOperationsImpl();
         ops.init(indexName, config);
-        String result = ops.updateIndex(action, value, repositoryName, indexName, indexXslt, resultPageXslt);
+        String result = ops.updateIndex(action, value, repositoryName, indexName, indexDocXslt, resultPageXslt);
         return result;
     }
     

@@ -26,6 +26,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexModifier;
@@ -59,13 +61,16 @@ public class OperationsImpl extends GenericOperationsImpl {
             String resultPageXslt)
     throws java.rmi.RemoteException {
         super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+        Analyzer analyzer= getAnalyzer(config.getAnalyzer(indexName));
+        PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer);
+        pfanalyzer.addAnalyzer("PID", new KeywordAnalyzer());
         ResultSet resultSet = (new Connection()).createStatement().executeQuery(
                 query,
                 hitPageStart,
                 hitPageSize,
                 snippetsMax,
                 fieldMaxLength,
-                getAnalyzer(config.getAnalyzer(indexName)),
+                pfanalyzer,
                 config.getDefaultQueryFields(indexName),
                 config.getIndexDir(indexName),
                 config.getIndexName(indexName));
