@@ -22,6 +22,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -74,7 +75,7 @@ public class Statement {
             else {
                 query = (new MultiFieldQueryParser(defaultFields, analyzer)).parse(queryString);
             }
-//          query.rewrite(IndexReader.open(indexPath));
+            query.rewrite(IndexReader.open(indexPath));
             Hits hits = searcher.search(query);
             int start = Integer.parseInt(Long.toString(startRecord));
             int end = Math.min(hits.length(), start + maxResults - 1);

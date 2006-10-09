@@ -17,9 +17,12 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -32,6 +35,9 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.axis.client.AdminClient;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 
@@ -357,6 +363,32 @@ public class Config {
                     	}
                     }
                     
+//					Add untokenizedFields property for lucene
+
+                    if (operationsImpl.indexOf("fgslucene")>-1) {
+                        props.setProperty("fgsindex.untokenizedFields", "");
+                        if (indexDirFile != null) {
+                        	StringBuffer untokenizedFields = new StringBuffer(props.getProperty("fgsindex.untokenizedFields"));
+                        	IndexReader ir = null;
+                        	ir = IndexReader.open(indexDir);
+                        	int max = ir.numDocs();
+                        	if (max > 10) max = 10;
+                        	for (int i=0; i<max; i++) {
+                        		Document doc = ir.document(i);
+                        		Enumeration fields = doc.fields();
+                        		while (fields.hasMoreElements()) {
+                        			Field f = (Field)fields.nextElement();
+                        			if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
+                        				untokenizedFields.append(" "+f.name());
+                        			}
+                        		}
+                        	}
+                        	props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
+                            if (logger.isDebugEnabled())
+                                logger.debug("indexName=" + indexName+ " fgsindex.untokenizedFields="+untokenizedFields);
+                        }
+                    }
+                    
 //                  Check defaultQueryFields - how can we check this?
                     String defaultQueryFields = props.getProperty("fgsindex.defaultQueryFields");
                     
@@ -565,7 +597,7 @@ public class Config {
             return indexName;
     }
     
-    private Properties getIndexProps(String indexName) {
+    public Properties getIndexProps(String indexName) {
         return (Properties) (indexNameToProps.get(getIndexName(indexName)));
     }
     
@@ -618,6 +650,10 @@ public class Config {
     
     public String getAnalyzer(String indexName) {
         return getIndexProps(indexName).getProperty("fgsindex.analyzer");
+    }
+    
+    public String getUntokenizedFields(String indexName) {
+        return getIndexProps(indexName).getProperty("fgsindex.untokenizedFields");
     }
     
     public String getDefaultQueryFields(String indexName) {

@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import javax.xml.transform.stream.StreamSource;
@@ -29,6 +32,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexReader;
@@ -61,16 +65,13 @@ public class OperationsImpl extends GenericOperationsImpl {
             String resultPageXslt)
     throws java.rmi.RemoteException {
         super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
-        Analyzer analyzer= getAnalyzer(config.getAnalyzer(indexName));
-        PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer);
-        pfanalyzer.addAnalyzer("PID", new KeywordAnalyzer());
         ResultSet resultSet = (new Connection()).createStatement().executeQuery(
                 query,
                 hitPageStart,
                 hitPageSize,
                 snippetsMax,
                 fieldMaxLength,
-                pfanalyzer,
+                getQueryAnalyzer(indexName),
                 config.getDefaultQueryFields(indexName),
                 config.getIndexDir(indexName),
                 config.getIndexName(indexName));
@@ -400,6 +401,16 @@ public class OperationsImpl extends GenericOperationsImpl {
                     deleteTotal-= deleted;
                 }
                 else insertTotal++;
+            	StringBuffer untokenizedFields = new StringBuffer(config.getUntokenizedFields(indexName));
+            	Enumeration fields = hdlr.getIndexDocument().fields();
+            	while (fields.hasMoreElements()) {
+            		Field f = (Field)fields.nextElement();
+            		if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
+            			untokenizedFields.append(" "+f.name());
+            		}
+            	}
+                Properties props = config.getIndexProps(indexName);
+                props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
                 logger.info("indexDoc="+hdlr.getPid()+" docCount="+modifier.docCount());
             }
         } catch (IOException e) {
@@ -437,6 +448,19 @@ public class OperationsImpl extends GenericOperationsImpl {
                     + ": instantiation error.\n", e);
         }
         return analyzer;
+    }
+    
+    public Analyzer getQueryAnalyzer(String indexName)
+    throws GenericSearchException {
+        Analyzer analyzer = getAnalyzer(config.getAnalyzer(indexName));
+        PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer);
+    	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
+    	while (untokenizedFields.hasMoreElements()) {
+    		pfanalyzer.addAnalyzer(untokenizedFields.nextToken(), new KeywordAnalyzer());
+    	}
+        if (logger.isDebugEnabled())
+            logger.debug("getQueryAnalyzer indexName=" + indexName+ "untokenizedFields="+untokenizedFields);
+        return pfanalyzer;
     }
     
 }
