@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.axis.AxisFault;
 import org.apache.log4j.Logger;
 
+import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIMBindingSOAPHTTPStub;
 import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIABindingSOAPHTTPStub;
@@ -205,8 +206,8 @@ public class GenericOperationsImpl implements Operations {
             String repositoryName)
     throws java.rmi.RemoteException {
         
-        if (logger.isDebugEnabled())
-            logger.debug("getFoxmlFromPid" +
+        if (logger.isInfoEnabled())
+            logger.info("getFoxmlFromPid" +
                     " pid="+pid +
                     " repositoryName="+repositoryName);
         FedoraAPIMBindingSOAPHTTPStub stub = null;
@@ -218,7 +219,11 @@ public class GenericOperationsImpl implements Operations {
         } catch (MalformedURLException e) {
             throw new RemoteException(e.getClass().getName()+": "+e.toString());
         }
-        foxmlRecord = stub.export(pid, "foxml1.0", "public", config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+        try {
+        	foxmlRecord = stub.export(pid, "foxml1.0", "public", config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+        } catch (RemoteException e) {
+        	throw new FedoraObjectNotFoundException("Fedora Object "+pid+" not found at "+repositoryName, e);
+        }
     }
     
     public String getDatastreamText(
@@ -226,8 +231,8 @@ public class GenericOperationsImpl implements Operations {
             String repositoryName,
             String dsId)
     throws GenericSearchException {
-        if (logger.isDebugEnabled())
-            logger.debug("getDatastreamText" +
+        if (logger.isInfoEnabled())
+            logger.info("getDatastreamText" +
             		" pid="+pid+" repositoryName="+repositoryName+" dsId="+dsId);
         StringBuffer dsBuffer = new StringBuffer();
         String mimetype = "";
@@ -271,8 +276,8 @@ public class GenericOperationsImpl implements Operations {
             String repositoryName,
             String dsMimetypes)
     throws GenericSearchException {
-        if (logger.isDebugEnabled())
-            logger.debug("getFirstDatastreamText" +
+        if (logger.isInfoEnabled())
+            logger.info("getFirstDatastreamText" +
                     " pid="+pid+" dsMimetypes="+dsMimetypes);
         StringBuffer dsBuffer = new StringBuffer();
         Datastream[] dsds = null;
@@ -336,8 +341,8 @@ public class GenericOperationsImpl implements Operations {
             String parameters, 
             String asOfDateTime)
     throws GenericSearchException {
-        if (logger.isDebugEnabled())
-            logger.debug("getDisseminationText" +
+        if (logger.isInfoEnabled())
+            logger.info("getDisseminationText" +
                     " pid="+pid+
                     " bDefPid="+bDefPid+
                     " methodName="+methodName+

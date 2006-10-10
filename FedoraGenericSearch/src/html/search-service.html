@@ -27,7 +27,7 @@
 				<a href="" id="logo"></a>
 				<div id="title">
 				<h1>Fedora Generic Search Service</h1>
-				<h2>Fedora Release 2.2</h2>
+				<h2>for Fedora Release 2.2</h2>
 				</div>
 			</div>
 			<div class="toc">
@@ -47,8 +47,24 @@
 				<a href="mailto:gsp@dtv.dk">Gert Schmeltz Pedersen</a>
 				at the Technical University of Denmark,
 				with feedback and contributions from members
-				of the Fedora community. The work is funded by 
-				<a href="http://www.deff.dk">
+				of the Fedora community, including
+				Beth Kirschner, Binaya Poudyal, Blake Anderson,
+				Boon Low, Christian T&#248;nsberg, 
+				Eric Brown,
+				Luis Zorita,
+				Matthias Razum, 
+				Michael Appleby,
+				Michael Hoppe,
+				Nikolai Schwertner,
+				Patrick Monbaron,
+				Pierre Yves Landron,
+				Robert Sherratt,
+				Ryan E. Scherle,
+				Sam Liberman, 
+				Steve DiDomenico,
+				and
+				Thierry Michel. </p>
+				<p>The work is funded by <a href="http://www.deff.dk">
 				DEFF, Denmark's Electronic Research Library</a>.</p>
 				<p>The service has the following features:</p>
 				<ul>
@@ -60,22 +76,30 @@
 				so far 
 				<a href="http://lucene.apache.org/">Lucene</a> and
 				<a href="http://www.indexdata.dk/zebra/">Zebra</a>.</li>
-				<li></li>
 				</ul>
-				<p>The following figure is explained below:
+				<p>The service has been developed and tested on Linux.
+				This release targets only Linux installations.
+				If you want to use the service on other platforms,
+				you may be expert enough to create equivalent scripts,
+				in which case you are encouraged to share them with the 
+				Fedora community, so that later releases may target
+				these platforms as well.</p>
+				<p>The following figure serves to give a first
+				understanding for a developer, who will use the 
+				Search Service in a Fedora application:
 				<p><img src="images/fgs-model.png"/></p>
-				<p>The model includes:</p>
+				<p>The figure shows:</p>
 				<ul>
-				<li>A REST client running in a user's browser
+				<li>A REST client, running in a user's browser, which
 				may combine accesses to Fedora and to the Search Service.</li>
-				<li>A SOAP client running anywhere may do the same.</li>
+				<li>A SOAP client, running anywhere, may do the same.</li>
 				<li>The Search Service implements a generic set of operations:
 				<ul>
-					<li><b>updateIndex (API-M)</b> - indexing the contents of the Fedora repository.</li>
-					<li><b>gfindObjects (API-A)</b> - search similar to Fedora findObjects.</li>
-					<li><b>browseIndex (API-A)</b> - browsing terms in a given index.</li>
-					<li><b>getRepositoryInfo (API-A)</b> - describing the properties of the repository in question,
-					<li><b>getIndexInfo (API-A)</b> - describing the properties of the index in question.</li>
+					<li><b>updateIndex</b> - indexing the contents of the Fedora repository.</li>
+					<li><b>gfindObjects</b> - search similar to Fedora findObjects.</li>
+					<li><b>browseIndex</b> - browsing terms in a given index.</li>
+					<li><b>getRepositoryInfo</b> - describing the properties of a repository,
+					<li><b>getIndexInfo</b> - describing the properties of an index.</li>
 				</ul>
 				</li>
 				<li>Engine specific implementations of the operations will receive
@@ -84,7 +108,9 @@
 				</ul>
 				<p>The Search Service may run in a separate
 				web server and may index more than one Fedora repository,
-				and it may update more than one index in parallel.</p>
+				and it may update more than one index in parallel.
+				For further architectural details, see 
+				<a href="additional">Additonal Information</a></p>
 				
 			</div>
 			<a name="installation"><h2>Installation</h2></a>
@@ -92,7 +118,8 @@
 				<ul>
 					<li> <a href="fedoragsearch.war">
 				Download the web application (.war) file</a>, which you copy 
-				into the webapps directory of a web server.</li>
+				into the webapps directory of your web server, 
+				e.g. the tomcat supplied with Fedora, or similar.</li>
 					<li>Edit the configuration settings.</li>
 				</ul>
 				
@@ -114,7 +141,7 @@ fedoragsearch.properties:
 	                                 which of the datastreams is fetched and indexed.
 	                                 Currently "text/plain text/html application/pdf" are implemented.
 	fedoragsearch.repositoryNames  = &lt;REPOSNAMES&gt;
-	fedoragsearch.indexNames	   = &lt;INDEXNAMES&gt;
+	fedoragsearch.indexNames	       = &lt;INDEXNAMES&gt;
 	                                 
 For each repository:
 
@@ -166,9 +193,24 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					</li>
                     <li>You may tailor the highlight of search terms in demo.css.
 					</li>
+                    <li>You may want to experiment with more than one configuration,
+                    in which case you may maintain them under different names
+                    in parallel to the &quot;config&quot; configuration, 
+                    which is the default configuration.
+                    In order to activate an alternative configuration you may use
+                    the semi-secret operation configure with parameter configName, 
+                    either using the demo command line client or the REST interface. 
+					</li>
 				</ul>
 				
 			<a name="additional"><h2>Additonal Information (to be edited)</h2></a>
+			<div class="toc">
+				<dl>
+				<dt><a href="#arch">Architectural Snapshots</a></dt>
+				<dt><a href="#multilingual">Multilingual Configuration</a></dt>
+				</dl>
+			</div>
+			<a name="arch"><h3>Architectural Snapshots</h3></a>
 				<p><img src="images/fgs-arch.png"/></p>
 				<ul>
 					<li>
@@ -238,6 +280,17 @@ index/&lt;INDEXNAME&gt;/index.properties:
 				<p>The SOAP service operations are deployed with the .war file and 
 				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
 
+			<a name="multilingual"><h3>Multilingual Configuration</h3></a>
+				<p>Luis Zorita had this problem and solved it 
+				 (his mail to fedora-users on 24 August 2006):</p>
+				<q>Hello Gert:
+				I have solved this multilingual problem adding the attribute 
+				URIEncoding=&quot;UTF-8&quot; to 
+				/jakarta-tomcat-5.0.28/conf/server.xml 
+				and to /jakarta-tomcat-5.0.28/conf/server_fedoraTemplate.xml
+				Now I can search special Spanish characters like &quot;&ntilde;&quot;,
+				&quot;&iacute;&quot; etc. with fedoragsearch.
+				Luis</q>
   <div id="footer">
     <div id="copyright">
       Copyright &#xA9; 2006 Technical University of Denmark, Fedora Project

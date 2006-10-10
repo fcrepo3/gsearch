@@ -342,11 +342,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             StringBuffer resultXml,
             String indexDocXslt)
     throws java.rmi.RemoteException {
-        try {
-			getFoxmlFromPid(pid, repositoryName);
-		} catch (java.rmi.RemoteException e) {
-			throw new FedoraObjectNotFoundException("Fedora Object "+pid+" not found at "+repositoryName);
-		}
+		getFoxmlFromPid(pid, repositoryName);
         indexDoc(pid, repositoryName, indexName, new ByteArrayInputStream(foxmlRecord), resultXml, indexDocXslt);
     }
     
@@ -358,7 +354,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             int deleted = modifier.deleteDocuments(new Term("PID", pid));
             deleteTotal += deleted;
             docCount = modifier.docCount();
-            logger.info("indexDoc="+pid+" docCount="+docCount);
+            logger.info("deletePid="+pid+" docCount="+docCount);
         } catch (IOException e) {
             throw new GenericSearchException("Update deletePid error pid="+pid, e);
         }

@@ -11,6 +11,8 @@
  */
 package dk.defxws.fedoragsearch.server;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -33,15 +35,26 @@ public class SOAPImpl implements Operations {
             String indexName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
+    	Date startTime = new Date();
         if (logger.isInfoEnabled())
-            logger.debug("gfindObjects" +
+            logger.info("gfindObjects" +
                     " query="+query+
                     " hitPageStart="+hitPageStart+
                     " hitPageSize="+hitPageSize+
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
         Operations ops = Config.getCurrentConfig().getOperationsImpl(indexName);
-        return ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+        String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+        if (logger.isInfoEnabled())
+            logger.info("gfindObjects" +
+                    " query="+query+
+                    " hitPageStart="+hitPageStart+
+                    " hitPageSize="+hitPageSize+
+                    " indexName="+indexName+
+                    " resultPageXslt="+resultPageXslt+
+                    " timeusedms="+timeusedms);
+        return result;
     }
     
     public String browseIndex(
@@ -51,40 +64,67 @@ public class SOAPImpl implements Operations {
             String indexName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
+    	Date startTime = new Date();
         if (logger.isInfoEnabled())
-            logger.debug("browseIndex" +
+            logger.info("browseIndex" +
                     " startTerm="+startTerm+
                     " termPageSize="+termPageSize+
                     " fieldName="+fieldName+
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
         Operations ops = Config.getCurrentConfig().getOperationsImpl(indexName);
-        return ops.browseIndex(startTerm, termPageSize, fieldName, indexName, resultPageXslt);
+        String result = ops.browseIndex(startTerm, termPageSize, fieldName, indexName, resultPageXslt);
+        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+        if (logger.isInfoEnabled())
+            logger.info("browseIndex" +
+                    " startTerm="+startTerm+
+                    " termPageSize="+termPageSize+
+                    " fieldName="+fieldName+
+                    " indexName="+indexName+
+                    " resultPageXslt="+resultPageXslt+
+                    " timeusedms="+timeusedms);
+        return result;
     }
     
     public String getRepositoryInfo(
             String repositoryName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
+    	Date startTime = new Date();
         if (logger.isInfoEnabled())
-            logger.debug("getRepositoryInfo" +
+            logger.info("getRepositoryInfo" +
                     " repositoryName="+repositoryName+
                     " resultPageXslt="+resultPageXslt);
         GenericOperationsImpl ops = (new GenericOperationsImpl());
         ops.init("", Config.getCurrentConfig());
-        return ops.getRepositoryInfo(repositoryName, resultPageXslt);
+        String result = ops.getRepositoryInfo(repositoryName, resultPageXslt);
+        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+        if (logger.isInfoEnabled())
+            logger.info("getRepositoryInfo" +
+                    " repositoryName="+repositoryName+
+                    " resultPageXslt="+resultPageXslt+
+                    " timeusedms="+timeusedms);
+        return result;
     }
     
     public String getIndexInfo(
             String indexName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
+    	Date startTime = new Date();
         if (logger.isInfoEnabled())
-            logger.debug("getIndexInfo" +
+            logger.info("getIndexInfo" +
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
         Operations ops = Config.getCurrentConfig().getOperationsImpl(indexName);
-        return ops.getIndexInfo(indexName, resultPageXslt);
+        String result = ops.getIndexInfo(indexName, resultPageXslt);
+        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+        if (logger.isInfoEnabled())
+            logger.info("getIndexInfo" +
+                    " indexName="+indexName+
+                    " resultPageXslt="+resultPageXslt+
+                    " timeusedms="+timeusedms);
+        return result;
     }
     
     public String updateIndex(
@@ -92,20 +132,31 @@ public class SOAPImpl implements Operations {
             String value,
             String repositoryName,
             String indexName,
-            String indexXslt,
+            String indexDocXslt,
             String resultPageXslt)
     throws java.rmi.RemoteException {
+    	Date startTime = new Date();
         if (logger.isInfoEnabled())
-            logger.debug("updateIndex" +
+            logger.info("updateIndex" +
                     " action="+action+
                     " value="+value+
                     " repositoryName="+repositoryName+
                     " indexName="+indexName+
-                    " indexXslt="+indexXslt+
+                    " indexDocXslt="+indexDocXslt+
                     " resultPageXslt="+resultPageXslt);
         GenericOperationsImpl ops = (new GenericOperationsImpl());
         ops.init(indexName, Config.getCurrentConfig());
-        String result = ops.updateIndex(action, value, repositoryName, indexName, indexXslt, resultPageXslt);
+        String result = ops.updateIndex(action, value, repositoryName, indexName, indexDocXslt, resultPageXslt);
+        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+        if (logger.isInfoEnabled())
+            logger.info("updateIndex" +
+                    " action="+action+
+                    " value="+value+
+                    " repositoryName="+repositoryName+
+                    " indexName="+indexName+
+                    " indexDocXslt="+indexDocXslt+
+                    " resultPageXslt="+resultPageXslt+
+                    " timeusedms="+timeusedms);
         return result;
     }
     

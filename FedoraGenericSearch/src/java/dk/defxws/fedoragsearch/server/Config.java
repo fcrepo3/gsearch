@@ -111,8 +111,8 @@ public class Config {
                     "*** Error loading "+configName+"/fedoragsearch.properties:\n" + e.toString());
         }
         
-        if (logger.isDebugEnabled())
-            logger.debug("fedoragsearch.properties=" + fgsProps.toString());
+        if (logger.isInfoEnabled())
+            logger.info("fedoragsearch.properties=" + fgsProps.toString());
         
 //      Read soap deployment parameters and try to deploy the wsdd file
         String [] params = new String[4];
@@ -182,8 +182,8 @@ public class Config {
                     props.load(propStream);
                     propStream.close();
                     
-                    if (logger.isDebugEnabled())
-                        logger.debug("/"+configName+"/repository/" + repositoryName + "/repository.properties=" + props.toString());
+                    if (logger.isInfoEnabled())
+                        logger.info("/"+configName+"/repository/" + repositoryName + "/repository.properties=" + props.toString());
                     
 //                  Check repositoryName
                     String propsRepositoryName = props.getProperty("fgsrepository.repositoryName");
@@ -259,8 +259,8 @@ public class Config {
                     props.load(propStream);
                     propStream.close();
                     
-                    if (logger.isDebugEnabled())
-                        logger.debug("/"+configName+"/index/" + indexName + "/index.properties=" + props.toString());
+                    if (logger.isInfoEnabled())
+                        logger.info("/"+configName+"/index/" + indexName + "/index.properties=" + props.toString());
                     
 //                  Check indexName
                     String propsIndexName = props.getProperty("fgsindex.indexName");

@@ -131,7 +131,10 @@ public class RESTImpl extends HttpServlet {
             logger.error(e);
             e.printStackTrace();
         }
-        params[3] = Long.toString((new Date()).getTime() - startTime.getTime());
+        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+        params[3] = timeusedms;
+        if (logger.isInfoEnabled())
+            logger.info("request="+request.getQueryString()+" timeusedms="+timeusedms);
         resultXml = (new GTransformer()).transform(
         				config.getConfigName()+"/rest/"+restXslt, 
         				resultXml, params);

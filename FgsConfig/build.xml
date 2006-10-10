@@ -14,10 +14,10 @@
 		<copy todir="${plugin.dir}/config">
 			<fileset dir="config"/>
 		</copy>
-		<delete dir="${plugin.dir}/configsindaponlucene" />
-		<mkdir dir="${plugin.dir}/configsindaponlucene" />
-		<copy todir="${plugin.dir}/configsindaponlucene">
-			<fileset dir="configsindaponlucene"/>
+		<delete dir="${plugin.dir}/configDemoOnLucene" />
+		<mkdir dir="${plugin.dir}/configDemoOnLucene" />
+		<copy todir="${plugin.dir}/configDemoOnLucene">
+			<fileset dir="configDemoOnLucene"/>
 		</copy>
 		<delete file="${plugin.dir}/log4j.xml" />
 		<copy file="log4j.xml" todir="${plugin.dir}" />

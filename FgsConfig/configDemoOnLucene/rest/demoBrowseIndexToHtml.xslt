@@ -41,6 +41,56 @@
 							<xsl:text> </xsl:text><input type="submit" value="Browse"/>
 						</td>
 					</tr>
+					<tr>
+						<td>
+							<xsl:text> </xsl:text>Index name: 
+								<select name="indexName">
+									<xsl:choose>
+										<xsl:when test="$INDEXNAME='DemoOnZebra'">
+											<option value="DemoOnLucene">DemoOnLucene</option>
+											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
+											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
+											<option value="DemoOnZebra" selected="true">DemoOnZebra</option>
+										</xsl:when>
+										<xsl:when test="$INDEXNAME='DemoOnLucene'">
+											<option value="DemoOnLucene" selected="true">DemoOnLucene</option>
+											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
+											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
+											<option value="DemoOnZebra">DemoOnZebra</option>
+										</xsl:when>
+										<xsl:when test="$INDEXNAME='SmileyDemoOnLucene'">
+											<option value="DemoOnLucene">DemoOnLucene</option>
+											<option value="SmileyDemoOnLucene" selected="true">SmileyDemoOnLucene</option>
+											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
+											<option value="DemoOnZebra">DemoOnZebra</option>
+										</xsl:when>
+										<xsl:when test="$INDEXNAME='SindapDemoOnLucene'">
+											<option value="DemoOnLucene">DemoOnLucene</option>
+											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
+											<option value="SindapDemoOnLucene" selected="true">SindapDemoOnLucene</option>
+											<option value="DemoOnZebra">DemoOnZebra</option>
+										</xsl:when>
+										<xsl:otherwise>
+											<option value="DemoOnLucene">DemoOnLucene</option>
+											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
+											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
+											<option value="DemoOnZebra">DemoOnZebra</option>
+										</xsl:otherwise>
+									</xsl:choose>
+								</select>
+							<xsl:text> </xsl:text>restXslt: 
+								<select name="restXslt">
+									<option value="demoBrowseIndexToHtml">demoBrowseIndexToHtml</option>
+									<option value="copyXml">no transformation</option>
+								</select>
+							<xsl:text> </xsl:text>resultPageXslt: 
+								<select name="resultPageXslt">
+									<option value="browseIndexToResultPage">browseIndexToResultPage</option>
+									<option value="copyXml">no transformation</option>
+								</select>
+							<xsl:text> </xsl:text>
+						</td>
+					</tr>
 				</table>
 			</form>
 			<p/>
@@ -102,7 +152,7 @@
 				<xsl:value-of select="@no"/>.
 				<a>
 					<xsl:variable name="TERM" select="text()"/>
-					<xsl:variable name="QUERYSTRING" select="concat('operation=gfindObjects', '&amp;', 'indexName=', $INDEXNAME, '&amp;', 'query=', $FIELDNAME, $EQCHAR, $TERM)"/>
+					<xsl:variable name="QUERYSTRING" select="concat('operation=gfindObjects', '&amp;', 'indexName=', $INDEXNAME, '&amp;', 'query=', $FIELDNAME, $EQCHAR, '&#034;', $TERM, '&#034;')"/>
 					<xsl:attribute name="href">/fedoragsearch/rest?<xsl:value-of select="$QUERYSTRING"/>
 					</xsl:attribute>
 					<xsl:value-of select="$TERM"/>

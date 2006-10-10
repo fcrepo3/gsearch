@@ -12,7 +12,7 @@
 package dk.defxws.fedoragsearch.server.errors;
 
 /**
- * an exception for configuration errors
+ * an exception for fedora objects not found
  * 
  * @author  gsp@dtv.dk
  * @version 

@@ -265,7 +265,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 		deleteTotal += dcounts[2];
 		docCount = insertTotal - deleteTotal;
 		resultXml.append("<delete>"+pid+"</delete>\n");
-        logger.info("indexDoc="+pid+" docCount="+docCount);
+        logger.info("deletePid="+pid+" docCount="+docCount);
 	}
 
 	private void indexDoc(
