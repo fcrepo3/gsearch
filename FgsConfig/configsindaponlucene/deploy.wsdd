@@ -30,7 +30,7 @@
       </operation>
       <operation name="gfindObjects" qname="operNS:gfindObjects" xmlns:operNS="http://server.fedoragsearch.defxws.dk" returnQName="gfindObjectsReturn" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
         <parameter qname="query" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
-        <parameter qname="hitPageStart" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="hitPageStart" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="hitPageSize" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="snippetsMax" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
         <parameter qname="fieldMaxLength" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>

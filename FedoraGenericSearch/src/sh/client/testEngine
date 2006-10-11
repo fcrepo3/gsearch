@@ -1,0 +1,93 @@
+#!/bin/sh
+#$Id$
+
+# <p><b>License and Copyright: </b>The contents of this file will be subject to the
+# same open source license as the Fedora Repository System at www.fedora.info
+# It is expected to be released with Fedora version 2.2.
+
+# Copyright &copy; 2006 by The Technical University of Denmark.
+# All rights reserved.</p>
+
+# @author  gsp@dtv.dk
+# @version 
+
+# The script assumes that a Fedora repository is running on HOSTPORT=localhost:8080.
+# The script is sourced from a test suite script, where CLIENT is set to a client program name.
+
+get_timestamp(){
+    echo "`date '+20%y-%m-%d %T'`"
+}
+
+usage(){
+    echo "Usage:"
+    echo "    sh $0 [expected|test]"
+}
+
+run_test(){
+    echo "<`get_timestamp`>$CLIENT $1 $2 $3 $4 $5 $6 $7 $8 $9 "
+    TESTCOUNT=`expr $TESTCOUNT "+" 1`
+    FILENAME=$CLIENT.$TESTCOUNT
+    if [ $MODE = "expected" ] ; then
+        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > expected/$SUITE/$FILENAME
+    else
+        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > result/$SUITE/$FILENAME
+        diff -I.*milliseconds.* -I.*resultPage.* expected/$SUITE/$FILENAME result/$SUITE/$FILENAME > ./diff/$SUITE/$FILENAME
+        if [ ! `cat ./diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
+            cat ./diff/$SUITE/$FILENAME
+            DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
+        fi;
+    fi;
+}
+
+begin_suite(){
+    CLIENT=$1
+    TESTCOUNT=0
+    DIFFCOUNT=0
+}
+
+end_suite(){
+    echo "<`get_timestamp`>TESTCOUNT=$TESTCOUNT"
+    echo "<`get_timestamp`>DIFFCOUNT=$DIFFCOUNT"
+}
+
+echo "<`get_timestamp`>testEngine $*"
+
+if [ ! $# = 1 ] ; then
+    usage
+    exit 1
+fi;
+
+if [ ! $1 = "expected" -a ! $1 = "test" ] ; then
+    usage
+    exit 1
+fi;
+
+HOSTPORT=localhost:8080
+SUITE=$0
+MODE=$1
+
+if [ ! -d expected ] ; then
+    mkdir expected
+fi;
+if [ $MODE = "expected" ] ; then
+    if [ -d expected/$SUITE ] ; then
+        rm -r expected/$SUITE
+    fi;
+    mkdir expected/$SUITE
+fi;
+
+if [ ! -d result ] ; then
+    mkdir result
+fi;
+if [ -d result/$SUITE ] ; then
+    rm -r result/$SUITE
+fi;
+mkdir result/$SUITE
+
+if [ ! -d diff ] ; then
+    mkdir ./diff
+fi;
+if [ -d ./diff/$SUITE ] ; then
+    rm -r ./diff/$SUITE
+fi;
+mkdir ./diff/$SUITE

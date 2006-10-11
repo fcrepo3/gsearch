@@ -44,7 +44,7 @@
   </operation>
   <operation name="gfindObjects" qname="ns3:gfindObjects" returnQName="gfindObjectsReturn" returnType="xsd:string" soapAction="" xmlns:ns3="http://server.fedoragsearch.defxws.dk" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <parameter name="query" type="xsd:string"/>
-   <parameter name="hitPageStart" type="xsd:long"/>
+   <parameter name="hitPageStart" type="xsd:int"/>
    <parameter name="hitPageSize" type="xsd:int"/>
    <parameter name="snippetsMax" type="xsd:int"/>
    <parameter name="fieldMaxLength" type="xsd:int"/>
