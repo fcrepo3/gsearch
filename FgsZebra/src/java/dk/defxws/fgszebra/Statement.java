@@ -52,7 +52,7 @@ public class Statement {
 	 */
 	protected ResultSet executeQuery(
           String query, 
-          long startRecord, 
+          int startRecord, 
           int maxResults,
           String indexBase, 
           String indexName)
@@ -103,7 +103,7 @@ public class Statement {
 	 */
 	protected ResultSet executeScan(
           String startTerm, 
-          long maxResults, 
+          int maxResults, 
           String fieldName,
           String indexBase, 
           String indexName)

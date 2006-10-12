@@ -49,7 +49,7 @@ public class Statement {
     
     ResultSet executeQuery(
             String queryString, 
-            long startRecord, 
+            int startRecord, 
             int maxResults,
             int snippetsMax,
             int fieldMaxLength,
@@ -77,7 +77,7 @@ public class Statement {
             }
             query.rewrite(IndexReader.open(indexPath));
             Hits hits = searcher.search(query);
-            int start = Integer.parseInt(Long.toString(startRecord));
+            int start = Integer.parseInt(Integer.toString(startRecord));
             int end = Math.min(hits.length(), start + maxResults - 1);
             StringBuffer resultXml = new StringBuffer();
             resultXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

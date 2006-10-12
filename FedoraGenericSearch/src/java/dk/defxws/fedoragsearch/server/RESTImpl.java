@@ -67,7 +67,7 @@ public class RESTImpl extends HttpServlet {
     private static final String PARAM_FIELDNAME = "fieldName";
     private static final String PARAM_ACTION = "action";
     private static final String PARAM_VALUE = "value";
-    private static final long DEFAULT_HITPAGESTART = 1;
+    private static final int DEFAULT_HITPAGESTART = 1;
     private static final int DEFAULT_HITPAGESIZE = 10;
     private static final int DEFAULT_TERMPAGESIZE = 20;
     

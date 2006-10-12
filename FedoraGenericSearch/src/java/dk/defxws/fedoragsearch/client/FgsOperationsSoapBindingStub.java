@@ -67,7 +67,7 @@ public class FgsOperationsSoapBindingStub extends org.apache.axis.client.Stub im
         oper.setName("gfindObjects");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "query"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "hitPageStart"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "hitPageStart"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
         oper.addParameter(param);
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "hitPageSize"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
         oper.addParameter(param);
@@ -227,7 +227,7 @@ public class FgsOperationsSoapBindingStub extends org.apache.axis.client.Stub im
 }
     }
 
-    public java.lang.String gfindObjects(java.lang.String query, long hitPageStart, int hitPageSize, int snippetsMax, int fieldMaxLength, java.lang.String indexName, java.lang.String resultPageXslt) throws java.rmi.RemoteException {
+    public java.lang.String gfindObjects(java.lang.String query, int hitPageStart, int hitPageSize, int snippetsMax, int fieldMaxLength, java.lang.String indexName, java.lang.String resultPageXslt) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -240,7 +240,7 @@ public class FgsOperationsSoapBindingStub extends org.apache.axis.client.Stub im
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {query, new java.lang.Long(hitPageStart), new java.lang.Integer(hitPageSize), new java.lang.Integer(snippetsMax), new java.lang.Integer(fieldMaxLength), indexName, resultPageXslt});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {query, new java.lang.Integer(hitPageStart), new java.lang.Integer(hitPageSize), new java.lang.Integer(snippetsMax), new java.lang.Integer(fieldMaxLength), indexName, resultPageXslt});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;

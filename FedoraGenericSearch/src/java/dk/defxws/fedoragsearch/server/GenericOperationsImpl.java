@@ -85,7 +85,7 @@ public class GenericOperationsImpl implements Operations {
         params[2] = "QUERY";
         params[3] = query;
         params[4] = "HITPAGESTART";
-        params[5] = Long.toString(hitPageStart);
+        params[5] = Integer.toString(hitPageStart);
         params[6] = "HITPAGESIZE";
         params[7] = Integer.toString(hitPageSize);
         params[8] = "INDEXNAME";

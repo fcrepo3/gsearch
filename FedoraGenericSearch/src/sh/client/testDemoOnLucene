@@ -11,12 +11,19 @@
 # @author  gsp@dtv.dk
 # @version 
 
-# The script assumes that the testEngine script is available
+# This script is in the fedoragsearch distribution 
+# in WEBSERVER/webapps/fedoragsearch/client
+# together with the testEngine script.
+
+# This script assumes that the testEngine script is available
 # and set to run on a Fedora repository,
 # where the Fedora demo objects have been ingested.
-# Further, expected test results are assumed to be in ./expected/$0
 
-. ./testEngine $1
+# Expected test results are assumed to be in $TESTHOME/expected/$0,
+# see testEngine for further information.
+
+MODE=$1
+. ./testEngine $MODE
 
 begin_suite runRESTClient.sh
 

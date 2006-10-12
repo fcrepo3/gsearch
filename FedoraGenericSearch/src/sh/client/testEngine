@@ -11,8 +11,35 @@
 # @author  gsp@dtv.dk
 # @version 
 
-# The script assumes that a Fedora repository is running on HOSTPORT=localhost:8080.
-# The script is sourced from a test suite script, where CLIENT is set to a client program name.
+# This script is in the fedoragsearch distribution in WEBSERVER/webapps/fedoragsearch/client
+# together with a set of test suite scripts.
+
+# This script assumes that a Fedora repository is running on HOSTPORT.
+
+# The TESTHOME dir is assumed to contain expected test results in $TESTHOME/expected/$SUITE
+
+# The script is sourced from a test suite script, installed in the same directory.
+# The SUITE name is given by the calling script name.
+
+# Each test suite script in the fedoragsearch distribution has expected test results with it.
+
+# The client program name is given as parameter to begin_suite().
+# it must be installed in the same directory.
+
+# Two client programs are in the fedoragsearch distribution: RESTClient and SOAPClient,
+# they can be called with runRESTClient.sh and runSOAPClient.sh,
+# they can be found in WEBSERVER/webapps/fedoragsearch/client, and should be called from there.
+
+# When MODE="expected" then test run results will appear in $TESTHOME/expected/$SUITE
+# When MODE="" then
+#   Test run results will appear in $TESTHOME/result/$SUITE
+#   Test results will appear in $TESTHOME/diff/$SUITE as the diff between expected and result.
+#   Diff count will come out of end_suite().
+
+HOSTPORT=localhost:8080
+TESTHOME=.
+SUITE=$0
+MODE=$1
 
 get_timestamp(){
     echo "`date '+20%y-%m-%d %T'`"
@@ -20,20 +47,20 @@ get_timestamp(){
 
 usage(){
     echo "Usage:"
-    echo "    sh $0 [expected|test]"
+    echo "    sh $0 [expected]"
 }
 
 run_test(){
     echo "<`get_timestamp`>$CLIENT $1 $2 $3 $4 $5 $6 $7 $8 $9 "
     TESTCOUNT=`expr $TESTCOUNT "+" 1`
     FILENAME=$CLIENT.$TESTCOUNT
-    if [ $MODE = "expected" ] ; then
-        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > expected/$SUITE/$FILENAME
+    if [ -n "$MODE" ] ; then
+        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/expected/$SUITE/$FILENAME
     else
-        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > result/$SUITE/$FILENAME
-        diff -I.*milliseconds.* -I.*resultPage.* expected/$SUITE/$FILENAME result/$SUITE/$FILENAME > ./diff/$SUITE/$FILENAME
-        if [ ! `cat ./diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
-            cat ./diff/$SUITE/$FILENAME
+        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/result/$SUITE/$FILENAME
+        diff -I.*milliseconds.* -I.*resultPage.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
+        if [ ! `cat $TESTHOME/diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
+            cat $TESTHOME/diff/$SUITE/$FILENAME
             DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
         fi;
     fi;
@@ -47,47 +74,47 @@ begin_suite(){
 
 end_suite(){
     echo "<`get_timestamp`>TESTCOUNT=$TESTCOUNT"
-    echo "<`get_timestamp`>DIFFCOUNT=$DIFFCOUNT"
+    if [ -z "$MODE" ] ; then
+        echo "<`get_timestamp`>DIFFCOUNT=$DIFFCOUNT"
+    fi;
 }
 
 echo "<`get_timestamp`>testEngine $*"
 
-if [ ! $# = 1 ] ; then
+if [ $# -gt 1 ] ; then
     usage
     exit 1
 fi;
 
-if [ ! $1 = "expected" -a ! $1 = "test" ] ; then
-    usage
-    exit 1
-fi;
-
-HOSTPORT=localhost:8080
-SUITE=$0
-MODE=$1
-
-if [ ! -d expected ] ; then
-    mkdir expected
-fi;
-if [ $MODE = "expected" ] ; then
-    if [ -d expected/$SUITE ] ; then
-        rm -r expected/$SUITE
+if [ $# -eq 1 ] ; then
+    if [ ! $MODE = "expected" ] ; then
+        usage
+        exit 1
     fi;
-    mkdir expected/$SUITE
 fi;
 
-if [ ! -d result ] ; then
-    mkdir result
+if [ ! -d $TESTHOME/expected ] ; then
+    mkdir $TESTHOME/expected
 fi;
-if [ -d result/$SUITE ] ; then
-    rm -r result/$SUITE
+if [ -n "$MODE" ] ; then
+    if [ -d $TESTHOME/expected/$SUITE ] ; then
+        rm -r $TESTHOME/expected/$SUITE
+    fi;
+    mkdir $TESTHOME/expected/$SUITE
 fi;
-mkdir result/$SUITE
 
-if [ ! -d diff ] ; then
-    mkdir ./diff
+if [ ! -d $TESTHOME/result ] ; then
+    mkdir $TESTHOME/result
 fi;
-if [ -d ./diff/$SUITE ] ; then
-    rm -r ./diff/$SUITE
+if [ -d $TESTHOME/result/$SUITE ] ; then
+    rm -r $TESTHOME/result/$SUITE
 fi;
-mkdir ./diff/$SUITE
+mkdir $TESTHOME/result/$SUITE
+
+if [ ! -d $TESTHOME/diff ] ; then
+    mkdir $TESTHOME/diff
+fi;
+if [ -d $TESTHOME/diff/$SUITE ] ; then
+    rm -r $TESTHOME/diff/$SUITE
+fi;
+mkdir $TESTHOME/diff/$SUITE

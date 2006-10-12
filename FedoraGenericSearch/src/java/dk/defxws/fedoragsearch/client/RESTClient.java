@@ -136,7 +136,7 @@ public class RESTClient {
             String restUrl,
             String query,
             String indexName,
-            long hitPageStart,
+            int hitPageStart,
             int hitPageSize,
             int snippetsMax,
             int fieldMaxLength,
@@ -380,10 +380,10 @@ public class RESTClient {
                         String indexName = "";
                         if (args.length>3)
                             indexName = args[3];
-                        long hitPageStart = 1;
+                        int hitPageStart = 1;
                         if (args.length>4) {
                             try {
-                                hitPageStart = Long.parseLong(args[4]);
+                                hitPageStart = Integer.parseInt(args[4]);
                             } catch (NumberFormatException nfe) {
                             }
                         }
