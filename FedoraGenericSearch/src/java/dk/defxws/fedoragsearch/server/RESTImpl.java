@@ -127,6 +127,9 @@ public class RESTImpl extends HttpServlet {
         } catch (java.rmi.RemoteException e) {
 //            throw new ServletException("ERROR: \n", e);
 //            params[1] = e.toString();
+            resultXml = new StringBuffer("<resultPage>");
+            resultXml.append("<error><message><![CDATA["+e.getMessage()+"]]></message></error>");
+            resultXml.append("</resultPage>");
             params[1] = e.getMessage();
             logger.error(e);
             e.printStackTrace();

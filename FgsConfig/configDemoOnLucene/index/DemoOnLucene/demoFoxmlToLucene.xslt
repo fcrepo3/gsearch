@@ -11,7 +11,7 @@
 		xmlns:uvalibdesc="http://dl.lib.virginia.edu/bin/dtd/descmeta/descmeta.dtd"
 		xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
-	<xsl:include href="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28/webapps/fedoragsearch/WEB-INF/classes/config/index/DemoOnLucene/demoUvalibdescToLucene.xslt"/>
+	<xsl:include href="WEBSERVERPATH/webapps/fedoragsearch/WEB-INF/classes/config/index/DemoOnLucene/demoUvalibdescToLucene.xslt"/>
 		
 <!--
 	 This xslt stylesheet generates the IndexDocument consisting of IndexFields

@@ -9,7 +9,7 @@
 
 	<xsl:param name="ERRORMESSAGE" select="''"/>
 	
-	<xsl:include href="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28/webapps/fedoragsearch/WEB-INF/classes/config/rest/demoCommon.xslt"/>
+	<xsl:include href="WEBSERVERPATH/webapps/fedoragsearch/WEB-INF/classes/config/rest/demoCommon.xslt"/>
 
 	<xsl:template name="opSpecifics">
 		<xsl:variable name="INDEXNAME" select="@indexName"/>

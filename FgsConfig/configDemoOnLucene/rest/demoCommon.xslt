@@ -38,9 +38,11 @@
 					</tr>
 				</table>
 				<p/>
+				<!-- 
 				<xsl:if test="$ERRORMESSAGE">
 					<xsl:call-template name="error"/>
 	 			</xsl:if>
+	 			 -->
         		<xsl:apply-templates select="error"/>
 				<xsl:call-template name="opSpecifics"/>
 				<div id="footer">

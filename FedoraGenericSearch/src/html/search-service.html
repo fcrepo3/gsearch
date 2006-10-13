@@ -36,7 +36,7 @@
 				<dt><a href="#about">About This Service</a></dt>
 				<dt><a href="#installation">Installation</a></dt>
 				<dt><a href="#config">Configuration</a></dt>
-				<dt><a href="additional">Additonal Information</a></dt>
+				<dt><a href="#additional">Additonal Information</a></dt>
 				</dl>
 			</div>
 			<div>
@@ -113,7 +113,7 @@
 				web server and may index more than one Fedora repository,
 				and it may update more than one index in parallel.
 				For further architectural details, see 
-				<a href="additional">Additonal Information</a></p>
+				<a href="#additional">Additonal Information</a></p>
 				
 			</div>
 			<a name="installation"><h2>Installation</h2></a>
@@ -206,13 +206,32 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					</li>
 				</ul>
 				
-			<a name="additional"><h2>Additonal Information (to be edited)</h2></a>
+			<a name="additional"><h2>Additonal Information</h2></a>
 			<div class="toc">
 				<dl>
+				<dt><a href="#engines">Search Engine Plugins</a></dt>
 				<dt><a href="#arch">Architectural Snapshots</a></dt>
 				<dt><a href="#multilingual">Multilingual Configuration</a></dt>
 				</dl>
 			</div>
+			<a name="engines"><h3>Search Engine Plugins</h3></a>
+				<h4><a href="http://lucene.apache.org/">Lucene</a></h4>
+				<p>The Lucene plugin comes as the java package dk.defxws.fgslucene
+				together with the Apache Lucene java libraries.
+				The set of classes was inspired by the JDBC API specification.</p>
+				<p>The Lucene plugin is used by configuration as explained above,
+				see also the DemoOnLucene example.</p>
+				<p>Lucene has a very rich functionality, and this plugin
+				exploits a small fraction of it. As a java programmer, you may
+				have ideas for further exploitation, which you may realize
+				by implementing an enhanced version of the plugin.
+				Please, share such ideas and implementations with the Fedora community.</p>
+				<h4><a href="http://www.indexdata.dk/zebra/">Zebra</a></h4>
+				<p>The Zebra plugin comes as the java package dk.defxws.fgszebra .</p>
+				<p>The Zebra plugin is used by configuration as 
+				seen from the DemoOnZebra example, which includes a README file,
+				which explains how to get and install Zebra, and how to configure it.</p>
+				<p></p>
 			<a name="arch"><h3>Architectural Snapshots</h3></a>
 				<p><img src="images/fgs-arch.png"/></p>
 				<ul>

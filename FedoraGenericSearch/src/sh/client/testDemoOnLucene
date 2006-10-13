@@ -36,6 +36,13 @@ run_test updateIndex fromFoxmlFiles
 run_test browseIndex a dc.title
 run_test gfindObjects fedora
 
+#errors
+
+run_test gfindObject fedora
+run_test gfindObjects unknown-field::fedora
+run_test_error "ERROR: operation gfindObject is unknown!" gfindObject fedora
+run_test_error "ERROR: " gfindObjects unknown-field::fedora
+
 end_suite
 
 begin_suite runSOAPClient.sh

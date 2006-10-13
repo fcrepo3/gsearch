@@ -57,11 +57,40 @@ run_test(){
     if [ -n "$MODE" ] ; then
         sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/expected/$SUITE/$FILENAME
     else
-        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/result/$SUITE/$FILENAME
-        diff -I.*milliseconds.* -I.*resultPage.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
-        if [ ! `cat $TESTHOME/diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
-            cat $TESTHOME/diff/$SUITE/$FILENAME
+        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/result/$SUITE/$FILENAME 2>&1
+        if [ $? != 0 ]; then
+            cat $TESTHOME/result/$SUITE/$FILENAME
             DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
+    	else
+            diff -I.*milliseconds.* -I.*resultPage.* -I.*cvsDate.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
+            if [ ! `cat $TESTHOME/diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
+                cat $TESTHOME/diff/$SUITE/$FILENAME
+                DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
+            fi;
+        fi;
+    fi;
+}
+
+run_test_error(){
+    if [ -z "$MODE" ] ; then
+        echo "<`get_timestamp`>$CLIENT $1 $2 $3 $4 $5 $6 $7 $8 $9 "
+        EXPECTED_ERRORMESSAGE=$1
+        TESTCOUNT=`expr $TESTCOUNT "+" 1`
+        FILENAME=$CLIENT.$TESTCOUNT
+        echo "$EXPECTED_ERRORMESSAGE" > $TESTHOME/expected/$SUITE/$FILENAME
+        sh $CLIENT $HOSTPORT $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/result/$SUITE/$FILENAME 2>&1
+        if [ $? != 0 ]; then
+            cat $TESTHOME/result/$SUITE/$FILENAME
+            DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
+    	else
+            cat $TESTHOME/result/$SUITE/$FILENAME
+    	    ERRORMESSAGE=`grep "<error>" "$TESTHOME/result/$SUITE/$FILENAME"  | perl -ne '$_ =~ /message>(.*)<message/; print $1'`
+            if [ "$EXPECTED_ERRORMESSAGE" != "$ERRORMESSAGE" ] ; then 
+                echo "EXPECTED_ERRORMESSAGE=$EXPECTED_ERRORMESSAGE" > $TESTHOME/diff/$SUITE/$FILENAME
+                echo "         ERRORMESSAGE=$ERRORMESSAGE" >> $TESTHOME/diff/$SUITE/$FILENAME
+                cat $TESTHOME/diff/$SUITE/$FILENAME
+                DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
+            fi;
         fi;
     fi;
 }
