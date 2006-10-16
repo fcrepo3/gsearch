@@ -11,7 +11,7 @@
 	<xsl:template name="opSpecifics">
 	
 		<h2>updateIndex</h2>
-		<xsl:apply-templates/>
+		    <xsl:apply-templates select="updateIndex"/>
 			<p/>
 			<form method="get" action="rest">
 				<table border="3" cellpadding="5" cellspacing="5">
