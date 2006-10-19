@@ -164,8 +164,8 @@ For each index:
 index/&lt;INDEXNAME&gt;/index.properties:
 	fedoragsearch.indexDir           = &lt;path to Lucene index directory, which must exist&gt;
 
-.../webapps/fedoragsearch/WEB-INF/classes/log4j.xml:
-    &lt;param name="File" value="/&lt;LOGPATH&gt;/fedoragsearch.log"/&gt; /LOGPATH must exist
+.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/log4j.xml:
+    &lt;param name="File" value="/&lt;LOGPATH&gt;/&lt;LOGFILENAME&gt;"/&gt; /LOGPATH must exist
 						</pre>
 						Edit the three files rest/demo*.xslt,
 						and the file index/DemoOnLucene/demoFoxmlToLucene.xslt,
