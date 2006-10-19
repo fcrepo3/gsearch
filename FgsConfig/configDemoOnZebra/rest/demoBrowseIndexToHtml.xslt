@@ -152,8 +152,8 @@
 				<xsl:value-of select="@no"/>.
 				<a>
 					<xsl:variable name="TERM" select="text()"/>
-					<xsl:variable name="QUERYSTRING" select="concat('operation=gfindObjects', '&amp;', 'indexName=', $INDEXNAME, '&amp;', 'query=', $FIELDNAME, $EQCHAR, '&#034;', $TERM, '&#034;')"/>
-					<xsl:attribute name="href">/fedoragsearch/rest?<xsl:value-of select="$QUERYSTRING"/>
+					<xsl:variable name="QUERYSTRING" select="concat('?operation=gfindObjects', '&amp;', 'indexName=', $INDEXNAME, '&amp;', 'query=', $FIELDNAME, $EQCHAR, '&#034;', $TERM, '&#034;')"/>
+					<xsl:attribute name="href"><xsl:value-of select="$QUERYSTRING"/>
 					</xsl:attribute>
 					<xsl:value-of select="$TERM"/>
 					[<xsl:value-of select="@fieldtermhittotal"/>]
