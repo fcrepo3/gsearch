@@ -12,6 +12,7 @@
 		xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
+	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
 	<xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
 	
 	<xsl:template match="/">
@@ -31,6 +32,9 @@
 	<xsl:template match="/foxml:digitalObject" mode="activeFedoraObject">
 			<IndexField IFname="PID" index="UN_TOKENIZED" store="YES" termVector="NO" boost="2.5">
 				<xsl:value-of select="$PID"/>
+			</IndexField>
+			<IndexField IFname="repositoryName" index="UN_TOKENIZED" store="YES" termVector="NO">
+				<xsl:value-of select="$REPOSITORYNAME"/>
 			</IndexField>
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
 				<IndexField index="UN_TOKENIZED" store="YES" termVector="NO">

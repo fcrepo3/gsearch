@@ -373,7 +373,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         StringBuffer sb = (new GTransformer()).transform(
         		xsltPath, 
                 new StreamSource(foxmlStream),
-                new String[] {});
+                new String[] {"REPOSITORYNAME", repositoryName});
         if (logger.isDebugEnabled())
             logger.debug("indexDoc=\n"+sb.toString());
         hdlr = new IndexDocumentHandler(
@@ -387,7 +387,7 @@ public class OperationsImpl extends GenericOperationsImpl {
                 deleted = modifier.deleteDocuments(new Term("PID", hdlr.getPid()));
             deleteTotal += deleted;
             if (hdlr.getIndexDocument().fields().hasMoreElements()) {
-                hdlr.getIndexDocument().add(new Field("repositoryName", repositoryName, Field.Store.YES, Field.Index.UN_TOKENIZED, Field.TermVector.NO));
+//                hdlr.getIndexDocument().add(new Field("repositoryName", repositoryName, Field.Store.YES, Field.Index.UN_TOKENIZED, Field.TermVector.NO));
                 modifier.addDocument(hdlr.getIndexDocument());
                 modifier.flush();
                 resultXml.append("<insert>"+hdlr.getPid()+"</insert>\n");

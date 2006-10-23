@@ -34,6 +34,7 @@
            default sequence given in properties
        - currently only the mimetype application/pdf can be handled.
 -->
+	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
 
 	<xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
 	<xsl:variable name="docBoost" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
@@ -60,6 +61,9 @@
 	<xsl:template match="/foxml:digitalObject" mode="activeDemoFedoraObject">
 			<IndexField IFname="PID" index="UN_TOKENIZED" store="YES" termVector="NO" boost="2.5">
 				<xsl:value-of select="$PID"/>
+			</IndexField>
+			<IndexField IFname="repositoryName" index="UN_TOKENIZED" store="YES" termVector="NO">
+				<xsl:value-of select="$REPOSITORYNAME"/>
 			</IndexField>
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
 				<IndexField index="UN_TOKENIZED" store="YES" termVector="NO">

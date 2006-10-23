@@ -189,12 +189,22 @@
 									<xsl:when test="@PID">
 								 		<xsl:value-of select="@PID"/>
 									</xsl:when>
+									<xsl:when test="field[@name='PID' and @snippet='yes']">
+								 		<xsl:value-of select="field[@name='PID']/span/text()"/>
+									</xsl:when>
 									<xsl:otherwise>
 								 		<xsl:value-of select="field[@name='PID']/text()"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:variable>
-							<xsl:attribute name="href">/fedora/get/<xsl:value-of select="$PIDVALUE"/>
+		                    <xsl:variable name="REPOSNAME" select="field[@name='repositoryName']/text()"/>
+							<xsl:variable name="REPOS">
+								<xsl:choose>
+									<xsl:when test="$REPOSNAME = 'DemoAtDtu' "><xsl:value-of select="'DEMOATDTUSOAPHOSTPORT'"/></xsl:when>
+									<xsl:when test="$REPOSNAME = 'SindapAtDtu' "><xsl:value-of select="'SINDAPATDTUSOAPHOSTPORT'"/></xsl:when>
+								</xsl:choose>
+							</xsl:variable>
+							<xsl:attribute name="href"><xsl:value-of select="$REPOS"/>/fedora/get/<xsl:value-of select="$PIDVALUE"/>
 							</xsl:attribute>
 							<xsl:value-of select="$PIDVALUE"/>
 						</a>

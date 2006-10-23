@@ -70,11 +70,13 @@
 		<replace file="${plugin.dir}/config/rest/demoBrowseIndexToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/rest/demoGetIndexInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/rest/demoGetRepositoryInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28"/>
+		<replace file="${plugin.dir}/config/rest/demoGfindObjectsToHtml.xslt" token="DEMOATDTUSOAPHOSTPORT" value="http://localhost:8080"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="SOAPHOSTPORT" value="localhost:8080"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/fedora-2.1.1/data/objects/2006"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
+		<replace file="${plugin.dir}/config/rest/demoGfindObjectsToHtml.xslt" token="SINDAPATDTUSOAPHOSTPORT" value="http://defxws2005.cvt.dk"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="SOAPHOSTPORT" value="defxws2005.cvt.dk"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
@@ -150,11 +152,13 @@
 		<replace file="${plugin.dir}/config/rest/demoBrowseIndexToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/rest/demoGetIndexInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/rest/demoGetRepositoryInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
+		<replace file="${plugin.dir}/config/rest/demoGfindObjectsToHtml.xslt" token="DEMOATDTUSOAPHOSTPORT" value="http://localhost:8282"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="SOAPHOSTPORT" value="localhost:8282"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/fedora2/fedora-2.1/data/objects/2006"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
+		<replace file="${plugin.dir}/config/rest/demoGfindObjectsToHtml.xslt" token="SINDAPATDTUSOAPHOSTPORT" value="http://localhost:8080"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="SOAPHOSTPORT" value="localhost:8080"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
