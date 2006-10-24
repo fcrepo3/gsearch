@@ -4,6 +4,14 @@
 		
 <!-- This xslt stylesheet presents a simple search page,
      including hits, if any.
+     It demonstrates in particular how to include
+     the correct url for search hits
+     (in the demo case, where one index (SindapDemoOnLucene)
+     contains index documents from two repositories)
+     based on the index field named repositoryName, 
+     which was included in the index documents
+     by the stylesheet index/SindapDemoOnLucene/sindapFoxmlToLucene,
+     see that one for further details.
 -->
 	<xsl:output method="html" indent="yes" encoding="UTF-8"/>
 

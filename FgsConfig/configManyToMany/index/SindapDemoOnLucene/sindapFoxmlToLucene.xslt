@@ -10,6 +10,18 @@
 		xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
 		xmlns:uvalibdesc="http://dl.lib.virginia.edu/bin/dtd/descmeta/descmeta.dtd"
 		xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
+		
+<!-- This xslt stylesheet will receive fedora objects with  
+     demo: PIDs from the repository DemoAtDtu and 
+     sindap: PIDs from the repository SindapAtDtu,
+     demonstrating the case, where one index (this one, SindapDemoOnLucene)
+     contains index documents from two repositories.
+     Each index document (one per fedora object) contains
+     an index field named repositoryName,
+     which is used by the rest/demoGfindObjects stylesheet
+     in order to include the correct url for search hits.
+-->
+		
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
 	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
