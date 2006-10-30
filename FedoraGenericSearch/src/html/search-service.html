@@ -99,8 +99,8 @@
 				<li>The Search Service implements a generic set of operations:
 				<ul>
 					<li><b>updateIndex</b> - indexing the contents of the Fedora repository.</li>
-					<li><b>gfindObjects</b> - search similar to Fedora findObjects.</li>
-					<li><b>browseIndex</b> - browsing terms in a given index.</li>
+					<li><b>gfindObjects</b> - search similar to Fedora findObjects and to the SRW/SRU operation <b>searchRetrieve</b>.</li>
+					<li><b>browseIndex</b> - browsing terms in a given index, similar to the SRW/SRU operation <b>scan</b>.</li>
 					<li><b>getRepositoryInfo</b> - describing the properties of a repository,
 					<li><b>getIndexInfo</b> - describing the properties of an index.</li>
 				</ul>
@@ -144,6 +144,7 @@ fedoragsearch.properties:
 	fedoragsearch.soapUser         = &lt;SOAPUSER&gt;
 	fedoragsearch.soapPass         = &lt;SOAPPASSWORD&gt;
 	fedoragsearch.deployFile       = &lt;WEBSERVERPATH&gt;/webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/deploy.wsdd
+	fedoragsearch.default&lt;OPERATION&gt;RestXslt = &lt;your default Rest stylesheet for the operation&gt;
 	fedoragsearch.mimeTypes        = &lt;a sequence of mimeTypes&gt;
 	                                 The first accessible mimeType will decide, 
 	                                 which of the datastreams is fetched and indexed.
@@ -154,15 +155,16 @@ fedoragsearch.properties:
 For each repository:
 
 repository/&lt;REPOSITORYNAME&gt;/repository.properties:
-	fedoragsearch.soapBase         = http://&lt;HOSTPORT&gt;/fedora/services (e.g. http://localhost:8080)
-	fedoragsearch.fedoraUser       = &lt;FEDORAUSER&gt;
-	fedoragsearch.fedoraPass       = &lt;FEDORAPASSWORD&gt;
-	fedoragsearch.fedoraObjectDir  = &lt;absolute path to FedoraObjects directory with FOXML files&gt;
+	fgsrepository.soapBase         = http://&lt;HOSTPORT&gt;/fedora/services (e.g. http://localhost:8080)
+	fgsrepository.fedoraUser       = &lt;FEDORAUSER&gt;
+	fgsrepository.fedoraPass       = &lt;FEDORAPASSWORD&gt;
+	fgsrepository.fedoraObjectDir  = &lt;absolute path to FedoraObjects directory with FOXML files&gt;
+	fgsrepository.mimeTypes        = &lt;as for fedoragsearch.mimeTypes&gt;
 	
 For each index:
 
 index/&lt;INDEXNAME&gt;/index.properties:
-	fedoragsearch.indexDir           = &lt;path to Lucene index directory, which must exist&gt;
+	fgsindex.indexDir              = &lt;path to Lucene index directory, which must exist&gt;
 
 .../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/log4j.xml:
     &lt;param name="File" value="/&lt;LOGPATH&gt;/&lt;LOGFILENAME&gt;"/&gt; /LOGPATH must exist
