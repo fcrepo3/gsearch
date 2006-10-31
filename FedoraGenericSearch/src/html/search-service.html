@@ -200,6 +200,7 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					</li>
                     <li>
 						Inspect the Lucene index with <a href="http://www.getopt.org/luke/">Luke</a>.
+						Luke cannot open an empty Lucene index.
 					</li>
                     <li>You may tailor the highlight of search terms in demo.css.
 					</li>
@@ -288,7 +289,9 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					</li>
 					<li>The following updateIndex actions are available:
 					<ul>
-						<li><b>createEmpty</b> - clearing the index.</li>
+						<li><b>createEmpty</b> - creating or emptying the index.
+						For a new index, you have to run createEmpty once, before
+						you can run the other actions.</li>
 						<li><b>fromFoxmlFiles ( filePath )</b> - indexing FOXML records;
 						filePath may be null, in which case the configured
 						Fedora Object Directory is used, so that the whole 

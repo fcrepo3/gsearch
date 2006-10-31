@@ -327,7 +327,9 @@ public class RESTClient {
             if (args.length<2) usage();
             RESTClient client = new RESTClient();
             String hostPort = args[0];
-            String restUrl = "http://"+hostPort+"/fedoragsearch/rest";
+            String restUrl = "http://"+hostPort;
+            if (hostPort.indexOf("/")<0)
+            	restUrl = "http://"+hostPort+"/fedoragsearch/rest";
             String op = args[1];
             if ("updateIndex".equals(op) ) {
                 String action = "";
@@ -466,6 +468,7 @@ public class RESTClient {
         System.out.println("host:port getRepositoryInfo [repositoryName [resultPageXslt]]");
         System.out.println("host:port getIndexInfo [indexName [resultPageXslt]]");
 //        System.out.println("host:port configure [configName]");
+        System.out.println("host:port may be host:port/webappname/restname, default is /fedoragsearch/rest");
         System.exit(1);
     }
     

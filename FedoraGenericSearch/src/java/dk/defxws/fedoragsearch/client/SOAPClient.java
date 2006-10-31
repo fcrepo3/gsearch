@@ -169,7 +169,9 @@ public class SOAPClient {
             if (args.length<2) usage();
             SOAPClient client = new SOAPClient();
             String hostPort = args[0];
-            String restUrl = "http://"+hostPort+"/fedoragsearch/services/FgsOperations";
+            String restUrl = "http://"+hostPort;
+            if (hostPort.indexOf("/")<0)
+            	restUrl = "http://"+hostPort+"/fedoragsearch/services/FgsOperations";
             String op = args[1];
             if ("updateIndex".equals(op) ) {
                 String action = "";
@@ -299,6 +301,7 @@ public class SOAPClient {
         System.out.println("host:port gfindObjects query [indexName [hitPageStart [hitPageSize [snippetsMax [fieldMaxLength [resultPageXslt]]]]]]");
         System.out.println("host:port getRepositoryInfo [repositoryName [resultPageXslt]]");
         System.out.println("host:port getIndexInfo [indexName [resultPageXslt]]");
+        System.out.println("host:port may be host:port/webappname/servicesname/operationsname, default is '/fedoragsearch/services/FgsOperations'");
         System.exit(1);
     }
     
