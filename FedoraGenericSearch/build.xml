@@ -16,7 +16,9 @@
 		<delete dir="${dist.dir}" />
 		<delete dir="${build.dir}" />
 		<delete dir="${project.dir}" />
-		<copy file="src/html/index.html" todir="${build.dir}" />
+		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" />
+		<copy file="src/html/prototype.html" todir="${build.dir}" />
+		<copy file="src/html/search-service.html" todir="${build.dir}" />
 		<copy todir="${build.dir}/css">
 			<fileset dir="src/css"/>
 		</copy>
