@@ -370,19 +370,22 @@ public class Config {
                         if (indexDirFile != null) {
                         	StringBuffer untokenizedFields = new StringBuffer(props.getProperty("fgsindex.untokenizedFields"));
                         	IndexReader ir = null;
-                        	ir = IndexReader.open(indexDir);
-                        	int max = ir.numDocs();
-                        	if (max > 10) max = 10;
-                        	for (int i=0; i<max; i++) {
-                        		Document doc = ir.document(i);
-                        		Enumeration fields = doc.fields();
-                        		while (fields.hasMoreElements()) {
-                        			Field f = (Field)fields.nextElement();
-                        			if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
-                        				untokenizedFields.append(" "+f.name());
-                        			}
-                        		}
-                        	}
+                        	try {
+								ir = IndexReader.open(indexDir);
+								int max = ir.numDocs();
+								if (max > 10) max = 10;
+								for (int i=0; i<max; i++) {
+									Document doc = ir.document(i);
+									Enumeration fields = doc.fields();
+									while (fields.hasMoreElements()) {
+										Field f = (Field)fields.nextElement();
+										if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
+											untokenizedFields.append(" "+f.name());
+										}
+									}
+								}
+							} catch (Exception e) {
+							}
                         	props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
                             if (logger.isDebugEnabled())
                                 logger.debug("indexName=" + indexName+ " fgsindex.untokenizedFields="+untokenizedFields);
