@@ -75,13 +75,11 @@
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/fedora-2.1.1/data/objects/2006"/>
-		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/config/rest/demoGfindObjectsToHtml.xslt" token="SINDAPATDTUSOAPHOSTPORT" value="http://defxws2005.cvt.dk"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="SOAPHOSTPORT" value="defxws2005.cvt.dk"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/fedora-2.1.1/data/objects/sindap"/>
-		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/config/index/DemoOnLucene/demoFoxmlToLucene.xslt" token="WEBSERVERPATH" value="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/index/DemoOnLucene/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/demoOnLucene"/>
 		<replace file="${plugin.dir}/config/index/DemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="demoFoxmlToLucene"/>
@@ -105,7 +103,6 @@
 		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/fedora-2.1.1/data/objects/2006"/>
-		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/index/DemoOnLucene/demoFoxmlToLucene.xslt" token="WEBSERVERPATH" value="/home/gsp/fedora-2.1.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/index/DemoOnLucene/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/demoOnLucene"/>
 		
@@ -122,7 +119,6 @@
 		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/fedora-2.1.1/data/objects/2006"/>
-		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/index/DemoOnZebra/index.properties" token="INDEXBASE" value="http://localhost:9999/"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/index/DemoOnZebra/index.properties" token="INDEXDIR" value="/home/gsp/fedoraservices/fedoragsearch/demoOnZebra"/>
 		
@@ -157,13 +153,11 @@
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/fedora2/fedora-2.1/data/objects/2006"/>
-		<replace file="${plugin.dir}/config/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/config/rest/demoGfindObjectsToHtml.xslt" token="SINDAPATDTUSOAPHOSTPORT" value="http://defxws2005.cvt.dk"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="SOAPHOSTPORT" value="defxws2005.cvt.dk"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/fedora2/fedora-2.1/data/objects/sindap"/>
-		<replace file="${plugin.dir}/config/repository/SindapAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/config/index/DemoOnLucene/demoFoxmlToLucene.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/config/index/DemoOnLucene/index.properties" token="INDEXDIR" value="/data/defxws2006/fgslucene/demoOnLucene"/>
 		<replace file="${plugin.dir}/config/index/DemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="demoFoxmlToLucene"/>
@@ -187,7 +181,6 @@
 		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/fedora2/fedora-2.1/data/objects/2006"/>
-		<replace file="${plugin.dir}/configDemoOnLucene/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/index/DemoOnLucene/demoFoxmlToLucene.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
 		<replace file="${plugin.dir}/configDemoOnLucene/index/DemoOnLucene/index.properties" token="INDEXDIR" value="/data/defxws2006/fgslucene/demoOnLucene"/>
 		
@@ -204,7 +197,6 @@
 		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/fedora-2.1.1/data/objects/2006"/>
-		<replace file="${plugin.dir}/configDemoOnZebra/repository/DemoAtDtu/repository.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/index/DemoOnZebra/index.properties" token="INDEXBASE" value="http://localhost:9998/"/>
 		<replace file="${plugin.dir}/configDemoOnZebra/index/DemoOnZebra/index.properties" token="INDEXDIR" value="/data/defxws2006/fgszebra/demoOnZebra"/>
 	</target>

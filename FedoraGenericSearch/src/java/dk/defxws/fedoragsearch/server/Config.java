@@ -117,7 +117,7 @@ public class Config {
 //      Read soap deployment parameters and try to deploy the wsdd file
         String [] params = new String[4];
         params[0] = "-l"+fgsProps.getProperty("fedoragsearch.soapBase");
-        params[1] =      fgsProps.getProperty("fedoragsearch.deployFile");
+        params[1] =      insertSystemProperties(fgsProps.getProperty("fedoragsearch.deployFile"));
         params[2] = "-u"+fgsProps.getProperty("fedoragsearch.soapUser");
         params[3] = "-w"+fgsProps.getProperty("fedoragsearch.soapPass");
         if (logger.isDebugEnabled())
@@ -214,7 +214,7 @@ public class Config {
 //                  }
                     
 //                  Check fedoraObjectDir
-                    String fedoraObjectDirName = props.getProperty("fgsrepository.fedoraObjectDir");
+                    String fedoraObjectDirName = insertSystemProperties(props.getProperty("fgsrepository.fedoraObjectDir"));
                     File fedoraObjectDir = new File(fedoraObjectDirName);
                     if (fedoraObjectDir == null) {
                         errors.append("\n*** "+configName+"/repository/" + repositoryName
@@ -225,9 +225,6 @@ public class Config {
 //                  Check result stylesheets
                     checkResultStylesheet("repository/"+repositoryName, props, 
                     "fgsrepository.defaultGetRepositoryInfoResultXslt");
-                    
-//                  Check mimeTypes
-                    checkMimeTypes(repositoryName, props, "fgsrepository.mimeTypes");
                     
                     repositoryNameToProps.put(repositoryName, props);
                 }
@@ -318,7 +315,7 @@ public class Config {
                     "fgsindex.defaultGetIndexInfoResultXslt");
                     
 //                  Check indexDir
-                    String indexDir = props.getProperty("fgsindex.indexDir"); 
+                    String indexDir = insertSystemProperties(props.getProperty("fgsindex.indexDir")); 
                     File indexDirFile = new File(indexDir);
                     if (indexDirFile == null) {
                     	errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.indexDir="
@@ -490,7 +487,7 @@ public class Config {
     }
     
     public String getDeployFile() {
-        return fgsProps.getProperty("fedoragsearch.deployFile");
+        return insertSystemProperties(fgsProps.getProperty("fedoragsearch.deployFile"));
     }
     
     public String getDefaultNoXslt() {
@@ -577,7 +574,7 @@ public class Config {
     
     public File getFedoraObjectDir(String repositoryName) 
     throws ConfigException {
-        String fedoraObjectDirName = getRepositoryProps(repositoryName).getProperty("fgsrepository.fedoraObjectDir");
+        String fedoraObjectDirName = insertSystemProperties(getRepositoryProps(repositoryName).getProperty("fgsrepository.fedoraObjectDir"));
         File fedoraObjectDir = new File(fedoraObjectDirName);
         if (fedoraObjectDir == null) {
             throw new ConfigException(repositoryName+": fgsrepository.fedoraObjectDir="
@@ -639,16 +636,12 @@ public class Config {
             return resultPageXslt;
     }
     
-    public String getMimeTypes(String indexName) {
-        return getIndexProps(indexName).getProperty("fgsindex.mimeTypes");
-    }
-    
     public String getIndexBase(String indexName) {
-        return getIndexProps(indexName).getProperty("fgsindex.indexBase");
+        return insertSystemProperties(getIndexProps(indexName).getProperty("fgsindex.indexBase"));
     }
     
     public String getIndexDir(String indexName) {
-        return getIndexProps(indexName).getProperty("fgsindex.indexDir");
+        return insertSystemProperties(getIndexProps(indexName).getProperty("fgsindex.indexDir"));
     }
     
     public String getAnalyzer(String indexName) {
@@ -705,6 +698,32 @@ public class Config {
         }
         ops.init(indexName, this);
         return ops;
+    }
+    
+    private String insertSystemProperties(String propertyValue) {
+    	String result = propertyValue;
+    	while (result.indexOf("${") > -1) {
+            if (logger.isDebugEnabled())
+                logger.debug("propertyValue="+result);
+    		result = insertSystemProperty(result);
+            if (logger.isDebugEnabled())
+                logger.debug("propertyValue="+result);
+    	}
+    	return result;
+    }
+    
+    private String insertSystemProperty(String propertyValue) {
+    	String result = propertyValue;
+    	int i = result.indexOf("${");
+    	if (i > -1) {
+    		int j = result.indexOf("}");
+    		if (j > -1) {
+        		String systemProperty = result.substring(i+2, j);
+        		String systemPropertyValue = System.getProperty(systemProperty, "?NOTFOUND{"+systemProperty+"}");
+        		result = result.substring(0, i) + systemPropertyValue + result.substring(j+1);
+    		}
+    	}
+    	return result;
     }
     
     public static void main(String[] args) {

@@ -225,6 +225,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 			String indexDocXslt)
 	throws java.rmi.RemoteException
 	{
+		if (file.isHidden()) return;
 		if (file.isDirectory())
 		{
 			String[] files = file.list();

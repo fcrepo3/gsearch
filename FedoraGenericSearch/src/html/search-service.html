@@ -51,19 +51,25 @@
 				Beth Kirschner, Binaya Poudyal, Blake Anderson,
 				Boon Low, Christian T&#248;nsberg, 
 				Eric Brown,
+				Jun Yamog,
+				Junran Lei,
 				Luis Zorita,
+				Matt Zumwalt,
 				Matthias Razum, 
 				Michael Appleby,
 				Michael Hoppe,
 				Nikolai Schwertner,
 				Patrick Monbaron,
-				Pierre Yves Landron,
+				Pierre-Yves Landron,
+				Ranju Upadhyaya,
 				Robert Sherratt,
 				Ryan E. Scherle,
 				Sam Liberman, 
-				Steve DiDomenico,
+				Shunde Zhang,
+				Steve DiDomenico
+				Thierry Michel,
 				and
-				Thierry Michel. </p>
+				Xinjian Guo. </p>
 				<p>The work is funded by <a href="http://www.deff.dk">
 				DEFF, Denmark's Electronic Research Library</a>.</p>
 				<p>The service has the following features:</p>
@@ -129,6 +135,8 @@
 				into the webapps directory, in order to give it another webapp name.</li>
 					<li>Edit the configuration settings.</li>
 				</ul>
+				<p>The SOAP service operations are deployed with the .war file, and 
+				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
 				
 				
 
@@ -140,12 +148,14 @@
 						(where &lt;WEBAPPNAME&gt; by default is 'fedoragsearch'):
 						<pre>
 fedoragsearch.properties:
-	fedoragsearch.soapBase         = http://&lt;HOSTPORT&gt;/&lt;WEBAPPNAME&gt;/services (e.g. http://localhost:8080)
+	fedoragsearch.soapBase         = http://&lt;HOST:PORT&gt;/&lt;WEBAPPNAME&gt;/services
 	fedoragsearch.soapUser         = &lt;SOAPUSER&gt;
 	fedoragsearch.soapPass         = &lt;SOAPPASSWORD&gt;
 	fedoragsearch.deployFile       = &lt;WEBSERVERPATH&gt;/webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/deploy.wsdd
+									(&lt;WEBSERVERPATH&gt; may be &quot;${catalina.home}&quot; in the Tomcat case)
+									(in general, you may insert system variable values in property values like this)
 	fedoragsearch.default&lt;OPERATION&gt;RestXslt = &lt;your default Rest stylesheet for the operation&gt;
-	fedoragsearch.mimeTypes        = &lt;a sequence of mimeTypes&gt;
+	fedoragsearch.mimeTypes        = &lt;a sequence of mimeTypes used by the application&gt;
 	                                 The first accessible mimeType will decide, 
 	                                 which of the datastreams is fetched and indexed.
 	                                 Currently "text/plain text/html application/pdf" are implemented.
@@ -154,12 +164,11 @@ fedoragsearch.properties:
 	                                 
 For each repository:
 
-repository/&lt;REPOSITORYNAME&gt;/repository.properties:
-	fgsrepository.soapBase         = http://&lt;HOSTPORT&gt;/fedora/services (e.g. http://localhost:8080)
+repository/&lt;REPOSNAME&gt;/repository.properties:
+	fgsrepository.fedoraSoap       = http://&lt;HOST:PORT&gt;/fedora/services (e.g. http://localhost:8080)
 	fgsrepository.fedoraUser       = &lt;FEDORAUSER&gt;
 	fgsrepository.fedoraPass       = &lt;FEDORAPASSWORD&gt;
 	fgsrepository.fedoraObjectDir  = &lt;absolute path to FedoraObjects directory with FOXML files&gt;
-	fgsrepository.mimeTypes        = &lt;as for fedoragsearch.mimeTypes&gt;
 	
 For each index:
 
@@ -176,6 +185,8 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					</li>
                     <li>
 						Then you may restart &lt;WEBAPPNAME&gt; and call http://&lt;HOSTPORT&gt;/&lt;WEBAPPNAME&gt;/rest in order to index and search.
+						The name &quot;rest&quot; may be reconfigured in 
+						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/web.xml
 					</li>
                     <li>
 						Try the demo command line client. Change directory to 
@@ -194,13 +205,17 @@ index/&lt;INDEXNAME&gt;/index.properties:
 						Tailor the demo Lucene indexing stylesheet for your own purpose by editing
 						a renamed copy of the demo xslt stylesheet in 
 	<pre>.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/index/&lt;INDEXNAME&gt;/demoFoxmlToLucene.xslt</pre>
+						For the sake of the example, the stylesheet indexes only active Fedora objects
+						with PID starting with &quot;demo&quot;
 						The options for tailoring include fields from other metadata datastreams 
 						than DC, field types and field boosts,
 						see the stylesheet for options. Then edit index.properties.
 					</li>
+                    <li>For your real applications, you must carefully edit all stylesheets for your purpose.
+					</li>
                     <li>
 						Inspect the Lucene index with <a href="http://www.getopt.org/luke/">Luke</a>.
-						Luke cannot open an empty Lucene index.
+						Notice, Luke cannot open an empty Lucene index.
 					</li>
                     <li>You may tailor the highlight of search terms in demo.css.
 					</li>
@@ -244,32 +259,28 @@ index/&lt;INDEXNAME&gt;/index.properties:
 				<p><img src="images/fgs-arch.png"/></p>
 				<ul>
 					<li>
-					In the prototype all engine specific operations return 
+					All engine specific operations return 
 					an engine specific xml answer, which is transformed 
 					by an engine-specific xslt stylesheet into result page xml.
 					For a SOAP request this is the answer.
 					For a REST request this is transformed to an html answer.
 					There may be any number of xslt stylesheets to select from,
 					the default ones are selected in the properties file.
-					Selecting a copy stylesheet or none will allow the transfer
+					Selecting a copy stylesheet will allow the transfer
 					of an answer untransformed. An alternative result page format 
 					is <a href="http://opensearch.a9.com/">OpenSearch</a>, 
 					which is an RSS2.0 extension.
 					</li>
-					<li>The prototype implementation has parameters to allow clients 
-					to select index by name and xslt stylesheets by name. 
-					In a real application these values will be determined 
+					<li>Parameters allow clients 
+					to select repository, index, and xslt stylesheets by name. 
+					In a real application, these values may be determined 
 					by the developer in the code,
 					or by the administrator in the properties file.
 					</li>
-					<li>The prototype implementation has OperationsImpl classes
-					for Zebra and for Lucene. The DEF-XWS Eprints application
+					<li>There are OperationsImpl classes
+					for Zebra and for Lucene. The configManyToMany example
 					has indexes for both engines, therefore similar searches 
 					may be compared.
-					</li>
-					<li>Sample search for Zebra: metal
-					</li>
-					<li>Sample search for Lucene: description:metal
 					</li>
 				</ul>
 				<p><img src="images/fgs-arch-indexing.png"/></p>
@@ -283,9 +294,6 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					per FedoraObject (which one is configurable), 
 					assuming that they contain the same text in different
 					mimetypes.
-					Only Active FedoraObjects are indexed, 
-					not Inactive nor Deleted ones,
-					not bDefs, not bMechs.
 					</li>
 					<li>The following updateIndex actions are available:
 					<ul>
@@ -305,12 +313,18 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					</ul>
 					</li>
 				</ul>
-				<p>The latest development adds the possibility to index
+				<p>A typical application will index one repository in one index.
+				However, you have the possibility to index
 				many repositories in one or more indexes in parallel, as illustrated here:</p>
 				<p><img src="images/fgs-manytomany.png"/></p>
+				<ul>
+					<li>There are OperationsImpl classes
+					for Zebra and for Lucene. The configManyToMany example
+					has indexes for both engines, therefore similar searches 
+					may be compared.
+					</li>
+				</ul>
 				<p>
-				<p>The SOAP service operations are deployed with the .war file and 
-				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
 
 			<a name="multilingual"><h3>Multilingual Configuration</h3></a>
 				<p>Luis Zorita had this problem and solved it 

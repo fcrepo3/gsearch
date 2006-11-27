@@ -314,6 +314,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexDocXslt)
     throws java.rmi.RemoteException
     {
+		if (file.isHidden()) return;
         if (logger.isDebugEnabled())
             logger.debug("indexDocs file="+file+" repositoryName="+repositoryName+" indexName="+indexName);
         if (file.isDirectory())
