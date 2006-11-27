@@ -152,8 +152,8 @@ fedoragsearch.properties:
 	fedoragsearch.soapUser         = &lt;SOAPUSER&gt;
 	fedoragsearch.soapPass         = &lt;SOAPPASSWORD&gt;
 	fedoragsearch.deployFile       = &lt;WEBSERVERPATH&gt;/webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/deploy.wsdd
-									(&lt;WEBSERVERPATH&gt; may be &quot;${catalina.home}&quot; in the Tomcat case)
-									(in general, you may insert system variable values in property values like this)
+                                    (&lt;WEBSERVERPATH&gt; may be &quot;${catalina.home}&quot; in the Tomcat case)
+                                    (in general, you may insert system variable values in property values in this way)
 	fedoragsearch.default&lt;OPERATION&gt;RestXslt = &lt;your default Rest stylesheet for the operation&gt;
 	fedoragsearch.mimeTypes        = &lt;a sequence of mimeTypes used by the application&gt;
 	                                 The first accessible mimeType will decide, 
@@ -276,11 +276,6 @@ index/&lt;INDEXNAME&gt;/index.properties:
 					In a real application, these values may be determined 
 					by the developer in the code,
 					or by the administrator in the properties file.
-					</li>
-					<li>There are OperationsImpl classes
-					for Zebra and for Lucene. The configManyToMany example
-					has indexes for both engines, therefore similar searches 
-					may be compared.
 					</li>
 				</ul>
 				<p><img src="images/fgs-arch-indexing.png"/></p>
