@@ -29,6 +29,7 @@
 	
 	<xsl:template match="/">
 		<IndexDocument> 
+		    <!-- The PID attribute is mandatory for indexing to work -->
 			<xsl:attribute name="PID">
 				<xsl:value-of select="$PID"/>
 			</xsl:attribute>

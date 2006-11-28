@@ -40,6 +40,7 @@
 			<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' and @VALUE='FedoraObject']">
 				<xsl:if test="starts-with($PID,'demo')">
 		<IndexDocument> 
+		    <!-- The PID attribute is mandatory for indexing to work -->
 			<xsl:attribute name="PID">
 				<xsl:value-of select="$PID"/>
 			</xsl:attribute>
