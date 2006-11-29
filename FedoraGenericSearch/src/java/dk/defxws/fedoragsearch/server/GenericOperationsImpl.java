@@ -13,9 +13,10 @@ package dk.defxws.fedoragsearch.server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.xml.transform.stream.StreamSource;
@@ -25,9 +26,10 @@ import org.apache.log4j.Logger;
 
 import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIMBindingSOAPHTTPStub;
-import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIABindingSOAPHTTPStub;
 
+import fedora.client.FedoraClient;
+import fedora.server.access.FedoraAPIA;
+import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.Datastream;
 import fedora.server.types.gen.MIMETypedStream;
 
@@ -41,7 +43,9 @@ public class GenericOperationsImpl implements Operations {
     
     private static final Logger logger =
         Logger.getLogger(GenericOperationsImpl.class);
-    
+
+    private static final Map fedoraClients = new HashMap();
+
     protected String indexName;
     protected Config config;
     protected int insertTotal = 0;
@@ -54,12 +58,80 @@ public class GenericOperationsImpl implements Operations {
     protected byte[] ds;
     protected String dsText;
     protected String[] params = null;
+
+    static {
+        FedoraClient.FORCE_LOG4J_CONFIGURATION = false;
+    }
+
+    private static FedoraClient getFedoraClient(String repositoryName,
+            Config config)
+            throws GenericSearchException {
+        try {
+            String baseURL = getBaseURL(config.getFedoraSoap(repositoryName));
+            String user = config.getFedoraUser(repositoryName); 
+            String clientId = user + "@" + baseURL;
+            synchronized (fedoraClients) {
+                if (fedoraClients.containsKey(clientId)) {
+                    return (FedoraClient) fedoraClients.get(clientId);
+                } else {
+                    FedoraClient client = new FedoraClient(baseURL,
+                            user, config.getFedoraPass(repositoryName));
+                    fedoraClients.put(clientId, client);
+                    return client;
+                }
+            }
+        } catch (Exception e) {
+            throw new GenericSearchException("Error getting FedoraClient"
+                    + " for repository: " + repositoryName, e);
+        }
+    }
+
+    private static String getBaseURL(String fedoraSoap)
+            throws Exception {
+        final String end = "/services";
+        String baseURL = fedoraSoap;
+        if (fedoraSoap.endsWith(end)) {
+            return fedoraSoap.substring(0, fedoraSoap.length() - end.length());
+        } else {
+            throw new Exception("Unable to determine baseURL from fedoraSoap"
+                    + " value (expected it to end with '" + end + "'): "
+                    + fedoraSoap);
+        }
+    }
+
+    private static FedoraAPIA getAPIA(String repositoryName,
+                                      Config config)
+            throws GenericSearchException {
+        try {
+            FedoraClient client = getFedoraClient(repositoryName, config);
+            return client.getAPIA();
+        } catch (GenericSearchException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GenericSearchException("Error getting API-A stub"
+                    + " for repository: " + repositoryName, e);
+        }
+    }
+    
+    private static FedoraAPIM getAPIM(String repositoryName,
+                                      Config config)
+            throws GenericSearchException {
+        try {
+            FedoraClient client = getFedoraClient(repositoryName, config);
+            return client.getAPIM();
+        } catch (GenericSearchException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GenericSearchException("Error getting API-M stub"
+                    + " for repository: " + repositoryName, e);
+        }
+    }
     
     public void init(String indexName, Config currentConfig) {
     	this.indexName = indexName;
         config = currentConfig;
     }
-    
+
     public String gfindObjects(
             String query,
             int hitPageStart,
@@ -210,17 +282,9 @@ public class GenericOperationsImpl implements Operations {
             logger.info("getFoxmlFromPid" +
                     " pid="+pid +
                     " repositoryName="+repositoryName);
-        FedoraAPIMBindingSOAPHTTPStub stub = null;
+        FedoraAPIM apim = getAPIM(repositoryName, config);
         try {
-            stub = new FedoraAPIMBindingSOAPHTTPStub(
-                    new java.net.URL(config.getFedoraSoap(repositoryName)+"/management"), null);
-        } catch (AxisFault e) {
-            throw new RemoteException(e.getClass().getName()+": "+e.toString());
-        } catch (MalformedURLException e) {
-            throw new RemoteException(e.getClass().getName()+": "+e.toString());
-        }
-        try {
-        	foxmlRecord = stub.export(pid, "foxml1.0", "public", config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+        	foxmlRecord = apim.export(pid, "foxml1.0", "public");
         } catch (RemoteException e) {
         	throw new FedoraObjectNotFoundException("Fedora Object "+pid+" not found at "+repositoryName, e);
         }
@@ -239,11 +303,9 @@ public class GenericOperationsImpl implements Operations {
         ds = null;
         if (dsId != null) {
             try {
-            	java.net.URL url = new java.net.URL(config.getFedoraSoap(repositoryName)+"/access");
-                if (url==null) return "";
-            	FedoraAPIABindingSOAPHTTPStub stub = new FedoraAPIABindingSOAPHTTPStub(url, null);
-                if (stub==null) return "";
-                MIMETypedStream mts = stub.getDatastreamDissemination(pid, dsId, null, config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+                FedoraAPIA apia = getAPIA(repositoryName, config);
+                MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
+                        dsId, null);
                 if (mts==null) return "";
                 ds = mts.getStream();
                 mimetype = mts.getMIMEType();
@@ -253,8 +315,6 @@ public class GenericOperationsImpl implements Operations {
                     return new String();
                 else
                     throw new GenericSearchException(e.getFaultString()+": "+e.toString());
-            } catch (MalformedURLException e) {
-                throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
             } catch (RemoteException e) {
                 throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
             }
@@ -282,11 +342,9 @@ public class GenericOperationsImpl implements Operations {
         StringBuffer dsBuffer = new StringBuffer();
         Datastream[] dsds = null;
         try {
-            dsds = (new FedoraAPIMBindingSOAPHTTPStub(
-                    new java.net.URL(config.getFedoraSoap(repositoryName)+"/management"), null)).getDatastreams(pid, null, "A", config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+            FedoraAPIM apim = getAPIM(repositoryName, config);
+            dsds = apim.getDatastreams(pid, null, "A");
         } catch (AxisFault e) {
-            throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
-        } catch (MalformedURLException e) {
             throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
         } catch (RemoteException e) {
             throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
@@ -311,11 +369,11 @@ public class GenericOperationsImpl implements Operations {
         ds = null;
         if (dsID != null) {
             try {
-                ds = (new FedoraAPIABindingSOAPHTTPStub(
-                        new java.net.URL(config.getFedoraSoap(repositoryName)+"/access"), null)).getDatastreamDissemination(pid, dsID, null, config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName)).getStream();
+                FedoraAPIA apia = getAPIA(repositoryName, config);
+                MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
+                        dsID, null);
+                ds = mts.getStream();
             } catch (AxisFault e) {
-                throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
-            } catch (MalformedURLException e) {
                 throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
             } catch (RemoteException e) {
                 throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
@@ -363,8 +421,9 @@ public class GenericOperationsImpl implements Operations {
         ds = null;
         if (pid != null) {
             try {
-                MIMETypedStream mts = (new FedoraAPIABindingSOAPHTTPStub(
-                        new java.net.URL(config.getFedoraSoap(repositoryName)+"/access"), null)).getDissemination(pid, bDefPid, methodName, params, asOfDateTime, config.getFedoraUser(repositoryName), config.getFedoraPass(repositoryName));
+                FedoraAPIA apia = getAPIA(repositoryName, config);
+                MIMETypedStream mts = apia.getDissemination(pid, bDefPid, 
+                        methodName, params, asOfDateTime);
                 if (mts==null) {
                     throw new GenericSearchException("getDissemination returned null");
                 }
@@ -383,8 +442,6 @@ public class GenericOperationsImpl implements Operations {
                     return new StringBuffer();
                 else
                     throw new GenericSearchException(e.getFaultString()+": "+e.toString());
-            } catch (MalformedURLException e) {
-                throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
             } catch (RemoteException e) {
                 throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
             }

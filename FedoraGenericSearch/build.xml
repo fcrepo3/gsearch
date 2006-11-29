@@ -21,7 +21,7 @@
     <path id="compile.classpath">
       <pathelement path="${lib.axis}"/>
       <pathelement path="${lib.commons-logging}"/>
-      <pathelement path="${lib.fedora-server}"/>
+      <pathelement path="${lib.fedora-client}"/>
       <pathelement path="${lib.jaxrpc}"/>
       <pathelement path="${lib.junit}"/>
       <pathelement path="${lib.log4j}"/>
@@ -75,7 +75,7 @@
 			<fileset dir="src/WEB-INF"/>
 		</copy>
 		<copy todir="${build.dir}/WEB-INF/lib">
-			<fileset dir="lib"/>
+			<fileset dir="lib" excludes="servlet-api.jar"/>
 		</copy>
 		<copy todir="${plugin.dir}">
 			<fileset dir="bin"/>

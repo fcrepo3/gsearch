@@ -28,7 +28,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-import fedora.server.utilities.StreamUtility;
 
 /**
  * parses the IndexDocument and generates the Lucene document 
