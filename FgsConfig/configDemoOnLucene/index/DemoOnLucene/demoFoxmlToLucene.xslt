@@ -19,8 +19,6 @@
        - from the root element = PID
        - from foxml:property   = type, state, contentModel, ...
        - from oai_dc:dc        = title, creator, ...
-     The IndexDocument element gets a PID attribute, which is mandatory,
-     while the PID IndexField is optional.
      Options for tailoring:
        - IndexField types, see Lucene javadoc for Field.Store, Field.Index, Field.TermVector
        - IndexField boosts, see Lucene documentation for explanation
@@ -42,7 +40,6 @@
 	
 	<xsl:template match="/">
 		<IndexDocument> 
-		    <!-- The PID attribute is mandatory for indexing to work -->
 			<xsl:attribute name="PID">
 				<xsl:value-of select="$PID"/>
 			</xsl:attribute>

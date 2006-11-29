@@ -104,7 +104,6 @@ public class Statement {
                         highlighter.setTextFragmenter(fragmenter);
                         TokenStream tokenStream = analyzer.tokenStream( f.name(), new StringReader(f.stringValue()));
                         snippets = highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax, " ... ");
-                        snippets.replace('&', '#');
                         if (snippets!=null && !snippets.equals("")) {
                             resultXml.append(" snippet=\"yes\">"+snippets);
                         }
