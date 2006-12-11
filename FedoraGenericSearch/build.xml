@@ -91,11 +91,6 @@
 			depends="prep, includeengines"
 	        description="build the download">
         <ant dir="../FgsConfig" target="configdownload" inheritAll="false"/>
-        <!--
-        <exec executable="ant">
-            <arg line=" -f ../FgsConfig/build.xml configdownload"/>
-        </exec>
-        -->
 	    <jar jarfile="${build.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
 

@@ -16,7 +16,6 @@
 
     <path id="compile.classpath">
       <pathelement path="../FedoraGenericSearch/bin"/>
-      <pathelement path="${lib.fedora-server}"/>
       <pathelement path="${lib.log4j}"/>
       <pathelement path="${lib.lucene}"/>
       <pathelement path="${lib.lucene-highlighter}"/>
