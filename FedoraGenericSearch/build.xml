@@ -7,6 +7,8 @@
 
     <loadproperties srcFile="lib/lib.properties" /> 
 
+    <property name="genericsearch.version" value="1.1"/>
+
     <property name="build.basedir" location="../FgsBuild"/>
     <property name="compile.dir" location="bin"/>
 
@@ -86,6 +88,40 @@
 			<fileset dir="."/>
 		</copy>
 	</target>
+
+    <target name="binrelease" depends="builddownload">
+      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}"
+            file="${build.dir}/${war.name}"/>
+      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}/doc">
+        <fileset dir="${build.dir}">
+          <include name="index.html"/>
+          <include name="css/**"/>
+          <include name="images/**"/>
+        </fileset>
+      </copy>
+      <zip zipfile="${build.basedir}/release/genericsearch-${genericsearch.version}.zip"
+           basedir="${build.basedir}/release" includes="genericsearch-${genericsearch.version}/**"/>
+      <delete dir="${build.basedir}/release/genericsearch-${genericsearch.version}"/>
+    </target>
+  
+    <target name="srcrelease" depends="clean">
+      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}-src">
+        <fileset dir="..">
+          <exclude name="${build.basedir}/**"/>
+        </fileset>
+      </copy>
+      <zip zipfile="${build.basedir}/release/genericsearch-${genericsearch.version}-src.zip" 
+           basedir="${build.basedir}/release" includes="genericsearch-${genericsearch.version}-src/**"/>
+      <delete dir="${build.basedir}/release/genericsearch-${genericsearch.version}-src"/>
+    </target>
+
+    <target name="release" depends="srcrelease,binrelease" description="Build the source and binary distributions">
+      <checksum fileext=".md5">
+        <fileset dir="${build.basedir}/release">
+          <include name="*.zip"/>
+        </fileset>
+      </checksum>
+    </target>
 
 	<target name="builddownload"
 			depends="prep, includeengines"

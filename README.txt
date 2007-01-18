@@ -7,6 +7,9 @@ support for Lucene and Zebra plugins:
   cd FedoraGenericSearch
   ant builddownload
 
+After building the downloadable war, documentation
+can be viewed locally from FgsBuild/webapp/index.html
+
 To clean up all build-generated files:
 
   cd FedoraGenericSearch
