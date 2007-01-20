@@ -104,7 +104,7 @@ public class Statement {
                         highlighter.setTextFragmenter(fragmenter);
                         TokenStream tokenStream = analyzer.tokenStream( f.name(), new StringReader(f.stringValue()));
                         snippets = highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax, " ... ");
-                        snippets.replace('&', '#');
+                        snippets = snippets.replace('&', '#');
                         if (snippets!=null && !snippets.equals("")) {
                             resultXml.append(" snippet=\"yes\">"+snippets);
                         }
@@ -115,8 +115,7 @@ public class Statement {
                             int iamp = snippet.lastIndexOf("&");
                             if (iamp>-1 && iamp>fieldMaxLength-8)
                                 snippet = snippet.substring(0, iamp);
-                            else
-                                resultXml.append(">"+snippet+" ... ");
+                            resultXml.append(">"+snippet+" ... ");
                         } else
                             resultXml.append(">"+f.stringValue());
                     resultXml.append("</field>");
