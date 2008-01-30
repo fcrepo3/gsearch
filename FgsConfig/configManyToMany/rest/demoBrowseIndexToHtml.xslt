@@ -27,6 +27,23 @@
 							
 	<xsl:template name="opSpecifics">
 		
+		<script>
+			function gfindObjects ( term ) { url='?operation=gfindObjects&amp;indexName=<xsl:value-of select="$INDEXNAME"/>&amp;query=<xsl:value-of select="$FIELDNAME"/><xsl:value-of select="$EQCHAR"/>&#034;'.concat(term_encode(term), '&#034;');window.location=url }
+			
+			function term_encode ( string ) {
+				var utftext = "";
+				for (var n = 0; string.length > n; n++) {
+					var c = string.charCodeAt(n);
+					if (c == 38) {
+						utftext += "%26";
+					}
+					else {
+						utftext += String.fromCharCode(c);
+					}
+				}
+				return utftext;
+			}
+		</script>
 		<h2>browseIndex</h2>
 			<form method="get" action="rest">
 				<table border="3" cellpadding="5" cellspacing="0">
@@ -152,9 +169,7 @@
 				<xsl:value-of select="@no"/>.
 				<a>
 					<xsl:variable name="TERM" select="text()"/>
-					<xsl:variable name="QUERYSTRING" select="concat('?operation=gfindObjects', '&amp;', 'indexName=', $INDEXNAME, '&amp;', 'query=', $FIELDNAME, $EQCHAR, '&#034;', $TERM, '&#034;')"/>
-					<xsl:attribute name="href"><xsl:value-of select="$QUERYSTRING"/>
-					</xsl:attribute>
+					<xsl:attribute name="href">javascript:gfindObjects(%22<xsl:value-of select="$TERM"/>%22)</xsl:attribute>
 					<xsl:value-of select="$TERM"/>
 					[<xsl:value-of select="@fieldtermhittotal"/>]
 				</a>

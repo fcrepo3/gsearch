@@ -63,6 +63,9 @@
 							<xsl:text> </xsl:text>Index name: 
 								<select name="indexName">
 									<xsl:choose>
+										<xsl:when test="$INDEXNAME='TestOnLucene'">
+											<option value="TestOnLucene" selected="true">TestOnLucene</option>
+										</xsl:when>
 										<xsl:when test="$INDEXNAME='DemoOnZebra'">
 											<option value="DemoOnLucene">DemoOnLucene</option>
 											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
@@ -88,10 +91,7 @@
 											<option value="DemoOnZebra">DemoOnZebra</option>
 										</xsl:when>
 										<xsl:otherwise>
-											<option value="DemoOnLucene">DemoOnLucene</option>
-											<option value="SmileyDemoOnLucene">SmileyDemoOnLucene</option>
-											<option value="SindapDemoOnLucene">SindapDemoOnLucene</option>
-											<option value="DemoOnZebra">DemoOnZebra</option>
+											<option value="TestOnLucene" selected="true">TestOnLucene</option>
 										</xsl:otherwise>
 									</xsl:choose>
 								</select>
