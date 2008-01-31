@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -113,6 +115,8 @@ public class RESTImpl extends HttpServlet {
                 resultXml = new StringBuffer(browseIndex(request, response));
             } else if ("configure".equals(operation)) {
                 resultXml = new StringBuffer(configure(request, response));
+            } else if ("getIndexConfigInfo".equals(operation)) {
+                resultXml = new StringBuffer(getIndexConfigInfo(request, response));
             } else {
                 resultXml = new StringBuffer("<resultPage/>");
                 if (restXslt==null || restXslt.equals("")) 
@@ -267,6 +271,32 @@ public class RESTImpl extends HttpServlet {
         }
         Config.configure(configName, propertyName, propertyValue);
         return "<resultPage/>";
+    }
+    
+    private String getIndexConfigInfo(HttpServletRequest request, HttpServletResponse response)
+    throws java.rmi.RemoteException {
+        if (restXslt==null || restXslt.equals("")) 
+            restXslt = "copyXml";
+        StringBuffer resultXml = new StringBuffer("<resultPage>");
+    	String[] indexNames = config.getIndexNames(null).split("\\s");
+    	for (int i=0;i<indexNames.length;i++) {
+    		resultXml.append("<index>");
+    		resultXml.append("<name>").append(indexNames[i]).append("</name>");
+    		Properties props = config.getIndexProps(indexNames[i]);
+    		for (Iterator iterator = props.keySet().iterator(); iterator
+					.hasNext();) {
+				String key = (String) iterator.next();
+				String value = props.getProperty(key);
+				resultXml.append("<property><key>")
+						.append(key)
+						.append("</key><value>")
+						.append(value)
+						.append("</value></property>");
+			}
+    		resultXml.append("</index>");
+    	}
+    	resultXml.append("</resultPage>");
+        return resultXml.toString();
     }
     
     /**
