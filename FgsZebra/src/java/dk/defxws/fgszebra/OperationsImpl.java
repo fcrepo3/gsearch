@@ -47,9 +47,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 			int snippetsMax,
 			int fieldMaxLength,
 			String indexName,
+            String sortFields,
 			String resultPageXslt)
 	throws java.rmi.RemoteException {
-		super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+		super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
 		ResultSet resultSet = (new Connection()).createStatement().executeQuery(
 				query,
 				hitPageStart,
@@ -58,8 +59,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 				config.getIndexName(indexName));
 		if (logger.isDebugEnabled())
 			logger.debug("resultSet.getResultXml()="+resultSet.getResultXml());
-		params[10] = "RESULTPAGEXSLT";
-		params[11] = resultPageXslt;
+		params[12] = "RESULTPAGEXSLT";
+		params[13] = resultPageXslt;
         String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
         		xsltPath,
