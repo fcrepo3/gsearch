@@ -36,7 +36,10 @@
 #   Test results will appear in $TESTHOME/diff/$SUITE as the diff between expected and result.
 #   Diff count will come out of end_suite().
 
-HOSTPORT=localhost:8080
+HOSTPORT=$HOST:$PORT
+if [ $HOSTPORT = ":" ] ; then
+    HOSTPORT=localhost:8080
+fi;
 TESTHOME=.
 SUITE=$0
 MODE=$1
@@ -47,50 +50,59 @@ get_timestamp(){
 
 usage(){
     echo "Usage:"
-    echo "    sh $0 [expected]"
+    echo "    sh $0 [expected | verbose]"
 }
 
 run_test(){
-    echo "<`get_timestamp`>$CLIENT $1 $2 $3 $4 $5 $6 $7 $8 $9 "
     TESTCOUNT=`expr $TESTCOUNT "+" 1`
+    if [ "$MODE" = "expected" -o "$MODE" = "verbose" ] ; then
+    	echo "<`get_timestamp`>run_test() #$TESTCOUNT $CLIENT $1 $2 $3 $4 $5 $6 $7 $8 $9 "
+    fi;
     FILENAME=$CLIENT.$TESTCOUNT
-    if [ -n "$MODE" ] ; then
-        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/expected/$SUITE/$FILENAME
+    if [ "$1" != "configure" ] ; then
+    if [ "$MODE" = "expected" ] ; then
+        sh $CLIENT $HOSTPORT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/expected/$SUITE/$FILENAME
     else
-        sh $CLIENT $HOSTPORT $1 $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/result/$SUITE/$FILENAME 2>&1
-        if [ $? != 0 ]; then
-            cat $TESTHOME/result/$SUITE/$FILENAME
+        sh $CLIENT $HOSTPORT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/result/$SUITE/$FILENAME 2>&1
+        diff -I.*milliseconds.* -I.*resultPage.* -I.*cvsDate.* -I.*$HttpInputStream@.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
+        if [ ! `cat $TESTHOME/diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
             DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
-    	else
-            diff -I.*milliseconds.* -I.*resultPage.* -I.*cvsDate.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
-            if [ ! `cat $TESTHOME/diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
+            echo " "
+            echo "<`get_timestamp`>!!! DIFF#$DIFFCOUNT >>>"
                 cat $TESTHOME/diff/$SUITE/$FILENAME
-                DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
-            fi;
+            echo "<`get_timestamp`>!!! DIFF#$DIFFCOUNT <<<"
+            echo " "
         fi;
+    fi;
     fi;
 }
 
 run_test_error(){
-    if [ -z "$MODE" ] ; then
-        echo "<`get_timestamp`>$CLIENT $1 $2 $3 $4 $5 $6 $7 $8 $9 "
-        EXPECTED_ERRORMESSAGE=$1
-        TESTCOUNT=`expr $TESTCOUNT "+" 1`
-        FILENAME=$CLIENT.$TESTCOUNT
-        echo "$EXPECTED_ERRORMESSAGE" > $TESTHOME/expected/$SUITE/$FILENAME
-        sh $CLIENT $HOSTPORT $2 $3 $4 $5 $6 $7 $8 $9 > $TESTHOME/result/$SUITE/$FILENAME 2>&1
-        if [ $? != 0 ]; then
-            cat $TESTHOME/result/$SUITE/$FILENAME
-            DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
-    	else
-            cat $TESTHOME/result/$SUITE/$FILENAME
-    	    ERRORMESSAGE=`grep "<error>" "$TESTHOME/result/$SUITE/$FILENAME"  | perl -ne '$_ =~ /message>(.*)<message/; print $1'`
-            if [ "$EXPECTED_ERRORMESSAGE" != "$ERRORMESSAGE" ] ; then 
-                echo "EXPECTED_ERRORMESSAGE=$EXPECTED_ERRORMESSAGE" > $TESTHOME/diff/$SUITE/$FILENAME
-                echo "         ERRORMESSAGE=$ERRORMESSAGE" >> $TESTHOME/diff/$SUITE/$FILENAME
-                cat $TESTHOME/diff/$SUITE/$FILENAME
+    TESTCOUNT=`expr $TESTCOUNT "+" 1`
+    EXPECTED_ERRORMESSAGE=$1
+    if [ "$MODE" = "expected" -o "$MODE" = "verbose" ] ; then
+    	echo "<`get_timestamp`>run_test_error() #$TESTCOUNT $CLIENT \"$EXPECTED_ERRORMESSAGE\" $2 $3 $4 $5 $6 $7 $8 \"$9\" "
+    fi;
+    FILENAME=$CLIENT.$TESTCOUNT
+    if [ "$MODE" = "expected" ] ; then
+        sh $CLIENT $HOSTPORT "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/expected/$SUITE/$FILENAME
+    else
+        sh $CLIENT $HOSTPORT "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/result/$SUITE/$FILENAME 2>&1
+    	ERRORLINE=`grep "$EXPECTED_ERRORMESSAGE" "$TESTHOME/result/$SUITE/$FILENAME"`
+        if [ -z "$ERRORLINE" ] ; then 
+        		echo " "
                 DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
-            fi;
+                echo "!!! DIFF#$DIFFCOUNT >>>"
+                echo "EXPECTED_ERRORMESSAGE=\"$EXPECTED_ERRORMESSAGE\" not found in result=" > $TESTHOME/diff/$SUITE/$FILENAME
+                cat $TESTHOME/result/$SUITE/$FILENAME
+                echo "!!! DIFF#$DIFFCOUNT <<<"
+        		echo " "
+        else
+    		if [ "$MODE" = "verbose" ] ; then
+        		echo " "
+    			echo "ERRORLINE=$ERRORLINE"
+        		echo " "
+        	fi;
         fi;
     fi;
 }
@@ -99,13 +111,15 @@ begin_suite(){
     CLIENT=$1
     TESTCOUNT=0
     DIFFCOUNT=0
+    echo "<`get_timestamp`>begin_suite $1 \"$2"\"
 }
 
 end_suite(){
     echo "<`get_timestamp`>TESTCOUNT=$TESTCOUNT"
-    if [ -z "$MODE" ] ; then
-        echo "<`get_timestamp`>DIFFCOUNT=$DIFFCOUNT"
+    if [ ! "$MODE" = "expected" ] ; then
+    	echo "<`get_timestamp`>DIFFCOUNT=$DIFFCOUNT"
     fi;
+    echo "<`get_timestamp`>end_suite"
 }
 
 echo "<`get_timestamp`>testEngine $*"
@@ -116,7 +130,7 @@ if [ $# -gt 1 ] ; then
 fi;
 
 if [ $# -eq 1 ] ; then
-    if [ ! $MODE = "expected" ] ; then
+    if [ ! \( "$MODE" = "expected" -o "$MODE" = "verbose" \) ] ; then
         usage
         exit 1
     fi;
@@ -125,7 +139,7 @@ fi;
 if [ ! -d $TESTHOME/expected ] ; then
     mkdir $TESTHOME/expected
 fi;
-if [ -n "$MODE" ] ; then
+if [ "$MODE" = "expected" ] ; then
     if [ -d $TESTHOME/expected/$SUITE ] ; then
         rm -r $TESTHOME/expected/$SUITE
     fi;

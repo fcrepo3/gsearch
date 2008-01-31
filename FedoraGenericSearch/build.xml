@@ -15,7 +15,7 @@
 	<property name="build.dir" location="${build.basedir}/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 	<property name="project.dir" location="${build.basedir}/eclipseprojects/FedoraGenericSearch" />
-	<property name="tomcat.basename" value="jakarta-tomcat-5.0.28" />
+	<property name="tomcat.basename" value="tomcat" />
 	<property name="dist.dir" location="dist" />
 	<property name="app.name" value="fedoragsearch" />
 	<property name="war.name" value="${app.name}.war" />
@@ -136,7 +136,12 @@
         <ant dir="../FgsConfig" target="configlocal" inheritAll="false"/>
 		<mkdir dir="${dist.dir}" />
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
-        <copy file="${dist.dir}/${war.name}" todir="/home/gsp/fedora-2.1.1/server/${tomcat.basename}/webapps"/>
+        <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f221/${tomcat.basename}/webapps"/>
+        <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f2218989/${tomcat.basename}/webapps"/>
+		<!--
+        <copy file="${dist.dir}/${war.name}" tofile="${dist.dir}/fedoragsearchtest.war"/>
+        <copy file="${dist.dir}/fedoragsearchtest.war" todir="/home/gsp/f2218989/${tomcat.basename}/webapps"/>
+        -->
 	</target>
 
 	<target name="builddemo"

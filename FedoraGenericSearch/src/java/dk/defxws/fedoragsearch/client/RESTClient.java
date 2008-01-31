@@ -36,7 +36,8 @@ public class RESTClient {
             String action,
             String value,
             String repositoryName,
-            String indexName) {
+            String indexName,
+            String indexDocXslt) {
         URL url = null;
         try {
             url =
@@ -47,6 +48,7 @@ public class RESTClient {
                         + "&value=" + value
                         + "&repositoryName=" + repositoryName
                         + "&indexName=" + indexName
+                        + "&indexDocXslt=" + indexDocXslt
                         + "&restXslt=copyXml");
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -140,6 +142,7 @@ public class RESTClient {
             int hitPageSize,
             int snippetsMax,
             int fieldMaxLength,
+            String sortFields,
             String resultPageXslt) {
         URL url = null;
         try {
@@ -153,6 +156,7 @@ public class RESTClient {
                         + "&hitPageSize=" + hitPageSize
                         + "&snippetsMax=" + snippetsMax
                         + "&fieldMaxLength=" + fieldMaxLength
+                        + "&sortFields=" + sortFields
                         + "&restXslt=copyXml"
                         + "&resultPageXslt=" + resultPageXslt);
         } catch (MalformedURLException e) {
@@ -279,14 +283,56 @@ public class RESTClient {
     
     public String configure(
             String restUrl,
-            String configName) {
+            String configName,
+            String propertyName,
+            String propertyValue) {
         URL url = null;
         try {
             url =
                 new URL(
                         restUrl
                         + "?operation=configure"
-                        + "&configName=" + configName);
+                        + "&configName=" + configName
+                        + "&propertyName=" + propertyName
+                        + "&propertyValue=" + propertyValue);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return "";
+        }
+        URLConnection conn = null;
+        try {
+            conn = url.openConnection();
+            conn.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+        content = null;
+        try {
+            content = conn.getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+        System.out.println((InputStream) content);
+        String line;
+        BufferedReader br = new BufferedReader(new InputStreamReader((InputStream)content));
+        try {
+            while ((line = br.readLine())!=null)
+                System.out.println(line);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return "";
+    }
+    
+    public String run(
+            String restUrl,
+            String queryString) {
+        URL url = null;
+        try {
+            url =
+                new URL(restUrl + queryString);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return "";
@@ -327,29 +373,35 @@ public class RESTClient {
             if (args.length<2) usage();
             RESTClient client = new RESTClient();
             String hostPort = args[0];
-            String restUrl = "http://"+hostPort;
-            if (hostPort.indexOf("/")<0)
-            	restUrl = "http://"+hostPort+"/fedoragsearch/rest";
+            int p = hostPort.indexOf("://");
+            String restUrl = hostPort;
+            if (p<0)
+            	restUrl = "http://"+hostPort;
+            if (restUrl.indexOf("/", restUrl.indexOf("://")+3)<0)
+            	restUrl = restUrl+"/fedoragsearch/rest";
             String op = args[1];
             if ("updateIndex".equals(op) ) {
                 String action = "";
                 if (args.length>2) action = args[2];
                 String repositoryName = "";
                 String value = "";
+                String indexName = "";
                 if (args.length>3)
                     if (action.equals("fromFoxmlFiles"))
                         repositoryName = args[3];
                     else
-                        value = args[3];
+                    	value = args[3];
                 if (args.length>4)
                     if (action.equals("fromFoxmlFiles"))
                         value = args[4];
                     else
                         repositoryName = args[4];
-                String indexName = "";
                 if (args.length>5)
                     indexName = args[5];
-                String result = client.updateIndex(restUrl, action, value, repositoryName, indexName);
+                String indexDocXslt = "";
+                if (args.length>6)
+                    indexDocXslt = args[6];
+                String result = client.updateIndex(restUrl, action, value, repositoryName, indexName, indexDocXslt);
                 System.out.println(result);
             }
             else
@@ -410,10 +462,13 @@ public class RESTClient {
                             } catch (NumberFormatException nfe) {
                             }
                         }
-                        String resultPageXslt = "";
+                        String sortFields = "";
                         if (args.length>8) 
-                            resultPageXslt = args[8];
-                        String result = client.gfindObjects(restUrl, query, indexName, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, resultPageXslt);
+                        	sortFields = args[8];
+                        String resultPageXslt = "";
+                        if (args.length>9) 
+                            resultPageXslt = args[9];
+                        String result = client.gfindObjects(restUrl, query, indexName, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, sortFields, resultPageXslt);
                         System.out.println(result);
                     }
                     else
@@ -441,11 +496,23 @@ public class RESTClient {
                             else
                                 if ("configure".equals(op) ) {
                                     String configName = "";
-                                    if (args.length>2)
+                                    String propertyName = "";
+                                    String propertyValue = "";
+                                    if (args.length>2) {
                                     	configName = args[2];
-                                    String result = client.configure(restUrl, configName);
+                                        if (args.length>3) {
+                                        	propertyName = args[3];
+                                        	propertyValue = args[4];
+                                        }
+                                    }
+                                    String result = client.configure(restUrl, configName, propertyName, propertyValue);
                                     System.out.println(result);
                                 }
+                                else
+                                    if ("?".equals(op.substring(0, 1)) ) {
+                                        String result = client.run(restUrl, op);
+                                        System.out.println(result);
+                                    }
                             else {
                                 System.out.println("!!! Error in operation name: "+op+" !!!");
                                 usage();
@@ -459,16 +526,18 @@ public class RESTClient {
     public static void usage() {	  
         System.out.println("Usage");
         System.out.println("host:port updateIndex # shows number of index documents #");
-        System.out.println("host:port updateIndex createEmpty [null indexName] # index dir must exist #");
-        System.out.println("host:port updateIndex fromFoxmlFiles [repositoryName [filePath [indexName]]]");
-        System.out.println("host:port updateIndex fromPid pid [repositoryName [indexName]]");
-        System.out.println("host:port updateIndex deletePid pid [repositoryName [indexName]]");
+        System.out.println("host:port updateIndex createEmpty [indexName] # index dir must exist #");
+        System.out.println("host:port updateIndex fromFoxmlFiles [repositoryName [filePath [indexName [indexDocXslt]]]]");
+        System.out.println("host:port updateIndex fromPid pid [repositoryName [indexName [indexDocXslt]]]");
+        System.out.println("host:port updateIndex deletePid pid [indexName]");
+        System.out.println("host:port updateIndex optimize [indexName]");
         System.out.println("host:port browseIndex startTerm fieldName [indexName [termPageSize [resultPageXslt]]]");
-        System.out.println("host:port gfindObjects query [indexName [hitPageStart [hitPageSize [snippetsMax [fieldMaxLength [resultPageXslt]]]]]]");
+        System.out.println("host:port gfindObjects query [indexName [hitPageStart [hitPageSize [snippetsMax [fieldMaxLength [sortFields [resultPageXslt]]]]]]]");
         System.out.println("host:port getRepositoryInfo [repositoryName [resultPageXslt]]");
         System.out.println("host:port getIndexInfo [indexName [resultPageXslt]]");
-//        System.out.println("host:port configure [configName]");
-        System.out.println("host:port may be host:port/webappname/restname, default is /fedoragsearch/rest");
+        System.out.println("host:port configure [configName [propertyName propertyValue]]");
+        System.out.println("host:port ?operation=...&...=...&...");
+        System.out.println("host:port may be [protocol://]host:port[/webappname/restname], default is http://host:port/fedoragsearch/rest");
         System.exit(1);
     }
     

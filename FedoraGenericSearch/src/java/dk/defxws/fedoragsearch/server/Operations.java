@@ -34,6 +34,7 @@ public interface Operations {
             int snippetsMax,
             int fieldMaxLength,
             String indexName,
+            String sortFields,
             String resultPageXslt) throws java.rmi.RemoteException;
     
     public String browseIndex(

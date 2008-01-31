@@ -20,6 +20,10 @@ public class FgsOperationsSoapBindingImpl implements dk.defxws.fedoragsearch.cli
         return null;
     }
 
+    public java.lang.String gfindObjects(java.lang.String query, int hitPageStart, int hitPageSize, int snippetsMax, int fieldMaxLength, java.lang.String indexName, java.lang.String sortFields, java.lang.String resultPageXslt) throws java.rmi.RemoteException {
+        return null;
+    }
+
     public java.lang.String getRepositoryInfo(java.lang.String repositoryName, java.lang.String resultPageXslt) throws java.rmi.RemoteException {
         return null;
     }

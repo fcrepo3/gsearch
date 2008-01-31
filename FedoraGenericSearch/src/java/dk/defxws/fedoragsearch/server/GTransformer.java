@@ -11,41 +11,25 @@
  */
 package dk.defxws.fedoragsearch.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import java.net.URL;
-
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.Source;
-
 //import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLFilterImpl;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
@@ -71,6 +55,11 @@ public class GTransformer {
      */
     public Transformer getTransformer(String xsltPath) 
     throws ConfigException {
+        return getTransformer(xsltPath, null);
+    }
+    
+    public Transformer getTransformer(String xsltPath, URIResolver uriResolver) 
+    throws ConfigException {
         Transformer transformer = null;
         String xsltPathName = "/"+xsltPath+".xslt";
         try {
@@ -81,6 +70,8 @@ public class GTransformer {
             TransformerFactory tfactory = TransformerFactory.newInstance();
             StreamSource xslt = new StreamSource(stylesheet);
             transformer = tfactory.newTransformer(xslt);
+            if (uriResolver!=null)
+            	transformer.setURIResolver(uriResolver);
         } catch (TransformerConfigurationException e) {
             throw new ConfigException("getTransformer "+xsltPathName+":\n", e);
         } catch (TransformerFactoryConfigurationError e) {
@@ -106,9 +97,14 @@ public class GTransformer {
 
     public StringBuffer transform(String xsltName, StreamSource sourceStream, Object[] params) 
     throws GenericSearchException {
+        return transform (xsltName, sourceStream, null, params);
+    }
+
+    public StringBuffer transform(String xsltName, StreamSource sourceStream, URIResolver uriResolver, Object[] params) 
+    throws GenericSearchException {
         if (logger.isDebugEnabled())
             logger.debug("xsltName="+xsltName);
-        Transformer transformer = getTransformer(xsltName);
+        Transformer transformer = getTransformer(xsltName, uriResolver);
         for (int i=0; i<params.length; i=i+2) {
             Object value = params[i+1];
             if (value==null) value = "";

@@ -60,6 +60,7 @@ public class RESTImpl extends HttpServlet {
     private static final String PARAM_HITPAGESIZE = "hitPageSize";
     private static final String PARAM_SNIPPETSMAX = "snippetsMax";
     private static final String PARAM_FIELDMAXLENGTH = "fieldMaxLength";
+    private static final String PARAM_SORTFIELDS = "sortFields";
     private static final String PARAM_STARTTERM = "startTerm";
     private static final String PARAM_TERMPAGESIZE = "termPageSize";
     private static final String PARAM_REPOSITORYNAME = "repositoryName";
@@ -110,17 +111,13 @@ public class RESTImpl extends HttpServlet {
                 resultXml = new StringBuffer(updateIndex(request, response));
             } else if (OP_BROWSEINDEX.equals(operation)) {
                 resultXml = new StringBuffer(browseIndex(request, response));
+            } else if ("configure".equals(operation)) {
+                resultXml = new StringBuffer(configure(request, response));
             } else {
                 resultXml = new StringBuffer("<resultPage/>");
                 if (restXslt==null || restXslt.equals("")) 
                     restXslt = config.getDefaultGfindObjectsRestXslt();
-                if ("configure".equals(operation)) {
-                    String configName = request.getParameter("configName");
-                    if (configName==null || configName.equals(""))
-                    	configName = "config";
-                    Config.configure(configName);
-                } else if (operation!=null && !"".equals(operation)) {
-//                    throw new ServletException("ERROR: operation "+operation+" is unknown!");
+                if (operation!=null && !"".equals(operation)) {
                     throw new GenericSearchException("ERROR: operation "+operation+" is unknown!");
                 }
             }
@@ -141,6 +138,8 @@ public class RESTImpl extends HttpServlet {
         resultXml = (new GTransformer()).transform(
         				config.getConfigName()+"/rest/"+restXslt, 
         				resultXml, params);
+//        if (logger.isDebugEnabled())
+//            logger.debug("after "+restXslt+" result=\n"+resultXml);
         
         if (restXslt.indexOf(CONTENTTYPEHTML)>=0)
             response.setContentType("text/html; charset=UTF-8");
@@ -183,8 +182,12 @@ public class RESTImpl extends HttpServlet {
             fieldMaxLength = Integer.parseInt(request.getParameter(PARAM_FIELDMAXLENGTH));
         } catch (NumberFormatException nfe) {
         }
+        String sortFields = request.getParameter(PARAM_SORTFIELDS);
+        if (sortFields==null) {
+        	sortFields = "";
+        }
         Operations ops = config.getOperationsImpl(indexName);
-        String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+        String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields,resultPageXslt);
         return result;
     }
     
@@ -248,6 +251,22 @@ public class RESTImpl extends HttpServlet {
         ops.init(indexName, config);
         String result = ops.updateIndex(action, value, repositoryName, indexName, indexDocXslt, resultPageXslt);
         return result;
+    }
+    
+    private String configure(HttpServletRequest request, HttpServletResponse response)
+    throws java.rmi.RemoteException {
+        if (restXslt==null || restXslt.equals("")) 
+            restXslt = config.getDefaultGfindObjectsRestXslt();
+        String configName = request.getParameter("configName");
+        if (configName==null || configName.equals(""))
+            configName = "config";
+        String propertyName = request.getParameter("propertyName");
+        String propertyValue = "";
+        if (!(propertyName==null || propertyName.equals(""))) {
+            propertyValue = request.getParameter("propertyValue");
+        }
+        Config.configure(configName, propertyName, propertyValue);
+        return "<resultPage/>";
     }
     
     /**

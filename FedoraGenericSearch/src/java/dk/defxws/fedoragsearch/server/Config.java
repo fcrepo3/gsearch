@@ -17,9 +17,11 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -29,6 +31,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -38,6 +41,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
+import org.pdfbox.ttf.IndexToLocationTable;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 
@@ -63,6 +67,8 @@ public class Config {
     
     private Hashtable indexNameToProps = null;
     
+    private Hashtable indexNameToUriResolvers = null;
+    
     private String defaultIndexName = null;
     
     private int maxPageSize = 50;
@@ -77,12 +83,24 @@ public class Config {
     
     private int defaultBrowseIndexTermPageSize = 20;
     
+    private String defaultSnippetBegin = "<span class=\"highlight\">";
+    
+    private String defaultSnippetEnd = "</span>";
+    
+    private String defaultAnalyzer = "org.apache.lucene.analysis.standard.StandardAnalyzer";
+    
     private StringBuffer errors = null;
     
     private final Logger logger = Logger.getLogger(Config.class);
     
     public static void configure(String configName) throws ConfigException {
         currentConfig = (new Config(configName));
+    }
+    
+    public static void configure(String configName, String propertyName, String propertyValue) throws ConfigException {
+        Config config = (new Config(configName));
+        config.setProperty(propertyName, propertyValue);
+        currentConfig = config;
     }
     
     public static Config getCurrentConfig() throws ConfigException {
@@ -240,7 +258,7 @@ public class Config {
         
 //      Check index properties
         indexNameToProps = new Hashtable();
-//      indexNameToClassName = new7 Hashtable();
+        indexNameToUriResolvers = new Hashtable();
         defaultIndexName = null;
         StringTokenizer indexNames = new StringTokenizer(fgsProps.getProperty("fedoragsearch.indexNames"));
         while (indexNames.hasMoreTokens()) {
@@ -326,9 +344,10 @@ public class Config {
                     if (operationsImpl.indexOf("fgslucene")>-1) {
                     	String analyzer = props.getProperty("fgsindex.analyzer"); 
                     	if (analyzer == null || analyzer.equals("")) {
-                    		errors.append("\n*** "+configName+"/index/" + indexName
-                    				+": fgsindex.analyzer must be set in "+configName+"/index/ "
-                    				+ indexName + ".properties");
+//                    		errors.append("\n*** "+configName+"/index/" + indexName
+//                    				+": fgsindex.analyzer must be set in "+configName+"/index/ "
+//                    				+ indexName + ".properties");
+                    		analyzer = defaultAnalyzer;
                     	}
                     	try {
                     		Class analyzerClass = Class.forName(analyzer);
@@ -363,7 +382,9 @@ public class Config {
 //					Add untokenizedFields property for lucene
 
                     if (operationsImpl.indexOf("fgslucene")>-1) {
-                        props.setProperty("fgsindex.untokenizedFields", "");
+                    	String defaultUntokenizedFields = props.getProperty("fgsindex.untokenizedFields");
+                    	if (defaultUntokenizedFields == null)
+                    		props.setProperty("fgsindex.untokenizedFields", "");
                         if (indexDirFile != null) {
                         	StringBuffer untokenizedFields = new StringBuffer(props.getProperty("fgsindex.untokenizedFields"));
                         	IndexReader ir = null;
@@ -373,9 +394,11 @@ public class Config {
 								if (max > 10) max = 10;
 								for (int i=0; i<max; i++) {
 									Document doc = ir.document(i);
-									Enumeration fields = doc.fields();
-									while (fields.hasMoreElements()) {
-										Field f = (Field)fields.nextElement();
+//									Enumeration fields = doc.fields();
+//									while (fields.hasMoreElements()) {
+									for (ListIterator li = doc.getFields().listIterator(); li.hasNext(); ) {
+										Field f = (Field)li.next();
+//										Field f = (Field)fields.nextElement();
 										if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
 											untokenizedFields.append(" "+f.name());
 										}
@@ -388,9 +411,49 @@ public class Config {
                                 logger.debug("indexName=" + indexName+ " fgsindex.untokenizedFields="+untokenizedFields);
                         }
                     }
-                    
+
 //                  Check defaultQueryFields - how can we check this?
                     String defaultQueryFields = props.getProperty("fgsindex.defaultQueryFields");
+                    
+//                  Use custom URIResolver if given
+                    if (operationsImpl.indexOf("fgslucene")>-1) {
+                		Class uriResolverClass = null;
+                        String uriResolver = props.getProperty("fgsindex.uriResolver");
+                        if (!(uriResolver == null || uriResolver.equals(""))) {
+                        	try {
+                        		uriResolverClass = Class.forName(uriResolver);
+                        		try {
+                        			URIResolverImpl ur = (URIResolverImpl) uriResolverClass
+                        			.getConstructor(new Class[] {})
+                        			.newInstance(new Object[] {});
+                                    if (ur != null) {
+                                    	ur.setConfig(this);
+                                    	indexNameToUriResolvers.put(indexName, ur);
+                                    }
+                        		} catch (InstantiationException e) {
+                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+                        					+ ": fgsindex.uriResolver="+uriResolver
+                        					+ ": instantiation error.\n"+e.toString());
+                        		} catch (IllegalAccessException e) {
+                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+                        					+ ": fgsindex.uriResolver="+uriResolver
+                        					+ ": instantiation error.\n"+e.toString());
+                        		} catch (InvocationTargetException e) {
+                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+                        					+ ": fgsindex.uriResolver="+uriResolver
+                        					+ ": instantiation error.\n"+e.toString());
+                        		} catch (NoSuchMethodException e) {
+                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+                        					+ ": fgsindex.uriResolver="+uriResolver
+                        					+ ": instantiation error:\n"+e.toString());
+                        		}
+                        	} catch (ClassNotFoundException e) {
+                        		errors.append("\n*** "+configName+"/index/" + indexName
+                        				+ ": fgsindex.uriResolver="+uriResolver
+                        				+ ": class not found:\n"+e.toString());
+                        	}
+                        }
+                    }
                     
                     indexNameToProps.put(indexName, props);
                 }
@@ -556,6 +619,25 @@ public class Config {
             return repositoryName;
     }
     
+    public String getRepositoryNameFromUrl(URL url) {
+//    	String repositoryName = defaultRepositoryName;
+    	String repositoryName = "";
+    	String hostPort = url.getHost();
+    	if (url.getPort()>-1)
+    		hostPort += ":"+url.getPort();
+        if (!(hostPort==null || hostPort.equals(""))) {
+        	Enumeration propss = repositoryNameToProps.elements();
+        	while (propss.hasMoreElements()) {
+        		Properties props = (Properties)propss.nextElement();
+        		String fedoraSoap = props.getProperty("fgsrepository.fedoraSoap");
+        		if (fedoraSoap != null && fedoraSoap.indexOf(hostPort) > -1) {
+        			return props.getProperty("fgsrepository.repositoryName", defaultRepositoryName);
+        		}
+        	}
+        }
+        return repositoryName;
+    }
+    
     private Properties getRepositoryProps(String repositoryName) {
         return (Properties) (repositoryNameToProps.get(repositoryName));
     }
@@ -590,6 +672,14 @@ public class Config {
             return resultPageXslt;
     }
     
+    public String getTrustStorePath(String repositoryName) {
+        return (getRepositoryProps(repositoryName)).getProperty("fgsrepository.trustStorePath");
+    }
+    
+    public String getTrustStorePass(String repositoryName) {
+        return (getRepositoryProps(repositoryName)).getProperty("fgsrepository.trustStorePass");
+    }
+    
     public String getIndexName(String indexName) {
         if (indexName==null || indexName.equals("")) 
             return defaultIndexName;
@@ -621,6 +711,13 @@ public class Config {
         else 
             return resultPageXslt;
     }
+
+	public String getSortFields(String indexName, String sortFields) {
+        if (sortFields==null || sortFields.equals("")) 
+            return (getIndexProps(indexName)).getProperty("fgsindex.defaultSortFields");
+        else 
+            return sortFields;
+    }
     
     public String getBrowseIndexResultXslt(String indexName, String resultPageXslt) {
         if (resultPageXslt==null || resultPageXslt.equals("")) 
@@ -648,12 +745,50 @@ public class Config {
         return getIndexProps(indexName).getProperty("fgsindex.analyzer");
     }
     
+    public URIResolver getURIResolver(String indexName) {
+        return (URIResolver)indexNameToUriResolvers.get(indexName);
+    }
+    
     public String getUntokenizedFields(String indexName) {
         return getIndexProps(indexName).getProperty("fgsindex.untokenizedFields");
     }
     
+    public void setUntokenizedFields(String indexName, String untokenizedFields) {
+        getIndexProps(indexName).setProperty("fgsindex.untokenizedFields", untokenizedFields);
+    }
+    
     public String getDefaultQueryFields(String indexName) {
         return getIndexProps(indexName).getProperty("fgsindex.defaultQueryFields");
+    }
+    
+    public String getSnippetBegin(String indexName) {
+    	String snippetBegin = getIndexProps(indexName).getProperty("fgsindex.snippetBegin");
+    	if (snippetBegin == null) return defaultSnippetBegin;
+    	return snippetBegin;
+    }
+    
+    public String getSnippetEnd(String indexName) {
+    	String snippetEnd = getIndexProps(indexName).getProperty("fgsindex.snippetEnd");
+    	if (snippetEnd == null) return defaultSnippetEnd;
+    	return snippetEnd;
+    }
+    
+    public int getMergeFactor(String indexName) {
+    	int mergeFactor = 1;
+		try {
+			mergeFactor = Integer.parseInt(getIndexProps(indexName).getProperty("fgsindex.mergeFactor"));
+		} catch (NumberFormatException e) {
+		}
+    	return mergeFactor;
+    }
+    
+    public int getMaxBufferedDocs(String indexName) {
+    	int maxBufferedDocs = 1;
+		try {
+			maxBufferedDocs = Integer.parseInt(getIndexProps(indexName).getProperty("fgsindex.maxBufferedDocs"));
+		} catch (NumberFormatException e) {
+		}
+    	return maxBufferedDocs;
     }
     
     public GenericOperationsImpl getOperationsImpl(String indexNameParam)
@@ -724,6 +859,33 @@ public class Config {
     		}
     	}
     	return result;
+    }
+    
+    private void setProperty(String propertyName, String propertyValue) {
+        if (logger.isInfoEnabled())
+            logger.info("property " + propertyName + "=" + propertyValue);
+        if (!(propertyName==null || propertyName.equals(""))) {
+            int i = propertyName.indexOf("/");
+            String propName = "";
+        	Properties props = null;
+            if (i>-1) {
+            	propName = propertyName.substring(0, i);
+            	if (indexNameToProps.contains(propName)) {
+            		props = (Properties)indexNameToProps.get(propName);
+            	}
+            	else if (repositoryNameToProps.contains(propName)) {
+            		props = (Properties)repositoryNameToProps.get(propName);
+            	}
+            } else {
+            	props = fgsProps;
+            }
+        	if (props!=null) {
+        		props.setProperty(propertyName, propertyValue);
+        	} else {
+                if (logger.isDebugEnabled())
+                    logger.debug("property " + propertyName + " not found");
+        	}
+        }
     }
     
     public static void main(String[] args) {

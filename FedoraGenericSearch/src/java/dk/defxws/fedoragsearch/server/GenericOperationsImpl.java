@@ -100,31 +100,39 @@ public class GenericOperationsImpl implements Operations {
     }
 
     private static FedoraAPIA getAPIA(String repositoryName,
-                                      Config config)
-            throws GenericSearchException {
-        try {
-            FedoraClient client = getFedoraClient(repositoryName, config);
-            return client.getAPIA();
-        } catch (GenericSearchException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new GenericSearchException("Error getting API-A stub"
-                    + " for repository: " + repositoryName, e);
-        }
+    		Config config)
+    throws GenericSearchException {
+    	String value = config.getTrustStorePath(repositoryName);
+    	if (value!=null)
+    		System.setProperty("javax.net.ssl.trustStore", value);
+    	value = config.getTrustStorePass(repositoryName);
+    	if (value!=null)
+    		System.setProperty("javax.net.ssl.trustStorePassword", value);
+    	FedoraClient client = getFedoraClient(repositoryName, config);
+    	try {
+    		return client.getAPIA();
+    	} catch (Exception e) {
+    		throw new GenericSearchException("Error getting API-A stub"
+    				+ " for repository: " + repositoryName, e);
+    	}
     }
     
     private static FedoraAPIM getAPIM(String repositoryName,
-                                      Config config)
-            throws GenericSearchException {
-        try {
-            FedoraClient client = getFedoraClient(repositoryName, config);
-            return client.getAPIM();
-        } catch (GenericSearchException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new GenericSearchException("Error getting API-M stub"
-                    + " for repository: " + repositoryName, e);
-        }
+    		Config config)
+    throws GenericSearchException {
+    	String value = config.getTrustStorePath(repositoryName);
+    	if (value!=null)
+    		System.setProperty("javax.net.ssl.trustStore", value);
+    	value = config.getTrustStorePass(repositoryName);
+    	if (value!=null)
+    		System.setProperty("javax.net.ssl.trustStorePassword", value);
+    	FedoraClient client = getFedoraClient(repositoryName, config);
+    	try {
+    		return client.getAPIM();
+    	} catch (Exception e) {
+    		throw new GenericSearchException("Error getting API-M stub"
+    				+ " for repository: " + repositoryName, e);
+    	}
     }
     
     public void init(String indexName, Config currentConfig) {
@@ -139,6 +147,7 @@ public class GenericOperationsImpl implements Operations {
             int snippetsMax,
             int fieldMaxLength,
             String indexName,
+            String sortFields,
             String resultPageXslt)
     throws java.rmi.RemoteException {
         
@@ -150,8 +159,9 @@ public class GenericOperationsImpl implements Operations {
                     " snippetsMax="+snippetsMax+
                     " fieldMaxLength="+fieldMaxLength+
                     " indexName="+indexName+
+                    " sortFields="+sortFields+
                     " resultPageXslt="+resultPageXslt);
-        params = new String[12];
+        params = new String[14];
         params[0] = "OPERATION";
         params[1] = "gfindObjects";
         params[2] = "QUERY";
@@ -162,6 +172,8 @@ public class GenericOperationsImpl implements Operations {
         params[7] = Integer.toString(hitPageSize);
         params[8] = "INDEXNAME";
         params[9] = indexName;
+        params[10] = "SORTFIELDS";
+        params[11] = sortFields;
         return "";
     }
     

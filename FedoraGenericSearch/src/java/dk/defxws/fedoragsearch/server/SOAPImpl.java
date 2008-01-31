@@ -35,6 +35,20 @@ public class SOAPImpl implements Operations {
             String indexName,
             String resultPageXslt)
     throws java.rmi.RemoteException {
+        String result = gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, "", resultPageXslt);
+        return result;
+    }
+    
+    public String gfindObjects(
+            String query,
+            int hitPageStart,
+            int hitPageSize,
+            int snippetsMax,
+            int fieldMaxLength,
+            String indexName,
+            String sortFields,
+            String resultPageXslt)
+    throws java.rmi.RemoteException {
     	Date startTime = new Date();
         if (logger.isInfoEnabled())
             logger.info("gfindObjects" +
@@ -44,7 +58,7 @@ public class SOAPImpl implements Operations {
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
         Operations ops = Config.getCurrentConfig().getOperationsImpl(indexName);
-        String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+        String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isInfoEnabled())
             logger.info("gfindObjects" +

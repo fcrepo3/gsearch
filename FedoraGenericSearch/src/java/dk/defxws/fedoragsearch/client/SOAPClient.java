@@ -100,6 +100,7 @@ public class SOAPClient {
             int hitPageSize,
             int snippetsMax,
             int fieldMaxLength,
+            String sortFields,
             String resultPageXslt) {
         String result = "";
         try {
@@ -111,7 +112,7 @@ public class SOAPClient {
             e.printStackTrace();
         }
         try {
-            result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+            result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
         } catch (RemoteException e1) {
             e1.printStackTrace();
         }
@@ -252,10 +253,13 @@ public class SOAPClient {
                             } catch (NumberFormatException nfe) {
                             }
                         }
-                        String resultPageXslt = "";
+                        String sortFields = "";
                         if (args.length>8) 
-                            resultPageXslt = args[8];
-                        String result = client.gfindObjects(restUrl, query, indexName, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, resultPageXslt);
+                        	sortFields = args[8];
+                        String resultPageXslt = "";
+                        if (args.length>9) 
+                            resultPageXslt = args[9];
+                        String result = client.gfindObjects(restUrl, query, indexName, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, sortFields, resultPageXslt);
                         System.out.println(result);
                     }
                     else
@@ -298,7 +302,7 @@ public class SOAPClient {
         System.out.println("host:port updateIndex fromPid pid [repositoryName [indexName]]");
         System.out.println("host:port updateIndex deletePid pid [repositoryName [indexName]]");
         System.out.println("host:port browseIndex startTerm fieldName [indexName [termPageSize [resultPageXslt]]]");
-        System.out.println("host:port gfindObjects query [indexName [hitPageStart [hitPageSize [snippetsMax [fieldMaxLength [resultPageXslt]]]]]]");
+        System.out.println("host:port gfindObjects query [indexName [hitPageStart [hitPageSize [snippetsMax [fieldMaxLength [sortFields [resultPageXslt]]]]]]]");
         System.out.println("host:port getRepositoryInfo [repositoryName [resultPageXslt]]");
         System.out.println("host:port getIndexInfo [indexName [resultPageXslt]]");
         System.out.println("host:port may be host:port/webappname/servicesname/operationsname, default is '/fedoragsearch/services/FgsOperations'");

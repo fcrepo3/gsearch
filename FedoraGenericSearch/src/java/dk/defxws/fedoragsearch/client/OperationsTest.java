@@ -24,14 +24,14 @@ public class OperationsTest extends TestCase {
 		OperationsService opsService = new OperationsServiceLocator();
 		try {
 			Operations ops = opsService.getFgsOperations();
-			try {
-				String result = ops.gfindObjects("metal", 1, 2, 3, 50, "Lucene", "");
-				assertEquals("12052 ", result);
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				fail(e1.toString());
-			}
+//			try {
+//				String result = ops.gfindObjects("metal", 1, 2, 3, 50, "Lucene", "");
+//				assertEquals("12052 ", result); 
+//			} catch (RemoteException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//				fail(e1.toString());
+//			}
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

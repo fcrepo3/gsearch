@@ -49,6 +49,7 @@
    <parameter name="snippetsMax" type="xsd:int"/>
    <parameter name="fieldMaxLength" type="xsd:int"/>
    <parameter name="indexName" type="xsd:string"/>
+   <parameter name="sortFields" type="xsd:string"/>
    <parameter name="resultPageXslt" type="xsd:string"/>
   </operation>
   <operation name="browseIndex" qname="ns2:browseIndex" returnQName="browseIndexReturn" returnType="xsd:string" soapAction="" xmlns:ns2="http://server.fedoragsearch.defxws.dk" xmlns:xsd="http://www.w3.org/2001/XMLSchema">

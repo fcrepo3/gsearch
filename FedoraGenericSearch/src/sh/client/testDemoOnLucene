@@ -33,15 +33,18 @@ run_test getIndexInfo
 run_test updateIndex createEmpty
 run_test updateIndex fromPid demo:10
 run_test updateIndex fromFoxmlFiles
+run_test updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2)"
+run_test gfindObjects EXPLICITPARAM1:explicitvalue1 and EXPLICITPARAM2:explicitvalue2
 run_test browseIndex a dc.title
 run_test gfindObjects fedora
+run_test gfindObjects unknown-field:fedora
 
 #errors
 
 run_test gfindObject fedora
-run_test gfindObjects unknown-field::fedora
-run_test_error "ERROR: operation gfindObject is unknown!" gfindObject fedora
-run_test_error "ERROR: " gfindObjects unknown-field::fedora
+run_test_error "query syntax" gfindObjects some-field::fedora
+run_test_error "ParseException" gfindObjects some-field::fedora
+run_test_error "no ending \')\'" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2"
 
 end_suite
 
@@ -50,9 +53,15 @@ begin_suite runSOAPClient.sh
 run_test getRepositoryInfo
 run_test getIndexInfo
 run_test updateIndex createEmpty
-run_test updateIndex fromPid demo:11
 run_test updateIndex fromFoxmlFiles
+run_test updateIndex fromPid demo:11
 run_test browseIndex a dc.title
 run_test gfindObjects fedora
+run_test gfindObjects unknown-field:fedora
+
+#errors
+
+run_test gfindObject fedora
+run_test_error "ParseException" gfindObjects some-field::fedora
 
 end_suite
