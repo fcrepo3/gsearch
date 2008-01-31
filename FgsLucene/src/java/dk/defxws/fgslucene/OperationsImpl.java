@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -43,6 +44,8 @@ import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
+import fedora.server.utilities.StreamUtility;
+
 /**
  * performs the Lucene specific parts of the operations
  * 
@@ -62,9 +65,10 @@ public class OperationsImpl extends GenericOperationsImpl {
             int snippetsMax,
             int fieldMaxLength,
             String indexName,
+            String sortFields,
             String resultPageXslt)
     throws java.rmi.RemoteException {
-        super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+        super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
         ResultSet resultSet = (new Connection()).createStatement().executeQuery(
                 query,
                 hitPageStart,
@@ -74,16 +78,21 @@ public class OperationsImpl extends GenericOperationsImpl {
                 getQueryAnalyzer(indexName),
                 config.getDefaultQueryFields(indexName),
                 config.getIndexDir(indexName),
-                config.getIndexName(indexName));
-        if (logger.isDebugEnabled())
-            logger.debug("resultSet.getResultXml()="+resultSet.getResultXml());
-        params[10] = "RESULTPAGEXSLT";
-        params[11] = resultPageXslt;
+                config.getIndexName(indexName),
+                config.getSnippetBegin(indexName),
+                config.getSnippetEnd(indexName),
+                config.getSortFields(indexName, sortFields));
+//        if (logger.isDebugEnabled())
+//            logger.debug("resultSet.getResultXml()=\n"+resultSet.getResultXml());
+        params[12] = "RESULTPAGEXSLT";
+        params[13] = resultPageXslt;
         String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
         StringBuffer sb = (new GTransformer()).transform(
         		xsltPath,
                 resultSet.getResultXml(),
                 params);
+//        if (logger.isDebugEnabled())
+//            logger.debug("after "+resultPageXslt+" result=\n"+sb.toString());
         return sb.toString();
     }
     
@@ -122,7 +131,7 @@ public class OperationsImpl extends GenericOperationsImpl {
                         pageSize++;
                         resultXml.append("<term no=\""+termNo+"\""
                                 +" fieldtermhittotal=\""+terms.docFreq()
-                                +"\">"+terms.term().text()+"</term>");
+                                +"\">"+StreamUtility.enc(terms.term().text())+"</term>");
                     }
                     terms.next();
                 }
@@ -147,7 +156,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         resultXml.insert(0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<lucenebrowseindex "+
                 "   xmlns:dc=\"http://purl.org/dc/elements/1.1/"+
-                "\" startTerm=\""+startTerm+
+                "\" startTerm=\""+StreamUtility.enc(startTerm)+
                 "\" termPageSize=\""+termPageSize+
                 "\" fieldName=\""+fieldName+
                 "\" indexName=\""+indexName+
@@ -208,6 +217,10 @@ public class OperationsImpl extends GenericOperationsImpl {
             else {
                 try {
                     modifier = new IndexModifier(config.getIndexDir(indexName), getAnalyzer(config.getAnalyzer(indexName)), false);
+                    if (config.getMaxBufferedDocs(indexName)>1)
+                    	modifier.setMaxBufferedDocs(config.getMaxBufferedDocs(indexName));
+                    if (config.getMergeFactor(indexName)>1)
+                    	modifier.setMergeFactor(config.getMergeFactor(indexName));
                 } catch (IOException e) {
                     if (e.toString().indexOf("/segments")>-1) {
                         try {
@@ -227,6 +240,9 @@ public class OperationsImpl extends GenericOperationsImpl {
                     else
                         if ("deletePid".equals(action)) 
                             deletePid(value, resultXml);
+                        else
+                            if ("optimize".equals(action)) 
+                            	optimize(resultXml);
             }
         } catch (RemoteException e) {
             if (modifier != null) {
@@ -238,11 +254,6 @@ public class OperationsImpl extends GenericOperationsImpl {
             throw new GenericSearchException("Exception on updateIndex action= "+action, e);
         }
         if (modifier != null) {
-            try {
-                modifier.optimize();
-            } catch (IOException e) {
-                throw new GenericSearchException("IndexModifier optimize error", e);
-            }
             docCount = modifier.docCount();
             try {
                 modifier.close();
@@ -288,6 +299,19 @@ public class OperationsImpl extends GenericOperationsImpl {
             throw new GenericSearchException("IndexModifier new error", e);
         }
         resultXml.append("<createEmpty/>\n");
+    }
+    
+    private void optimize(
+    		StringBuffer resultXml)
+    throws java.rmi.RemoteException {
+        if (modifier != null) {
+            try {
+                modifier.optimize();
+            } catch (IOException e) {
+                throw new GenericSearchException("IndexModifier optimize error", e);
+            }
+        }
+        resultXml.append("<optimize/>\n");
     }
     
     private void fromFoxmlFiles(
@@ -370,11 +394,42 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexDocXslt)
     throws java.rmi.RemoteException {
         IndexDocumentHandler hdlr = null;
-        String xsltPath = config.getConfigName()+"/index/"+indexName+"/"+config.getUpdateIndexDocXslt(indexName, indexDocXslt);
+        String xsltName = indexDocXslt;
+        String[] params = new String[2];
+        int beginParams = indexDocXslt.indexOf("(");
+        if (beginParams > -1) {
+        	xsltName = indexDocXslt.substring(0, beginParams).trim();
+            int endParams = indexDocXslt.indexOf(")");
+        	if (endParams < beginParams)
+                throw new GenericSearchException("Format error (no ending ')') in indexDocXslt="+indexDocXslt+": ");
+            StringTokenizer st = new StringTokenizer(indexDocXslt.substring(beginParams+1, endParams), ",");
+            params = new String[2+2*st.countTokens()];
+            int i=1; 
+            while (st.hasMoreTokens()) {
+            	String param = st.nextToken().trim();
+            	if (param==null || param.length()<1)
+                    throw new GenericSearchException("Format error (empty param) in indexDocXslt="+indexDocXslt+" params["+i+"]="+param);
+            	int eq = param.indexOf("=");
+            	if (eq < 0)
+                    throw new GenericSearchException("Format error (no '=') in indexDocXslt="+indexDocXslt+" params["+i+"]="+param);
+            	String pname = param.substring(0, eq).trim();
+            	String pvalue = param.substring(eq+1).trim();
+            	if (pname==null || pname.length()<1)
+                    throw new GenericSearchException("Format error (no param name) in indexDocXslt="+indexDocXslt+" params["+i+"]="+param);
+            	if (pvalue==null || pvalue.length()<1)
+                    throw new GenericSearchException("Format error (no param value) in indexDocXslt="+indexDocXslt+" params["+i+"]="+param);
+            	params[2*i] = pname;
+            	params[1+2*i++] = pvalue;
+            }
+        }
+        params[0] = "REPOSITORYNAME";
+        params[1] = repositoryName;
+        String xsltPath = config.getConfigName()+"/index/"+indexName+"/"+config.getUpdateIndexDocXslt(indexName, xsltName);
         StringBuffer sb = (new GTransformer()).transform(
         		xsltPath, 
                 new StreamSource(foxmlStream),
-                new String[] {"REPOSITORYNAME", repositoryName});
+                config.getURIResolver(indexName),
+                params);
         if (logger.isDebugEnabled())
             logger.debug("indexDoc=\n"+sb.toString());
         hdlr = new IndexDocumentHandler(
@@ -387,7 +442,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             if (!(hdlr.getPid()==null || hdlr.getPid().equals("")))
                 deleted = modifier.deleteDocuments(new Term("PID", hdlr.getPid()));
             deleteTotal += deleted;
-            if (hdlr.getIndexDocument().fields().hasMoreElements()) {
+            ListIterator li = hdlr.getIndexDocument().getFields().listIterator();
+            if (li.hasNext()) {
+//            if (hdlr.getIndexDocument().fields().hasMoreElements()) {
 //                hdlr.getIndexDocument().add(new Field("repositoryName", repositoryName, Field.Store.YES, Field.Index.UN_TOKENIZED, Field.TermVector.NO));
                 modifier.addDocument(hdlr.getIndexDocument());
                 modifier.flush();
@@ -399,15 +456,18 @@ public class OperationsImpl extends GenericOperationsImpl {
                 }
                 else insertTotal++;
             	StringBuffer untokenizedFields = new StringBuffer(config.getUntokenizedFields(indexName));
-            	Enumeration fields = hdlr.getIndexDocument().fields();
-            	while (fields.hasMoreElements()) {
-            		Field f = (Field)fields.nextElement();
+                while (li.hasNext()) {
+                    Field f = (Field)li.next();
+//            	Enumeration fields = hdlr.getIndexDocument().fields();
+//            	while (fields.hasMoreElements()) {
+//            		Field f = (Field)fields.nextElement();
             		if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
             			untokenizedFields.append(" "+f.name());
+                        config.setUntokenizedFields(indexName, untokenizedFields.toString());
             		}
             	}
-                Properties props = config.getIndexProps(indexName);
-                props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
+//                Properties props = config.getIndexProps(indexName);
+//                props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
                 logger.info("indexDoc="+hdlr.getPid()+" docCount="+modifier.docCount());
             }
         } catch (IOException e) {

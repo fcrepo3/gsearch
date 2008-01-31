@@ -171,36 +171,38 @@ public class IndexDocumentHandler extends DefaultHandler {
             String qualifiedName)  throws SAXException {
         String ebs = elementBuffer.toString().trim();
         if ("IndexField".equals(simpleName)) {
-            if (dsId != null)
-                try {
-                    ebs = owner.getDatastreamText(pid, repositoryName, dsId).toString();
-                } catch (GenericSearchException e) {
-                    throw new SAXException(e);
-                }
-                if (dsMimetypes != null)
-                    try {
-                        ebs = owner.getFirstDatastreamText(pid, repositoryName, dsMimetypes).toString();
-                    } catch (GenericSearchException e) {
-                        throw new SAXException(e);
-                    }
-                    if (bDefPid != null)
-                        try {
-                            ebs = owner.getDisseminationText(pid, repositoryName, bDefPid, methodName, parameters, asOfDateTime).toString();
-                        } catch (GenericSearchException e) {
-                            throw new SAXException(e);
-                        }
-                        if (ebs.length()>0) {
-//                            Field f = new Field(fieldName, StreamUtility.enc(ebs), store, index, termVector);
-//							we have to insert a space before encoded characters, 
-//                        	else StandardAnalyzer will index e.g. "a'b" as a&apos and b&quot
-//                        	which will fail during search and browse.
-                        	Field f = new Field(fieldName, enc(ebs), store, index, termVector);
-                            if (boost > Float.MIN_VALUE) f.setBoost(boost);
-                            indexDocument.add(f);
-                        }
-//                        if (fieldName.equals("fgs.PID"))
-//                            pid = ebs;
-        }
+			if (dsId != null) {
+				try {
+					ebs = owner.getDatastreamText(pid, repositoryName, dsId)
+							.toString();
+				} catch (GenericSearchException e) {
+					throw new SAXException(e);
+				}
+			} else if (dsMimetypes != null) {
+				try {
+					ebs = owner.getFirstDatastreamText(pid, repositoryName,
+							dsMimetypes).toString();
+				} catch (GenericSearchException e) {
+					throw new SAXException(e);
+				}
+			} else if (bDefPid != null) {
+				try {
+					ebs = owner.getDisseminationText(pid, repositoryName,
+							bDefPid, methodName, parameters, asOfDateTime)
+							.toString();
+				} catch (GenericSearchException e) {
+					throw new SAXException(e);
+				}
+			}
+			if (ebs.length() > 0) {
+				if (logger.isDebugEnabled())
+					logger.debug(fieldName + "=" + ebs);
+				Field f = new Field(fieldName, ebs, store, index, termVector);
+				if (boost > Float.MIN_VALUE)
+					f.setBoost(boost);
+				indexDocument.add(f);
+			}
+		}
     }
     
     protected Document getIndexDocument() {
@@ -209,72 +211,6 @@ public class IndexDocumentHandler extends DefaultHandler {
     
     protected String getPid() {
         return pid;
-    }
-    /**
-     * Returns an XML-appropriate encoding of the given String.
-     *
-     * @param in The String to encode.
-     * @return A new, encoded String.
-     */
-    private static String enc(String in) {
-    	String inStr=in;
-    	if (inStr==null){
-    		inStr="";
-    	}
-        StringBuffer out=new StringBuffer();
-        enc(inStr, out);
-        return out.toString();
-    }
-
-    /**
-     * Appends an XML-appropriate encoding of the given String to the given
-     * StringBuffer.
-     *
-     * @param in The String to encode.
-     * @param out The StringBuffer to write to.
-     */
-    private static void enc(String in, StringBuffer out) {
-        for (int i=0; i<in.length(); i++) {
-            enc(in.charAt(i),out);
-        }
-    }
-
-    /**
-     * Appends an XML-appropriate encoding of the given range of characters
-     * to the given StringBuffer.
-     *
-     * @param in The char buffer to read from.
-     * @param start The starting index.
-     * @param length The number of characters in the range.
-     * @param out The StringBuffer to write to.
-     */
-    private static void enc(char[] in, int start, int length, StringBuffer out) {
-        for (int i=start; i<length+start; i++) {
-            enc(in[i], out);
-        }
-    }
-
-    /**
-     * Appends an XML-appropriate encoding of the given character to the
-     * given StringBuffer.
-     *
-     * @param in The character.
-     * @param out The StringBuffer to write to.
-     */
-    private static void enc(char in, StringBuffer out) {
-        if (in=='&') {
-            out.append(" &amp;");
-        } else if (in=='<') {
-            out.append(" &lt;");
-        } else if (in=='>') {
-            out.append(" &gt;");
-        } else if (in=='\"') {
-            out.append(" &quot;");
-        } else if (in=='\'') {
-            out.append(" &apos;");
-        } else {
-            out.append(in);
-        }
     }
 
 }
