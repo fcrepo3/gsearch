@@ -13,14 +13,11 @@ package dk.defxws.fgszebra;
 
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
