@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URLEncoder;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.StringTokenizer;

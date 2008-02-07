@@ -19,10 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -33,7 +31,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexReader;
@@ -41,7 +38,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
-import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 import fedora.server.utilities.StreamUtility;
