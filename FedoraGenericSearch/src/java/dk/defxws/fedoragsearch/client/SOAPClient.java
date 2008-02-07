@@ -11,15 +11,6 @@
  */
 package dk.defxws.fedoragsearch.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
@@ -34,8 +25,6 @@ public class SOAPClient {
     
     private OperationsServiceLocator opsService = new OperationsServiceLocator();
     private dk.defxws.fedoragsearch.client.Operations ops;
-    
-    private Object content;
     
     public SOAPClient() {
         try {

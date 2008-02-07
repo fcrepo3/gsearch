@@ -59,10 +59,6 @@ public class GenericOperationsImpl implements Operations {
     protected String dsText;
     protected String[] params = null;
 
-    static {
-        FedoraClient.FORCE_LOG4J_CONFIGURATION = false;
-    }
-
     private static FedoraClient getFedoraClient(String repositoryName,
             Config config)
             throws GenericSearchException {

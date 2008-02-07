@@ -9,6 +9,8 @@ package dk.defxws.fedoragsearch.client;
 
 public class OperationsServiceLocator extends org.apache.axis.client.Service implements dk.defxws.fedoragsearch.client.OperationsService {
 
+	private static final long serialVersionUID = 1L;
+	 
     public OperationsServiceLocator() {
     }
 

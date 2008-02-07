@@ -20,11 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -41,7 +39,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
-import org.pdfbox.ttf.IndexToLocationTable;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 

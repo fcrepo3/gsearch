@@ -18,7 +18,9 @@ package dk.defxws.fedoragsearch.server.errors;
  * @version 
  */
 public class ConfigException extends GenericSearchException {
-    
+
+	private static final long serialVersionUID = 1L;
+
     /**
      *
      * @param message An informative message explaining what happened and

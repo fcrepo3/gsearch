@@ -34,7 +34,9 @@ import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
  * @version 
  */
 public class RESTImpl extends HttpServlet {
-    
+
+	private static final long serialVersionUID = 1L;
+
     private static final Logger logger =
         Logger.getLogger(RESTImpl.class);
     
@@ -70,9 +72,6 @@ public class RESTImpl extends HttpServlet {
     private static final String PARAM_FIELDNAME = "fieldName";
     private static final String PARAM_ACTION = "action";
     private static final String PARAM_VALUE = "value";
-    private static final int DEFAULT_HITPAGESTART = 1;
-    private static final int DEFAULT_HITPAGESIZE = 10;
-    private static final int DEFAULT_TERMPAGESIZE = 20;
     
     /** Exactly the same behavior as doGet */
     public void doPost(HttpServletRequest request, HttpServletResponse response)
