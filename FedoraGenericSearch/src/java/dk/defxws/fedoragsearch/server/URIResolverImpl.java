@@ -1,3 +1,10 @@
+//$Id:  $
+/*
+ * <p><b>License and Copyright: </b>The contents of this file is subject to the
+ * same open source license as the Fedora Repository System at www.fedora-commons.org
+ * Copyright &copy; 2006, 2007, 2008 by The Technical University of Denmark.
+ * All rights reserved.</p>
+ */
 package dk.defxws.fedoragsearch.server;
 
 import java.io.IOException;
@@ -14,6 +21,12 @@ import org.apache.log4j.Logger;
 
 import fedora.common.http.WebClient;
 
+/**
+ * custom URIResolver for ssl access
+ * 
+ * @author  gsp@dtv.dk
+ * @version 
+ */
 public class URIResolverImpl implements URIResolver {
 	
 	private Config config;
@@ -28,7 +41,6 @@ public class URIResolverImpl implements URIResolver {
 		Source source = null;
 		URL url;
 		try {
-//			url = new URL(new URL(base), href);
 			url = new URL(href);
 		} catch (MalformedURLException e) {
 			throw new TransformerException("resolve new URL href="+href+" base="+base, e);

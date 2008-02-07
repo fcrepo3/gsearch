@@ -1,13 +1,9 @@
 //$Id$
 /*
- * <p><b>License and Copyright: </b>The contents of this file will be subject to the
- * same open source license as the Fedora Repository System at www.fedora.info
- * It is expected to be released with Fedora version 2.2.
- *
- * <p>The entire file consists of original code.  
- * Copyright &copy; 2006 by The Technical University of Denmark.
+ * <p><b>License and Copyright: </b>The contents of this file is subject to the
+ * same open source license as the Fedora Repository System at www.fedora-commons.org
+ * Copyright &copy; 2006, 2007, 2008 by The Technical University of Denmark.
  * All rights reserved.</p>
- *
  */
 package dk.defxws.fedoragsearch.client;
 
