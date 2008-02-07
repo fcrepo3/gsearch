@@ -1,13 +1,9 @@
 //$Id$
 /*
- * <p><b>License and Copyright: </b>The contents of this file will be subject to the
- * same open source license as the Fedora Repository System at www.fedora.info
- * It is expected to be released with Fedora version 2.2.
- *
- * <p>The entire file consists of original code.  
- * Copyright &copy; 2006 by The Technical University of Denmark.
+ * <p><b>License and Copyright: </b>The contents of this file is subject to the
+ * same open source license as the Fedora Repository System at www.fedora-commons.org
+ * Copyright &copy; 2006, 2007, 2008 by The Technical University of Denmark.
  * All rights reserved.</p>
- *
  */
 package dk.defxws.fgslucene;
 
@@ -454,16 +450,11 @@ public class OperationsImpl extends GenericOperationsImpl {
             	StringBuffer untokenizedFields = new StringBuffer(config.getUntokenizedFields(indexName));
                 while (li.hasNext()) {
                     Field f = (Field)li.next();
-//            	Enumeration fields = hdlr.getIndexDocument().fields();
-//            	while (fields.hasMoreElements()) {
-//            		Field f = (Field)fields.nextElement();
             		if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
             			untokenizedFields.append(" "+f.name());
                         config.setUntokenizedFields(indexName, untokenizedFields.toString());
             		}
             	}
-//                Properties props = config.getIndexProps(indexName);
-//                props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
                 logger.info("indexDoc="+hdlr.getPid()+" docCount="+modifier.docCount());
             }
         } catch (IOException e) {
