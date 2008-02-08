@@ -14,10 +14,12 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ListIterator;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.transform.Transformer;
@@ -91,9 +93,7 @@ public class Config {
     }
     
     public static void configure(String configName, String propertyName, String propertyValue) throws ConfigException {
-        Config config = (new Config(configName));
-        config.setProperty(propertyName, propertyValue);
-        currentConfig = config;
+    	currentConfig = (new Config(configName)).setProperty(propertyName, propertyValue);
     }
     
     public static Config getCurrentConfig() throws ConfigException {
@@ -176,6 +176,28 @@ public class Config {
         } catch (NumberFormatException e) {
             errors.append("\n*** defaultGfindObjectsFieldMaxLength is not valid:\n" + e.toString());
         }
+//		Check for unknown properties, indicating typos or wrong property names
+        String[] propNames = {
+        		"fedoragsearch.deployFile",
+        		"fedoragsearch.soapBase",
+        		"fedoragsearch.soapUser",
+        		"fedoragsearch.soapPass",
+        		"fedoragsearch.defaultNoXslt",
+        		"fedoragsearch.defaultGfindObjectsRestXslt",
+        		"fedoragsearch.defaultUpdateIndexRestXslt",
+        		"fedoragsearch.defaultBrowseIndexRestXslt",
+        		"fedoragsearch.defaultGetRepositoryInfoRestXslt",
+        		"fedoragsearch.defaultGetIndexInfoRestXslt",
+        		"fedoragsearch.mimeTypes",
+        		"fedoragsearch.maxPageSize",
+        		"fedoragsearch.defaultBrowseIndexTermPageSize",
+        		"fedoragsearch.defaultGfindObjectsHitPageSize",
+        		"fedoragsearch.defaultGfindObjectsSnippetsMax",
+        		"fedoragsearch.defaultGfindObjectsFieldMaxLength",
+        		"fedoragsearch.repositoryNames",
+        		"fedoragsearch.indexNames"
+        };
+        checkPropNames("fedoragsearch.properties", fgsProps, propNames);
         
 //      Check repository properties
         repositoryNameToProps = new Hashtable();
@@ -236,6 +258,19 @@ public class Config {
 //                  Check result stylesheets
                     checkResultStylesheet("repository/"+repositoryName, props, 
                     "fgsrepository.defaultGetRepositoryInfoResultXslt");
+                    
+//            		Check for unknown properties, indicating typos or wrong property names
+                    String[] reposPropNames = {
+                    		"fgsrepository.repositoryName",
+                    		"fgsrepository.fedoraSoap",
+                    		"fgsrepository.fedoraUser",
+                    		"fgsrepository.fedoraPass",
+                    		"fgsrepository.fedoraObjectDir",
+                    		"fgsrepository.defaultGetRepositoryInfoResultXslt",
+                    		"fgsrepository.trustStorePath",
+                    		"fgsrepository.trustStorePass"
+                    };
+                    checkPropNames(configName+"/repository/"+repositoryName+"/repository.properties", props, reposPropNames);
                     
                     repositoryNameToProps.put(repositoryName, props);
                 }
@@ -447,6 +482,30 @@ public class Config {
                         	}
                         }
                     }
+//            		Check for unknown properties, indicating typos or wrong property names
+                    String[] indexPropNames = {
+                    		"fgsindex.indexName",
+                    		"fgsindex.indexBase",
+                    		"fgsindex.indexUser",
+                    		"fgsindex.indexPass",
+                    		"fgsindex.operationsImpl",
+                    		"fgsindex.defaultUpdateIndexDocXslt",
+                    		"fgsindex.defaultUpdateIndexResultXslt",
+                    		"fgsindex.defaultGfindObjectsResultXslt",
+                    		"fgsindex.defaultBrowseIndexResultXslt",
+                    		"fgsindex.defaultGetIndexInfoResultXslt",
+                    		"fgsindex.indexDir",
+                    		"fgsindex.analyzer",
+                    		"fgsindex.untokenizedFields",
+                    		"fgsindex.defaultQueryFields",
+                    		"fgsindex.snippetBegin",
+                    		"fgsindex.snippetEnd",
+                    		"fgsindex.maxBufferedDocs",
+                    		"fgsindex.mergeFactor",
+                    		"fgsindex.defaultSortFields",
+                    		"fgsindex.uriResolver"
+                    };
+                    checkPropNames(configName+"/index/"+indexName+"/index.properties", props, indexPropNames);
                     
                     indexNameToProps.put(indexName, props);
                 }
@@ -526,6 +585,22 @@ public class Config {
         }
     }
     
+    private void checkPropNames(String propsFileName, Properties props, String[] propNames) {
+//		Check for unknown properties, indicating typos or wrong property names
+        Enumeration it = props.keys();
+        while (it.hasMoreElements()) {
+        	String propName = (String)it.nextElement();
+        	for (int i=0; i<propNames.length; i++) {
+        		if (propNames[i].equals(propName)) {
+        			propName = null;
+        		}
+        	}
+        	if (propName!=null) {
+                errors.append("\n*** unknown config property in "+propsFileName+": " + propName);
+        	}
+        }
+    }
+    
     public String getConfigName() {
         return configName;
     }
@@ -555,6 +630,10 @@ public class Config {
     }
     
     public int getMaxPageSize() {
+        try {
+        	maxPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.maxPageSize"));
+        } catch (NumberFormatException e) {
+        }
         return maxPageSize;
     }
     
@@ -563,14 +642,26 @@ public class Config {
     }
     
     public int getDefaultGfindObjectsHitPageSize() {
+        try {
+            defaultGfindObjectsHitPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsHitPageSize"));
+        } catch (NumberFormatException e) {
+        }
         return defaultGfindObjectsHitPageSize;
     }
     
     public int getDefaultGfindObjectsSnippetsMax() {
+        try {
+        	defaultGfindObjectsSnippetsMax = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsSnippetsMax"));
+        } catch (NumberFormatException e) {
+        }
         return defaultGfindObjectsSnippetsMax;
     }
     
     public int getDefaultGfindObjectsFieldMaxLength() {
+        try {
+        	defaultGfindObjectsFieldMaxLength = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsFieldMaxLength"));
+        } catch (NumberFormatException e) {
+        }
         return defaultGfindObjectsFieldMaxLength;
     }
     
@@ -579,6 +670,10 @@ public class Config {
     }
     
     public int getDefaultBrowseIndexTermPageSize() {
+        try {
+        	defaultBrowseIndexTermPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultBrowseIndexTermPageSize"));
+        } catch (NumberFormatException e) {
+        }
         return defaultBrowseIndexTermPageSize;
     }
     
@@ -854,31 +949,35 @@ public class Config {
     	return result;
     }
     
-    private void setProperty(String propertyName, String propertyValue) {
+    private Config setProperty(String propertyName, String propertyValue)
+    	throws ConfigException {
         if (logger.isInfoEnabled())
             logger.info("property " + propertyName + "=" + propertyValue);
         if (!(propertyName==null || propertyName.equals(""))) {
             int i = propertyName.indexOf("/");
-            String propName = "";
+            String propName = propertyName;
         	Properties props = null;
             if (i>-1) {
-            	propName = propertyName.substring(0, i);
-            	if (indexNameToProps.contains(propName)) {
-            		props = (Properties)indexNameToProps.get(propName);
+                String propsName = propertyName.substring(0, i);
+                propName = propertyName.substring(i+1);
+                if (logger.isDebugEnabled())
+                    logger.debug("propsName=" + propsName + " propName=" + propName);
+            	if (indexNameToProps.containsKey(propsName)) {
+            		props = (Properties)indexNameToProps.get(propsName);
             	}
-            	else if (repositoryNameToProps.contains(propName)) {
-            		props = (Properties)repositoryNameToProps.get(propName);
+            	else if (repositoryNameToProps.containsKey(propsName)) {
+            		props = (Properties)repositoryNameToProps.get(propsName);
             	}
             } else {
             	props = fgsProps;
             }
-        	if (props!=null) {
-        		props.setProperty(propertyName, propertyValue);
+        	if (props!=null && propName!=null && propName.length()>0) {
+        		props.setProperty(propName, propertyValue);
         	} else {
-                if (logger.isDebugEnabled())
-                    logger.debug("property " + propertyName + " not found");
+                throw new ConfigException("property " + propertyName + " not found");
         	}
         }
+        return this;
     }
     
     public static void main(String[] args) {
