@@ -7,12 +7,12 @@ Args
  5=10
  6=3
  7=50
- 8=dc.description
+ 8=PID,aa-BB-var-xyz
 sun.net.www.protocol.http.HttpURLConnection$HttpInputStream@10d448
 <?xml version="1.0" encoding="UTF-8"?>
 <resultPage>
 <error>
-<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields must be UN_TOKENIZED : java.lang.RuntimeException: there are more terms than documents in field "dc.description", but it's impossible to sort on tokenized fields</message>
+<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : unknown locale string 'aa-BB-var-xyz' in 'PID,aa-BB-var-xyz'</message>
 </error>
 </resultPage>
 

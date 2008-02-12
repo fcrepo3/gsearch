@@ -54,6 +54,12 @@ run_test gfindObjects image DemoOnLucene 1 10 3 50 PID,cy-GB-var
 run_test gfindObjects image DemoOnLucene 1 10 3 50 "fgs.createdDate"
 run_test gfindObjects image DemoOnLucene 1 10 3 50 "fgs.createdDate,AUTO,true"
 run_test gfindObjects image DemoOnLucene 1 10 3 50 "PID;fgs.createdDate"
+run_test configure configDemoOnLucene defaultSortFields PID
+run_test gfindObjects image
+run_test gfindObjects image DemoOnLucene 1 10 3 50 PID,SCORE,true
+run_test configure configDemoOnLucene defaultSortFields PID,SCORE,true
+run_test gfindObjects image
+run_test gfindObjects image DemoOnLucene 1 10 3 50 PID,SCORE
 
 #errors found
 

@@ -7,12 +7,12 @@ Args
  5=10
  6=3
  7=50
- 8=PID,unknown
+ 8=PID;+;+
 sun.net.www.protocol.http.HttpURLConnection$HttpInputStream@10d448
 <?xml version="1.0" encoding="UTF-8"?>
 <resultPage>
 <error>
-<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : unknown language string 'unknown' in 'PID,unknown'</message>
+<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : empty sortField string in 'PID; ; '</message>
 </error>
 </resultPage>
 

@@ -7,12 +7,12 @@ Args
  5=10
  6=3
  7=50
- 8=PID,-+-GB
+ 8=nonexistingfield
 sun.net.www.protocol.http.HttpURLConnection$HttpInputStream@10d448
 <?xml version="1.0" encoding="UTF-8"?>
 <resultPage>
 <error>
-<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : empty language string in 'PID,- -GB'</message>
+<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : sortFieldName 'nonexistingfield' not found as index field name</message>
 </error>
 </resultPage>
 

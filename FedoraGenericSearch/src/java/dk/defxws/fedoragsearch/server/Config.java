@@ -45,12 +45,21 @@ import dk.defxws.fedoragsearch.server.errors.ConfigException;
  * sets and gets the properties,
  * generates index-specific operationsImpl object.
  * 
+ * A Config object may exist for each given configuration.
+ * The normal situation is that the default currentConfig is named 'config'.
+ * 
+ * For test purposes, the configure operation may be called with the configName
+ * matching other given configurations, and then the configure operation
+ * with a property may be used to change property values for test purposes.
+ * 
  * @author  gsp@dtv.dk
  * @version
  */
 public class Config {
     
     private static Config currentConfig = null;
+    
+    private static Hashtable configs = new Hashtable();
     
     private String configName = null;
     
@@ -87,23 +96,51 @@ public class Config {
     private StringBuffer errors = null;
     
     private final Logger logger = Logger.getLogger(Config.class);
-    
-    public static void configure(String configName) throws ConfigException {
-        currentConfig = (new Config(configName));
+
+    /**
+     * The configure operation creates a new current Config object.
+     */
+    public static void configure(String configNameIn) throws ConfigException {
+    	String configName = configNameIn;
+    	if (configName==null | configName.equals(""))
+    		configName = "config";
+        currentConfig = new Config(configName);
+        configs.put(configName, currentConfig);
     }
-    
+
+    /**
+     * The configure operation with a property 
+     * - creates a new Config object with the configName, if it does not exist,
+     * - and sets that property.
+     */
     public static void configure(String configName, String propertyName, String propertyValue) throws ConfigException {
-    	currentConfig = (new Config(configName)).setProperty(propertyName, propertyValue);
+    	Config config = (Config)configs.get(configName);
+    	if (config==null) {
+    		config = new Config(configName);
+            configs.put(configName, config);
+    	}
+    	config.setProperty(propertyName, propertyValue);
     }
     
     public static Config getCurrentConfig() throws ConfigException {
         if (currentConfig == null)
-            currentConfig = (new Config("config"));
+            currentConfig = new Config("config");
         return currentConfig;
+    }
+    
+    public static Config getConfig(String configName) throws ConfigException {
+    	Config config = (Config)configs.get(configName);
+        if (config == null) {
+        	config = new Config(configName);
+            configs.put(configName, config);
+        }
+        return config;
     }
     
     public Config(String configNameIn) throws ConfigException {
     	configName = configNameIn;
+    	if (configName==null | configName.equals(""))
+    		configName = "config";
         errors = new StringBuffer();
         
 //      Read and set fedoragsearch properties

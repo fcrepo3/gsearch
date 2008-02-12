@@ -7,12 +7,12 @@ Args
  5=10
  6=3
  7=50
- 8=PID,cy-GB-+-
+ 8=PID,+,+
 sun.net.www.protocol.http.HttpURLConnection$HttpInputStream@10d448
 <?xml version="1.0" encoding="UTF-8"?>
 <resultPage>
 <error>
-<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : empty variant string in 'PID,cy-GB- -'</message>
+<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : empty sortType or locale string in 'PID, ,'</message>
 </error>
 </resultPage>
 

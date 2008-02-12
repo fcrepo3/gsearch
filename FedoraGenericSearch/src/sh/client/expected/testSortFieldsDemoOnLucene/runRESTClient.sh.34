@@ -1,0 +1,18 @@
+Args
+ 0=localhost:8080
+ 1=gfindObjects
+ 2=image
+ 3=DemoOnLucene
+ 4=1
+ 5=10
+ 6=3
+ 7=50
+ 8=dc.description
+sun.net.www.protocol.http.HttpURLConnection$HttpInputStream@10d448
+<?xml version="1.0" encoding="UTF-8"?>
+<resultPage>
+<error>
+<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields must be UN_TOKENIZED : java.lang.RuntimeException: there are more terms than documents in field "dc.description", but it's impossible to sort on tokenized fields</message>
+</error>
+</resultPage>
+

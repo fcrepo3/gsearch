@@ -64,7 +64,7 @@ run_test(){
         sh $CLIENT $HOSTPORT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/expected/$SUITE/$FILENAME
     else
         sh $CLIENT $HOSTPORT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/result/$SUITE/$FILENAME 2>&1
-        diff -I.*milliseconds.* -I.*resultPage.* -I.*cvsDate.* -I.*$HttpInputStream@.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
+        diff -I.*milliseconds.* -I.*resultPage.* -I.*cvsDate.* -I.*createdDate.* -I.*lastModifiedDate.* -I.*$HttpInputStream@.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
         if [ ! `cat $TESTHOME/diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 
             DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
             echo " "

@@ -54,6 +54,7 @@ public class RESTImpl extends HttpServlet {
     private static final String OP_GETINDEXINFO = "getIndexInfo";
     private static final String OP_UPDATEINDEX = "updateIndex";
     private static final String OP_BROWSEINDEX = "browseIndex";
+    private static final String PARAM_CONFIGNAME = "configName";
     private static final String PARAM_OPERATION = "operation";
     private static final String PARAM_QUERY = "query";
     private static final String PARAM_HITPAGESTART = "hitPageStart";
@@ -79,6 +80,14 @@ public class RESTImpl extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException { 
     	Date startTime = new Date();
+        String configName = request.getParameter(PARAM_CONFIGNAME);
+        if (configName==null) {
+        	// the normal situation
+            config = Config.getCurrentConfig();
+        } else {
+        	// mainly for test purposes
+        	config = Config.getConfig(configName);
+        }
         config = Config.getCurrentConfig();
         StringBuffer resultXml = new StringBuffer("<resultPage/>");
         String operation = request.getParameter(PARAM_OPERATION);
@@ -256,15 +265,17 @@ public class RESTImpl extends HttpServlet {
     throws java.rmi.RemoteException {
         if (restXslt==null || restXslt.equals("")) 
             restXslt = config.getDefaultGfindObjectsRestXslt();
-        String configName = request.getParameter("configName");
-        if (configName==null || configName.equals(""))
-            configName = "config";
+        String configName = request.getParameter(PARAM_CONFIGNAME);
         String propertyName = request.getParameter("propertyName");
         String propertyValue = "";
         if (!(propertyName==null || propertyName.equals(""))) {
             propertyValue = request.getParameter("propertyValue");
+            // used to set or change a property value, mainly for test purposes
+            Config.configure(configName, propertyName, propertyValue);
+        } else {
+        	// used to create a new currentConfig, mainly for test purposes
+            Config.configure(configName);
         }
-        Config.configure(configName, propertyName, propertyValue);
         return "<resultPage/>";
     }
     

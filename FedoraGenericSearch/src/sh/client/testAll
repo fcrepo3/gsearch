@@ -31,4 +31,4 @@ sh testRESTDemoOnLucene $MODE
 sh testSOAPDemoOnLucene $MODE
 sh testIndexingParamsDemoOnLucene $MODE
 sh testSortFieldsDemoOnLucene $MODE
-sh testTruncationDemoOnLucene $MODE
+sh testTruncationTestOnLucene $MODE

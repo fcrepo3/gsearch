@@ -7,12 +7,12 @@ Args
  5=10
  6=3
  7=50
- 8=PID,cy,noreverse
+ 8=PID,UNKNOWN
 sun.net.www.protocol.http.HttpURLConnection$HttpInputStream@10d448
 <?xml version="1.0" encoding="UTF-8"?>
 <resultPage>
 <error>
-<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : unknown reverse string 'noreverse' in 'PID,cy,noreverse'</message>
+<message>dk.defxws.fedoragsearch.server.errors.GenericSearchException: sortFields : unknown sortType string 'UNKNOWN' in 'PID,UNKNOWN'</message>
 </error>
 </resultPage>
 
