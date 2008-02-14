@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id: build.xml 6534 2008-01-30 16:22:28Z gertsp $ -->
+<project name="FgsConfig" default="configlocal" basedir=".">
+	<description>Fedora Generic Search Service configuration</description>
+
+	<property environment="env" />
+	<property name="webserver.path" location="${env.FEDORA_HOME}/tomcat" />
+	<property name="configs.path" location="${webserver.path}/webapps/fedoragsearch/WEB-INF/classes" />
+	<property name="log.path" location="${env.FEDORA_HOME}/server/logs" />
+	<property name="debug.level" value="DEBUG" />
+	<property name="soap.deploy.hostport" value="localhost:8080" />
+	<property name="soap.deploy.user" value="fedoraAdmin" />
+	<property name="soap.deploy.pass" value="fedoraAdmin" />
+
+	<target name="configDefault"
+	          description="select the default config">
+		<delete dir="${configs.path}/config" />
+		<mkdir dir="${configs.path}/config" />
+		<copy todir="${configs.path}/config">
+			<fileset dir="${configs.path}/${basic.config.name}"/>
+		</copy>
+		<replace file="${configs.path}/config/rest/${basic.config.prefix}UpdateIndexToHtml.xslt" token="${basic.config.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="${basic.config.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${basic.config.prefix}BrowseIndexToHtml.xslt" token="${basic.config.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${basic.config.prefix}GetIndexInfoToHtml.xslt" token="${basic.config.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${basic.config.prefix}GetRepositoryInfoToHtml.xslt" token="${basic.config.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/index/${basic.index.1}/${basic.config.prefix}FoxmlToLucene.xslt" token="${basic.config.path}" value="${configs.path}/config"/>
+	</target>
+
+	<target name="configlocal"
+			depends="configBasic, configDefault"
+        	description="set values for the local configs">
+		<replace file="${configs.path}/log4j.xml" token="LOGPATH" value="${log.path}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELG" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELL" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELZ" value="${debug.level}"/>
+	</target>
+
+	<target name="configBasic"
+        	description="set values for the local configBasic">
+		
+		<property name="basic.config.name" value="configBasic" />
+		<property name="basic.config.path" value="${configs.path}/${basic.config.name}" />
+		<property name="basic.config.prefix" value="basic" />
+		<property name="basic.mimetypes" value="text/plain text/html application/pdf" />
+		<property name="basic.index.1" value="BasicIndex" />
+		<property name="basic.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${basic.index.1}" />
+		<property name="basic.index.names" value="${basic.index.1}" />
+		<property name="basic.repos.1" value="BasicRepos" />
+		<property name="basic.repos.1.fedorasoap" value="https://localhost:8080" />
+		<property name="basic.repos.1.fedorauser" value="fedoraAdmin" />
+		<property name="basic.repos.1.fedorapass" value="fedoraAdmin" />
+		<property name="basic.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="basic.repos.names" value="${basic.repos.1}" />
+		
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPUSER" value="${soap.deploy.user}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPPASS" value="${soap.deploy.pass}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="REPOSNAMES" value="${basic.repos.names}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="INDEXNAMES" value="${basic.index.names}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="${basic.config.prefix}UpdateIndexToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="${basic.config.prefix}GfindObjectsToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="${basic.config.prefix}BrowseIndexToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="${basic.config.prefix}GetRepositoryInfoToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${basic.config.prefix}GetIndexInfoToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${basic.mimetypes}"/>
+		
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}UpdateIndexToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}BrowseIndexToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetIndexInfoToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetRepositoryInfoToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetIndexInfoToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetRepositoryInfoToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="REPOS1FEDORABASE" value="${basic.repos.1.fedorasoap}"/>
+		
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORASOAP" value="${basic.repos.1.fedorasoap}"/>
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAUSER" value="${basic.repos.1.fedorauser}"/>
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAPASS" value="${basic.repos.1.fedorapass}"/>
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/f221/data/objects"/>
+		
+		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="INDEXDIR" value="${basic.index.1.indexdir}"/>
+		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${basic.config.prefix}FoxmlToLucene"/>
+		<replace file="${basic.config.path}/index/${basic.index.1}/${basic.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		
+	</target>
+
+</project>
