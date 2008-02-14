@@ -9,7 +9,7 @@
 
 	<xsl:param name="ERRORMESSAGE" select="''"/>
 	
-	<xsl:include href="WEBSERVERPATH/webapps/fedoragsearch/WEB-INF/classes/config/rest/demoCommon.xslt"/>
+	<xsl:include href="CONFIGPATH/rest/basicCommon.xslt"/>
 
 	<xsl:template name="opSpecifics">
 		<xsl:variable name="INDEXNAME" select="@indexName"/>
@@ -137,7 +137,7 @@
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:variable>
-							<xsl:attribute name="href">/fedora/get/<xsl:value-of select="$PIDVALUE"/>
+							<xsl:attribute name="href">REPOS1FEDORABASE/fedora/get/<xsl:value-of select="$PIDVALUE"/>
 							</xsl:attribute>
 							<xsl:value-of select="$PIDVALUE"/>
 						</a>

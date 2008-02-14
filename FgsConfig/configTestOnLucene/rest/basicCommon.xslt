@@ -3,7 +3,7 @@
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		
 <!-- This xslt stylesheet is common to 
-     demoGfindObjectsToHtml, demoGetIndexInfoToHtml, and demoUpdateIndexToHtml.
+     basicGfindObjectsToHtml, basicBrowseIndexToHtml, basicGetIndexInfoToHtml, and basicUpdateIndexToHtml.
 -->
 	
 	<xsl:output method="html" indent="yes" encoding="UTF-8"/>
@@ -11,8 +11,8 @@
 	<xsl:template match="/resultPage">
 		<html>
 			<head>
-				<title>REST Client Demo of Fedora Generic Search Service</title>
-				<link rel="stylesheet" type="text/css" href="css/demo.css"/>
+				<title>Basic Client for Fedora Generic Search Service</title>
+				<link rel="stylesheet" type="text/css" href="css/basic.css"/>
 				<style type="text/css">
 					.highlight {
 						background: yellow;
@@ -25,7 +25,7 @@
 				<div id="header">
 					<a href="" id="logo"></a>
 					<div id="title">
-						<h1>REST Client Demo of Fedora Generic Search Service</h1>
+						<h1>Basic Client for Fedora Generic Search Service</h1>
 					</div>
 				</div>
 				<table cellspacing="10" cellpadding="10">
@@ -47,13 +47,13 @@
 				<xsl:call-template name="opSpecifics"/>
 				<div id="footer">
    					<div id="copyright">
-						Copyright &#xA9; 2006 Technical University of Denmark, Fedora Project
+						Copyright &#xA9; 2008 Technical University of Denmark, Fedora Project
 					</div>
 					<div id="lastModified">
 						Last Modified
 						<script type="text/javascript">
 							//<![CDATA[
-							var cvsDate = "$Date: 2006-10-13 16:17:53 +0200 (Fri, 13 Oct 2006) $";
+							var cvsDate = "$Date: 2008-02-15 $";
 							var parts = cvsDate.split(" ");
 							var modifiedDate = parts[1];
 							document.write(modifiedDate);
