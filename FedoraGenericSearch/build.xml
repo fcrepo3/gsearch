@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  $Id$ -->
-<project name="FedoraGenericSearch" default="buildlocal" basedir=".">
+<project name="FedoraGenericSearch" default="builddownload" basedir=".">
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
 
     <loadproperties srcFile="lib/lib.properties" /> 
 
-    <property name="genericsearch.version" value="1.1.1"/>
+    <property name="genericsearch.version" value="2.0"/>
 
     <property name="build.basedir" location="../FgsBuild"/>
     <property name="compile.dir" location="bin"/>
@@ -57,9 +57,11 @@
 		<delete dir="${dist.dir}" />
 		<delete dir="${build.dir}" />
 		<delete dir="${project.dir}" />
+		<mkdir dir="${dist.dir}" />
 		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" />
 		<copy file="src/html/prototype.html" todir="${build.dir}" />
 		<copy file="src/html/search-service.html" todir="${build.dir}" />
+		<copy file="../FgsConfig/configvalues.xml" todir="${build.dir}" />
 		<copy todir="${build.dir}/css">
 			<fileset dir="src/css"/>
 		</copy>
@@ -127,14 +129,13 @@
 			depends="prep, includeengines"
 	        description="build the download">
         <ant dir="../FgsConfig" target="configdownload" inheritAll="false"/>
-	    <jar jarfile="${build.dir}/${war.name}" basedir="${build.dir}"/>
+	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
 
 	<target name="buildlocal"
-			depends="builddownload"
+		    depends="prep, includeengines"
 	        description="build local">
         <ant dir="../FgsConfig" target="configlocal" inheritAll="false"/>
-		<mkdir dir="${dist.dir}" />
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
         <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f221/${tomcat.basename}/webapps"/>
         <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f2218989/${tomcat.basename}/webapps"/>

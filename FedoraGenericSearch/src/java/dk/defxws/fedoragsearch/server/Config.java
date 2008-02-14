@@ -643,15 +643,15 @@ public class Config {
     }
     
     public String getSoapBase() {
-        return fgsProps.getProperty("fgsrepository.soapBase");
+        return fgsProps.getProperty("fedoragsearch.soapBase");
     }
     
     public String getSoapUser() {
-        return fgsProps.getProperty("fgsrepository.soapUser");
+        return fgsProps.getProperty("fedoragsearch.soapUser");
     }
     
     public String getSoapPass() {
-        return fgsProps.getProperty("fgsrepository.soapPass");
+        return fgsProps.getProperty("fedoragsearch.soapPass");
     }
     
     public String getDeployFile() {
