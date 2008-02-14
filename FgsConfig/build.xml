@@ -9,10 +9,10 @@
 
 	<target name="prep"
 	          description="prepare">
-		<delete dir="${plugin.dir}/config" />
-		<mkdir dir="${plugin.dir}/config" />
-		<copy todir="${plugin.dir}/config">
-			<fileset dir="configManyToMany"/>
+		<delete dir="${plugin.dir}/configBasic" />
+		<mkdir dir="${plugin.dir}/configBasic" />
+		<copy todir="${plugin.dir}/configBasic">
+			<fileset dir="configBasic"/>
 		</copy>
 		<delete dir="${plugin.dir}/configDemoOnLucene" />
 		<mkdir dir="${plugin.dir}/configDemoOnLucene" />
