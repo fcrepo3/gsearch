@@ -30,6 +30,11 @@
     <level value="DEBUGLEVELL" />
     <appender-ref ref="FILEOUT"/>
   </logger>
+  
+  <logger name="dk.defxws.fgssolr" additivity="false">
+    <level value="DEBUGLEVELS" />
+    <appender-ref ref="FILEOUT"/>
+  </logger>
 
   <root>
     <level value="WARN" />

@@ -56,7 +56,7 @@
 						Last Modified
 						<script type="text/javascript">
 							//<![CDATA[
-							var cvsDate = "$Date$";
+							var cvsDate = "$Date: 2006-10-13 15:17:53 +0100 (Fri, 13 Oct 2006) $";
 							var parts = cvsDate.split(" ");
 							var modifiedDate = parts[1];
 							document.write(modifiedDate);

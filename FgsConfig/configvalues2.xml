@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id: build.xml 6534 2008-01-30 16:22:28Z gertsp $ -->
+<project name="FgsConfig" default="configOnWebServer" basedir=".">
+	<description>
+		Fedora Generic Search Service configuration.
+		Set the property values for your environment.
+		Select the default config in configDefault.
+		Save this edited file outside of the web server.
+		Run target configOnWebServer after deployment from command line:
+					>ant -f configvalues.xml configOnWebServer
+	</description>
+
+	<property environment="env" />
+	<property name="log.path" location="${env.FEDORA_HOME}/server/logs" />
+	<!-- The three soap properties are used for the deployment of the deploy.wsdd file for soap access -->
+	<property name="soap.deploy.hostport" value="localhost:8080" />
+	<property name="soap.deploy.user" value="fedoraAdmin" />
+	<property name="soap.deploy.pass" value="fedoraAdmin" />
+
+	<target name="configDefault"
+	          description="select the default config, by setting these three properties">
+		<property name="default.config.path" location="${basic.config.path}" />
+		<property name="default.config.prefix" value="${basic.config.prefix}" />
+		<property name="default.index.1" value="${basic.index.1}" />
+		<delete dir="${configs.path}/config" />
+		<mkdir dir="${configs.path}/config" />
+		<copy todir="${configs.path}/config">
+			<fileset dir="${default.config.path}"/>
+		</copy>
+		<replace file="${configs.path}/config/rest/${default.config.prefix}UpdateIndexToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${default.config.prefix}GfindObjectsToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${default.config.prefix}BrowseIndexToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${default.config.prefix}GetIndexInfoToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/rest/${default.config.prefix}GetRepositoryInfoToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
+		<replace file="${configs.path}/config/index/${default.index.1}/${default.config.prefix}FoxmlToLucene.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
+	</target>
+
+	<target name="prepForWebServer"
+        	description="set values for the configs on web server">
+		<property name="webserver.path" location="${env.FEDORA_HOME}/tomcat" />
+		<property name="configs.path" location="${webserver.path}/webapps/fedoragsearch/WEB-INF/classes" />
+	</target>
+
+	<target name="configOnWebServer"
+			depends="prepForWebServer, configBasic, configDemoOnLucene, configDemoOnSolr, configDefault"
+        	description="set values for the configs on web server">
+		<property name="debug.level" value="INFO" />
+		<replace file="${configs.path}/log4j.xml" token="LOGPATH" value="${log.path}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELG" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELL" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELS" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELZ" value="${debug.level}"/>
+	</target>
+
+	<target name="prepForLocalDevelopment"
+        	description="set values for the local development configs">
+		<property name="configs.path" location="../FgsBuild/webapp/WEB-INF/classes" />
+	</target>
+
+	<target name="configForLocalDevelopment"
+			depends="prepForLocalDevelopment, configBasic, configDemoOnLucene, configDemoOnSolr, configDemoOnZebra, configTestOnLucene, configDefault"
+        	description="set values for the local development configs">
+		<property name="debug.level" value="DEBUG" />
+		<replace file="${configs.path}/log4j.xml" token="LOGPATH" value="${log.path}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELG" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELL" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELS" value="${debug.level}"/>
+		<replace file="${configs.path}/log4j.xml" token="DEBUGLEVELZ" value="${debug.level}"/>
+	</target>
+
+	<target name="configBasic"
+        	description="set values for configBasic">
+		
+		<property name="basic.config.name" value="configBasic" />
+		<property name="basic.config.path" value="${configs.path}/${basic.config.name}" />
+		<property name="basic.config.prefix" value="basic" />
+		<property name="basic.mimetypes" value="text/plain text/xml text/html application/pdf" />
+		<property name="basic.index.1" value="BasicIndex" />
+		<property name="basic.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${basic.index.1}" />
+		<property name="basic.index.names" value="${basic.index.1}" />
+		<property name="basic.repos.1" value="BasicRepos" />
+		<property name="basic.repos.1.fedorasoap" value="http://localhost:8080" />
+		<property name="basic.repos.1.fedorauser" value="fedoraAdmin" />
+		<property name="basic.repos.1.fedorapass" value="fedoraAdmin" />
+		<property name="basic.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="basic.repos.names" value="${basic.repos.1}" />
+		
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPUSER" value="${soap.deploy.user}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPPASS" value="${soap.deploy.pass}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="REPOSNAMES" value="${basic.repos.names}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="INDEXNAMES" value="${basic.index.names}"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="${basic.config.prefix}UpdateIndexToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="${basic.config.prefix}GfindObjectsToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="${basic.config.prefix}BrowseIndexToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="${basic.config.prefix}GetRepositoryInfoToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${basic.config.prefix}GetIndexInfoToHtml"/>
+		<replace file="${basic.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${basic.mimetypes}"/>
+		
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}UpdateIndexToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}BrowseIndexToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetIndexInfoToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetRepositoryInfoToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
+		
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetIndexInfoToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetRepositoryInfoToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		
+		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="REPOS1FEDORABASE" value="${basic.repos.1.fedorasoap}"/>
+		
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORASOAP" value="${basic.repos.1.fedorasoap}"/>
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAUSER" value="${basic.repos.1.fedorauser}"/>
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAPASS" value="${basic.repos.1.fedorapass}"/>
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${basic.repos.1.fedoraobjectdir}"/>
+		
+		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="INDEXDIR" value="${basic.index.1.indexdir}"/>
+		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${basic.config.prefix}FoxmlToLucene"/>
+		<replace file="${basic.config.path}/index/${basic.index.1}/${basic.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		
+	</target>
+
+	<target name="configDemoOnLucene"
+        	description="set values for configDemoOnLucene">
+		
+		<property name="lucene.config.name" value="configDemoOnLucene" />
+		<property name="lucene.config.path" value="${configs.path}/${lucene.config.name}" />
+		<property name="lucene.config.prefix" value="demo" />
+		<property name="lucene.mimetypes" value="text/plain text/xml text/html application/pdf" />
+		<property name="lucene.index.1" value="DemoOnLucene" />
+		<property name="lucene.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${lucene.index.1}" />
+		<property name="lucene.index.names" value="${lucene.index.1}" />
+		<property name="lucene.repos.1" value="DemoAtDtu" />
+		<property name="lucene.repos.1.fedorasoap" value="http://localhost:8080" />
+		<property name="lucene.repos.1.fedorauser" value="fedoraAdmin" />
+		<property name="lucene.repos.1.fedorapass" value="fedoraAdmin" />
+		<property name="lucene.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="lucene.repos.names" value="${lucene.repos.1}" />
+		
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="SOAPUSER" value="${soap.deploy.user}"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="SOAPPASS" value="${soap.deploy.pass}"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="CONFIGPATH" value="${lucene.config.path}"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="REPOSNAMES" value="${lucene.repos.names}"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="INDEXNAMES" value="${lucene.index.names}"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="${lucene.config.prefix}UpdateIndexToHtml"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="${lucene.config.prefix}GfindObjectsToHtml"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="${lucene.config.prefix}BrowseIndexToHtml"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="${lucene.config.prefix}GetRepositoryInfoToHtml"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${lucene.config.prefix}GetIndexInfoToHtml"/>
+		<replace file="${lucene.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${lucene.mimetypes}"/>
+		
+		<replace file="${lucene.config.path}/rest/${lucene.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${lucene.config.path}"/>
+		<replace file="${lucene.config.path}/rest/${lucene.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${lucene.config.path}"/>
+		<replace file="${lucene.config.path}/rest/${lucene.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${lucene.config.path}"/>
+		<replace file="${lucene.config.path}/rest/${lucene.config.prefix}GetIndexInfoToHtml.xslt" token="CONFIGPATH" value="${lucene.config.path}"/>
+		<replace file="${lucene.config.path}/rest/${lucene.config.prefix}GetRepositoryInfoToHtml.xslt" token="CONFIGPATH" value="${lucene.config.path}"/>
+		
+		<replace file="${lucene.config.path}/rest/${lucene.config.prefix}GfindObjectsToHtml.xslt" token="REPOS1FEDORABASE" value="${lucene.repos.1.fedorasoap}"/>
+		
+		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORASOAP" value="${lucene.repos.1.fedorasoap}"/>
+		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORAUSER" value="${lucene.repos.1.fedorauser}"/>
+		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORAPASS" value="${lucene.repos.1.fedorapass}"/>
+		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${lucene.repos.1.fedoraobjectdir}"/>
+
+		<replace file="${lucene.config.path}/index/${lucene.index.1}/index.properties" token="INDEXDIR" value="${lucene.index.1.indexdir}"/>
+		<replace file="${lucene.config.path}/index/${lucene.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${lucene.config.prefix}FoxmlToLucene"/>
+		<replace file="${lucene.config.path}/index/${lucene.index.1}/${lucene.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${lucene.config.path}"/>
+		
+	</target>
+
+	<target name="configTestOnLucene"
+        	description="set values for configTestOnLucene">
+		
+		<property name="test.config.name" value="configTestOnLucene" />
+		<property name="test.config.path" value="${configs.path}/${test.config.name}" />
+		<property name="test.config.prefix" value="demo" />
+		<property name="test.mimetypes" value="text/plain text/xml text/html application/pdf" />
+		<property name="test.index.1" value="TestOnLucene" />
+		<property name="test.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${test.index.1}" />
+		<property name="test.index.names" value="${test.index.1}" />
+		<property name="test.repos.1" value="TestAtDtu" />
+		<property name="test.repos.1.fedorasoap" value="http://localhost:8080" />
+		<property name="test.repos.1.fedorauser" value="fedoraAdmin" />
+		<property name="test.repos.1.fedorapass" value="fedoraAdmin" />
+		<property name="test.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="test.repos.names" value="${test.repos.1}" />
+		
+		<replace file="${test.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="SOAPUSER" value="${soap.deploy.user}"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="SOAPPASS" value="${soap.deploy.pass}"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="CONFIGPATH" value="${test.config.path}"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="REPOSNAMES" value="${test.repos.names}"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="INDEXNAMES" value="${test.index.names}"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="${test.config.prefix}UpdateIndexToHtml"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="${test.config.prefix}GfindObjectsToHtml"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="${test.config.prefix}BrowseIndexToHtml"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="${test.config.prefix}GetRepositoryInfoToHtml"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${test.config.prefix}GetIndexInfoToHtml"/>
+		<replace file="${test.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${test.mimetypes}"/>
+		
+		<replace file="${test.config.path}/rest/${test.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${test.config.path}"/>
+		<replace file="${test.config.path}/rest/${test.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${test.config.path}"/>
+		<replace file="${test.config.path}/rest/${test.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${test.config.path}"/>
+		<replace file="${test.config.path}/rest/${test.config.prefix}GetIndexInfoToHtml.xslt" token="CONFIGPATH" value="${test.config.path}"/>
+		<replace file="${test.config.path}/rest/${test.config.prefix}GetRepositoryInfoToHtml.xslt" token="CONFIGPATH" value="${test.config.path}"/>
+		
+		<replace file="${test.config.path}/rest/${test.config.prefix}GfindObjectsToHtml.xslt" token="REPOS1FEDORABASE" value="${test.repos.1.fedorasoap}"/>
+		
+		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORASOAP" value="${test.repos.1.fedorasoap}"/>
+		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORAUSER" value="${test.repos.1.fedorauser}"/>
+		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORAPASS" value="${test.repos.1.fedorapass}"/>
+		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${test.repos.1.fedoraobjectdir}"/>
+
+		<replace file="${test.config.path}/index/${test.index.1}/index.properties" token="INDEXDIR" value="${test.index.1.indexdir}"/>
+		<replace file="${test.config.path}/index/${test.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${test.config.prefix}FoxmlToLucene"/>
+		<replace file="${test.config.path}/index/${test.index.1}/${test.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${test.config.path}"/>
+		
+	</target>
+
+	<target name="configDemoOnSolr"
+        	description="set values for configDemoOnSolr">
+		
+		<property name="solr.config.name" value="configDemoOnSolr" />
+		<property name="solr.config.path" value="${configs.path}/${solr.config.name}" />
+		<property name="solr.config.prefix" value="demo" />
+		<property name="solr.mimetypes" value="text/plain text/xml text/html application/pdf" />
+		<property name="solr.index.1" value="DemoOnSolr" />
+		<property name="solr.index.1.indexbase" value="http://localhost:8983/solr" />
+		<property name="solr.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${solr.index.1}/example/solr/data/index" />
+		<property name="solr.index.names" value="${solr.index.1}" />
+		<property name="solr.repos.1" value="DemoAtDtu" />
+		<property name="solr.repos.1.fedorasoap" value="http://localhost:8080" />
+		<property name="solr.repos.1.fedorauser" value="fedoraAdmin" />
+		<property name="solr.repos.1.fedorapass" value="fedoraAdmin" />
+		<property name="solr.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="solr.repos.names" value="${solr.repos.1}" />
+		
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="SOAPUSER" value="${soap.deploy.user}"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="SOAPPASS" value="${soap.deploy.pass}"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="CONFIGPATH" value="${solr.config.path}"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="REPOSNAMES" value="${solr.repos.names}"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="INDEXNAMES" value="${solr.index.names}"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="${solr.config.prefix}UpdateIndexToHtml"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="${solr.config.prefix}GfindObjectsToHtml"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="${solr.config.prefix}BrowseIndexToHtml"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="${solr.config.prefix}GetRepositoryInfoToHtml"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${solr.config.prefix}GetIndexInfoToHtml"/>
+		<replace file="${solr.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${solr.mimetypes}"/>
+		
+		<replace file="${solr.config.path}/rest/${solr.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${solr.config.path}"/>
+		<replace file="${solr.config.path}/rest/${solr.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${solr.config.path}"/>
+		<replace file="${solr.config.path}/rest/${solr.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${solr.config.path}"/>
+		<replace file="${solr.config.path}/rest/${solr.config.prefix}GetIndexInfoToHtml.xslt" token="CONFIGPATH" value="${solr.config.path}"/>
+		<replace file="${solr.config.path}/rest/${solr.config.prefix}GetRepositoryInfoToHtml.xslt" token="CONFIGPATH" value="${solr.config.path}"/>
+		
+		<replace file="${solr.config.path}/rest/${solr.config.prefix}GfindObjectsToHtml.xslt" token="REPOS1FEDORABASE" value="${solr.repos.1.fedorasoap}"/>
+		
+		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORASOAP" value="${solr.repos.1.fedorasoap}"/>
+		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORAUSER" value="${solr.repos.1.fedorauser}"/>
+		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORAPASS" value="${solr.repos.1.fedorapass}"/>
+		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${solr.repos.1.fedoraobjectdir}"/>
+
+		<replace file="${solr.config.path}/index/${solr.index.1}/index.properties" token="INDEXBASE" value="${solr.index.1.indexbase}"/>
+		<replace file="${solr.config.path}/index/${solr.index.1}/index.properties" token="INDEXDIR" value="${solr.index.1.indexdir}"/>
+		<replace file="${solr.config.path}/index/${solr.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${solr.config.prefix}FoxmlToSolr"/>
+		<replace file="${solr.config.path}/index/${solr.index.1}/${solr.config.prefix}FoxmlToSolr.xslt" token="CONFIGPATH" value="${solr.config.path}"/>
+		
+	</target>
+
+	<target name="configDemoOnZebra"
+        	description="set values for configDemoOnZebra">
+		
+		<property name="zebra.config.name" value="configDemoOnZebra" />
+		<property name="zebra.config.path" value="${configs.path}/${zebra.config.name}" />
+		<property name="zebra.config.prefix" value="demo" />
+		<property name="zebra.mimetypes" value="text/plain text/xml text/html application/pdf" />
+		<property name="zebra.index.1" value="DemoOnZebra" />
+		<property name="zebra.index.1.indexbase" value="http://localhost:8983/zebra" />
+		<property name="zebra.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${zebra.index.1}" />
+		<property name="zebra.index.names" value="${zebra.index.1}" />
+		<property name="zebra.repos.1" value="DemoAtDtu" />
+		<property name="zebra.repos.1.fedorasoap" value="http://localhost:8080" />
+		<property name="zebra.repos.1.fedorauser" value="fedoraAdmin" />
+		<property name="zebra.repos.1.fedorapass" value="fedoraAdmin" />
+		<property name="zebra.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="zebra.repos.names" value="${zebra.repos.1}" />
+		
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="SOAPUSER" value="${soap.deploy.user}"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="SOAPPASS" value="${soap.deploy.pass}"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="CONFIGPATH" value="${zebra.config.path}"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="REPOSNAMES" value="${zebra.repos.names}"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="INDEXNAMES" value="${zebra.index.names}"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="${zebra.config.prefix}UpdateIndexToHtml"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="${zebra.config.prefix}GfindObjectsToHtml"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="${zebra.config.prefix}BrowseIndexToHtml"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="${zebra.config.prefix}GetRepositoryInfoToHtml"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${zebra.config.prefix}GetIndexInfoToHtml"/>
+		<replace file="${zebra.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${zebra.mimetypes}"/>
+		
+		<replace file="${zebra.config.path}/rest/${zebra.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${zebra.config.path}"/>
+		<replace file="${zebra.config.path}/rest/${zebra.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${zebra.config.path}"/>
+		<replace file="${zebra.config.path}/rest/${zebra.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${zebra.config.path}"/>
+		<replace file="${zebra.config.path}/rest/${zebra.config.prefix}GetIndexInfoToHtml.xslt" token="CONFIGPATH" value="${zebra.config.path}"/>
+		<replace file="${zebra.config.path}/rest/${zebra.config.prefix}GetRepositoryInfoToHtml.xslt" token="CONFIGPATH" value="${zebra.config.path}"/>
+		
+		<replace file="${zebra.config.path}/rest/${zebra.config.prefix}GfindObjectsToHtml.xslt" token="REPOS1FEDORABASE" value="${zebra.repos.1.fedorasoap}"/>
+		
+		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORASOAP" value="${zebra.repos.1.fedorasoap}"/>
+		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORAUSER" value="${zebra.repos.1.fedorauser}"/>
+		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORAPASS" value="${zebra.repos.1.fedorapass}"/>
+		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${zebra.repos.1.fedoraobjectdir}"/>
+
+		<replace file="${zebra.config.path}/index/${zebra.index.1}/index.properties" token="INDEXBASE" value="${zebra.index.1.indexbase}"/>
+		<replace file="${zebra.config.path}/index/${zebra.index.1}/index.properties" token="INDEXDIR" value="${zebra.index.1.indexdir}"/>
+		<replace file="${zebra.config.path}/index/${zebra.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${zebra.config.prefix}FoxmlToZebra"/>
+		<replace file="${zebra.config.path}/index/${zebra.index.1}/${zebra.config.prefix}FoxmlToZebra.xslt" token="CONFIGPATH" value="${zebra.config.path}"/>
+		
+	</target>
+
+</project>

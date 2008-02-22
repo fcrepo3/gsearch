@@ -47,7 +47,7 @@
 				<xsl:call-template name="opSpecifics"/>
 				<div id="footer">
    					<div id="copyright">
-						Copyright &#xA9; 2006 Technical University of Denmark, Fedora Project
+						Copyright &#xA9; 2008 Technical University of Denmark, Fedora Project
 					</div>
 					<div id="lastModified">
 						Last Modified

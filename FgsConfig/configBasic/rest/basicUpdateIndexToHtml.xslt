@@ -30,6 +30,18 @@
 					<tr>
 						<td>
 							<input type="hidden" name="operation" value="updateIndex"/>
+							<input type="hidden" name="action" value="optimize"/>
+							<xsl:text> </xsl:text><input type="submit" value="updateIndex optimize"/>
+						</td>
+					</tr>
+				</table>
+			</form>
+		
+			<form method="get" action="rest">
+				<table border="3" cellpadding="5" cellspacing="5">
+					<tr>
+						<td>
+							<input type="hidden" name="operation" value="updateIndex"/>
 							<input type="hidden" name="action" value="fromFoxmlFiles"/>
 							Foxml files path: <input type="text" name="value" size="40" value=""/> 
 							<xsl:text> </xsl:text><input type="submit" value="updateIndex fromFoxmlFiles"/>

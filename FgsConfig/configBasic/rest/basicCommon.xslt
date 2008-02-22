@@ -7,6 +7,8 @@
 -->
 	
 	<xsl:output method="html" indent="yes" encoding="UTF-8"/>
+	
+	<xsl:param name="TIMEUSEDMS" select="''"/>
 
 	<xsl:template match="/resultPage">
 		<html>
@@ -35,6 +37,7 @@
 					<th><a href="?operation=browseIndex">browseIndex</a></th>
 					<th><a href="?operation=getRepositoryInfo">getRepositoryInfo</a></th>
 					<th><a href="?operation=getIndexInfo">getIndexInfo</a></th>
+					<td>(<xsl:value-of select="$TIMEUSEDMS"/> milliseconds)</td>
 					</tr>
 				</table>
 				<p/>
