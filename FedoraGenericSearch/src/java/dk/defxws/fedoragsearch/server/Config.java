@@ -14,12 +14,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ListIterator;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.transform.Transformer;
@@ -164,10 +162,10 @@ public class Config {
         
 //      Read soap deployment parameters and try to deploy the wsdd file
         String [] params = new String[4];
-        params[0] = "-l"+fgsProps.getProperty("fedoragsearch.soapBase");
-        params[1] =      insertSystemProperties(fgsProps.getProperty("fedoragsearch.deployFile"));
-        params[2] = "-u"+fgsProps.getProperty("fedoragsearch.soapUser");
-        params[3] = "-w"+fgsProps.getProperty("fedoragsearch.soapPass");
+        params[0] = "-l"+getSoapBase();
+        params[1] =      insertSystemProperties(getDeployFile());
+        params[2] = "-u"+getSoapUser();
+        params[3] = "-w"+getSoapPass();
         if (logger.isDebugEnabled())
             logger.debug("AdminClient()).process(soapBase="+params[0]+" soapUser="+params[2]+" soapPass="+params[3]+" deployFile="+params[1]+")");
         try {

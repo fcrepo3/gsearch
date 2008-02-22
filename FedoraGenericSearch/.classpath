@@ -22,8 +22,7 @@
 	<classpathentry kind="lib" path="/home/gsp/fworkspace/FedoraGenericSearch/lib/xalan.jar"/>
 	<classpathentry kind="lib" path="/home/gsp/fworkspace/FedoraGenericSearch/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="/home/gsp/fworkspace/FedoraGenericSearch/lib/xml-apis.jar"/>
-	<classpathentry kind="lib" path="/home/gsp/FGSlocalworkspace/FedoraGenericSearch/lib/lucene-core-2.2.0.jar"/>
-	<classpathentry kind="lib" path="/home/gsp/FGSlocalworkspace/FedoraGenericSearch/lib/lucene-demos-2.2.0.jar"/>
-	<classpathentry kind="lib" path="/home/gsp/FGSlocalworkspace/FedoraGenericSearch/lib/lucene-highlighter-2.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/fgs2.0.0/FedoraGenericSearch/lib/lucene-demos-2.3.0.jar"/>
+	<classpathentry kind="lib" path="/home/gsp/fgs2.0.0/FedoraGenericSearch/lib/lucene-core-2.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

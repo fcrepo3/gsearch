@@ -55,19 +55,22 @@ public class GenericOperationsImpl implements Operations {
     protected String dsText;
     protected String[] params = null;
 
-    private static FedoraClient getFedoraClient(String repositoryName,
-            Config config)
+    private static FedoraClient getFedoraClient(
+    		String repositoryName,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass)
             throws GenericSearchException {
         try {
-            String baseURL = getBaseURL(config.getFedoraSoap(repositoryName));
-            String user = config.getFedoraUser(repositoryName); 
+            String baseURL = getBaseURL(fedoraSoap);
+            String user = fedoraUser; 
             String clientId = user + "@" + baseURL;
             synchronized (fedoraClients) {
                 if (fedoraClients.containsKey(clientId)) {
                     return (FedoraClient) fedoraClients.get(clientId);
                 } else {
                     FedoraClient client = new FedoraClient(baseURL,
-                            user, config.getFedoraPass(repositoryName));
+                            user, fedoraPass);
                     fedoraClients.put(clientId, client);
                     return client;
                 }
@@ -91,16 +94,19 @@ public class GenericOperationsImpl implements Operations {
         }
     }
 
-    private static FedoraAPIA getAPIA(String repositoryName,
-    		Config config)
+    private static FedoraAPIA getAPIA(
+    		String repositoryName,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass)
     throws GenericSearchException {
-    	String value = config.getTrustStorePath(repositoryName);
-    	if (value!=null)
-    		System.setProperty("javax.net.ssl.trustStore", value);
-    	value = config.getTrustStorePass(repositoryName);
-    	if (value!=null)
-    		System.setProperty("javax.net.ssl.trustStorePassword", value);
-    	FedoraClient client = getFedoraClient(repositoryName, config);
+    	if (trustStorePath!=null)
+    		System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+    	if (trustStorePass!=null)
+    		System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
+    	FedoraClient client = getFedoraClient(repositoryName, fedoraSoap, fedoraUser, fedoraPass);
     	try {
     		return client.getAPIA();
     	} catch (Exception e) {
@@ -109,16 +115,19 @@ public class GenericOperationsImpl implements Operations {
     	}
     }
     
-    private static FedoraAPIM getAPIM(String repositoryName,
-    		Config config)
+    private static FedoraAPIM getAPIM(
+    		String repositoryName,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass)
     throws GenericSearchException {
-    	String value = config.getTrustStorePath(repositoryName);
-    	if (value!=null)
-    		System.setProperty("javax.net.ssl.trustStore", value);
-    	value = config.getTrustStorePass(repositoryName);
-    	if (value!=null)
-    		System.setProperty("javax.net.ssl.trustStorePassword", value);
-    	FedoraClient client = getFedoraClient(repositoryName, config);
+    	if (trustStorePath!=null)
+    		System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+    	if (trustStorePass!=null)
+    		System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
+    	FedoraClient client = getFedoraClient(repositoryName, fedoraSoap, fedoraUser, fedoraPass);
     	try {
     		return client.getAPIM();
     	} catch (Exception e) {
@@ -286,7 +295,12 @@ public class GenericOperationsImpl implements Operations {
             logger.info("getFoxmlFromPid" +
                     " pid="+pid +
                     " repositoryName="+repositoryName);
-        FedoraAPIM apim = getAPIM(repositoryName, config);
+        FedoraAPIM apim = getAPIM(repositoryName, 
+        		config.getFedoraSoap(repositoryName), 
+        		config.getFedoraUser(repositoryName), 
+        		config.getFedoraPass(repositoryName), 
+        		config.getTrustStorePath(repositoryName), 
+        		config.getTrustStorePass(repositoryName) );
         try {
         	foxmlRecord = apim.export(pid, "foxml1.0", "public");
         } catch (RemoteException e) {
@@ -299,15 +313,46 @@ public class GenericOperationsImpl implements Operations {
             String repositoryName,
             String dsId)
     throws GenericSearchException {
+    	return getDatastreamText(pid, repositoryName, dsId,
+                		config.getFedoraSoap(repositoryName), 
+                		config.getFedoraUser(repositoryName), 
+                		config.getFedoraPass(repositoryName), 
+                		config.getTrustStorePath(repositoryName), 
+                		config.getTrustStorePass(repositoryName) );
+    }
+    
+    public String getDatastreamText(
+            String pid,
+            String repositoryName,
+            String dsId,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass)
+    throws GenericSearchException {
         if (logger.isInfoEnabled())
-            logger.info("getDatastreamText" +
-            		" pid="+pid+" repositoryName="+repositoryName+" dsId="+dsId);
+            logger.info("getDatastreamText"
+            		+" pid="+pid
+            		+" repositoryName="+repositoryName
+            		+" dsId="+dsId
+            		+" fedoraSoap="+fedoraSoap
+            		+" fedoraUser="+fedoraUser
+            		+" fedoraPass="+fedoraPass
+            		+" trustStorePath="+trustStorePath
+            		+" trustStorePass="+trustStorePass);
         StringBuffer dsBuffer = new StringBuffer();
         String mimetype = "";
         ds = null;
         if (dsId != null) {
             try {
-                FedoraAPIA apia = getAPIA(repositoryName, config);
+                FedoraAPIA apia = getAPIA(
+                		repositoryName, 
+                		fedoraSoap, 
+                		fedoraUser,
+                		fedoraPass,
+                		trustStorePath,
+                		trustStorePass );
                 MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
                         dsId, null);
                 if (mts==null) return "";
@@ -340,13 +385,43 @@ public class GenericOperationsImpl implements Operations {
             String repositoryName,
             String dsMimetypes)
     throws GenericSearchException {
+    	return getFirstDatastreamText(pid, repositoryName, dsMimetypes,
+            		config.getFedoraSoap(repositoryName), 
+            		config.getFedoraUser(repositoryName), 
+            		config.getFedoraPass(repositoryName), 
+            		config.getTrustStorePath(repositoryName), 
+            		config.getTrustStorePass(repositoryName));
+    }
+    
+    public StringBuffer getFirstDatastreamText(
+            String pid,
+            String repositoryName,
+            String dsMimetypes,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass)
+    throws GenericSearchException {
         if (logger.isInfoEnabled())
-            logger.info("getFirstDatastreamText" +
-                    " pid="+pid+" dsMimetypes="+dsMimetypes);
+            logger.info("getFirstDatastreamText"
+                    +" pid="+pid
+            		+" dsMimetypes="+dsMimetypes
+            		+" fedoraSoap="+fedoraSoap
+            		+" fedoraUser="+fedoraUser
+            		+" fedoraPass="+fedoraPass
+            		+" trustStorePath="+trustStorePath
+            		+" trustStorePass="+trustStorePass);
         StringBuffer dsBuffer = new StringBuffer();
         Datastream[] dsds = null;
         try {
-            FedoraAPIM apim = getAPIM(repositoryName, config);
+            FedoraAPIM apim = getAPIM(
+            		repositoryName, 
+            		fedoraSoap, 
+            		fedoraUser,
+            		fedoraPass,
+            		trustStorePath,
+            		trustStorePass );
             dsds = apim.getDatastreams(pid, null, "A");
         } catch (AxisFault e) {
             throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
@@ -373,7 +448,13 @@ public class GenericOperationsImpl implements Operations {
         ds = null;
         if (dsID != null) {
             try {
-                FedoraAPIA apia = getAPIA(repositoryName, config);
+                FedoraAPIA apia = getAPIA(
+                		repositoryName, 
+                		fedoraSoap, 
+                		fedoraUser,
+                		fedoraPass,
+                		trustStorePath,
+                		trustStorePass );
                 MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
                         dsID, null);
                 ds = mts.getStream();
@@ -403,13 +484,39 @@ public class GenericOperationsImpl implements Operations {
             String parameters, 
             String asOfDateTime)
     throws GenericSearchException {
+    	return getDisseminationText(pid, repositoryName, bDefPid, methodName, parameters, asOfDateTime,
+                		config.getFedoraSoap(repositoryName), 
+                		config.getFedoraUser(repositoryName), 
+                		config.getFedoraPass(repositoryName), 
+                		config.getTrustStorePath(repositoryName), 
+                		config.getTrustStorePass(repositoryName) );
+    }
+    
+    public StringBuffer getDisseminationText(
+            String pid,
+            String repositoryName,
+            String bDefPid, 
+            String methodName, 
+            String parameters, 
+            String asOfDateTime,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass)
+    throws GenericSearchException {
         if (logger.isInfoEnabled())
             logger.info("getDisseminationText" +
                     " pid="+pid+
                     " bDefPid="+bDefPid+
                     " methodName="+methodName+
                     " parameters="+parameters+
-                    " asOfDateTime="+asOfDateTime);
+                    " asOfDateTime="+asOfDateTime
+            		+" fedoraSoap="+fedoraSoap
+            		+" fedoraUser="+fedoraUser
+            		+" fedoraPass="+fedoraPass
+            		+" trustStorePath="+trustStorePath
+            		+" trustStorePass="+trustStorePass);
         StringTokenizer st = new StringTokenizer(parameters);
         fedora.server.types.gen.Property[] params = new fedora.server.types.gen.Property[st.countTokens()];
         for (int i=0; i<st.countTokens(); i++) {
@@ -425,7 +532,13 @@ public class GenericOperationsImpl implements Operations {
         ds = null;
         if (pid != null) {
             try {
-                FedoraAPIA apia = getAPIA(repositoryName, config);
+                FedoraAPIA apia = getAPIA(
+                		repositoryName, 
+                		fedoraSoap, 
+                		fedoraUser,
+                		fedoraPass,
+                		trustStorePath,
+                		trustStorePass );
                 MIMETypedStream mts = apia.getDissemination(pid, bDefPid, 
                         methodName, params, asOfDateTime);
                 if (mts==null) {

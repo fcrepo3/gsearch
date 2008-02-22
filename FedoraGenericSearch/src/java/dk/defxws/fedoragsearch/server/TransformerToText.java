@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.demo.html.HTMLParser;
 import org.pdfbox.cos.COSDocument;
@@ -35,7 +37,7 @@ public class TransformerToText {
     private static final Logger logger =
         Logger.getLogger(TransformerToText.class);
     
-    public static final String[] handledMimeTypes = {"text/plain", "text/html", "application/pdf"};
+    public static final String[] handledMimeTypes = {"text/plain", "text/xml",  "text/html", "application/pdf"};
     
     public TransformerToText() {
     }
@@ -49,6 +51,8 @@ public class TransformerToText {
     throws GenericSearchException {
         if (mimetype.equals("text/plain")) {
             return getTextFromText(doc);
+        } else if(mimetype.equals("text/xml")) {
+            return getTextFromXML(doc);
         } else if(mimetype.equals("text/html")) {
             return getTextFromHTML(doc);
         } else if(mimetype.equals("application/pdf")) {
@@ -80,6 +84,21 @@ public class TransformerToText {
         }
         return docText;
     }
+
+/**
+ * 
+ *
+ * @throws GenericSearchException.
+ */
+private StringBuffer getTextFromXML(byte[] doc) 
+throws GenericSearchException {
+    InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(doc));
+    StringBuffer docText = (new GTransformer()).transform(
+    		"config/textFromXml", 
+            new StreamSource(isr));
+    docText.delete(0, docText.indexOf(">"));
+    return docText;
+}
     
     /**
      * 

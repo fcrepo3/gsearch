@@ -127,6 +127,14 @@
 			</div>
 			<a name="new"><h2>New Features in Version 2.0</h2></a>
 				<ul>
+				    
+				    <li>Added a plugin for the Apache Solr search server.</li>
+				    
+				    <li>Added easier configuration, so that you need only edit one file
+				    with property values, then run it with ant.</li>
+				    
+				    <li>Updated to Lucene version 2.3.0.</li>
+				    
 				    <li>Added params to indexing in the format:
 
 					<pre>...&indexDocXslt=[xslt-name][(paramname1=value1[,paramname2=value2[,...]])]</pre>
@@ -186,46 +194,19 @@
 			<a name="config"><h2>Configuring the Service</h2></a>
 				<ul>
 					<li>
-						Edit the configuration files in 
+						Edit the property values in the configvalues.xml file in 
 						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/
 						(where &lt;WEBAPPNAME&gt; by default is 'fedoragsearch'):
 						<pre>
-fedoragsearch.properties:
-	fedoragsearch.soapBase         = http://&lt;HOST:PORT&gt;/&lt;WEBAPPNAME&gt;/services
-	fedoragsearch.soapUser         = &lt;SOAPUSER&gt;
-	fedoragsearch.soapPass         = &lt;SOAPPASSWORD&gt;
-	fedoragsearch.deployFile       = &lt;WEBSERVERPATH&gt;/webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/deploy.wsdd
-                                    (&lt;WEBSERVERPATH&gt; may be &quot;${catalina.home}&quot; in the Tomcat case)
-                                    (in general, you may insert system variable values in property values in this way)
-	fedoragsearch.default&lt;OPERATION&gt;RestXslt = &lt;your default Rest stylesheet for the operation&gt;
-	fedoragsearch.mimeTypes        = &lt;a sequence of mimeTypes used by the application&gt;
-	                                 The first accessible mimeType will decide, 
-	                                 which of the datastreams is fetched and indexed.
-	                                 Currently "text/plain text/html application/pdf" are implemented.
-	fedoragsearch.repositoryNames  = &lt;REPOSNAMES&gt;
-	fedoragsearch.indexNames	       = &lt;INDEXNAMES&gt;
-	                                 
-For each repository:
+	o Set the property values for your environment.
+	o Select the default config in configDefault.
+	o Save this edited file outside of the web server.
+	o Run target configOnWebServer after deployment from command line:
 
-repository/&lt;REPOSNAME&gt;/repository.properties:
-	fgsrepository.fedoraSoap       = http://&lt;HOST:PORT&gt;/fedora/services (e.g. http://localhost:8080)
-	fgsrepository.fedoraUser       = &lt;FEDORAUSER&gt;
-	fgsrepository.fedoraPass       = &lt;FEDORAPASSWORD&gt;
-	fgsrepository.fedoraObjectDir  = &lt;absolute path to FedoraObjects directory with FOXML files&gt;
-	
-For each index:
-
-index/&lt;INDEXNAME&gt;/index.properties:
-	fgsindex.indexDir              = &lt;path to Lucene index directory, which must exist&gt;
-
-.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/log4j.xml:
-    &lt;param name="File" value="/&lt;LOGPATH&gt;/&lt;LOGFILENAME&gt;"/&gt; /LOGPATH must exist
-						</pre>
-						Edit the three files rest/demo*.xslt,
-						and the file index/DemoOnLucene/demoFoxmlToLucene.xslt,
-						where the xsl:include elements
-						shall have absolute paths instead of relative paths.
-					</li>
+	  &gt;ant -f configvalues.xml configOnWebServer
+  </pre>
+  This will set your values into fedoragsearch.properties, repository.properties,
+  and index.properties. Read these files to make sure they are correct.
                     <li>
 						Then you may restart &lt;WEBAPPNAME&gt; and call http://&lt;HOSTPORT&gt;/&lt;WEBAPPNAME&gt;/rest in order to index and search.
 						The name &quot;rest&quot; may be reconfigured in 
@@ -317,6 +298,15 @@ index/&lt;INDEXNAME&gt;/index.properties:
 				have ideas for further exploitation, which you may realize
 				by implementing an enhanced version of the plugin.
 				Please, share such ideas and implementations with the Fedora community.</p>
+				<h4><a href="http://lucene.apache.org/solr">Solr</a></h4>
+				<p>The Solr plugin comes as the java package dk.defxws.fgssolr.</p>
+				<p>The Solr plugin is used by configuration as explained above,
+				see also the DemoOnSolr example.</p>
+				<p>This plugin indexes documents via the HTTP POST interface of Solr.
+				Searches may be performed via the Solr native HTTP GET to the Solr server
+				and via gfindObjects, which accesses the Lucene index directly.
+				Solr functionality does not include browsing, however, this is offered
+				by the plugin via the browseIndex operation.</p>
 				<h4><a href="http://www.indexdata.dk/zebra/">Zebra</a></h4>
 				<p>The Zebra plugin comes as the java package dk.defxws.fgszebra .</p>
 				<p>The Zebra plugin is used by configuration as 

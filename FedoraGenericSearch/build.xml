@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  $Id$ -->
-<project name="FedoraGenericSearch" default="builddownload" basedir=".">
+<project name="FedoraGenericSearch" default="buildlocal" basedir=".">
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
@@ -36,6 +36,7 @@
     <target name="clean"
             description="removes build-generated artifacts">
 		<delete dir="../FgsLucene/bin"/>
+		<delete dir="../FgsSolr/bin"/>
 		<delete dir="../FgsZebra/bin"/>
 		<delete dir="${compile.dir}"/>
 		<delete dir="${build.basedir}"/>
@@ -135,14 +136,9 @@
 	<target name="buildlocal"
 		    depends="prep, includeengines"
 	        description="build local">
-        <ant dir="../FgsConfig" target="configlocal" inheritAll="false"/>
+        <ant dir="../FgsConfig" target="config" inheritAll="false"/>
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
         <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f221/${tomcat.basename}/webapps"/>
-        <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f2218989/${tomcat.basename}/webapps"/>
-		<!--
-        <copy file="${dist.dir}/${war.name}" tofile="${dist.dir}/fedoragsearchtest.war"/>
-        <copy file="${dist.dir}/fedoragsearchtest.war" todir="/home/gsp/f2218989/${tomcat.basename}/webapps"/>
-        -->
 	</target>
 
 	<target name="builddemo"
@@ -160,6 +156,7 @@
 	
     <target name="includeengines" depends="">
         <ant dir="../FgsLucene" inheritAll="false"/>
+        <ant dir="../FgsSolr" inheritAll="false"/>
         <ant dir="../FgsZebra" inheritAll="false"/>
     </target>
     	

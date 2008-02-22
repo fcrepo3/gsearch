@@ -27,7 +27,7 @@ Version 1.1 was released in January 2007, working with Fedora version 2.2.
 Version 1.1.1 was released in May 2007 with a bug fix concerning snippets 
 for search results.
 
-Version 2.0 is released in February 2008, with seven new features requested by users.
+Version 2.0 is released in February 2008, with new features requested by users.
 The main and overall aim is to exploit more features of Lucene.
 It works with Fedora version 2.2.1.
 
@@ -40,6 +40,13 @@ at src/html/search-service.html, and after installation at
 http://localhost:8080/fedoragsearch/index.html .
 
 Briefly, the new features in Version 2.0 are:
+
+- Added a plugin for the Apache Solr search server.
+
+- Updated to Lucene version 2.3.0.
+
+- Added easier configuration, so that you need only edit one file
+  with property values, then run it with ant.
 				    
 - Added a sortFields parameter to gfindObjects for Lucene, sorting
   search results as specified, exploiting Lucene classes for sorting.
@@ -67,7 +74,7 @@ Briefly, the new features in Version 2.0 are:
   Snippets now show special characters without modification.
   Indexes should be reindexed.
 
-For examples, see the index.properties file in configTestOnLucene/index/TestOnLucene/.
+For examples, see the property files of the example configurations.
 
 The next version, presumably called 3.0, will be released with Fedora version 3.0.
 
