@@ -42,7 +42,7 @@
 	</target>
 
 	<target name="configOnWebServer"
-			depends="prepForWebServer, configBasic, configDemoOnLucene, configDemoOnSolr, configDefault"
+			depends="prepForWebServer, configBasic, configDemoOnLucene, configDemoOnSolr, configDemoOnZebra, configTestOnLucene, configDefault"
         	description="set values for the configs on web server">
 		<property name="debug.level" value="INFO" />
 		<replace file="${configs.path}/log4j.xml" token="LOGPATH" value="${log.path}"/>

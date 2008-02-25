@@ -13,6 +13,12 @@
         <ant antfile="configvalues.xml" target="configForLocalDevelopment" inheritAll="false"/>
 	</target>
 
+	<target name="configForWebServer"
+			depends="prep, configManyToMany"
+        	description="build the config">
+        <ant antfile="configvalues.xml" target="configOnWebServer" inheritAll="false"/>
+	</target>
+
 	<target name="prep"
 	          description="prepare">
 		<delete dir="${plugin.dir}/configBasic" />
