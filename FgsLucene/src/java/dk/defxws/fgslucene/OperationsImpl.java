@@ -215,14 +215,14 @@ public class OperationsImpl extends GenericOperationsImpl {
         		if ("deletePid".equals(action)) 
         			deletePid(value, indexName, resultXml);
         		else {
-                    getIndexWriter(indexName, false);
-        			if ("optimize".equals(action)) 
+        			if ("fromPid".equals(action)) 
         				optimize(indexName, resultXml);
         			else {
+                        getIndexWriter(indexName, false);
         				if ("fromFoxmlFiles".equals(action)) 
         					fromFoxmlFiles(value, repositoryName, indexName, resultXml, indexDocXslt);
         				else
-        					if ("fromPid".equals(action)) 
+        					if ("optimize".equals(action)) 
         						fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
         			}
         		}
@@ -437,6 +437,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     	try {
     		ListIterator li = hdlr.getIndexDocument().getFields().listIterator();
     		if (li.hasNext()) {
+                getIndexWriter(indexName, false);
                 iw.updateDocument(new Term("PID", hdlr.getPid()), hdlr.getIndexDocument());
     				updateTotal++;
         			resultXml.append("<updated>"+hdlr.getPid()+"</updated>\n");
@@ -559,6 +560,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             	iw.setMaxBufferedDocs(config.getMaxBufferedDocs(indexName));
             if (config.getMergeFactor(indexName)>1)
             	iw.setMergeFactor(config.getMergeFactor(indexName));
+            if (config.getDefaultWriteLockTimeout(indexName)>1)
+            	IndexWriter.setDefaultWriteLockTimeout(config.getDefaultWriteLockTimeout(indexName));
         } catch (IOException e) {
         	iw = null;
             if (e.toString().indexOf("/segments")>-1) {
