@@ -129,7 +129,7 @@
 	<target name="builddownload"
 			depends="prep, includeengines"
 	        description="build the download">
-        <ant dir="../FgsConfig" target="configdownload" inheritAll="false"/>
+        <ant dir="../FgsConfig" target="configForWebServer" inheritAll="false"/>
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
 
