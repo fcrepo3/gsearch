@@ -24,18 +24,22 @@
 # Expected test results are generated with MODE=expected,
 # you have to check that they are as expected, before running against them.
 
+export HOST=localhost
+export PORT=8080
+
 MODE=$1
 . ./testEngine $MODE
 
+echo "sh runRESTClient.sh $HOST:$PORT configure configDemoOnSolr > /dev/null"
+sh runRESTClient.sh $HOST:$PORT configure configDemoOnSolr > /dev/null
+
 begin_suite runRESTClient.sh "REST operations test"
 
-run_test configure configDemoOnLucene
 run_test getRepositoryInfo
 run_test getIndexInfo
 run_test updateIndex createEmpty
 run_test updateIndex fromPid demo:10
-run_test updateIndex fromFoxmlFilesrun_test updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2)"
-run_test gfindObjects EXPLICITPARAM1:explicitvalue1 and EXPLICITPARAM2:explicitvalue2
+run_test updateIndex fromFoxmlFiles
 run_test browseIndex a dc.title
 run_test gfindObjects fedora
 run_test gfindObjects unknown-field:fedora
@@ -44,6 +48,5 @@ run_test gfindObjects unknown-field:fedora
 
 run_test_error "Error in operation name" gfindObject fedora
 run_test_error "ParseException" gfindObjects some-field::fedora
-run_test_error "no ending \')\'" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2"
 
 end_suite

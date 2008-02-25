@@ -537,6 +537,7 @@ public class Config {
                     		"fgsindex.snippetEnd",
                     		"fgsindex.maxBufferedDocs",
                     		"fgsindex.mergeFactor",
+                    		"fgsindex.defaultWriteLockTimeout",
                     		"fgsindex.defaultSortFields",
                     		"fgsindex.uriResolver"
                     };
@@ -873,7 +874,10 @@ public class Config {
     }
     
     public String getUntokenizedFields(String indexName) {
-        return getIndexProps(indexName).getProperty("fgsindex.untokenizedFields");
+        String untokenizedFields = getIndexProps(indexName).getProperty("fgsindex.untokenizedFields");
+        if (untokenizedFields == null)
+        	untokenizedFields = "";
+        return untokenizedFields;
     }
     
     public void setUntokenizedFields(String indexName, String untokenizedFields) {
@@ -912,6 +916,15 @@ public class Config {
 		} catch (NumberFormatException e) {
 		}
     	return maxBufferedDocs;
+    }
+    
+    public long getDefaultWriteLockTimeout(String indexName) {
+    	long defaultWriteLockTimeout = 1;
+		try {
+			defaultWriteLockTimeout = Integer.parseInt(getIndexProps(indexName).getProperty("fgsindex.defaultWriteLockTimeout"));
+		} catch (NumberFormatException e) {
+		}
+    	return defaultWriteLockTimeout;
     }
     
     public GenericOperationsImpl getOperationsImpl(String indexNameParam)
