@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id: build.xml 5741 2006-12-11 14:16:26Z cwilper $ -->
+<project name="FedoraGenericSearch" default="pluginbuild" basedir=".">
+	<description>Fedora Generic Search Service plugin for the Solr engine</description>
+
+    <property environment="env"/>
+
+    <loadproperties srcFile="lib.properties" /> 
+
+    <property name="build.basedir" location="../FgsBuild"/>
+    <property name="compile.dir" location="bin"/>
+
+	<property name="build.dir" location="../FgsBuild/webapp" />
+	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
+	<property name="project.dir" location="../FgsBuild/eclipseprojects/FgsSolr" />
+
+    <path id="compile.classpath">
+      <pathelement path="../FedoraGenericSearch/bin"/>
+      <pathelement path="${lib.log4j}"/>
+      <pathelement path="${lib.lucene}"/>
+      <pathelement path="${lib.lucene-highlighter}"/>
+    </path>
+
+    <target name="clean"
+            description="removes build-generated artifacts">
+		<delete dir="${compile.dir}"/>
+    </target>
+
+    <target name="compile">
+      <mkdir dir="${compile.dir}"/>
+      <javac classpathref="compile.classpath"
+             debug="true"
+             destdir="${compile.dir}"
+             srcdir="src/java"
+             optimize="off"/>
+    </target>
+
+	<target name="pluginbuild"
+	        description="build the plugin"
+	        depends="compile">
+		<delete dir="${plugin.dir}/dk/defxws/fgssolr" />
+		<mkdir dir="${plugin.dir}/dk/defxws/fgssolr" />
+		<copy todir="${plugin.dir}">
+			<fileset dir="bin"/>
+		</copy>
+		<delete dir="${project.dir}" />
+		<mkdir dir="${project.dir}" />
+		<copy todir="${project.dir}">
+			<fileset dir="."/>
+		</copy>
+	</target>
+
+</project>
