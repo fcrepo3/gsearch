@@ -37,6 +37,11 @@
 -->
 
 	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
+	<xsl:param name="FEDORASOAP" select="repositoryName"/>
+	<xsl:param name="FEDORAUSER" select="repositoryName"/>
+	<xsl:param name="FEDORAPASS" select="repositoryName"/>
+	<xsl:param name="TRUSTSTOREPATH" select="repositoryName"/>
+	<xsl:param name="TRUSTSTOREPASS" select="repositoryName"/>
 	<xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
 	<xsl:variable name="docBoost" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
 	
@@ -82,11 +87,11 @@
 			<!-- a managed datastream is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the field. -->
 			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M']">
-				<field >
+				<field index="TOKENIZED" store="YES" termVector="NO">
 					<xsl:attribute name="name">
-						<xsl:value-of select="concat('fgs.', @ID)"/>
+						<xsl:value-of select="concat('dsm.', @ID)"/>
 					</xsl:attribute>
-					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID)"/>
+					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</field>
 			</xsl:for-each>
 			

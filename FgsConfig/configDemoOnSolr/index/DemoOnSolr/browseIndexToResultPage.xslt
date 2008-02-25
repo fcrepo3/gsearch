@@ -6,7 +6,7 @@
 		xmlns:dc="http://purl.org/dc/elements/1.1/">
 		
 <!-- This xslt stylesheet generates the resultPage
-     from a Lucene browseIndex.
+     from a Solr browseIndex.
 -->
 	
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
@@ -16,7 +16,7 @@
 	<xsl:param name="RESULTPAGEXSLT" select="resultPageXslt"/>
 	<xsl:param name="DATETIME" select="none"/>
 
-	<xsl:template match="lucenebrowseindex">
+	<xsl:template match="solrbrowseindex">
 		<xsl:variable name="INDEXNAME" select="@indexName"/>
 		<xsl:variable name="FIELDNAME" select="@fieldName"/>
 		<xsl:variable name="TERMTOTAL" select="@termTotal"/>

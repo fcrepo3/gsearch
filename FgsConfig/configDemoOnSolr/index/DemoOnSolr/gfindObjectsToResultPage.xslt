@@ -6,7 +6,7 @@
 		xmlns:dc="http://purl.org/dc/elements/1.1/">
 		
 <!-- This xslt stylesheet generates the resultPage
-     from a Lucene search.
+     from a Solr search.
 -->
 	
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
@@ -17,7 +17,7 @@
 	<xsl:param name="RESULTPAGEXSLT" select="resultPageXslt"/>
 	<xsl:param name="DATETIME" select="none"/>
 
-	<xsl:template match="lucenesearch">
+	<xsl:template match="solrsearch">
 		<xsl:variable name="INDEXNAME" select="@indexName"/>
 		<xsl:variable name="HITTOTAL" select="@hitTotal"/>
 	 	<resultPage dateTime="{$DATETIME}"

@@ -179,10 +179,10 @@
 		<property name="test.config.path" value="${configs.path}/${test.config.name}" />
 		<property name="test.config.prefix" value="demo" />
 		<property name="test.mimetypes" value="text/plain text/xml text/html application/pdf" />
-		<property name="test.index.1" value="TestOnLucene" />
+		<property name="test.index.1" value="BasicIndex" />
 		<property name="test.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${test.index.1}" />
 		<property name="test.index.names" value="${test.index.1}" />
-		<property name="test.repos.1" value="TestAtDtu" />
+		<property name="test.repos.1" value="BasicRepos" />
 		<property name="test.repos.1.fedorasoap" value="http://localhost:8080" />
 		<property name="test.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="test.repos.1.fedorapass" value="fedoraAdmin" />
