@@ -246,14 +246,16 @@ public class OperationsImpl extends GenericOperationsImpl {
         }
         logger.info("updateIndex "+action+" indexName="+indexName
         		+" indexDirSpace="+indexDirSpace(new File(config.getIndexDir(indexName)))
-        		+" docCount="+docCount);
+        		+" docCount="+(docCount-deleteTotal));
         resultXml.append("<counts");
         resultXml.append(" insertTotal=\""+insertTotal+"\"");
         resultXml.append(" updateTotal=\""+updateTotal+"\"");
         resultXml.append(" deleteTotal=\""+deleteTotal+"\"");
-        resultXml.append(" docCount=\""+docCount+"\"");
+        resultXml.append(" docCount=\""+(docCount-deleteTotal)+"\"");
         resultXml.append("/>\n");
         resultXml.append("</solrUpdateIndex>\n");
+        if (logger.isDebugEnabled())
+            logger.debug("resultXml =\n"+resultXml.toString());
         params = new String[12];
         params[0] = "OPERATION";
         params[1] = "updateIndex";
@@ -272,6 +274,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         		xsltPath,
                 resultXml,
                 params);
+        if (logger.isDebugEnabled())
+            logger.debug("resultXml =\n"+sb.toString());
         return sb.toString();
     }
     
@@ -280,7 +284,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
-        StringBuffer sb = new StringBuffer("<delete>"+pid+"</delete>");
+        StringBuffer sb = new StringBuffer("<delete><id>"+pid+"</id></delete>");
         if (logger.isDebugEnabled())
             logger.debug("indexDoc=\n"+sb.toString());
         postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
@@ -503,12 +507,27 @@ public class OperationsImpl extends GenericOperationsImpl {
                 throw new GenericSearchException("postData URL="+solrUrlString+" HTTP response code="+status);
         	}
           Reader reader = new InputStreamReader(in);
-          pipe(reader, output);
+          pipeString(reader, output);
           reader.close();
         } catch (IOException e) {
           throw new GenericSearchException("IOException while reading response", e);
         } finally {
           if(in!=null) in.close();
+        }
+        
+        InputStream es = urlc.getErrorStream();
+        if (es != null) {
+            try {
+                Reader reader = new InputStreamReader(es);
+                output.append("<error><message>");
+                pipeString(reader, output);
+                output.append("</message></error>");
+                reader.close();
+              } catch (IOException e) {
+                throw new GenericSearchException("IOException while reading response", e);
+              } finally {
+                if(es!=null) es.close();
+              }
         }
         
       } catch (IOException e) {
@@ -591,11 +610,12 @@ public class OperationsImpl extends GenericOperationsImpl {
     /**
      * Pipes everything from the reader to the writer via a buffer
      */
-    private static void pipe(Reader reader, StringBuffer writer) throws IOException {
+    private static void pipeString(Reader reader, StringBuffer writer) throws IOException {
       char[] buf = new char[1024];
       int read = 0;
       while ( (read = reader.read(buf) ) >= 0) {
-        writer.append(buf, 0, read);
+    	  if (!(buf[0]=='<' && buf[1]=='?'))
+    		  writer.append(buf, 0, read);
       }
     }
     
