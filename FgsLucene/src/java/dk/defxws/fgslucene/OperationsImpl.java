@@ -216,14 +216,14 @@ public class OperationsImpl extends GenericOperationsImpl {
         			deletePid(value, indexName, resultXml);
         		else {
         			if ("fromPid".equals(action)) 
-        				optimize(indexName, resultXml);
+						fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
         			else {
                         getIndexWriter(indexName, false);
         				if ("fromFoxmlFiles".equals(action)) 
         					fromFoxmlFiles(value, repositoryName, indexName, resultXml, indexDocXslt);
         				else
         					if ("optimize".equals(action)) 
-        						fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
+                				optimize(indexName, resultXml);
         			}
         		}
         	}
