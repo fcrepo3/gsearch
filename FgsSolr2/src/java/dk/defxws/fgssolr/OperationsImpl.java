@@ -411,7 +411,8 @@ public class OperationsImpl extends GenericOperationsImpl {
                 params);
         if (logger.isDebugEnabled())
             logger.debug("indexDoc=\n"+sb.toString());
-        postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
+        if (sb.indexOf("name=\"PID") > 0)
+        	postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
         updateTotal++;
     }
     
