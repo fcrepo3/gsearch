@@ -22,6 +22,7 @@
 
     <path id="compile.classpath">
       <pathelement path="${lib.axis}"/>
+      <pathelement path="${lib.commons-httpclient}"/>
       <pathelement path="${lib.commons-logging}"/>
       <pathelement path="${lib.fedora-client}"/>
       <pathelement path="${lib.jaxrpc}"/>
@@ -36,7 +37,7 @@
     <target name="clean"
             description="removes build-generated artifacts">
 		<delete dir="../FgsLucene/bin"/>
-		<delete dir="../FgsSolr/bin"/>
+		<delete dir="../FgsSolr2/bin"/>
 		<delete dir="../FgsZebra/bin"/>
 		<delete dir="${compile.dir}"/>
 		<delete dir="${build.basedir}"/>
@@ -156,7 +157,7 @@
 	
     <target name="includeengines" depends="">
         <ant dir="../FgsLucene" inheritAll="false"/>
-        <ant dir="../FgsSolr" inheritAll="false"/>
+        <ant dir="../FgsSolr2" inheritAll="false"/>
         <ant dir="../FgsZebra" inheritAll="false"/>
     </target>
     	
