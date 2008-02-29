@@ -1,0 +1,50 @@
+#!/bin/sh
+#$Id: testDemoOnLucene 5719 2006-10-13 14:17:53Z gertsp $
+
+# <p><b>License and Copyright: </b>The contents of this file will be subject to the
+# same open source license as the Fedora Repository System at www.fedora.info
+# It is expected to be released with Fedora version 2.2.
+
+# Copyright &copy; 2006 by The Technical University of Denmark.
+# All rights reserved.</p>
+
+# @author  gsp@dtv.dk
+# @version 
+
+# This script is in the fedoragsearch distribution 
+# in WEBSERVER/webapps/fedoragsearch/client
+# together with the testEngine script.
+
+# This script assumes that the testEngine script is available
+# and set to run on a Fedora repository,
+# where the Fedora demo objects have been ingested.
+
+# Expected test results are assumed to be in $TESTHOME/expected/$0,
+# see testEngine for further information.
+# Expected test results are generated with MODE=expected,
+# you have to check that they are as expected, before running against them.
+
+MODE=$1
+. ./testEngine $MODE
+
+begin_suite runRESTClient.sh "test of indexXslt explicit parameters"
+
+run_test configure configDemoOnLucene
+run_test updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams"
+run_test updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams()"
+run_test updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2)"
+run_test gfindObjects "EXPLICITPARAM1:explicitvalue1 and EXPLICITPARAM2:explicitvalue2"
+
+#errors found
+
+run_test_error "Format error (no ending ')')" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2"
+run_test_error "Format error (empty param)" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,+)"
+run_test_error "Format error (empty param)" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(+,EXPLICITPARAM2=explicitvalue2)"
+run_test_error "Format error (no '=')" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1explicitvalue1,EXPLICITPARAM2=explicitvalue2)"
+run_test_error "Format error (no '=')" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2explicitvalue2)"
+run_test_error "Format error (no param name)" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(=explicitvalue1,EXPLICITPARAM2=explicitvalue2)"
+run_test_error "Format error (no param name)" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,=explicitvalue2)"
+run_test_error "Format error (no param value)" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=,EXPLICITPARAM2=explicitvalue2)"
+run_test_error "Format error (no param value)" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=)"
+
+end_suite

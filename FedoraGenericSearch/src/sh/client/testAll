@@ -1,0 +1,34 @@
+#!/bin/sh
+#$Id: testDemoOnLucene 5719 2006-10-13 14:17:53Z gertsp $
+
+# <p><b>License and Copyright: </b>The contents of this file will be subject to the
+# same open source license as the Fedora Repository System at www.fedora.info
+# It is expected to be released with Fedora version 2.2.
+
+# Copyright &copy; 2006 by The Technical University of Denmark.
+# All rights reserved.</p>
+
+# @author  gsp@dtv.dk
+# @version 
+
+# This script is in the fedoragsearch distribution 
+# in WEBSERVER/webapps/fedoragsearch/client
+# together with the testEngine script.
+
+# This script assumes that the testEngine script is available
+# and set to run on a Fedora repository,
+# where the Fedora demo objects have been ingested.
+
+# Expected test results are assumed to be in $TESTHOME/expected/$0,
+# see testEngine for further information.
+
+MODE=$1
+. ./testEngine $MODE
+
+#sh testAllSetup
+
+sh testRESTDemoOnLucene $MODE
+sh testSOAPDemoOnLucene $MODE
+sh testIndexingParamsDemoOnLucene $MODE
+sh testSortFieldsDemoOnLucene $MODE
+sh testTruncationTestOnLucene $MODE

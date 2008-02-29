@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id$ -->
+<project name="FedoraGenericSearch" default="buildlocal" basedir=".">
+	<description>Fedora Generic Search Service</description>
+
+    <property environment="env"/>
+
+    <loadproperties srcFile="lib/lib.properties" /> 
+
+    <property name="genericsearch.version" value="2.0"/>
+
+    <property name="build.basedir" location="../FgsBuild"/>
+    <property name="compile.dir" location="bin"/>
+
+	<property name="build.dir" location="${build.basedir}/webapp" />
+	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
+	<property name="project.dir" location="${build.basedir}/eclipseprojects/FedoraGenericSearch" />
+	<property name="tomcat.basename" value="tomcat" />
+	<property name="dist.dir" location="dist" />
+	<property name="app.name" value="fedoragsearch" />
+	<property name="war.name" value="${app.name}.war" />
+
+    <path id="compile.classpath">
+      <pathelement path="${lib.axis}"/>
+      <pathelement path="${lib.commons-httpclient}"/>
+      <pathelement path="${lib.commons-logging}"/>
+      <pathelement path="${lib.fedora-client}"/>
+      <pathelement path="${lib.jaxrpc}"/>
+      <pathelement path="${lib.junit}"/>
+      <pathelement path="${lib.log4j}"/>
+      <pathelement path="${lib.lucene}"/>
+      <pathelement path="${lib.lucene-demos}"/>
+      <pathelement path="${lib.pdfbox}"/>
+      <pathelement path="${lib.servlet-api}"/>
+    </path>
+
+    <target name="clean"
+            description="removes build-generated artifacts">
+		<delete dir="../FgsLucene/bin"/>
+		<delete dir="../FgsSolr2/bin"/>
+		<delete dir="../FgsZebra/bin"/>
+		<delete dir="${compile.dir}"/>
+		<delete dir="${build.basedir}"/>
+		<delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="compile">
+      <mkdir dir="${compile.dir}"/>
+      <javac classpathref="compile.classpath"
+             debug="true"
+             destdir="${compile.dir}"
+             srcdir="src/java"
+             optimize="off"/>
+    </target>
+
+	<target name="prep"
+            depends="compile"
+            description="prepare">
+		<delete dir="${dist.dir}" />
+		<delete dir="${build.dir}" />
+		<delete dir="${project.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" />
+		<copy file="src/html/prototype.html" todir="${build.dir}" />
+		<copy file="src/html/search-service.html" todir="${build.dir}" />
+		<copy file="../FgsConfig/configvalues.xml" todir="${build.dir}" />
+		<copy todir="${build.dir}/css">
+			<fileset dir="src/css"/>
+		</copy>
+		<copy todir="${build.dir}/images">
+			<fileset dir="src/images">
+				<include name="*.png"/>
+				<include name="*.gif"/>
+				<include name="*.jpg"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}">
+			<fileset dir="src/sh"/>
+		</copy>
+		<copy todir="${build.dir}/WEB-INF">
+			<fileset dir="src/WEB-INF"/>
+		</copy>
+		<copy todir="${build.dir}/WEB-INF/lib">
+			<fileset dir="lib" excludes="servlet-api.jar"/>
+		</copy>
+		<copy todir="${plugin.dir}">
+			<fileset dir="bin"/>
+		</copy>
+		<delete dir="${project.dir}" />
+		<mkdir dir="${project.dir}" />
+		<copy todir="${project.dir}">
+			<fileset dir="."/>
+		</copy>
+	</target>
+
+    <target name="binrelease" depends="builddownload">
+      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}"
+            file="${dist.dir}/${war.name}"/>
+      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}/doc">
+        <fileset dir="${build.dir}">
+          <include name="index.html"/>
+          <include name="css/**"/>
+          <include name="images/**"/>
+        </fileset>
+      </copy>
+      <zip zipfile="${build.basedir}/release/genericsearch-${genericsearch.version}.zip"
+           basedir="${build.basedir}/release" includes="genericsearch-${genericsearch.version}/**"/>
+      <delete dir="${build.basedir}/release/genericsearch-${genericsearch.version}"/>
+    </target>
+  
+    <target name="srcrelease" depends="clean">
+      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}-src">
+        <fileset dir="..">
+          <exclude name="${build.basedir}/**"/>
+        </fileset>
+      </copy>
+      <zip zipfile="${build.basedir}/release/genericsearch-${genericsearch.version}-src.zip" 
+           basedir="${build.basedir}/release" includes="genericsearch-${genericsearch.version}-src/**"/>
+      <delete dir="${build.basedir}/release/genericsearch-${genericsearch.version}-src"/>
+    </target>
+
+    <target name="release" depends="srcrelease,binrelease" description="Build the source and binary distributions">
+      <checksum fileext=".md5">
+        <fileset dir="${build.basedir}/release">
+          <include name="*.zip"/>
+        </fileset>
+      </checksum>
+    </target>
+
+	<target name="builddownload"
+			depends="prep, includeengines"
+	        description="build the download">
+        <ant dir="../FgsConfig" target="prep" inheritAll="false"/>
+	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
+	</target>
+
+	<target name="buildlocal"
+		    depends="prep, includeengines"
+	        description="build local">
+        <ant dir="../FgsConfig" target="config" inheritAll="false"/>
+	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
+        <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f221/${tomcat.basename}/webapps"/>
+	</target>
+
+	<target name="builddemo"
+			depends="builddownload"
+	        description="build public">
+        <ant dir="../FgsConfig" target="configdemo" inheritAll="false"/>
+		<mkdir dir="${dist.dir}" />
+	    <zip zipfile="${build.dir}/eclipseprojects.zip" basedir="${build.basedir}/eclipseprojects"/>
+	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
+		<exec executable="scp">
+        <arg line=" -p ${dist.dir}/${war.name} fedora2@defxws2006.cvt.dk:/home/fedora2/fedora-2.1/server/${tomcat.basename}/webapps"/>
+    </exec>
+
+	</target>
+	
+    <target name="includeengines" depends="">
+        <ant dir="../FgsLucene" inheritAll="false"/>
+        <ant dir="../FgsSolr2" inheritAll="false"/>
+        <ant dir="../FgsZebra" inheritAll="false"/>
+    </target>
+    	
+</project>

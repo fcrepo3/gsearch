@@ -1,0 +1,49 @@
+#!/bin/sh
+#$Id: testDemoOnLucene 5719 2006-10-13 14:17:53Z gertsp $
+
+# <p><b>License and Copyright: </b>The contents of this file will be subject to the
+# same open source license as the Fedora Repository System at www.fedora.info
+# It is expected to be released with Fedora version 2.2.
+
+# Copyright &copy; 2006 by The Technical University of Denmark.
+# All rights reserved.</p>
+
+# @author  gsp@dtv.dk
+# @version 
+
+# This script is in the fedoragsearch distribution 
+# in WEBSERVER/webapps/fedoragsearch/client
+# together with the testEngine script.
+
+# This script assumes that the testEngine script is available
+# and set to run on a Fedora repository,
+# where the Fedora demo objects have been ingested.
+
+# Expected test results are assumed to be in $TESTHOME/expected/$0,
+# see testEngine for further information.
+# Expected test results are generated with MODE=expected,
+# you have to check that they are as expected, before running against them.
+
+MODE=$1
+. ./testEngine $MODE
+
+begin_suite runRESTClient.sh "REST operations test"
+
+run_test configure configDemoOnLucene
+run_test getRepositoryInfo
+run_test getIndexInfo
+run_test updateIndex createEmpty
+run_test updateIndex fromPid demo:10
+run_test updateIndex fromFoxmlFilesrun_test updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2)"
+run_test gfindObjects EXPLICITPARAM1:explicitvalue1 and EXPLICITPARAM2:explicitvalue2
+run_test browseIndex a dc.title
+run_test gfindObjects fedora
+run_test gfindObjects unknown-field:fedora
+
+#errors found
+
+run_test_error "Error in operation name" gfindObject fedora
+run_test_error "ParseException" gfindObjects some-field::fedora
+run_test_error "no ending \')\'" updateIndex fromPid demo:10 DemoAtDtu DemoOnLucene "demoFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2"
+
+end_suite

@@ -1,0 +1,25 @@
+Args
+ 0=localhost:8080
+ 1=gfindObject
+ 2=fedora
+ 3=
+ 4=
+ 5=
+ 6=
+ 7=
+ 8=
+!!! Error in operation name: gfindObject !!!
+Usage
+host:port updateIndex # shows number of index documents #
+host:port updateIndex createEmpty [indexName] # index dir must exist #
+host:port updateIndex fromFoxmlFiles [repositoryName [filePath [indexName [indexDocXslt]]]]
+host:port updateIndex fromPid pid [repositoryName [indexName [indexDocXslt]]]
+host:port updateIndex deletePid pid [indexName]
+host:port updateIndex optimize [indexName]
+host:port browseIndex startTerm fieldName [indexName [termPageSize [resultPageXslt]]]
+host:port gfindObjects query [indexName [hitPageStart [hitPageSize [snippetsMax [fieldMaxLength [sortFields [resultPageXslt]]]]]]]
+host:port getRepositoryInfo [repositoryName [resultPageXslt]]
+host:port getIndexInfo [indexName [resultPageXslt]]
+host:port configure [configName [propertyName propertyValue]]
+host:port ?operation=...&...=...&...
+host:port may be [protocol://]host:port[/webappname/restname], default is http://host:port/fedoragsearch/rest

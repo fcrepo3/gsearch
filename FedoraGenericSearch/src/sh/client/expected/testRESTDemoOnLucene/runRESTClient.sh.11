@@ -1,0 +1,29 @@
+Args
+ 0=localhost:8080
+ 1=gfindObjects
+ 2=some-field::fedora
+ 3=
+ 4=
+ 5=
+ 6=
+ 7=
+ 8=
+sun.net.www.protocol.http.HttpURLConnection$HttpInputStream@10d448
+<?xml version="1.0" encoding="UTF-8"?>
+<resultPage>
+<error>
+<message>org.apache.lucene.queryParser.ParseException: Cannot parse 'some-field::fedora': Encountered ":" at line 1, column 11.
+Was expecting one of:
+    "(" ...
+    "*" ...
+    &lt;QUOTED&gt; ...
+    &lt;TERM&gt; ...
+    &lt;PREFIXTERM&gt; ...
+    &lt;WILDTERM&gt; ...
+    "[" ...
+    "{" ...
+    &lt;NUMBER&gt; ...
+    </message>
+</error>
+</resultPage>
+
