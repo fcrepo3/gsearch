@@ -14,26 +14,12 @@
 
 <!--
 	 This xslt stylesheet generates the Solr doc element consisting of field elements
-     from a FOXML record. The IndexFields are:
-       - from the root element = PID
-       - from foxml:property   = type, state, contentModel, ...
-       - from oai_dc:dc        = title, creator, ...
-     The IndexDocument element gets a PID attribute, which is mandatory,
-     while the PID IndexField is optional.
+     from a FOXML record. The PID field is mandatory.
      Options for tailoring:
-       - IndexField types, see Lucene javadoc for Field.Store, Field.Index, Field.TermVector
-       - IndexField boosts, see Lucene documentation for explanation
-       - IndexDocument boosts, see Lucene documentation for explanation
-       - generation of IndexFields from other XML metadata streams than DC
-         - e.g. as for uvalibdesc included above and called below, the XML is inline
-         - for not inline XML, the datastream may be fetched with the document() function,
-           see the example below (however, none of the demo objects can test this)
-       - generation of IndexFields from other datastream types than XML
+       - generation of fields from other XML metadata streams than DC
+       - generation of fields from other datastream types than XML
          - from datastream by ID, text fetched, if mimetype can be handled
-         - from datastream by sequence of mimetypes, 
-           text fetched from the first mimetype that can be handled,
-           default sequence given in properties
-       - currently only the mimetype application/pdf can be handled.
+             currently the mimetypes text/plain, text/xml, text/html, application/pdf can be handled.
 -->
 
 	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
