@@ -32,7 +32,7 @@
 		<replace file="${configs.path}/config/rest/${default.config.prefix}BrowseIndexToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
 		<replace file="${configs.path}/config/rest/${default.config.prefix}GetIndexInfoToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
 		<replace file="${configs.path}/config/rest/${default.config.prefix}GetRepositoryInfoToHtml.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
-		<replace file="${configs.path}/config/index/${default.index.1}/${default.config.prefix}FoxmlToLucene.xslt" token="${default.configs.path}" value="${configs.path}/config"/>
+
 	</target>
 
 	<target name="prepForWebServer"
