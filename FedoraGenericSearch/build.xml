@@ -95,7 +95,7 @@
 
     <target name="binrelease" depends="builddownload">
       <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}"
-            file="${build.dir}/${war.name}"/>
+            file="${dist.dir}/${war.name}"/>
       <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}/doc">
         <fileset dir="${build.dir}">
           <include name="index.html"/>
