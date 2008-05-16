@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/gsp/fgs2.0.0/FedoraGenericSearch/lib/fedora-client.jar"/>
-	<classpathentry kind="lib" path="/home/gsp/fgs2.0.0/FedoraGenericSearch/lib/log4j-1.2.14.jar"/>
-	<classpathentry kind="lib" path="/home/gsp/fgs2.0.0/FedoraGenericSearch/lib/lucene-core-2.3.0.jar"/>
-	<classpathentry kind="lib" path="/home/gsp/fgs2.0.0/FedoraGenericSearch/lib/lucene-highlighter-2.3.0.jar"/>
+	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/fedora-client.jar"/>
+	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/log4j-1.2.14.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FedoraGenericSearch"/>
+	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-core-2.3.2.jar"/>
+	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-highlighter-2.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

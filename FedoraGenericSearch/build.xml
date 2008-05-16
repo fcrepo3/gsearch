@@ -7,7 +7,7 @@
 
     <loadproperties srcFile="lib/lib.properties" /> 
 
-    <property name="genericsearch.version" value="2.0"/>
+    <property name="genericsearch.version" value="2.1"/>
 
     <property name="build.basedir" location="../FgsBuild"/>
     <property name="compile.dir" location="bin"/>
@@ -25,6 +25,7 @@
       <pathelement path="${lib.commons-httpclient}"/>
       <pathelement path="${lib.commons-logging}"/>
       <pathelement path="${lib.fedora-client}"/>
+      <pathelement path="${lib.fedora-messaging-client}"/>
       <pathelement path="${lib.jaxrpc}"/>
       <pathelement path="${lib.junit}"/>
       <pathelement path="${lib.log4j}"/>
@@ -32,6 +33,7 @@
       <pathelement path="${lib.lucene-demos}"/>
       <pathelement path="${lib.pdfbox}"/>
       <pathelement path="${lib.servlet-api}"/>
+      <pathelement path="${lib.activemq-all}"/>
     </path>
 
     <target name="clean"
@@ -139,7 +141,7 @@
 	        description="build local">
         <ant dir="../FgsConfig" target="config" inheritAll="false"/>
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
-        <copy file="${dist.dir}/${war.name}" todir="/home/gsp/f221/${tomcat.basename}/webapps"/>
+        <copy file="${dist.dir}/${war.name}" todir="${env.FEDORA_HOME}/${tomcat.basename}/webapps"/>
 	</target>
 
 	<target name="builddemo"

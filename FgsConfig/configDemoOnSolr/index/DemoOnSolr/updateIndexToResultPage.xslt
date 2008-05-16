@@ -17,11 +17,13 @@
 		<xsl:variable name="UPDATETOTAL" select="counts/@updateTotal"/>
 		<xsl:variable name="DELETETOTAL" select="counts/@deleteTotal"/>
 		<xsl:variable name="DOCCOUNT" select="counts/@docCount"/>
+		<xsl:variable name="WARNCOUNT" select="counts/@warnCount"/>
 	 		<updateIndex 	indexName="{$INDEXNAME}"
 	 						insertTotal="{$INSERTTOTAL}"
 	 						updateTotal="{$UPDATETOTAL}"
 	 						deleteTotal="{$DELETETOTAL}"
-	 						docCount="{$DOCCOUNT}">
+	 						docCount="{$DOCCOUNT}"
+	 						warnCount="{$WARNCOUNT}">
 			</updateIndex>
 	</xsl:template>
 	

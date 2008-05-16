@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-              FedoraGSearch Version 2.0
+              FedoraGSearch Version 2.1
 -------------------------------------------------------------------
 
  * License and Copyright: FedoraGSearch is subject to the same open source 
@@ -27,9 +27,12 @@ Version 1.1 was released in January 2007, working with Fedora version 2.2.
 Version 1.1.1 was released in May 2007 with a bug fix concerning snippets 
 for search results.
 
-Version 2.0 is released in February 2008, with new features requested by users.
+Version 2.0 was released in February 2008, with new features requested by users.
 The main and overall aim is to exploit more features of Lucene.
 It works with Fedora version 2.2.1.
+
+Version 2.1 was released in April 2008, updating GSearch to work with Fedora 3.0
+and taking advantage of Fedora's new messaging capability for index updates.
 
 The Fedora System Documentation at http://www.fedora-commons.org/developers
 has a link to FedoraGSearch information with introduction, new features, 
@@ -39,7 +42,27 @@ The same information is available in the source download from sourceforge.net
 at src/html/search-service.html, and after installation at
 http://localhost:8080/fedoragsearch/index.html .
 
-Briefly, the new features in Version 2.0 are:
+The new features in Version 2.1:
+
+- Fedora 3.0 compatibility
+
+- Update listener which uses the Fedora messaging client to listen for 
+  updates being performed through API-M. These update messages contain the 
+  information needed to perform index updates, thereby keeping GSearch
+  up-to-date with the Fedora repository.
+
+- Enhanced the sortFields parameter to gfindObjects for Lucene,
+  sorting search results by a custom Comparator class,
+  see the index.properties file in configTestOnLucene and
+  the test class dk.defxws.fedoragsearch.test.ComparatorSourceTest.
+
+- Enhanced the fromFoxmlFiles action of updateIndex for Lucene,
+  so that all files are attempted to be indexed,
+  even though one or more may fail,
+  in which case log messages are given.
+  Before, one failure would cause abortion.
+
+The new features in Version 2.0:
 
 - Added a plugin for the Apache Solr search server.
 
@@ -75,7 +98,5 @@ Briefly, the new features in Version 2.0 are:
   Indexes should be reindexed.
 
 For examples, see the property files of the example configurations.
-
-The next version, presumably called 3.0, will be released with Fedora version 3.0.
 
 -------------------------------------------------------------------

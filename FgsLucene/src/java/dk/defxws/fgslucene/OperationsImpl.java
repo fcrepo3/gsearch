@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -27,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -103,6 +101,12 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws java.rmi.RemoteException {
         super.browseIndex(startTerm, termPageSize, fieldName, indexName, resultPageXslt);
         StringBuffer resultXml = new StringBuffer("<fields>");
+        try {
+            getIndexWriter(indexName, false);
+			optimize(indexName, resultXml);
+        } finally {
+            closeIndexWriter(indexName);
+        }
         int termNo = 0;
         try {
             getIndexReader(indexName);
@@ -245,6 +249,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         resultXml.append(" updateTotal=\""+updateTotal+"\"");
         resultXml.append(" deleteTotal=\""+deleteTotal+"\"");
         resultXml.append(" docCount=\""+docCount+"\"");
+        resultXml.append(" warnCount=\""+warnCount+"\"");
         resultXml.append("/>\n");
         resultXml.append("</luceneUpdateIndex>\n");
         params = new String[12];
@@ -323,6 +328,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             objectDir = config.getFedoraObjectDir(repositoryName);
         else objectDir = new File(filePath);
         indexDocs(objectDir, repositoryName, indexName, resultXml, indexDocXslt);
+        docCount = docCount-warnCount;
+        resultXml.append("<warnCount>"+warnCount+"</warnCount>\n");
+        resultXml.append("<docCount>"+docCount+"</docCount>\n");
     }
     
     private void indexDocs(
@@ -352,12 +360,15 @@ public class OperationsImpl extends GenericOperationsImpl {
             try {
                 indexDoc(file.getName(), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
             } catch (RemoteException e) {
-                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+                resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
+                logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
+//                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
             } catch (FileNotFoundException e) {
-                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+              resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
+              logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
+//                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
             }
         }
-        resultXml.append("<docCount>"+docCount+"</docCount>\n");
     }
     
     private void fromPid(

@@ -59,6 +59,8 @@ public class Config {
     
     private static Hashtable configs = new Hashtable();
     
+    private static boolean wsddDeployed = false;
+    
     private String configName = null;
     
     private Properties fgsProps = null;
@@ -72,6 +74,8 @@ public class Config {
     private Hashtable indexNameToUriResolvers = null;
     
     private String defaultIndexName = null;
+    
+    private Hashtable updaterNameToProps = null;
     
     private int maxPageSize = 50;
     
@@ -100,7 +104,7 @@ public class Config {
      */
     public static void configure(String configNameIn) throws ConfigException {
     	String configName = configNameIn;
-    	if (configName==null | configName.equals(""))
+    	if (configName==null || configName.equals(""))
     		configName = "config";
         currentConfig = new Config(configName);
         configs.put(configName, currentConfig);
@@ -137,7 +141,7 @@ public class Config {
     
     public Config(String configNameIn) throws ConfigException {
     	configName = configNameIn;
-    	if (configName==null | configName.equals(""))
+    	if (configName==null || configName.equals(""))
     		configName = "config";
         errors = new StringBuffer();
         
@@ -159,20 +163,6 @@ public class Config {
         
         if (logger.isInfoEnabled())
             logger.info("fedoragsearch.properties=" + fgsProps.toString());
-        
-//      Read soap deployment parameters and try to deploy the wsdd file
-        String [] params = new String[4];
-        params[0] = "-l"+getSoapBase();
-        params[1] =      insertSystemProperties(getDeployFile());
-        params[2] = "-u"+getSoapUser();
-        params[3] = "-w"+getSoapPass();
-        if (logger.isDebugEnabled())
-            logger.debug("AdminClient()).process(soapBase="+params[0]+" soapUser="+params[2]+" soapPass="+params[3]+" deployFile="+params[1]+")");
-        try {
-            (new AdminClient()).process(params);
-        } catch (Exception e) {
-            errors.append("\n*** Unable to deploy\n"+e.toString());
-        }
         
 //      Check rest stylesheets
         checkRestStylesheet("fedoragsearch.defaultNoXslt");
@@ -230,7 +220,8 @@ public class Config {
         		"fedoragsearch.defaultGfindObjectsSnippetsMax",
         		"fedoragsearch.defaultGfindObjectsFieldMaxLength",
         		"fedoragsearch.repositoryNames",
-        		"fedoragsearch.indexNames"
+        		"fedoragsearch.indexNames",
+        		"fedoragsearch.updaterNames"
         };
         checkPropNames("fedoragsearch.properties", fgsProps, propNames);
         
@@ -301,6 +292,7 @@ public class Config {
                     		"fgsrepository.fedoraUser",
                     		"fgsrepository.fedoraPass",
                     		"fgsrepository.fedoraObjectDir",
+                    		"fgsrepository.fedoraVersion",
                     		"fgsrepository.defaultGetRepositoryInfoResultXslt",
                     		"fgsrepository.trustStorePath",
                     		"fgsrepository.trustStorePass"
@@ -556,6 +548,94 @@ public class Config {
             if (errors.length()>0)
                 throw new ConfigException(errors.toString());
         }
+        
+        // Check updater properties
+        String updaterProperty = fgsProps.getProperty("fedoragsearch.updaterNames");
+        if(updaterProperty == null) {
+            updaterNameToProps = null; // No updaters will be created
+        } else {           
+            updaterNameToProps = new Hashtable();
+            StringTokenizer updaterNames = new StringTokenizer(updaterProperty);
+            while (updaterNames.hasMoreTokens()) {
+                String updaterName = updaterNames.nextToken();
+                try {
+                    InputStream propStream =
+                            Config.class.getResourceAsStream("/" + configName
+                                    + "/updater/" + updaterName
+                                    + "/updater.properties");
+                    if (propStream != null) {
+                        Properties props = new Properties();
+                        props.load(propStream);
+                        propStream.close();
+                        
+                        if (logger.isInfoEnabled()) {
+                            logger.info("/" + configName + "/updater/"
+                                    + updaterName + "/updater.properties="
+                                    + props.toString());
+                        }
+                        
+                        // Check properties
+                        String propsNamingFactory = props.getProperty("java.naming.factory.initial");
+                        String propsProviderUrl = props.getProperty("java.naming.provider.url");
+                        String propsConnFactory = props.getProperty("connection.factory.name");
+                        String propsClientId = props.getProperty("client.id");
+                        
+                        if(propsNamingFactory == null) {
+                            errors.append("\n*** java.naming.factory.initial not provided in "
+                                            + configName + "/updater/" + updaterName
+                                            + "/updater.properties");
+                        }
+                        if(propsProviderUrl == null) {
+                            errors.append("\n*** java.naming.provider.url not provided in "
+                                            + configName + "/updater/" + updaterName
+                                            + "/updater.properties");
+                        }
+                        if(propsConnFactory == null) {
+                            errors.append("\n*** connection.factory.name not provided in "
+                                            + configName + "/updater/" + updaterName
+                                            + "/updater.properties");
+                        }
+                        if(propsClientId == null) {
+                            errors.append("\n*** client.id not provided in "
+                                            + configName + "/updater/" + updaterName
+                                            + "/updater.properties");
+                        }
+                        
+                        updaterNameToProps.put(updaterName, props);
+                    }
+                    else {
+                        errors.append("\n*** "+configName+"/updater/" + updaterName
+                                + "/updater.properties not found in classpath");
+                    }
+                } catch (IOException e) {
+                    errors.append("\n*** Error loading "+configName+"/updater/" + updaterName
+                            + ".properties:\n" + e.toString());
+                }
+            }             
+        }
+ 
+    }
+    
+    //  Read soap deployment parameters and try to deploy the wsdd file    
+    public void deployWSDD() {
+      String [] params = new String[4];
+      params[0] = "-l"+getSoapBase();
+      params[1] =      insertSystemProperties(getDeployFile());
+      params[2] = "-u"+getSoapUser();
+      params[3] = "-w"+getSoapPass();
+      if (logger.isDebugEnabled())
+          logger.debug("AdminClient()).process(soapBase="+params[0]+" soapUser="+params[2]+" soapPass="+params[3]+" deployFile="+params[1]+")");
+      try {
+          (new AdminClient()).process(params);
+      } catch (Exception e) {
+          errors.append("\n*** Unable to deploy\n"+e.toString());
+          logger.warn("Unable to deploy: " + e.getMessage());
+      }
+      wsddDeployed = true;
+    }
+    
+    public boolean wsddDeployed() {
+        return wsddDeployed;
     }
     
     private void checkRestStylesheet(String propName) {
@@ -789,6 +869,10 @@ public class Config {
         return fedoraObjectDir;
     }
     
+    public String getFedoraVersion(String repositoryName) {
+        return (getRepositoryProps(repositoryName)).getProperty("fgsrepository.fedoraVersion");
+    }
+    
     public String getRepositoryInfoResultXslt(String repositoryName, String resultPageXslt) {
         if (resultPageXslt==null || resultPageXslt.equals("")) 
             return (getRepositoryProps(getRepositoryName(repositoryName))).getProperty("fgsrepository.defaultGetRepositoryInfoResultXslt");
@@ -803,6 +887,10 @@ public class Config {
     public String getTrustStorePass(String repositoryName) {
         return (getRepositoryProps(repositoryName)).getProperty("fgsrepository.trustStorePass");
     }
+
+    public Hashtable getUpdaterProps() {
+        return updaterNameToProps;
+    }    
     
     public String getIndexName(String indexName) {
         if (indexName==null || indexName.equals("")) 

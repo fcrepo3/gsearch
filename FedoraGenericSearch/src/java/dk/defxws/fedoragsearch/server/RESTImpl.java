@@ -81,16 +81,13 @@ public class RESTImpl extends HttpServlet {
     throws ServletException, IOException { 
     	Date startTime = new Date();
         String configName = request.getParameter(PARAM_CONFIGNAME);
-        if (configName==null) {
-        	// the normal situation
-            config = Config.getCurrentConfig();
-        } else {
+        String operation = request.getParameter(PARAM_OPERATION);
+        config = Config.getCurrentConfig();
+        if (configName!=null && !"configure".equals(operation)) {
         	// mainly for test purposes
         	config = Config.getConfig(configName);
         }
-        config = Config.getCurrentConfig();
         StringBuffer resultXml = new StringBuffer("<resultPage/>");
-        String operation = request.getParameter(PARAM_OPERATION);
         if (logger.isInfoEnabled())
             logger.info("request="+request.getQueryString());
         repositoryName = request.getParameter(PARAM_REPOSITORYNAME);
@@ -141,8 +138,6 @@ public class RESTImpl extends HttpServlet {
         }
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         params[3] = timeusedms;
-        if (logger.isInfoEnabled())
-            logger.info("request="+request.getQueryString()+" timeusedms="+timeusedms);
         resultXml = (new GTransformer()).transform(
         				config.getConfigName()+"/rest/"+restXslt, 
         				resultXml, params);
@@ -158,6 +153,8 @@ public class RESTImpl extends HttpServlet {
                         response.getOutputStream(), "UTF-8"));
         out.print(resultXml);
         out.close();
+        if (logger.isInfoEnabled())
+            logger.info("request="+request.getQueryString()+" timeusedms="+timeusedms);
     }
     
     private String gfindObjects(HttpServletRequest request, HttpServletResponse response)
@@ -263,8 +260,6 @@ public class RESTImpl extends HttpServlet {
     
     private String configure(HttpServletRequest request, HttpServletResponse response)
     throws java.rmi.RemoteException {
-        if (restXslt==null || restXslt.equals("")) 
-            restXslt = config.getDefaultGfindObjectsRestXslt();
         String configName = request.getParameter(PARAM_CONFIGNAME);
         String propertyName = request.getParameter("propertyName");
         String propertyValue = "";
@@ -275,7 +270,10 @@ public class RESTImpl extends HttpServlet {
         } else {
         	// used to create a new currentConfig, mainly for test purposes
             Config.configure(configName);
+            config = Config.getCurrentConfig();
         }
+        if (restXslt==null || restXslt.equals("")) 
+            restXslt = config.getDefaultGfindObjectsRestXslt();
         return "<resultPage/>";
     }
     

@@ -11,7 +11,7 @@
 		xmlns:uvalibdesc="http://dl.lib.virginia.edu/bin/dtd/descmeta/descmeta.dtd"
 		xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
-	<xsl:include href="CONFIGPATH/index/BasicIndex/demoUvalibdescToLucene.xslt"/>
+	<xsl:include href="CONFIGPATH/index/DemoOnLucene/demoUvalibdescToLucene.xslt"/>
 		
 	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
 	<xsl:param name="FEDORASOAP" select="repositoryName"/>
@@ -57,7 +57,7 @@
 			</xsl:attribute>
 		<!-- The following allows only active demo FedoraObjects to be indexed. -->
 		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
-			<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' and @VALUE='FedoraObject']">
+			<xsl:if test="not(foxml:digitalObject/foxml:datastream[@ID='METHODMAP'] or foxml:digitalObject/foxml:datastream[@ID='DS-COMPOSITE-MODEL'])">
 				<xsl:if test="starts-with($PID,'demo')">
 					<xsl:apply-templates mode="activeDemoFedoraObject"/>
 				</xsl:if>

@@ -83,6 +83,7 @@
 		<property name="basic.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="basic.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="basic.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="basic.repos.1.fedoraversion" value="3.0" />
 		<property name="basic.repos.names" value="${basic.repos.1}" />
 		
 		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -98,12 +99,6 @@
 		<replace file="${basic.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${basic.config.prefix}GetIndexInfoToHtml"/>
 		<replace file="${basic.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${basic.mimetypes}"/>
 		
-		<replace file="${basic.config.path}/rest/${basic.config.prefix}UpdateIndexToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
-		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
-		<replace file="${basic.config.path}/rest/${basic.config.prefix}BrowseIndexToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
-		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetIndexInfoToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
-		<replace file="${basic.config.path}/rest/${basic.config.prefix}GetRepositoryInfoToHtml.xslt" token="WEBSERVERPATH" value="${webserver.path}"/>
-		
 		<replace file="${basic.config.path}/rest/${basic.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
 		<replace file="${basic.config.path}/rest/${basic.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
 		<replace file="${basic.config.path}/rest/${basic.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
@@ -116,6 +111,7 @@
 		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAUSER" value="${basic.repos.1.fedorauser}"/>
 		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAPASS" value="${basic.repos.1.fedorapass}"/>
 		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${basic.repos.1.fedoraobjectdir}"/>
+		<replace file="${basic.config.path}/repository/${basic.repos.1}/repository.properties" token="FEDORAVERSION" value="${basic.repos.1.fedoraversion}"/>
 		
 		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="INDEXDIR" value="${basic.index.1.indexdir}"/>
 		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${basic.config.prefix}FoxmlToLucene"/>
@@ -138,6 +134,7 @@
 		<property name="lucene.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="lucene.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="lucene.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="lucene.repos.1.fedoraversion" value="3.0" />
 		<property name="lucene.repos.names" value="${lucene.repos.1}" />
 		
 		<replace file="${lucene.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -165,6 +162,7 @@
 		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORAUSER" value="${lucene.repos.1.fedorauser}"/>
 		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORAPASS" value="${lucene.repos.1.fedorapass}"/>
 		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${lucene.repos.1.fedoraobjectdir}"/>
+		<replace file="${lucene.config.path}/repository/${lucene.repos.1}/repository.properties" token="FEDORAVERSION" value="${lucene.repos.1.fedoraversion}"/>
 
 		<replace file="${lucene.config.path}/index/${lucene.index.1}/index.properties" token="INDEXDIR" value="${lucene.index.1.indexdir}"/>
 		<replace file="${lucene.config.path}/index/${lucene.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${lucene.config.prefix}FoxmlToLucene"/>
@@ -177,16 +175,17 @@
 		
 		<property name="test.config.name" value="configTestOnLucene" />
 		<property name="test.config.path" value="${configs.path}/${test.config.name}" />
-		<property name="test.config.prefix" value="demo" />
+		<property name="test.config.prefix" value="test" />
 		<property name="test.mimetypes" value="text/plain text/xml text/html application/pdf" />
-		<property name="test.index.1" value="BasicIndex" />
+		<property name="test.index.1" value="TestOnLucene" />
 		<property name="test.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${test.index.1}" />
 		<property name="test.index.names" value="${test.index.1}" />
-		<property name="test.repos.1" value="BasicRepos" />
+		<property name="test.repos.1" value="DemoLocal" />
 		<property name="test.repos.1.fedorasoap" value="http://localhost:8080" />
 		<property name="test.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="test.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="test.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="test.repos.1.fedoraversion" value="3.0" />
 		<property name="test.repos.names" value="${test.repos.1}" />
 		
 		<replace file="${test.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -214,6 +213,7 @@
 		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORAUSER" value="${test.repos.1.fedorauser}"/>
 		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORAPASS" value="${test.repos.1.fedorapass}"/>
 		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${test.repos.1.fedoraobjectdir}"/>
+		<replace file="${test.config.path}/repository/${test.repos.1}/repository.properties" token="FEDORAVERSION" value="${test.repos.1.fedoraversion}"/>
 
 		<replace file="${test.config.path}/index/${test.index.1}/index.properties" token="INDEXDIR" value="${test.index.1.indexdir}"/>
 		<replace file="${test.config.path}/index/${test.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${test.config.prefix}FoxmlToLucene"/>
@@ -237,6 +237,7 @@
 		<property name="solr.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="solr.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="solr.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="solr.repos.1.fedoraversion" value="3.0" />
 		<property name="solr.repos.names" value="${solr.repos.1}" />
 		
 		<replace file="${solr.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -264,6 +265,7 @@
 		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORAUSER" value="${solr.repos.1.fedorauser}"/>
 		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORAPASS" value="${solr.repos.1.fedorapass}"/>
 		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${solr.repos.1.fedoraobjectdir}"/>
+		<replace file="${solr.config.path}/repository/${solr.repos.1}/repository.properties" token="FEDORAVERSION" value="${solr.repos.1.fedoraversion}"/>
 
 		<replace file="${solr.config.path}/index/${solr.index.1}/index.properties" token="INDEXBASE" value="${solr.index.1.indexbase}"/>
 		<replace file="${solr.config.path}/index/${solr.index.1}/index.properties" token="INDEXDIR" value="${solr.index.1.indexdir}"/>
@@ -288,6 +290,7 @@
 		<property name="zebra.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="zebra.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="zebra.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="zebra.repos.1.fedoraversion" value="3.0" />
 		<property name="zebra.repos.names" value="${zebra.repos.1}" />
 		
 		<replace file="${zebra.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -315,6 +318,7 @@
 		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORAUSER" value="${zebra.repos.1.fedorauser}"/>
 		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORAPASS" value="${zebra.repos.1.fedorapass}"/>
 		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${zebra.repos.1.fedoraobjectdir}"/>
+		<replace file="${zebra.config.path}/repository/${zebra.repos.1}/repository.properties" token="FEDORAVERSION" value="${zebra.repos.1.fedoraversion}"/>
 
 		<replace file="${zebra.config.path}/index/${zebra.index.1}/index.properties" token="INDEXBASE" value="${zebra.index.1.indexbase}"/>
 		<replace file="${zebra.config.path}/index/${zebra.index.1}/index.properties" token="INDEXDIR" value="${zebra.index.1.indexdir}"/>

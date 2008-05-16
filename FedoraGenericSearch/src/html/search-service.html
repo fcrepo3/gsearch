@@ -26,25 +26,26 @@
 			<div id="header">
 				<a href="" id="logo"></a>
 				<div id="title">
-				<h1>Fedora Generic Search Service Version 2.0 (February 2008)</h1>
-				<h2>For Fedora Version 2.2.1</h2>
-				<h3>Subsequently, to be released for Fedora Version 3.0</h3>
+				<h1>Fedora Generic Search Service Version 2.1 (May 2008)</h1>
+				<h2>For Fedora Version 3.0</h2>
 				</div>
 			</div>
 			<div class="toc">
 				<p><b>Table of Contents</b></p>
 				<dl>
 				<dt><a href="#about">About This Service</a></dt>
-				<dt><a href="#new">New Features in Version 2.0</a></dt>
+				<dt><a href="#new21">New Features in Version 2.1</a></dt>
+				<dt><a href="#new20">New Features in Version 2.0</a></dt>
 				<dt><a href="#installation">Installation</a></dt>
 				<dt><a href="#config">Configuring the Service</a></dt>
-				<dt><a href="#auto">Configuring Fedora for Automatic Updates</a></dt>
+				<dt><a href="#sauto">Configuring the Service for Automatic Updates</a></dt>
+				<dt><a href="#fauto">Configuring Fedora for Automatic Updates</a></dt>
 				<dt><a href="#additional">Additional Information</a></dt>
 				</dl>
 			</div>
 			<div>
 			<a name="about"><h2>About This Service</h2></a>
-				<p>The Fedora Generic Search Service, abbreviated GSearch, is part of the 
+				<p>The Fedora Generic Search Service, abbreviated GSearch, is part of the
 				<a href="http://www.fedora.info/download/2.2.1/userdocs/server/features/serviceframework.htm">
 				Fedora Service Framework</a>. It was developed by
 				<a href="mailto:gsp@dtv.dk">Gert Schmeltz Pedersen</a>
@@ -52,14 +53,14 @@
 				with feedback and contributions from members
 				of the Fedora community, including
 				Beth Kirschner, Binaya Poudyal, Blake Anderson,
-				Boon Low, Christian T&#248;nsberg, 
+				Boon Low, Christian T&#248;nsberg,
 				Eric Brown,
 				Jun Yamog,
 				Junran Lei,
 				Leire Urcelay,
 				Luis Zorita,
 				Matt Zumwalt,
-				Matthias Razum, 
+				Matthias Razum,
 				Michael Appleby,
 				Michael Hoppe,
 				Nikolai Schwertner,
@@ -68,7 +69,7 @@
 				Ranju Upadhyaya,
 				Robert Sherratt,
 				Ryan E. Scherle,
-				Sam Liberman, 
+				Sam Liberman,
 				Shunde Zhang,
 				Steve DiDomenico
 				Thierry Michel,
@@ -78,12 +79,12 @@
 				DEFF, Denmark's Electronic Research Library</a>.</p>
 				<p>The service has the following major features:</p>
 				<ul>
-				<li>Indexing of Fedora FOXML records, 
+				<li>Indexing of Fedora FOXML records,
 				including the text contents of datastreams
 				and the results of disseminator calls.</li>
 				<li>Search in the index.</li>
 				<li>Plugin of selected search engines,
-				so far 
+				so far
 				<a href="http://lucene.apache.org/">Lucene</a>,
 				<a href="http://lucene.apache.org/solr">Solr</a> and
 				<a href="http://www.indexdata.dk/zebra/">Zebra</a>.</li>
@@ -93,8 +94,8 @@
 				If you want to use the service on other platforms,
 				you may be expert enough to do so, at least several people
 				have succeeded on Windows and Mac platforms.
-				You are encouraged to share problems and experience with the 
-				Fedora community, send mail to 
+				You are encouraged to share problems and experience with the
+				Fedora community, send mail to
 				<a href="mailto:fedora-commons-users@lists.sourceforge.net">fedora-commons-users</a>, or to
 				<a href="mailto:cwilper@cs.cornell.edu">Chris Wilper</a>, or to
 				<a href="mailto:gsp@dtv.dk">Gert Schmeltz Pedersen</a>.</p>
@@ -122,20 +123,41 @@
 				<p>GSearch may run in a separate
 				web server and may index more than one Fedora repository,
 				and it may update more than one index in parallel.
-				For further architectural details, see 
+				For further architectural details, see
 				<a href="#additional">Additional Information</a></p>
-				
+
 			</div>
-			<a name="new"><h2>New Features in Version 2.0</h2></a>
+			<a name="new21"><h2>New Features in Version 2.1</h2></a>
 				<ul>
-				    
+					<li>Fedora 3.0 compatibility</li>
+
+					<li>Added an update listener which uses the Fedora Messaging Client to listen for
+					updates being performed through API-M. These update messages contain the information
+					needed to perform index updates, thereby keeping GSearch up-to-date with the Fedora
+					repository.</li>
+
+				    <li>Enhanced the sortFields parameter to gfindObjects for Lucene,
+				    sorting search results by a custom Comparator class,
+				    see the index.properties file in configTestOnLucene and
+				    the test class dk.defxws.fedoragsearch.test.ComparatorSourceTest.</li>
+
+				    <li>Enhanced the fromFoxmlFiles action of updateIndex for Lucene,
+				    so that all files are attempted to be indexed,
+				    even though one or more may fail,
+				    in which case log messages are given.
+				    Before, one failure would cause abortion.</li>
+				</ul>
+
+			<a name="new20"><h2>New Features in Version 2.0</h2></a>
+				<ul>
+
 				    <li>Added a plugin for the Apache Solr search server.</li>
-				    
+
 				    <li>Added easier configuration, so that you need only edit one file
 				    with property values, then run it with ant.</li>
-				    
+
 				    <li>Updated to Lucene version 2.3.0.</li>
-				    
+
 				    <li>Added params to indexing in the format:
 
 					<pre>...&indexDocXslt=[xslt-name][(paramname1=value1[,paramname2=value2[,...]])]</pre>
@@ -144,35 +166,35 @@
 					indexing xslt stylesheet, like this:
 
 					<pre>&lt;xsl:param name="someparamname" select="defaultvalue"/&gt;</pre></li>
-					
+
 				    <li>Added optimize options for Lucene indexing:<br/>
-				    
+
 					<pre>fgsindex.mergeFactor and fgsindex.maxBufferedDocs</pre>
 					will affect performance, see the index.properties file in configTestOnLucene.
 					Also added
-					
+
 					<pre>...?operation=updateIndex&action=optimize</pre>
 					which will perform IndexWriter.optimize()
-					which merges all segments together into a single segment, 
+					which merges all segments together into a single segment,
 					optimizing an index for search. Removed the optimize() call after each updateIndex.</li>
-				    
+
 				    <li>Added untokenizedFields property to Lucene index.properties files.
 				    Adding the property with a list of all untokenized fields will
 				    ensure that they all select the appropriate analyzer.</li>
-				    
-				    <li>Added a sortFields parameter to gfindObjects for Lucene, 
+
+				    <li>Added a sortFields parameter to gfindObjects for Lucene,
 				    sorting search results as specified,
 				    see the index.properties file in configTestOnLucene.</li>
-				    
+
 				    <li>Added properties snippetBegin and snippetEnd,
 				    making highlight code configurable,
 				    see the index.properties file in configTestOnLucene.</li>
-				    
+
 				    <li>Added property for custom URIResolver used by xslt transformers
 				    for basic auth and SSL,
 				    see the example dk.defxws.fedoragsearch.server.URIResolverImpl class
 				    and the index.properties file in configTestOnLucene.</li>
-					
+
 				    <li>Removed encoding of special characters in indexFields.
 				    Snippets now show special characters without modification.
 				    Indexes should be reindexed.</li>
@@ -181,22 +203,22 @@
 				<p>To install the service:</p>
 				<ul>
 					<li>Deploy fedoragsearch.war
-                to the webapps directory of your web server, 
+                to the webapps directory of your web server,
 				e.g. the tomcat supplied with Fedora, or similar.
 				You may rename the .war file, before you copy it
 				into the webapps directory, in order to give it another webapp name.</li>
 					<li>Edit the configuration settings.</li>
 				</ul>
-				<p>The SOAP service operations are deployed with the .war file, and 
+				<p>The SOAP service operations are deployed with the .war file, and
 				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
-				
-				
+
+
 
 			<a name="config"><h2>Configuring the Service</h2></a>
 				<ul>
 					<li>
-						Edit the property values in the configvalues.xml file in 
-						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/
+						Edit the property values in the configvalues.xml file in
+						.../webapps/&lt;WEBAPPNAME&gt;/
 						(where &lt;WEBAPPNAME&gt; by default is 'fedoragsearch'):
 						<pre>
 	o Set the property values for your environment.
@@ -210,11 +232,11 @@
   and index.properties. Read these files to make sure they are correct.
                     <li>
 						Then you may restart &lt;WEBAPPNAME&gt; and call http://&lt;HOSTPORT&gt;/&lt;WEBAPPNAME&gt;/rest in order to index and search.
-						The name &quot;rest&quot; may be reconfigured in 
+						The name &quot;rest&quot; may be reconfigured in
 						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/web.xml
 					</li>
                     <li>
-						Try the demo command line client. Change directory to 
+						Try the demo command line client. Change directory to
 	<pre>.../webapps/&lt;WEBAPPNAME&gt;/client/</pre>
 						make the file executable, and run
 	<pre>sh runRESTClient.sh</pre>
@@ -222,17 +244,17 @@
 					</li>
                     <li>
 						Tailor the demos for your own purpose by editing
-						renamed copies of the demo xslt stylesheets in 
+						renamed copies of the demo xslt stylesheets in
 	<pre>.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/rest/</pre>
 						Then edit fedoragsearch.properties.
 					</li>
                     <li>
 						Tailor the demo Lucene indexing stylesheet for your own purpose by editing
-						a renamed copy of the demo xslt stylesheet in 
+						a renamed copy of the demo xslt stylesheet in
 	<pre>.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/index/&lt;INDEXNAME&gt;/demoFoxmlToLucene.xslt</pre>
 						For the sake of the example, the stylesheet indexes only active Fedora objects
 						with PID starting with &quot;demo&quot;
-						The options for tailoring include fields from other metadata datastreams 
+						The options for tailoring include fields from other metadata datastreams
 						than DC, field types and field boosts,
 						see the stylesheet for options. Then edit index.properties.
 					</li>
@@ -246,31 +268,92 @@
 					</li>
                     <li>You may want to experiment with more than one configuration,
                     in which case you may maintain them under different names
-                    in parallel to the &quot;config&quot; configuration, 
+                    in parallel to the &quot;config&quot; configuration,
                     which is the default configuration.
                     In order to activate an alternative configuration you may use
-                    the semi-secret operation configure with parameter configName, 
-                    either using the demo command line client or the REST interface. 
+                    the semi-secret operation configure with parameter configName,
+                    either using the demo command line client or the REST interface.
 					</li>
 				</ul>
 
-            <a name="auto"><h2>Configuring Fedora for Automatic Updates</h2></a>
+            <a name="sauto"><h2>Configuring the service for Automatic Updates</h2></a>
             <p>
-              As of Fedora 2.2, it is possible to configure Fedora to
-              send a signal to the Generic Search Service when objects
-              are added, modified, and purged.  We expect future versions of
-              Fedora to use more sophisticated messaging techniques (like JMS)
-              to accomplish this, but for now Fedora can be made to send simple
-              REST calls to the service at appropriate times.
+              As of version 2.1, GSearch has the ability to listen to update messages
+              provided by Fedora. These messages are sent via JMS, so a JMS provider
+              must be available (a JMS provider is included with Fedora 3.0). In order
+              to configure the update listener, open updater.properties and set the
+              following property values. These values will most likely be the same
+              as those specified in your Fedora configuration.
+              <ul>
+                 <li>
+                   <strong>java.naming.factory.initial</strong>
+				   <ul>
+				     <li>Default: org.apache.activemq.jndi.ActiveMQInitialContextFactory</li>
+				     <li>Specifies the JNDI initial context which will be used to look up JMS administered objects.</li>
+				   </ul>
+				 </li>
+				 <li>
+				   <strong>java.naming.provider.url</strong>
+				   <ul>
+				     <li>Default: tcp://localhost:61616</li>
+				     <li>Specifies the address at which a connection can be made to the messaging provider.</li>
+				     <li>The update listener will attempt to connect to the messaging provider at this address on server startup,
+				     so make sure that your provider is running and available, otherwise you will see a connection error.</li>
+				   </ul>
+				 </li>
+				 <li>
+				   <strong>connection.factory.name</strong>
+				   <ul>
+				     <li>Default: ConnectionFactory</li>
+				     <li>Specifies the JNDI name of the ConnectionFactory object needed to create a connection to the JMS
+				     provider.</li>
+				   </ul>
+				 </li>
+				 <li>
+				   <strong>topic.fedoraAPIM</strong>
+				   <ul>
+				     <li>Default: fedora.apim.update</li>
+				     <li>Specifies the topic on which to listen for updates.</li>
+				   </ul>
+				 </li>
+				 <li>
+				   <strong>client.id</strong>
+				   <ul>
+				     <li>Default: fedoragsearch0</li>
+				     <li>The identifier of the GSearch client. If you have more than one instance of GSearch running
+				     they must have different client identifiers.</li>
+				   </ul>
+				 </li>
+		       </ul>
+		     </p>
+		     <p>
+		       If you decide not to use the automatic updates feature in GSearch, you'll need to open fedoragsearch.properties
+		       and remove (or comment out) the line specifying fedoragsearch.updaternames. This will disable the update
+		       listener.
+		     </p>
+
+            <a name="fauto"><h2>Configuring Fedora for Automatic Updates</h2></a>
+            <p>
+              Fedora 3.0 added the ability to send a message whenever a change is made to the
+              content of the repository (through API-M.) This messaging capability must be
+              enabled and configured to work properly. See the Fedora documentation for
+              instructions on configuring messaging.
             </p>
             <p>
-              To enable this, edit your <code>fedora.fcfg</code> file
+              As an alternative to updates via messaging, it is possible to configure Fedora to
+              send a signal via REST to the Generic Search Service when objects are added, modified,
+              and purged. Using messaging is the preferred method for automatic updates, and this
+              technique, while still available, should be considered deprecated. It it not recommended
+              to use both the update listener and REST-based updates.
+            </p>
+            <p>
+              To enable REST-based updates, edit your <code>fedora.fcfg</code> file
               and change the class of the <code>fedora.server.storage.DOManager</code>
               module to <code>fedora.server.storage.GSearchDOManager</code>.
               Then populate the following module parameters as needed:
             </p>
               <ul>
-                <li> <code>gSearchRESTURL</code> - The REST endpoint for 
+                <li> <code>gSearchRESTURL</code> - The REST endpoint for
                 GSearch, for example, http://localhost:8080/fedoragsearch/rest</li>
                 <li> <code>gSearchUsername</code> - If GSearch is protected by
                 authentication, this is the username that Fedora should use to
@@ -310,7 +393,7 @@
 				by the plugin via the browseIndex operation.</p>
 				<h4><a href="http://www.indexdata.dk/zebra/">Zebra</a></h4>
 				<p>The Zebra plugin comes as the java package dk.defxws.fgszebra .</p>
-				<p>The Zebra plugin is used by configuration as 
+				<p>The Zebra plugin is used by configuration as
 				seen from the DemoOnZebra example, which includes a README file,
 				which explains how to get and install Zebra, and how to configure it.</p>
 				<p></p>
@@ -318,21 +401,21 @@
 				<p><img src="images/fgs-arch.png"/></p>
 				<ul>
 					<li>
-					All engine specific operations return 
-					an engine specific xml answer, which is transformed 
+					All engine specific operations return
+					an engine specific xml answer, which is transformed
 					by an engine-specific xslt stylesheet into result page xml.
 					For a SOAP request this is the answer.
 					For a REST request this is transformed to an html answer.
 					There may be any number of xslt stylesheets to select from,
 					the default ones are selected in the properties file.
 					Selecting a copy stylesheet will allow the transfer
-					of an answer untransformed. An alternative result page format 
-					is <a href="http://opensearch.a9.com/">OpenSearch</a>, 
+					of an answer untransformed. An alternative result page format
+					is <a href="http://opensearch.a9.com/">OpenSearch</a>,
 					which is an RSS2.0 extension.
 					</li>
-					<li>Parameters allow clients 
-					to select repository, index, and xslt stylesheets by name. 
-					In a real application, these values may be determined 
+					<li>Parameters allow clients
+					to select repository, index, and xslt stylesheets by name.
+					In a real application, these values may be determined
 					by the developer in the code,
 					or by the administrator in the properties file.
 					</li>
@@ -340,12 +423,12 @@
 				<p><img src="images/fgs-arch-indexing.png"/></p>
 				<ul>
 					<li>Objects in the Fedora repository are exported
-					in FOXML format, transformed into an appropriate 
+					in FOXML format, transformed into an appropriate
 					document format by the indexing stylesheet, and
 					indexed by the engine in question. The XML datastreams
-					are indexed as decided in the stylesheet. 
-					One managed or external datastream may be indexed 
-					per FedoraObject (which one is configurable), 
+					are indexed as decided in the stylesheet.
+					One managed or external datastream may be indexed
+					per FedoraObject (which one is configurable),
 					assuming that they contain the same text in different
 					mimetypes.
 					</li>
@@ -356,12 +439,12 @@
 						you can run the other actions.</li>
 						<li><b>fromFoxmlFiles ( filePath )</b> - indexing FOXML records;
 						filePath may be null, in which case the configured
-						Fedora Object Directory is used, so that the whole 
+						Fedora Object Directory is used, so that the whole
 						of the Fedora registry is indexed.</li>
 						<li><b>fromPid ( PID )</b> - indexing one FOXML record,
 						as exported by Fedora API-M; in case a previous
 						index document with the same PID exists, it is first deleted.
-						This is the incremental update operation that shall be called after 
+						This is the incremental update operation that shall be called after
 						all of Fedora's API-M operations that modifies a FedoraObject.</li>
 						<li><b>deletePid ( PID )</b> - deleting one index document.</li>
 					</ul>
@@ -374,19 +457,19 @@
 				<ul>
 					<li>There are OperationsImpl classes
 					for Zebra, Lucene and Solr. The configManyToMany example
-					has indexes for two engines, therefore similar searches 
+					has indexes for two engines, therefore similar searches
 					may be compared.
 					</li>
 				</ul>
 				<p>
 
 			<a name="multilingual"><h3>Multilingual Configuration</h3></a>
-				<p>Luis Zorita had this problem and solved it 
+				<p>Luis Zorita had this problem and solved it
 				 (his mail to fedora-users on 24 August 2006):</p>
 				<q>Hello Gert:
-				I have solved this multilingual problem adding the attribute 
-				URIEncoding=&quot;UTF-8&quot; to 
-				.../tomcat/conf/server.xml 
+				I have solved this multilingual problem adding the attribute
+				URIEncoding=&quot;UTF-8&quot; to
+				.../tomcat/conf/server.xml
 				and to .../tomcat/conf/server_fedoraTemplate.xml
 				Now I can search special Spanish characters like &quot;&ntilde;&quot;,
 				&quot;&iacute;&quot; etc. with fedoragsearch.

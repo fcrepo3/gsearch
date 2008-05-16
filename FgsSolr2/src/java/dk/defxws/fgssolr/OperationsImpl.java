@@ -18,8 +18,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
@@ -28,7 +26,6 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -38,14 +35,12 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.StaleReaderException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
+
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
@@ -62,7 +57,8 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private static final Logger logger = Logger.getLogger(OperationsImpl.class);
     
-//    private IndexModifier modifier = null;
+    private static final String UNIQUEKEY = "PID";
+    
     private IndexReader ir = null;
     
     public String gfindObjects(
@@ -89,8 +85,8 @@ public class OperationsImpl extends GenericOperationsImpl {
                 config.getSnippetBegin(indexName),
                 config.getSnippetEnd(indexName),
                 config.getSortFields(indexName, sortFields));
-//        if (logger.isDebugEnabled())
-//            logger.debug("resultSet.getResultXml()=\n"+resultSet.getResultXml());
+        if (logger.isDebugEnabled())
+            logger.debug("resultSet.getResultXml()=\n"+resultSet.getResultXml());
         params[12] = "RESULTPAGEXSLT";
         params[13] = resultPageXslt;
         String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
@@ -98,8 +94,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         		xsltPath,
                 resultSet.getResultXml(),
                 params);
-//        if (logger.isDebugEnabled())
-//            logger.debug("after "+resultPageXslt+" result=\n"+sb.toString());
+        if (logger.isDebugEnabled())
+            logger.debug("after "+resultPageXslt+" result=\n"+sb.toString());
         return sb.toString();
     }
     
@@ -112,6 +108,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws java.rmi.RemoteException {
         super.browseIndex(startTerm, termPageSize, fieldName, indexName, resultPageXslt);
         StringBuffer resultXml = new StringBuffer("<fields>");
+		optimize(indexName, resultXml);
         int termNo = 0;
         try {
             getIndexReader(indexName);
@@ -217,41 +214,46 @@ public class OperationsImpl extends GenericOperationsImpl {
         resultXml.append(">\n");
         try {
         	if ("createEmpty".equals(action)) 
-                throw new GenericSearchException("updateIndex createEmpty not implemented for solr.");
+        		createEmpty(indexName, resultXml);
+//                throw new GenericSearchException("updateIndex createEmpty not implemented for solr.");
         	else {
         		getIndexReader(indexName);
         		initDocCount = docCount;
         		if ("deletePid".equals(action)) 
         			deletePid(value, indexName, resultXml);
         		else {
-        			if ("optimize".equals(action)) 
-                        throw new GenericSearchException("updateIndex optimize not implemented for solr.");
+        			if ("fromPid".equals(action)) 
+						fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
         			else {
         				if ("fromFoxmlFiles".equals(action)) 
         					fromFoxmlFiles(value, repositoryName, indexName, resultXml, indexDocXslt);
         				else
-        					if ("fromPid".equals(action)) 
-        						fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
+        					if ("optimize".equals(action)) 
+                				optimize(indexName, resultXml);
         			}
         		}
         	}
         } finally {
         	getIndexReader(indexName);
+        	closeIndexReader(indexName);
+            if (logger.isDebugEnabled())
+                logger.debug("initDocCount="+initDocCount+" docCount="+docCount+" updateTotal="+updateTotal);
         	if (updateTotal > 0) {
         		int diff = docCount - initDocCount;
         		insertTotal = diff;
         		updateTotal -= diff;
         	}
-        	closeIndexReader(indexName);
+        	docCount = docCount - deleteTotal;
         }
         logger.info("updateIndex "+action+" indexName="+indexName
         		+" indexDirSpace="+indexDirSpace(new File(config.getIndexDir(indexName)))
-        		+" docCount="+(docCount-deleteTotal));
+        		+" docCount="+docCount);
         resultXml.append("<counts");
         resultXml.append(" insertTotal=\""+insertTotal+"\"");
         resultXml.append(" updateTotal=\""+updateTotal+"\"");
         resultXml.append(" deleteTotal=\""+deleteTotal+"\"");
-        resultXml.append(" docCount=\""+(docCount-deleteTotal)+"\"");
+        resultXml.append(" docCount=\""+docCount+"\"");
+        resultXml.append(" warnCount=\""+warnCount+"\"");
         resultXml.append("/>\n");
         resultXml.append("</solrUpdateIndex>\n");
         if (logger.isDebugEnabled())
@@ -279,6 +281,13 @@ public class OperationsImpl extends GenericOperationsImpl {
         return sb.toString();
     }
     
+    private void createEmpty(
+            String indexName,
+            StringBuffer resultXml)
+    throws java.rmi.RemoteException {
+        throw new GenericSearchException("createEmpty: Stop solr, remove the index dir, restart solr");
+    }
+    
     private void deletePid(
             String pid,
             String indexName,
@@ -290,6 +299,17 @@ public class OperationsImpl extends GenericOperationsImpl {
         postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
         deleteTotal++;
         resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
+    }
+    
+    private void optimize(
+            String indexName,
+    		StringBuffer resultXml)
+    throws java.rmi.RemoteException {
+        StringBuffer sb = new StringBuffer("<optimize/>");
+        if (logger.isDebugEnabled())
+            logger.debug("indexDoc=\n"+sb.toString());
+        postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
+        resultXml.append("<optimize/>\n");
     }
     
     private void fromFoxmlFiles(
@@ -306,6 +326,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             objectDir = config.getFedoraObjectDir(repositoryName);
         else objectDir = new File(filePath);
         indexDocs(objectDir, repositoryName, indexName, resultXml, indexDocXslt);
+        docCount = docCount-warnCount;
+        resultXml.append("<warnCount>"+warnCount+"</warnCount>\n");
+        resultXml.append("<docCount>"+docCount+"</docCount>\n");
     }
     
     private void indexDocs(
@@ -335,12 +358,13 @@ public class OperationsImpl extends GenericOperationsImpl {
             try {
                 indexDoc(file.getName(), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
             } catch (RemoteException e) {
-                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+                resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
+                logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
             } catch (FileNotFoundException e) {
-                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+              resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
+              logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
             }
         }
-        resultXml.append("<docCount>"+docCount+"</docCount>\n");
     }
     
     private void fromPid(
@@ -411,9 +435,10 @@ public class OperationsImpl extends GenericOperationsImpl {
                 params);
         if (logger.isDebugEnabled())
             logger.debug("indexDoc=\n"+sb.toString());
-        if (sb.indexOf("name=\"PID") > 0)
+        if (sb.indexOf("name=\""+UNIQUEKEY) > 0) {
         	postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
-        updateTotal++;
+            updateTotal++;
+        }
     }
     
     public Analyzer getAnalyzer(String analyzerClassName)
@@ -465,12 +490,12 @@ public class OperationsImpl extends GenericOperationsImpl {
      * Reads data from the data reader and posts it to solr,
      * writes the response to output
      */
-    public void postData(String solrUrlString, Reader data, StringBuffer output)
+    private void postData(String solrUrlString, Reader data, StringBuffer output)
     throws GenericSearchException {
 
       URL solrUrl = null;
 	try {
-		solrUrl = new URL("http://localhost:8983/solr/update");
+		solrUrl = new URL(solrUrlString);
 	} catch (MalformedURLException e) {
         throw new GenericSearchException("solrUrl="+solrUrl.toString()+": ", e);
 	}
@@ -503,9 +528,11 @@ public class OperationsImpl extends GenericOperationsImpl {
         
         InputStream in = urlc.getInputStream();
         int status = urlc.getResponseCode();
+        StringBuffer errorStream = new StringBuffer();
         try {
         	if (status!=HttpURLConnection.HTTP_OK) {
-                throw new GenericSearchException("postData URL="+solrUrlString+" HTTP response code="+status);
+        		errorStream.append("postData URL="+solrUrlString+" HTTP response code="+status+" ");
+                throw new GenericSearchException("URL="+solrUrlString+" HTTP response code="+status);
         	}
           Reader reader = new InputStreamReader(in);
           pipeString(reader, output);
@@ -520,9 +547,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         if (es != null) {
             try {
                 Reader reader = new InputStreamReader(es);
-                output.append("<error><message>");
-                pipeString(reader, output);
-                output.append("</message></error>");
+                pipeString(reader, errorStream);
                 reader.close();
               } catch (IOException e) {
                 throw new GenericSearchException("IOException while reading response", e);
@@ -530,63 +555,8 @@ public class OperationsImpl extends GenericOperationsImpl {
                 if(es!=null) es.close();
               }
         }
-        
-      } catch (IOException e) {
-          throw new GenericSearchException("Connection error (is Solr running at " + solrUrl + " ?): " + e);
-      } finally {
-        if(urlc!=null) urlc.disconnect();
-      }
-    }
-
-    /**
-     * Reads data from the data reader and posts it to solr,
-     * writes the response to output
-     */
-    public void postData(String solrUrlString, Reader data, Writer output)
-    throws GenericSearchException {
-
-      URL solrUrl = null;
-	try {
-		solrUrl = new URL(solrUrlString);
-	} catch (MalformedURLException e) {
-        throw new GenericSearchException("solrUrl="+solrUrlString+": ", e);
-	}
-      HttpURLConnection urlc = null;
-      String POST_ENCODING = "UTF-8";
-      try {
-        urlc = (HttpURLConnection) solrUrl.openConnection();
-        try {
-          urlc.setRequestMethod("POST");
-        } catch (ProtocolException e) {
-          throw new GenericSearchException("Shouldn't happen: HttpURLConnection doesn't support POST??", e);
-        }
-        urlc.setDoOutput(true);
-        urlc.setDoInput(true);
-        urlc.setUseCaches(false);
-        urlc.setAllowUserInteraction(false);
-        urlc.setRequestProperty("Content-type", "text/xml; charset=" + POST_ENCODING);
-        
-        OutputStream out = urlc.getOutputStream();
-        
-        try {
-          Writer writer = new OutputStreamWriter(out, POST_ENCODING);
-          pipe(data, writer);
-          writer.close();
-        } catch (IOException e) {
-          throw new GenericSearchException("IOException while posting data", e);
-        } finally {
-          if(out!=null) out.close();
-        }
-        
-        InputStream in = urlc.getInputStream();
-        try {
-          Reader reader = new InputStreamReader(in);
-          pipe(reader, output);
-          reader.close();
-        } catch (IOException e) {
-          throw new GenericSearchException("IOException while reading response", e);
-        } finally {
-          if(in!=null) in.close();
+        if (errorStream.length()>0) {
+            throw new GenericSearchException("postData error: " + errorStream.toString());
         }
         
       } catch (IOException e) {
@@ -595,6 +565,64 @@ public class OperationsImpl extends GenericOperationsImpl {
         if(urlc!=null) urlc.disconnect();
       }
     }
+
+//    /**
+//     * Reads data from the data reader and posts it to solr,
+//     * writes the response to output
+//     */
+//    public void postData(String solrUrlString, Reader data, Writer output)
+//    throws GenericSearchException {
+//
+//      URL solrUrl = null;
+//	try {
+//		solrUrl = new URL(solrUrlString);
+//	} catch (MalformedURLException e) {
+//        throw new GenericSearchException("solrUrl="+solrUrlString+": ", e);
+//	}
+//      HttpURLConnection urlc = null;
+//      String POST_ENCODING = "UTF-8";
+//      try {
+//        urlc = (HttpURLConnection) solrUrl.openConnection();
+//        try {
+//          urlc.setRequestMethod("POST");
+//        } catch (ProtocolException e) {
+//          throw new GenericSearchException("Shouldn't happen: HttpURLConnection doesn't support POST??", e);
+//        }
+//        urlc.setDoOutput(true);
+//        urlc.setDoInput(true);
+//        urlc.setUseCaches(false);
+//        urlc.setAllowUserInteraction(false);
+//        urlc.setRequestProperty("Content-type", "text/xml; charset=" + POST_ENCODING);
+//        
+//        OutputStream out = urlc.getOutputStream();
+//        
+//        try {
+//          Writer writer = new OutputStreamWriter(out, POST_ENCODING);
+//          pipe(data, writer);
+//          writer.close();
+//        } catch (IOException e) {
+//          throw new GenericSearchException("IOException while posting data", e);
+//        } finally {
+//          if(out!=null) out.close();
+//        }
+//        
+//        InputStream in = urlc.getInputStream();
+//        try {
+//          Reader reader = new InputStreamReader(in);
+//          pipe(reader, output);
+//          reader.close();
+//        } catch (IOException e) {
+//          throw new GenericSearchException("IOException while reading response", e);
+//        } finally {
+//          if(in!=null) in.close();
+//        }
+//        
+//      } catch (IOException e) {
+//          throw new GenericSearchException("Connection error (is Solr running at " + solrUrl + " ?): " + e);
+//      } finally {
+//        if(urlc!=null) urlc.disconnect();
+//      }
+//    }
 
     /**
      * Pipes everything from the reader to the writer via a buffer
@@ -610,6 +638,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 
     /**
      * Pipes everything from the reader to the writer via a buffer
+     * except lines starting with '<?'
      */
     private static void pipeString(Reader reader, StringBuffer writer) throws IOException {
       char[] buf = new char[1024];

@@ -9,7 +9,9 @@ package dk.defxws.fedoragsearch.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.rmi.RemoteException;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,13 +19,17 @@ import java.util.StringTokenizer;
 
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.axis.AxisFault;
-import org.apache.log4j.Logger;
-
 import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
+import org.apache.axis.AxisFault;
+
+import org.apache.log4j.Logger;
+
 import fedora.client.FedoraClient;
+
+import fedora.common.Constants;
+
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.Datastream;
@@ -48,6 +54,7 @@ public class GenericOperationsImpl implements Operations {
     protected int updateTotal = 0;
     protected int deleteTotal = 0;
     protected int docCount = 0;
+    protected int warnCount = 0;
     
     protected byte[] foxmlRecord;
     protected String dsID;
@@ -301,8 +308,14 @@ public class GenericOperationsImpl implements Operations {
         		config.getFedoraPass(repositoryName), 
         		config.getTrustStorePath(repositoryName), 
         		config.getTrustStorePass(repositoryName) );
+        
+        String fedoraVersion = config.getFedoraVersion(repositoryName);
+        String format = Constants.FOXML1_0.uri;
+        if(fedoraVersion != null && fedoraVersion.startsWith("2.")) {
+            format = "foxml1.0";
+        }
         try {
-        	foxmlRecord = apim.export(pid, "foxml1.0", "public");
+        	foxmlRecord = apim.export(pid, format, "public");
         } catch (RemoteException e) {
         	throw new FedoraObjectNotFoundException("Fedora Object "+pid+" not found at "+repositoryName, e);
         }

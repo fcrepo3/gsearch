@@ -53,7 +53,7 @@ public class SOAPImpl implements Operations {
                     " hitPageSize="+hitPageSize+
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
-        Operations ops = Config.getCurrentConfig().getOperationsImpl(indexName);
+        Operations ops = getConfig().getOperationsImpl(indexName);
         String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isInfoEnabled())
@@ -82,7 +82,7 @@ public class SOAPImpl implements Operations {
                     " fieldName="+fieldName+
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
-        Operations ops = Config.getCurrentConfig().getOperationsImpl(indexName);
+        Operations ops = getConfig().getOperationsImpl(indexName);
         String result = ops.browseIndex(startTerm, termPageSize, fieldName, indexName, resultPageXslt);
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isInfoEnabled())
@@ -106,7 +106,7 @@ public class SOAPImpl implements Operations {
                     " repositoryName="+repositoryName+
                     " resultPageXslt="+resultPageXslt);
         GenericOperationsImpl ops = (new GenericOperationsImpl());
-        ops.init("", Config.getCurrentConfig());
+        ops.init("", getConfig());
         String result = ops.getRepositoryInfo(repositoryName, resultPageXslt);
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isInfoEnabled())
@@ -126,7 +126,7 @@ public class SOAPImpl implements Operations {
             logger.info("getIndexInfo" +
                     " indexName="+indexName+
                     " resultPageXslt="+resultPageXslt);
-        Operations ops = Config.getCurrentConfig().getOperationsImpl(indexName);
+        Operations ops = getConfig().getOperationsImpl(indexName);
         String result = ops.getIndexInfo(indexName, resultPageXslt);
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isInfoEnabled())
@@ -155,7 +155,7 @@ public class SOAPImpl implements Operations {
                     " indexDocXslt="+indexDocXslt+
                     " resultPageXslt="+resultPageXslt);
         GenericOperationsImpl ops = (new GenericOperationsImpl());
-        ops.init(indexName, Config.getCurrentConfig());
+        ops.init(indexName, getConfig());
         String result = ops.updateIndex(action, value, repositoryName, indexName, indexDocXslt, resultPageXslt);
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isInfoEnabled())
@@ -168,6 +168,14 @@ public class SOAPImpl implements Operations {
                     " resultPageXslt="+resultPageXslt+
                     " timeusedms="+timeusedms);
         return result;
+    }
+    
+    public Config getConfig() throws java.rmi.RemoteException {
+        Config config = Config.getCurrentConfig();
+        if(!config.wsddDeployed()) {
+            config.deployWSDD();
+        }
+        return config;
     }
     
 }

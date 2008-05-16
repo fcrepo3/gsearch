@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resultPage indexName="DemoOnLucene">
  <indexInfo>
-  <IndexShortName>DemoOnLucene</IndexShortName>
-  <IndexLongName>Demonstration index on Lucene</IndexLongName>
+  <IndexShortName>DemoOnSolr</IndexShortName>
+  <IndexLongName>Demonstration index on Solr</IndexLongName>
   <EngineUrl>http://lucene.apache.org/</EngineUrl>
-  <EngineShortName>Lucene</EngineShortName>
+  <EngineShortName>Solr</EngineShortName>
   <EngineLongName>Apache Lucene project</EngineLongName>
-  <EngineDescription>The Apache Lucene project develops open-source search software.</EngineDescription>
-  <EngineTags>lucene apache open-source search software</EngineTags>
-  <EngineImage>http://lucene.apache.org/lucene_green_300.gif</EngineImage>
+  <EngineDescription>The Apache Solr project develops open-source search software.</EngineDescription>
+  <EngineTags>solr lucene apache open-source search software</EngineTags>
+  <EngineImage>http://solr.apache.org/solr_green_300.gif</EngineImage>
   <QueryLanguage>See e.g. http://lucene.apache.org/java/docs/queryparsersyntax.html</QueryLanguage>
   <SampleSearch>dc.title:fedora AND dc.creator:"thornton staples"</SampleSearch>
   <IndexFieldNameList>PID, repositoryName,<BR/> 
@@ -20,9 +20,9 @@
                       DS2.text,<BR/>
                       others depending on the indexing stylesheet.
   </IndexFieldNameList>
-  <EngineDeveloper>Apache Lucene project</EngineDeveloper>
-  <EngineContact>info@lucene.apache.org</EngineContact>
-  <EngineAttribution>The Apache Lucene project &#169; 2005, The Apache Lucene project,
+  <EngineDeveloper>Apache Lucene Solr project</EngineDeveloper>
+  <EngineContact>info@lucene.apache.org/solr</EngineContact>
+  <EngineAttribution>The Apache Lucene Solr project &#169; 2005, The Apache Lucene Solr project,
    All Rights Reserved</EngineAttribution>
  </indexInfo>
 </resultPage>

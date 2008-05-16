@@ -2,10 +2,8 @@
 #$Id$
 
 # <p><b>License and Copyright: </b>The contents of this file will be subject to the
-# same open source license as the Fedora Repository System at www.fedora.info
-# It is expected to be released with Fedora version 2.2.
-
-# Copyright &copy; 2006 by The Technical University of Denmark.
+# same open source license as the Fedora Repository System at www.fedora-commons.org
+# Copyright &copy; 2006, 2007, 2008 by The Technical University of Denmark.
 # All rights reserved.</p>
 
 # @author  gsp@dtv.dk
@@ -38,7 +36,9 @@
 
 HOSTPORT=$HOST:$PORT
 if [ $HOSTPORT = ":" ] ; then
-    HOSTPORT=localhost:8080
+    export HOST=localhost
+    export PORT=8080
+    HOSTPORT=$HOST:$PORT
 fi;
 TESTHOME=.
 SUITE=$0
@@ -59,10 +59,10 @@ run_test(){
     	echo "<`get_timestamp`>run_test() #$TESTCOUNT $CLIENT $1 $2 $3 $4 $5 $6 $7 $8 $9 "
     fi;
     FILENAME=$CLIENT.$TESTCOUNT
-    if [ "$1" != "configure" ] ; then
     if [ "$MODE" = "expected" ] ; then
         sh $CLIENT $HOSTPORT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/expected/$SUITE/$FILENAME
     else
+    if [ "$1" != "configure" ] ; then
         sh $CLIENT $HOSTPORT "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/result/$SUITE/$FILENAME 2>&1
         diff -I.*milliseconds.* -I.*resultPage.* -I.*cvsDate.* -I.*createdDate.* -I.*lastModifiedDate.* -I.*$HttpInputStream@.* $TESTHOME/expected/$SUITE/$FILENAME $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
         if [ ! `cat $TESTHOME/diff/$SUITE/$FILENAME | wc -c` = 0 ] ; then 

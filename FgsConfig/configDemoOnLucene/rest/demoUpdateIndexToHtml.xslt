@@ -83,6 +83,7 @@
 		<xsl:variable name="UPDATETOTAL" select="@updateTotal"/>
 		<xsl:variable name="DELETETOTAL" select="@deleteTotal"/>
 		<xsl:variable name="DOCCOUNT" select="@docCount"/>
+		<xsl:variable name="WARNCOUNT" select="@warnCount"/>
 		
 			<table border="3" cellpadding="5" cellspacing="5">
 				<tr>
@@ -95,6 +96,8 @@
 					<td>Deleted number of index documents: <xsl:value-of select="$DELETETOTAL"/>
 					</td>
 					<td>Resulting number of index documents: <xsl:value-of select="$DOCCOUNT"/>
+					</td>
+					<td>Number of warnings (see log): <xsl:value-of select="$WARNCOUNT"/>
 					</td>
 				</tr>
 			</table>

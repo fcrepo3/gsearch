@@ -58,6 +58,11 @@
 		<servlet-name>GenericSearchREST</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+        <servlet-name>UpdateListener</servlet-name>
+        <servlet-class>dk.defxws.fedoragsearch.server.UpdateListener</servlet-class>
+        <load-on-startup>101</load-on-startup>
+    </servlet>
 	<welcome-file-list id="WelcomeFileList_1">
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

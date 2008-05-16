@@ -61,7 +61,7 @@
 	</target>
 
 	<target name="configManyToMany"
-			depends="prep"
+			depends=""
         	description="build the config for local deployment">
 		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPHOSTPORT" value="localhost:8080"/>
 		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPUSER" value="fedoraAdmin"/>

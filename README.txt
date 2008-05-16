@@ -1,5 +1,5 @@
 This is the source tree for the Fedora Generic Search service.
-It currently works with Fedora 2.2.
+It currently works with Fedora 3.0.
 
 To build the downloadable war, which includes
 support for Lucene and Zebra plugins:
