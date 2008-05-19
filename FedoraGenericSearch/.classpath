@@ -30,8 +30,8 @@
 	<classpathentry kind="lib" path="lib/jaxen-1.1-beta-9.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
 	<classpathentry kind="lib" path="lib/sjsxp.jar"/>
-	<classpathentry kind="lib" path="lib/activemq-all-5.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-2.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-demos-2.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/activemq-all-5.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
