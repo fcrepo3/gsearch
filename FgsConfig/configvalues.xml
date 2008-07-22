@@ -11,7 +11,14 @@
 	</description>
 
 	<property environment="env" />
-	<property name="log.path" location="${env.FEDORA_HOME}/server/logs" />
+	<path id="fedora.path">
+		<pathelement path="${env.FEDORA_HOME}"/>
+	</path>
+	<pathconvert targetos="unix" property="fedora.home" refid="fedora.path"/>
+	<path id="logs.path">
+		<pathelement path="${fedora.home}/server/logs"/>
+	</path>
+	<pathconvert targetos="unix" property="log.path" refid="logs.path"/>
 	<!-- The three soap properties are used for the deployment of the deploy.wsdd file for soap access -->
 	<property name="soap.deploy.hostport" value="localhost:8080" />
 	<property name="soap.deploy.user" value="fedoraAdmin" />
@@ -37,8 +44,11 @@
 
 	<target name="prepForWebServer"
         	description="set values for the configs on web server">
-		<property name="webserver.path" location="${env.FEDORA_HOME}/tomcat" />
-		<property name="configs.path" location="${webserver.path}/webapps/fedoragsearch/WEB-INF/classes" />
+		<property name="webserver.path" location="${fedora.home}/tomcat" />
+		<path id="config.path">
+			<pathelement path="${webserver.path}/webapps/fedoragsearch/WEB-INF/classes"/>
+		</path>
+		<pathconvert targetos="unix" property="configs.path" refid="config.path"/>		
 	</target>
 
 	<target name="configOnWebServer"
@@ -76,13 +86,13 @@
 		<property name="basic.config.prefix" value="basic" />
 		<property name="basic.mimetypes" value="text/plain text/xml text/html application/pdf" />
 		<property name="basic.index.1" value="BasicIndex" />
-		<property name="basic.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${basic.index.1}" />
+		<property name="basic.index.1.indexdir" value="${fedora.home}/gsearch/${basic.index.1}" />
 		<property name="basic.index.names" value="${basic.index.1}" />
 		<property name="basic.repos.1" value="BasicRepos" />
 		<property name="basic.repos.1.fedorasoap" value="http://localhost:8080" />
 		<property name="basic.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="basic.repos.1.fedorapass" value="fedoraAdmin" />
-		<property name="basic.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="basic.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
 		<property name="basic.repos.1.fedoraversion" value="3.0" />
 		<property name="basic.repos.names" value="${basic.repos.1}" />
 		
@@ -127,13 +137,13 @@
 		<property name="lucene.config.prefix" value="demo" />
 		<property name="lucene.mimetypes" value="text/plain text/xml text/html application/pdf" />
 		<property name="lucene.index.1" value="DemoOnLucene" />
-		<property name="lucene.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${lucene.index.1}" />
+		<property name="lucene.index.1.indexdir" value="${fedora.home}/gsearch/${lucene.index.1}" />
 		<property name="lucene.index.names" value="${lucene.index.1}" />
 		<property name="lucene.repos.1" value="DemoAtDtu" />
 		<property name="lucene.repos.1.fedorasoap" value="http://localhost:8080" />
 		<property name="lucene.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="lucene.repos.1.fedorapass" value="fedoraAdmin" />
-		<property name="lucene.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="lucene.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
 		<property name="lucene.repos.1.fedoraversion" value="3.0" />
 		<property name="lucene.repos.names" value="${lucene.repos.1}" />
 		
@@ -178,13 +188,13 @@
 		<property name="test.config.prefix" value="test" />
 		<property name="test.mimetypes" value="text/plain text/xml text/html application/pdf" />
 		<property name="test.index.1" value="TestOnLucene" />
-		<property name="test.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${test.index.1}" />
+		<property name="test.index.1.indexdir" value="${fedora.home}/gsearch/${test.index.1}" />
 		<property name="test.index.names" value="${test.index.1}" />
 		<property name="test.repos.1" value="DemoLocal" />
 		<property name="test.repos.1.fedorasoap" value="http://localhost:8080" />
 		<property name="test.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="test.repos.1.fedorapass" value="fedoraAdmin" />
-		<property name="test.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="test.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
 		<property name="test.repos.1.fedoraversion" value="3.0" />
 		<property name="test.repos.names" value="${test.repos.1}" />
 		
@@ -230,13 +240,13 @@
 		<property name="solr.mimetypes" value="text/plain text/xml text/html application/pdf" />
 		<property name="solr.index.1" value="DemoOnSolr" />
 		<property name="solr.index.1.indexbase" value="http://localhost:8983/solr" />
-		<property name="solr.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${solr.index.1}/example/solr/data/index" />
+		<property name="solr.index.1.indexdir" value="${fedora.home}/gsearch/${solr.index.1}/example/solr/data/index" />
 		<property name="solr.index.names" value="${solr.index.1}" />
 		<property name="solr.repos.1" value="DemoAtDtu" />
 		<property name="solr.repos.1.fedorasoap" value="http://localhost:8080" />
 		<property name="solr.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="solr.repos.1.fedorapass" value="fedoraAdmin" />
-		<property name="solr.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="solr.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
 		<property name="solr.repos.1.fedoraversion" value="3.0" />
 		<property name="solr.repos.names" value="${solr.repos.1}" />
 		
@@ -283,13 +293,13 @@
 		<property name="zebra.mimetypes" value="text/plain text/xml text/html application/pdf" />
 		<property name="zebra.index.1" value="DemoOnZebra" />
 		<property name="zebra.index.1.indexbase" value="http://localhost:8983/zebra" />
-		<property name="zebra.index.1.indexdir" value="${env.FEDORA_HOME}/gsearch/${zebra.index.1}" />
+		<property name="zebra.index.1.indexdir" value="${fedora.home}/gsearch/${zebra.index.1}" />
 		<property name="zebra.index.names" value="${zebra.index.1}" />
 		<property name="zebra.repos.1" value="DemoAtDtu" />
 		<property name="zebra.repos.1.fedorasoap" value="http://localhost:8080" />
 		<property name="zebra.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="zebra.repos.1.fedorapass" value="fedoraAdmin" />
-		<property name="zebra.repos.1.fedoraobjectdir" value="${env.FEDORA_HOME}/data/objects" />
+		<property name="zebra.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
 		<property name="zebra.repos.1.fedoraversion" value="3.0" />
 		<property name="zebra.repos.names" value="${zebra.repos.1}" />
 		
