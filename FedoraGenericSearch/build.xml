@@ -7,7 +7,7 @@
 
     <loadproperties srcFile="lib/lib.properties" /> 
 
-    <property name="genericsearch.version" value="2.1"/>
+    <property name="genericsearch.version" value="2.1.1"/>
 
     <property name="build.basedir" location="../FgsBuild"/>
     <property name="compile.dir" location="bin"/>
