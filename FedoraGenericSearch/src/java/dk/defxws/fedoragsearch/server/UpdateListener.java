@@ -91,15 +91,15 @@ public class UpdateListener extends HttpServlet implements MessagingListener {
             }
             
             try {
-                MessagingClient messagingClient =
+                JmsMessagingClient messagingClient =
                         new JmsMessagingClient(clientId, this, properties, true);
-                messagingClient.start();
+                messagingClient.start(false);
                 messagingClientList.add(messagingClient);
-            } catch (MessagingException ne) {
+            } catch (MessagingException me) {
                 String errorMessage = "Messaging exception encountered "
                     + "attempting to start messaging client with id " 
-                    + clientId + ". Error message was: " + ne.getMessage();
-                logger.error(errorMessage, ne);
+                    + clientId + ". Error message was: " + me.getMessage();
+                logger.error(errorMessage, me);
             } 
         }        
     }
@@ -117,9 +117,11 @@ public class UpdateListener extends HttpServlet implements MessagingListener {
                 MessagingClient client = clients.next();
                 try {
                     client.stop(false);
-                } catch (MessagingException ne) {
-                    logger.info("Messaging Exception encountered stopping the "
-                              + "messaging client" + ne.getMessage(), ne);
+                } catch (MessagingException me) {
+                    logger.warn("Messaging exception encountered stopping the "
+                              + "messaging client: " + me.getMessage() + ". This "
+                              + "error is expected and can be ignored if the message "
+                              + "broker was shut down prior to the UpdateListener.");
                 }
             }
         }
