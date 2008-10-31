@@ -39,6 +39,8 @@ import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
+import fedora.common.Constants;
+import fedora.server.management.FedoraAPIM;
 import fedora.server.utilities.StreamUtility;
 
 /**
@@ -65,31 +67,54 @@ public class OperationsImpl extends GenericOperationsImpl {
             String resultPageXslt)
     throws java.rmi.RemoteException {
         super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
+        String usingIndexName = config.getIndexName(indexName);
+        if (srf != null && config.isSearchResultFilteringActive("presearch")) {
+        	usingIndexName = srf.selectIndexNameForPresearch(fgsUserName, usingIndexName);
+            if (logger.isDebugEnabled())
+                logger.debug("gfindObjects presearch" +
+                        " fgsUserName="+fgsUserName+
+                        " usingIndexName="+usingIndexName);
+        }
+        String usingQuery = query;
+        if (srf != null && config.isSearchResultFilteringActive("insearch")) {
+        	usingQuery = srf.rewriteQueryForInsearch(fgsUserName, usingIndexName, query);
+            if (logger.isDebugEnabled())
+                logger.debug("gfindObjects insearch" +
+                        " fgsUserName="+fgsUserName+
+                        " usingQuery="+usingQuery);
+        }
         ResultSet resultSet = (new Connection()).createStatement().executeQuery(
-                query,
+        		usingQuery,
                 hitPageStart,
                 hitPageSize,
                 snippetsMax,
                 fieldMaxLength,
-                getQueryAnalyzer(indexName),
-                config.getDefaultQueryFields(indexName),
-                config.getIndexDir(indexName),
-                config.getIndexName(indexName),
-                config.getSnippetBegin(indexName),
-                config.getSnippetEnd(indexName),
-                config.getSortFields(indexName, sortFields));
+                getQueryAnalyzer(usingIndexName),
+                config.getDefaultQueryFields(usingIndexName),
+                config.getIndexDir(usingIndexName),
+                usingIndexName,
+                config.getSnippetBegin(usingIndexName),
+                config.getSnippetEnd(usingIndexName),
+                config.getSortFields(usingIndexName, sortFields));
 //        if (logger.isDebugEnabled())
 //            logger.debug("resultSet.getResultXml()=\n"+resultSet.getResultXml());
         params[12] = "RESULTPAGEXSLT";
         params[13] = resultPageXslt;
-        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
-        StringBuffer sb = (new GTransformer()).transform(
+        String xsltPath = config.getConfigName()+"/index/"+usingIndexName+"/"+config.getGfindObjectsResultXslt(usingIndexName, resultPageXslt);
+        StringBuffer resultXml = (new GTransformer()).transform(
         		xsltPath,
-                resultSet.getResultXml(),
+        		resultSet.getResultXml(),
                 params);
 //        if (logger.isDebugEnabled())
-//            logger.debug("after "+resultPageXslt+" result=\n"+sb.toString());
-        return sb.toString();
+//            logger.debug("after "+resultPageXslt+" result=\n"+resultXml.toString());
+        if (srf != null && config.isSearchResultFilteringActive("postsearch")) {
+        	resultXml = srf.filterResultsetForPostsearch(fgsUserName, resultXml, config);
+            if (logger.isDebugEnabled())
+                logger.debug("gfindObjects postsearch" +
+                        " fgsUserName="+fgsUserName+
+                        " resultXml=\n"+resultXml);
+        }
+        return resultXml.toString();
     }
     
     public String browseIndex(
@@ -207,6 +232,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         deleteTotal = 0;
         int initDocCount = 0;
         StringBuffer resultXml = new StringBuffer(); 
+        srf = config.getSearchResultFiltering();
         resultXml.append("<luceneUpdateIndex");
         resultXml.append(" indexName=\""+indexName+"\"");
         resultXml.append(">\n");
@@ -277,6 +303,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
+//        if (logger.isDebugEnabled())
+//            logger.debug("createEmpty resultXml="+resultXml);
         getIndexWriter(indexName, true);
         resultXml.append("<createEmpty/>\n");
     }
@@ -439,7 +467,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     			config.getURIResolver(indexName),
     			params);
     	if (logger.isDebugEnabled())
-    		logger.debug("indexDoc=\n"+sb.toString());
+    		logger.debug("IndexDocument=\n"+sb.toString());
     	hdlr = new IndexDocumentHandler(
     			this,
     			repositoryName,
@@ -460,7 +488,10 @@ public class OperationsImpl extends GenericOperationsImpl {
     					config.setUntokenizedFields(indexName, untokenizedFields.toString());
     				}
     			}
-    			logger.info("indexDoc="+hdlr.getPid()+" docCount="+iw.docCount());
+    			logger.info("IndexDocument="+hdlr.getPid()+" docCount="+iw.numDocs());
+    		}
+    		else {
+    			logger.warn("IndexDocument "+hdlr.getPid()+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
     		}
     	} catch (IOException e) {
     		throw new GenericSearchException("Update error pidOrFilename="+pidOrFilename, e);
@@ -566,7 +597,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws GenericSearchException {
     	if (iw != null) return;
         try {
-            iw = new IndexWriter(config.getIndexDir(indexName), getAnalyzer(config.getAnalyzer(indexName)), create);
+            iw = new IndexWriter(config.getIndexDir(indexName), getAnalyzer(config.getAnalyzer(indexName)), create, IndexWriter.MaxFieldLength.LIMITED);
             if (config.getMaxBufferedDocs(indexName)>1)
             	iw.setMaxBufferedDocs(config.getMaxBufferedDocs(indexName));
             if (config.getMergeFactor(indexName)>1)
@@ -577,7 +608,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         	iw = null;
             if (e.toString().indexOf("/segments")>-1) {
                 try {
-                    iw = new IndexWriter(config.getIndexDir(indexName), getAnalyzer(config.getAnalyzer(indexName)), true);
+                    iw = new IndexWriter(config.getIndexDir(indexName), getAnalyzer(config.getAnalyzer(indexName)), true, IndexWriter.MaxFieldLength.LIMITED);
                 } catch (IOException e2) {
                     throw new GenericSearchException("IndexWriter new error, creating index indexName=" + indexName+ " :\n", e2);
                 }

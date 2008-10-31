@@ -99,7 +99,7 @@ public class IndexDocumentHandler extends DefaultHandler {
         methodName = "";
         parameters = "";
         asOfDateTime = "";
-        index = Field.Index.TOKENIZED;
+        index = Field.Index.ANALYZED;
         store = Field.Store.YES;
         termVector = Field.TermVector.NO;
         boost = 1;
@@ -133,10 +133,11 @@ public class IndexDocumentHandler extends DefaultHandler {
                 if (aName=="parameters") parameters = val;
                 if (aName=="asOfDateTime") asOfDateTime = val;
                 if (aName=="index") 
-                    if ("TOKENIZED".equals(val)) index = Field.Index.TOKENIZED;
-                    else if ("UN_TOKENIZED".equals(val)) index = Field.Index.UN_TOKENIZED;
+                    if ("ANALYZED".equals(val) || "TOKENIZED".equals(val)) index = Field.Index.ANALYZED;
+                    else if ("NOT_ANALYZED".equals(val) || "UN_TOKENIZED".equals(val)) index = Field.Index.NOT_ANALYZED;
                     else if ("NO".equals(val)) index = Field.Index.NO;
-                    else if ("NO_NORMS".equals(val)) index = Field.Index.NO_NORMS;
+                    else if ("NOT_ANALYZED_NO_NORMS".equals(val) || "NO_NORMS".equals(val)) index = Field.Index.NOT_ANALYZED_NO_NORMS;
+                    else if ("ANALYZED_NO_NORMS".equals(val)) index = Field.Index.ANALYZED_NO_NORMS;
                 if (aName=="store") 
                     if ("YES".equals(val)) store = Field.Store.YES;
                     else if ("NO".equals(val)) store = Field.Store.NO;
