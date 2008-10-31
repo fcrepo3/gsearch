@@ -3,7 +3,11 @@
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		
 <!-- This xslt stylesheet is common to 
-     demoGfindObjectsToHtml, demoGetIndexInfoToHtml, and demoUpdateIndexToHtml.
+     demoUpdateIndexToHtml, 
+     demoBrowseIndexToHtml,
+     demoGfindObjectsToHtml, 
+     demoGetIndexInfoToHtml, and 
+     demoGetRepositoryInfoToHtml.
 -->
 	
 	<xsl:output method="html" indent="yes" encoding="UTF-8"/>
@@ -13,7 +17,7 @@
 	<xsl:template match="/resultPage">
 		<html>
 			<head>
-				<title>REST Client Demo of Fedora Generic Search Service</title>
+				<title>REST Client Demo of Fedora Generic Search Service (configDemoOnLucene)</title>
 				<link rel="stylesheet" type="text/css" href="css/demo.css"/>
 				<style type="text/css">
 					.highlight {
@@ -27,7 +31,7 @@
 				<div id="header">
 					<a href="" id="logo"></a>
 					<div id="title">
-						<h1>REST Client Demo of Fedora Generic Search Service</h1>
+						<h1>REST Client Demo of Fedora Generic Search Service (configDemoOnLucene)</h1>
 					</div>
 				</div>
 				<table cellspacing="10" cellpadding="10">

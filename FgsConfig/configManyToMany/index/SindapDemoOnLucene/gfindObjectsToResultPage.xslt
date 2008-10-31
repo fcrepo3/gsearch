@@ -73,7 +73,7 @@
 				</xsl:for-each>
 				</objects>
 			</gfindObjects>
-	 	</resultPage>
+	 	<resultPage>
 	</xsl:template>
 	
 </xsl:stylesheet>	

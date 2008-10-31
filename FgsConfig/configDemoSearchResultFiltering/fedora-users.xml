@@ -1,0 +1,45 @@
+<?xml version='1.0' ?>
+  <users>
+    <user name="fedoraAdmin" password="fedoraAdmin">
+      <attribute name="fedoraRole">
+        <value>administrator</value>
+      </attribute>
+    </user>
+    <user name="fedoraIntCallUser" password="changeme">
+      <attribute name="fedoraRole">
+        <value>fedoraInternalCall-1</value>
+        <value>fedoraInternalCall-2</value>
+      </attribute>
+    </user>
+    <user name="dualResImageAdmin" password="dualResImageAdmin">
+      <attribute name="fedoraRole">
+        <value>DualResImageAdministrator</value>
+      </attribute>
+    </user>
+    <user name="smileyAdmin1" password="smileyAdmin1">
+      <attribute name="smileyRole">
+        <value>SmileyAdministrator</value>
+      </attribute>
+    </user>
+    <user name="smileyUser1" password="smileyUser1">
+      <attribute name="smileyRole">
+        <value>SmileyUser</value>
+      </attribute>
+    </user>
+    <user name="drinkExpert1" password="drinkExpert1">
+      <attribute name="smileyRole">
+        <value>SmileyUser</value>
+      </attribute>
+      <attribute name="subject">
+        <value>drink beer water glass cup</value>
+      </attribute>
+    </user>
+    <user name="foodExpert1" password="foodExpert1">
+      <attribute name="smileyRole">
+        <value>SmileyUser</value>
+      </attribute>
+      <attribute name="subject">
+        <value>dinnerware flour sugar snail trash</value>
+      </attribute>
+    </user>
+  </users>

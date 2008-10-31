@@ -17,7 +17,7 @@
 
 	<xsl:param name="ERRORMESSAGE" select="''"/>
 	
-	<xsl:include href="WEBSERVERPATH/webapps/fedoragsearch/WEB-INF/classes/config/rest/demoCommon.xslt"/>
+	<xsl:include href="CONFIGPATH/rest/demoCommon.xslt"/>
 
 	<xsl:template name="opSpecifics">
 		<xsl:variable name="INDEXNAME" select="@indexName"/>

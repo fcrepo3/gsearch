@@ -26,6 +26,11 @@
 		<copy todir="${plugin.dir}/configBasic">
 			<fileset dir="configBasic"/>
 		</copy>
+		<delete dir="${plugin.dir}/configDemoSearchResultFiltering" />
+		<mkdir dir="${plugin.dir}/configDemoSearchResultFiltering" />
+		<copy todir="${plugin.dir}/configDemoSearchResultFiltering">
+			<fileset dir="configDemoSearchResultFiltering"/>
+		</copy>
 		<delete dir="${plugin.dir}/configDemoOnLucene" />
 		<mkdir dir="${plugin.dir}/configDemoOnLucene" />
 		<copy todir="${plugin.dir}/configDemoOnLucene">

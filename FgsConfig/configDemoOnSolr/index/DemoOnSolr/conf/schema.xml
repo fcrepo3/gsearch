@@ -131,6 +131,14 @@
     -->
 
     <!-- A text field that only splits on whitespace for exact matching of words -->
+    <fieldType name="text_fgs" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <!-- A text field that only splits on whitespace for exact matching of words -->
     <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
@@ -275,7 +283,8 @@
         field name or dynamic field, rather than reporting them as an error. 
         alternately, change the type="ignored" to some other type e.g. "text" if you want 
         unknown fields indexed and/or stored by default --> 
-   <dynamicField name="*" type="text"  indexed="true"  stored="true" multiValued="true"/>
+   <field name="dc.description" type="text_fgs"  indexed="true"  stored="true" multiValued="true"/>
+   <dynamicField name="*" type="text_fgs"  indexed="true"  stored="true" multiValued="true"/>
    
  </fields>
 
@@ -285,7 +294,7 @@
  <uniqueKey>PID</uniqueKey>
 
  <!-- field for the QueryParser to use when an explicit fieldname is absent -->
- <defaultSearchField>text</defaultSearchField>
+ <defaultSearchField>dc.description</defaultSearchField>
 
  <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
  <solrQueryParser defaultOperator="OR"/>

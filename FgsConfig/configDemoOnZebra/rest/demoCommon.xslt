@@ -11,7 +11,7 @@
 	<xsl:template match="/resultPage">
 		<html>
 			<head>
-				<title>REST Client Demo of Fedora Generic Search Service</title>
+				<title>REST Client Demo of Fedora Generic Search Service (configDemoOnZebra)</title>
 				<link rel="stylesheet" type="text/css" href="css/demo.css"/>
 				<style type="text/css">
 					.highlight {
@@ -25,7 +25,7 @@
 				<div id="header">
 					<a href="" id="logo"></a>
 					<div id="title">
-						<h1>REST Client Demo of Fedora Generic Search Service</h1>
+						<h1>REST Client Demo of Fedora Generic Search Service (configDemoOnZebra)</h1>
 					</div>
 				</div>
 				<table cellspacing="10" cellpadding="10">

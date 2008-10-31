@@ -52,7 +52,7 @@
 	</target>
 
 	<target name="configOnWebServer"
-			depends="prepForWebServer, configBasic, configDemoOnLucene, configDemoOnSolr, configDemoOnZebra, configTestOnLucene, configDefault"
+			depends="prepForWebServer, configBasic, configDemoOnLucene, configDemoSearchResultFiltering, configDemoOnSolr, configDemoOnZebra, configTestOnLucene, configDefault"
         	description="set values for the configs on web server">
 		<property name="debug.level" value="INFO" />
 		<replace file="${configs.path}/log4j.xml" token="LOGPATH" value="${log.path}"/>
@@ -68,7 +68,7 @@
 	</target>
 
 	<target name="configForLocalDevelopment"
-			depends="prepForLocalDevelopment, configBasic, configDemoOnLucene, configDemoOnSolr, configDemoOnZebra, configTestOnLucene, configDefault"
+			depends="prepForLocalDevelopment, configBasic, configDemoOnLucene, configDemoSearchResultFiltering, configDemoOnSolr, configDemoOnZebra, configTestOnLucene, configDefault"
         	description="set values for the local development configs">
 		<property name="debug.level" value="DEBUG" />
 		<replace file="${configs.path}/log4j.xml" token="LOGPATH" value="${log.path}"/>
@@ -126,6 +126,69 @@
 		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="INDEXDIR" value="${basic.index.1.indexdir}"/>
 		<replace file="${basic.config.path}/index/${basic.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${basic.config.prefix}FoxmlToLucene"/>
 		<replace file="${basic.config.path}/index/${basic.index.1}/${basic.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${basic.config.path}"/>
+		
+	</target>
+
+	<target name="configDemoSearchResultFiltering"
+        	description="set values for configDemoSearchResultFiltering">
+		
+		<property name="srf.config.name" value="configDemoSearchResultFiltering" />
+		<property name="srf.config.path" value="${configs.path}/${srf.config.name}" />
+		<property name="srf.config.prefix" value="srf" />
+		<property name="srf.mimetypes" value="text/plain text/xml text/html application/pdf" />
+		<property name="srf.index.1" value="AllObjectsIndex" />
+		<property name="srf.index.1.indexdir" value="${fedora.home}/gsearch/${srf.index.1}" />
+		<property name="srf.index.2" value="SmileyAdminIndex" />
+		<property name="srf.index.2.indexdir" value="${fedora.home}/gsearch/${srf.index.2}" />
+		<property name="srf.index.3" value="SmileyUserIndex" />
+		<property name="srf.index.3.indexdir" value="${fedora.home}/gsearch/${srf.index.3}" />
+		<property name="srf.index.names" value="${srf.index.1} ${srf.index.2} ${srf.index.3}" />
+		<property name="srf.repos.1" value="DemoRepos" />
+		<property name="srf.repos.1.fedorasoap" value="http://localhost:8080" />
+		<property name="srf.repos.1.fedorauser" value="fedoraAdmin" />
+		<property name="srf.repos.1.fedorapass" value="fedoraAdmin" />
+		<property name="srf.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
+		<property name="srf.repos.1.fedoraversion" value="3.0" />
+		<property name="srf.repos.names" value="${srf.repos.1}" />
+		
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="SOAPUSER" value="${soap.deploy.user}"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="SOAPPASS" value="${soap.deploy.pass}"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="CONFIGPATH" value="${srf.config.path}"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="REPOSNAMES" value="${srf.repos.names}"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="INDEXNAMES" value="${srf.index.names}"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="${srf.config.prefix}UpdateIndexToHtml"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="${srf.config.prefix}GfindObjectsToHtml"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="${srf.config.prefix}BrowseIndexToHtml"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="${srf.config.prefix}GetRepositoryInfoToHtml"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="${srf.config.prefix}GetIndexInfoToHtml"/>
+		<replace file="${srf.config.path}/fedoragsearch.properties" token="MIMETYPES" value="${srf.mimetypes}"/>
+		
+		<replace file="${srf.config.path}/rest/${srf.config.prefix}UpdateIndexToHtml.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
+		<replace file="${srf.config.path}/rest/${srf.config.prefix}GfindObjectsToHtml.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
+		<replace file="${srf.config.path}/rest/${srf.config.prefix}BrowseIndexToHtml.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
+		<replace file="${srf.config.path}/rest/${srf.config.prefix}GetIndexInfoToHtml.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
+		<replace file="${srf.config.path}/rest/${srf.config.prefix}GetRepositoryInfoToHtml.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
+		
+		<replace file="${srf.config.path}/rest/${srf.config.prefix}GfindObjectsToHtml.xslt" token="REPOS1FEDORABASE" value="${srf.repos.1.fedorasoap}"/>
+		
+		<replace file="${srf.config.path}/repository/${srf.repos.1}/repository.properties" token="FEDORASOAP" value="${srf.repos.1.fedorasoap}"/>
+		<replace file="${srf.config.path}/repository/${srf.repos.1}/repository.properties" token="FEDORAUSER" value="${srf.repos.1.fedorauser}"/>
+		<replace file="${srf.config.path}/repository/${srf.repos.1}/repository.properties" token="FEDORAPASS" value="${srf.repos.1.fedorapass}"/>
+		<replace file="${srf.config.path}/repository/${srf.repos.1}/repository.properties" token="FEDORAOBJECTDIR" value="${srf.repos.1.fedoraobjectdir}"/>
+		<replace file="${srf.config.path}/repository/${srf.repos.1}/repository.properties" token="FEDORAVERSION" value="${srf.repos.1.fedoraversion}"/>
+
+		<replace file="${srf.config.path}/index/${srf.index.1}/index.properties" token="INDEXDIR" value="${srf.index.1.indexdir}"/>
+		<replace file="${srf.config.path}/index/${srf.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${srf.config.prefix}FoxmlToLucene"/>
+		<replace file="${srf.config.path}/index/${srf.index.1}/${srf.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
+		
+		<replace file="${srf.config.path}/index/${srf.index.2}/index.properties" token="INDEXDIR" value="${srf.index.2.indexdir}"/>
+		<replace file="${srf.config.path}/index/${srf.index.2}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${srf.config.prefix}FoxmlToLucene"/>
+		<replace file="${srf.config.path}/index/${srf.index.2}/${srf.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
+		
+		<replace file="${srf.config.path}/index/${srf.index.3}/index.properties" token="INDEXDIR" value="${srf.index.3.indexdir}"/>
+		<replace file="${srf.config.path}/index/${srf.index.3}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${srf.config.prefix}FoxmlToLucene"/>
+		<replace file="${srf.config.path}/index/${srf.index.3}/${srf.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${srf.config.path}"/>
 		
 	</target>
 
@@ -228,6 +291,7 @@
 		<replace file="${test.config.path}/index/${test.index.1}/index.properties" token="INDEXDIR" value="${test.index.1.indexdir}"/>
 		<replace file="${test.config.path}/index/${test.index.1}/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="${test.config.prefix}FoxmlToLucene"/>
 		<replace file="${test.config.path}/index/${test.index.1}/${test.config.prefix}FoxmlToLucene.xslt" token="CONFIGPATH" value="${test.config.path}"/>
+		<replace file="${test.config.path}/index/${test.index.1}/${test.config.prefix}FoxmlToLuceneWithExplicitParams.xslt" token="CONFIGPATH" value="${test.config.path}"/>
 		
 	</target>
 
