@@ -89,7 +89,7 @@ public class RESTImpl extends HttpServlet {
         }
         StringBuffer resultXml = new StringBuffer("<resultPage/>");
         if (logger.isInfoEnabled())
-            logger.info("request="+request.getQueryString());
+            logger.info("request="+request.getQueryString()+" remoteUser="+request.getRemoteUser());
         repositoryName = request.getParameter(PARAM_REPOSITORYNAME);
         if (repositoryName==null) repositoryName="";
         indexName = request.getParameter(PARAM_INDEXNAME);
@@ -98,7 +98,7 @@ public class RESTImpl extends HttpServlet {
         if (resultPageXslt==null) resultPageXslt="";
         restXslt = request.getParameter(PARAM_RESTXSLT);
         if (restXslt==null) restXslt="";
-        String[] params = new String[4];
+        String[] params = new String[8];
         params[0] = "ERRORMESSAGE";
         params[1] = "";
         params[2] = "TIMEUSEDMS";
@@ -138,6 +138,10 @@ public class RESTImpl extends HttpServlet {
         }
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         params[3] = timeusedms;
+        params[4] = "FGSUSERNAME";
+        params[5] = request.getRemoteUser();
+        params[6] = "SRFTYPE";
+        params[7] = config.getSearchResultFilteringType();
         resultXml = (new GTransformer()).transform(
         				config.getConfigName()+"/rest/"+restXslt, 
         				resultXml, params);
@@ -191,7 +195,7 @@ public class RESTImpl extends HttpServlet {
         if (sortFields==null) {
         	sortFields = "";
         }
-        Operations ops = config.getOperationsImpl(indexName);
+        Operations ops = config.getOperationsImpl(request.getRemoteUser(), indexName);
         String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields,resultPageXslt);
         return result;
     }
@@ -253,7 +257,7 @@ public class RESTImpl extends HttpServlet {
         String indexDocXslt = request.getParameter(PARAM_INDEXDOCXSLT);
         if (indexDocXslt==null) indexDocXslt="";
         GenericOperationsImpl ops = new GenericOperationsImpl();
-        ops.init(indexName, config);
+        ops.init(request.getRemoteUser(), indexName, config);
         String result = ops.updateIndex(action, value, repositoryName, indexName, indexDocXslt, resultPageXslt);
         return result;
     }
@@ -299,7 +303,7 @@ public class RESTImpl extends HttpServlet {
 			}
     		resultXml.append("</index>");
     	}
-    	resultXml.append("</resultPage>");
+    	resultXml.append("<resultPage>");
         return resultXml.toString();
     }
     

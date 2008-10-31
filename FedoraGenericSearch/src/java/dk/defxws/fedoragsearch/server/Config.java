@@ -95,6 +95,8 @@ public class Config {
     
     private String defaultAnalyzer = "org.apache.lucene.analysis.standard.StandardAnalyzer";
     
+    private String searchResultFilteringModuleProperty = null;
+    
     private StringBuffer errors = null;
     
     private final Logger logger = Logger.getLogger(Config.class);
@@ -221,7 +223,9 @@ public class Config {
         		"fedoragsearch.defaultGfindObjectsFieldMaxLength",
         		"fedoragsearch.repositoryNames",
         		"fedoragsearch.indexNames",
-        		"fedoragsearch.updaterNames"
+        		"fedoragsearch.updaterNames",
+        		"fedoragsearch.searchResultFilteringModule",
+        		"fedoragsearch.searchResultFilteringType"
         };
         checkPropNames("fedoragsearch.properties", fgsProps, propNames);
         
@@ -613,7 +617,59 @@ public class Config {
                 }
             }             
         }
- 
+        // Check searchResultFilteringModule property
+        searchResultFilteringModuleProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringModule");
+        if(searchResultFilteringModuleProperty != null && searchResultFilteringModuleProperty.length()>0) {
+            try {
+                Class srfClass = Class.forName(searchResultFilteringModuleProperty);
+                try {
+                	SearchResultFiltering srfInstance = (SearchResultFiltering) srfClass
+                    .getConstructor(new Class[] {})
+                    .newInstance(new Object[] {});
+                } catch (InstantiationException e) {
+                    errors.append("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                } catch (IllegalAccessException e) {
+                    errors.append("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                } catch (InvocationTargetException e) {
+                    errors.append("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                } catch (NoSuchMethodException e) {
+                    errors.append("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                }
+            } catch (ClassNotFoundException e) {
+                errors.append("\n*** "+configName
+                        + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                        + ": class not found.\n"+e);
+            }
+            String searchResultFilteringTypeProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringType");
+            StringTokenizer srft = new StringTokenizer("");
+            if (searchResultFilteringTypeProperty != null) {
+            	srft = new StringTokenizer(searchResultFilteringTypeProperty);
+            }
+            int countTokens = srft.countTokens();
+            if (searchResultFilteringTypeProperty==null || countTokens==0 || countTokens>1) {
+                errors.append("\n*** "+configName
+                        + ": fedoragsearch.searchResultFilteringType="+searchResultFilteringTypeProperty
+                        + ": one and only one of 'presearch', 'insearch', 'postsearch' must be stated.\n");
+            } 
+            else {
+            	for (int i=0; i<countTokens; i++) {
+            		String token = srft.nextToken();
+            		if (!("presearch".equals(token) || "insearch".equals(token) || "postsearch".equals(token))) {
+                        errors.append("\n*** "+configName
+                                + ": fedoragsearch.searchResultFilteringType="+searchResultFilteringTypeProperty
+                                + ": only 'presearch', 'insearch', 'postsearch' may be stated, not '"+token+"'.\n");
+            		}
+            	}
+            }
+        }
     }
     
     //  Read soap deployment parameters and try to deploy the wsdd file    
@@ -895,8 +951,13 @@ public class Config {
     public String getIndexName(String indexName) {
         if (indexName==null || indexName.equals("")) 
             return defaultIndexName;
-        else 
-            return indexName;
+        else {
+        	int i = indexName.indexOf("/");
+        	if (i<0)
+                return indexName;
+        	else
+        		return indexName.substring(0, i);
+        }
     }
     
     public Properties getIndexProps(String indexName) {
@@ -950,6 +1011,9 @@ public class Config {
     }
     
     public String getIndexDir(String indexName) {
+        String indexDir = getIndexProps(indexName).getProperty("fgsindex.indexDir");
+        if (indexName.indexOf("/")>-1)
+        	indexDir += indexName.substring(indexName.indexOf("/"));
         return insertSystemProperties(getIndexProps(indexName).getProperty("fgsindex.indexDir"));
     }
     
@@ -958,7 +1022,7 @@ public class Config {
     }
     
     public URIResolver getURIResolver(String indexName) {
-        return (URIResolver)indexNameToUriResolvers.get(indexName);
+        return (URIResolver)indexNameToUriResolvers.get(getIndexName(indexName));
     }
     
     public String getUntokenizedFields(String indexName) {
@@ -1015,7 +1079,59 @@ public class Config {
     	return defaultWriteLockTimeout;
     }
     
+    public SearchResultFiltering getSearchResultFiltering()
+    throws ConfigException {
+    	SearchResultFiltering srfInstance = null;
+        if(searchResultFilteringModuleProperty != null && searchResultFilteringModuleProperty.length()>0) {
+            try {
+                Class srfClass = Class.forName(searchResultFilteringModuleProperty);
+                try {
+                	srfInstance = (SearchResultFiltering) srfClass
+                    .getConstructor(new Class[] {})
+                    .newInstance(new Object[] {});
+                } catch (InstantiationException e) {
+                    throw new ConfigException("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                } catch (IllegalAccessException e) {
+                    throw new ConfigException("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                } catch (InvocationTargetException e) {
+                    throw new ConfigException("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                } catch (NoSuchMethodException e) {
+                    throw new ConfigException("\n*** "+configName
+                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                            + ": instantiation error.\n"+e.toString());
+                }
+            } catch (ClassNotFoundException e) {
+                throw new ConfigException("\n*** "+configName
+                        + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
+                        + ": class not found.\n"+e);
+            }
+        }
+        return srfInstance;
+    }
+    
+    public String getSearchResultFilteringType() {
+        return fgsProps.getProperty("fedoragsearch.searchResultFilteringType");
+    }
+    
+    public boolean isSearchResultFilteringActive(String type) {
+        if (type.equals(fgsProps.getProperty("fedoragsearch.searchResultFilteringType")))
+        	return true;
+    	else
+    		return false;
+    }
+    
     public GenericOperationsImpl getOperationsImpl(String indexNameParam)
+    throws ConfigException {
+        return getOperationsImpl(null, indexNameParam);
+    }
+    
+    public GenericOperationsImpl getOperationsImpl(String fgsUserNameParam, String indexNameParam)
     throws ConfigException {
         GenericOperationsImpl ops = null;
         String indexName = getIndexName(indexNameParam);
@@ -1055,7 +1171,7 @@ public class Config {
             throw new ConfigException(operationsImpl
                     + ": instantiation error.\n", e);
         }
-        ops.init(indexName, this);
+        ops.init(fgsUserNameParam, indexName, this);
         return ops;
     }
     
@@ -1083,6 +1199,38 @@ public class Config {
     		}
     	}
     	return result;
+    }
+    
+    public String getProperty(String propertyName)
+    	throws ConfigException {
+    	String propertyValue = null;
+        if (!(propertyName==null || propertyName.equals(""))) {
+            int i = propertyName.indexOf("/");
+            String propName = propertyName;
+        	Properties props = null;
+            if (i>-1) {
+                String propsName = propertyName.substring(0, i);
+                propName = propertyName.substring(i+1);
+                if (logger.isDebugEnabled())
+                    logger.debug("propsName=" + propsName + " propName=" + propName);
+            	if (indexNameToProps.containsKey(propsName)) {
+            		props = (Properties)indexNameToProps.get(propsName);
+            	}
+            	else if (repositoryNameToProps.containsKey(propsName)) {
+            		props = (Properties)repositoryNameToProps.get(propsName);
+            	}
+            } else {
+            	props = fgsProps;
+            }
+        	if (props!=null && propName!=null && propName.length()>0) {
+        		propertyValue = props.getProperty(propName);
+        	} else {
+                throw new ConfigException("property " + propertyName + " not found");
+        	}
+        }
+        if (logger.isDebugEnabled())
+            logger.info("property " + propertyName + "=" + propertyValue);
+    	return propertyValue;
     }
     
     private Config setProperty(String propertyName, String propertyValue)

@@ -96,7 +96,7 @@ throws GenericSearchException {
     StringBuffer docText = (new GTransformer()).transform(
     		"config/textFromXml", 
             new StreamSource(isr));
-    docText.delete(0, docText.indexOf(">"));
+    docText.delete(0, docText.indexOf(">")+1);
     return docText;
 }
     

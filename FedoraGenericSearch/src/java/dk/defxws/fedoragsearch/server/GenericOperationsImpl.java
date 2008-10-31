@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 
 import javax.xml.transform.stream.StreamSource;
 
+import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
@@ -48,8 +49,10 @@ public class GenericOperationsImpl implements Operations {
 
     private static final Map fedoraClients = new HashMap();
 
+    protected String fgsUserName;
     protected String indexName;
     protected Config config;
+    protected SearchResultFiltering srf;
     protected int insertTotal = 0;
     protected int updateTotal = 0;
     protected int deleteTotal = 0;
@@ -144,8 +147,20 @@ public class GenericOperationsImpl implements Operations {
     }
     
     public void init(String indexName, Config currentConfig) {
+    	init(null, indexName, currentConfig);
+    }
+    
+    public void init(String fgsUserName, String indexName, Config currentConfig) {
+    	this.fgsUserName = fgsUserName;
     	this.indexName = indexName;
         config = currentConfig;
+        if (null==this.fgsUserName || this.fgsUserName.length()==0) {
+        	try {
+				this.fgsUserName = config.getProperty("fedoragsearch.testUserName");
+			} catch (ConfigException e) {
+				this.fgsUserName = "fedoragsearch.testUserName";
+			}
+        }
     }
 
     public String gfindObjects(
@@ -169,7 +184,8 @@ public class GenericOperationsImpl implements Operations {
                     " indexName="+indexName+
                     " sortFields="+sortFields+
                     " resultPageXslt="+resultPageXslt);
-        params = new String[14];
+        srf = config.getSearchResultFiltering();
+        params = new String[18];
         params[0] = "OPERATION";
         params[1] = "gfindObjects";
         params[2] = "QUERY";
@@ -182,6 +198,10 @@ public class GenericOperationsImpl implements Operations {
         params[9] = indexName;
         params[10] = "SORTFIELDS";
         params[11] = sortFields;
+        params[14] = "FGSUSERNAME";
+        params[15] = fgsUserName;
+        params[16] = "SRFTYPE";
+        params[17] = config.getSearchResultFilteringType();
         return "";
     }
     
@@ -284,7 +304,7 @@ public class GenericOperationsImpl implements Operations {
         StringTokenizer st = new StringTokenizer(config.getIndexNames(indexNames));
         while (st.hasMoreTokens()) {
             String indexName = st.nextToken();
-            Operations ops = config.getOperationsImpl(indexName);
+            Operations ops = config.getOperationsImpl(fgsUserName, indexName);
             resultXml.append(ops.updateIndex(action, value, repositoryName, indexName, indexDocXslt, resultPageXslt));
         }
         resultXml.append("</resultPage>\n");
@@ -310,9 +330,9 @@ public class GenericOperationsImpl implements Operations {
         		config.getTrustStorePass(repositoryName) );
         
         String fedoraVersion = config.getFedoraVersion(repositoryName);
-        String format = Constants.FOXML1_0.uri;
+        String format = Constants.FOXML1_1.uri;
         if(fedoraVersion != null && fedoraVersion.startsWith("2.")) {
-            format = "foxml1.0";
+            format = Constants.FOXML1_0.uri;
         }
         try {
         	foxmlRecord = apim.export(pid, format, "public");

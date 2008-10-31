@@ -4,10 +4,15 @@
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
+    <property name="javac.debug"               value="on"/>
+    <property name="javac.deprecation"         value="on"/>
+    <property name="javac.maxwarns"            value="100"/>
+    <property name="javac.source"              value="1.5"/>
+    <property name="javac.target"              value="1.5"/>
 
     <loadproperties srcFile="lib/lib.properties" /> 
 
-    <property name="genericsearch.version" value="2.1.2"/>
+    <property name="genericsearch.version" value="2.2"/>
 
     <property name="build.basedir" location="../FgsBuild"/>
     <property name="compile.dir" location="bin"/>
@@ -17,9 +22,13 @@
 	<property name="project.dir" location="${build.basedir}/eclipseprojects/FedoraGenericSearch" />
 	<property name="tomcat.basename" value="tomcat" />
 	<property name="dist.dir" location="dist" />
+    <property name="lib.dir" location="lib"/>
 	<property name="app.name" value="fedoragsearch" />
 	<property name="war.name" value="${app.name}.war" />
 
+	<property name="junit.build.dir"		   location="${build.basedir}/junit"/>
+	<property name="junit.src.dir"             location="src/test/junit"/>
+	<!-- 
     <path id="compile.classpath">
       <pathelement path="${lib.axis}"/>
       <pathelement path="${lib.commons-httpclient}"/>
@@ -35,6 +44,47 @@
       <pathelement path="${lib.servlet-api}"/>
       <pathelement path="${lib.activemq-all}"/>
     </path>
+   -->
+    <path id="compile.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>                    
+    </path>
+
+	<path id="junit.classpath">
+		<path refid="compile.classpath"/>
+		<pathelement path="${junit.build.dir}"/>
+		<pathelement path="${compile.dir}"/>
+		<pathelement path="${build.basedir}/classes"/>
+	</path>
+	
+    <!-- MacroDefs -->
+    <macrodef name="md-compile">
+        <attribute name="classpathref" default="compile.classpath"/>
+        <attribute name="destdir"/>
+        <attribute name="excludes" default=""/>
+        <attribute name="fork" default="no"/>
+        <attribute name="includes" default=""/>
+        <attribute name="srcdir"/>
+        <attribute name="compilerargs" default=""/>
+        <!-- default="-Xlint -Xlint:-path -Xmaxwarns ${javac.maxwarns}" -->
+        <sequential>
+            <mkdir dir="@{destdir}"/>
+            <javac classpathref="@{classpathref}" 
+                   debug="${javac.debug}" 
+                   deprecation="${javac.deprecation}" 
+                   destdir="@{destdir}" 
+                   excludes="@{excludes}" 
+                   fork="@{fork}"
+                   includes="@{includes}"
+                   source="${javac.source}" 
+                   srcdir="@{srcdir}"
+                   target="${javac.target}"
+            	   encoding="UTF-8">
+            	<compilerarg line="@{compilerargs}"/>
+            </javac>
+        </sequential>
+    </macrodef>
 
     <target name="clean"
             description="removes build-generated artifacts">
@@ -142,6 +192,14 @@
         <ant dir="../FgsConfig" target="config" inheritAll="false"/>
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
         <copy file="${dist.dir}/${war.name}" todir="${env.FEDORA_HOME}/${tomcat.basename}/webapps"/>
+		<delete dir="${env.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
+		<mkdir dir="${env.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
+		<copy todir="${env.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies">
+			<fileset dir="${build.dir}/WEB-INF/classes/configDemoSearchResultFiltering/fgs-policies"/>
+		</copy>
+		<exec executable="sh" dir="${env.FEDORA_HOME}/server/bin/">
+            <arg line=" fedora-reload-policies.sh http fedoraAdmin fedoraAdmin"/>
+		</exec>
 	</target>
 
 	<target name="builddemo"
@@ -152,8 +210,8 @@
 	    <zip zipfile="${build.dir}/eclipseprojects.zip" basedir="${build.basedir}/eclipseprojects"/>
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
 		<exec executable="scp">
-        <arg line=" -p ${dist.dir}/${war.name} fedora2@defxws2006.cvt.dk:/home/fedora2/fedora-2.1/server/${tomcat.basename}/webapps"/>
-    </exec>
+            <arg line=" -p ${dist.dir}/${war.name} fedora2@defxws2006.cvt.dk:/home/fedora2/fedora-2.1/server/${tomcat.basename}/webapps"/>
+        </exec>
 
 	</target>
 	
@@ -162,5 +220,74 @@
         <ant dir="../FgsSolr2" inheritAll="false"/>
         <ant dir="../FgsZebra" inheritAll="false"/>
     </target>
+	
+	<target name="compile-junit" depends="compile">
+		<md-compile srcdir="${junit.src.dir}"
+					destdir="${junit.build.dir}"
+					classpathref="junit.classpath"/>
+        <copy todir="${junit.build.dir}" file="${junit.src.dir}/log4j.xml"/>
+	</target>
+	
+	<target name="junit-all" depends="junit-set-all, junit">
+	</target>
+	
+	<target name="junit-set-all">
+		<property name="test" value="gsearch.test.AllTests"/>
+	</target>
+	
+	<target name="junit-lucene" depends="junit-set-lucene, junit">
+	</target>
+	
+	<target name="junit-set-lucene">
+		<property name="test" value="gsearch.test.lucene.AllTests"/>
+	</target>
+	
+	<target name="junit-solr" depends="junit-set-solr, junit">
+	</target>
+	
+	<target name="junit-set-solr">
+		<property name="test" value="gsearch.test.solr.AllTests"/>
+	</target>
+	
+	<target name="junit-testsonlucene" depends="junit-set-testsonlucene, junit">
+	</target>
+	
+	<target name="junit-set-testsonlucene">
+		<property name="test" value="gsearch.test.testsonlucene.AllTests"/>
+	</target>
+	
+	<target name="junit-searchresultfiltering" depends="junit-set-searchresultfiltering, junit">
+	</target>
+	
+	<target name="junit-set-searchresultfiltering">
+		<property name="test" value="gsearch.test.searchresultfiltering.AllTests"/>
+	</target>
+	
+	<target name="junit" depends="compile-junit">
+		<property name="fedoragsearch.protocol" value="http"/>
+		<property name="fedoragsearch.hostport" value="localhost:8080"/>
+		<property name="fedoragsearch.path" value="fedoragsearch/rest"/>
+		<property name="fedoragsearch.user" value="fedoraAdmin"/>
+		<property name="fedoragsearch.pass" value="fedoraAdmin"/>
+		
+		<copy todir="${junit.build.dir}" includeEmptyDirs="false">
+	        <fileset dir="${junit.src.dir}">
+                <exclude name="**/*.java"/>
+	        </fileset>
+        </copy>
+		
+		<junit printsummary="yes" fork="yes" haltonfailure="no" showoutput="yes">
+			<syspropertyset id="junit.sysproperties">
+				<propertyref name="fedoragsearch.protocol"/>
+				<propertyref name="fedoragsearch.hostport"/>
+				<propertyref name="fedoragsearch.path"/>
+				<propertyref name="fedoragsearch.user"/>
+				<propertyref name="fedoragsearch.pass"/>
+			</syspropertyset>
+			<classpath refid="junit.classpath"/>
+			<formatter type="plain" usefile="false"/>
+			<test name="${test}"/>
+		</junit>
+	</target>
     	
 </project>

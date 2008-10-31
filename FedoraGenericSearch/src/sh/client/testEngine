@@ -77,24 +77,58 @@ run_test(){
     fi;
 }
 
-run_test_error(){
+run_test_ok(){
     TESTCOUNT=`expr $TESTCOUNT "+" 1`
-    EXPECTED_ERRORMESSAGE=$1
+    EXPECTED_OK_PATTERN=$1
     if [ "$MODE" = "expected" -o "$MODE" = "verbose" ] ; then
-    	echo "<`get_timestamp`>run_test_error() #$TESTCOUNT $CLIENT \"$EXPECTED_ERRORMESSAGE\" $2 $3 $4 $5 $6 $7 $8 \"$9\" "
+    	echo "<`get_timestamp`>run_test_ok() #$TESTCOUNT $CLIENT $EXPECTED_OK_PATTERN $2 $3 $4 $5 $6 $7 $8 $9 "
     fi;
     FILENAME=$CLIENT.$TESTCOUNT
     if [ "$MODE" = "expected" ] ; then
         sh $CLIENT $HOSTPORT "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/expected/$SUITE/$FILENAME
     else
         sh $CLIENT $HOSTPORT "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/result/$SUITE/$FILENAME 2>&1
-    	ERRORLINE=`grep "$EXPECTED_ERRORMESSAGE" "$TESTHOME/result/$SUITE/$FILENAME"`
+    	OKLINE=`egrep "$EXPECTED_OK_PATTERN" "$TESTHOME/result/$SUITE/$FILENAME"`
+        if [ -z "$OKLINE" ] ; then 
+        		echo " "
+                DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
+                echo "!!! DIFF#$DIFFCOUNT >>>"
+    	        echo "<`get_timestamp`>run_test_ok() #$TESTCOUNT $CLIENT $EXPECTED_OK_PATTERN $2 $3 $4 $5 $6 $7 $8 $9 "
+                echo "EXPECTED_OK_PATTERN=$EXPECTED_OK_PATTERN not found in result in $TESTHOME/result/$SUITE/$FILENAME"
+                echo "EXPECTED_OK_PATTERN=$EXPECTED_OK_PATTERN not found in result=" > $TESTHOME/diff/$SUITE/$FILENAME
+                cat $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
+                echo "!!! DIFF#$DIFFCOUNT <<<"
+        		echo " "
+        else
+    		if [ "$MODE" = "verbose" ] ; then
+        		echo " "
+    			echo "OKLINE=$OKLINE"
+        		echo " "
+        	fi;
+        fi;
+    fi;
+}
+
+run_test_error(){
+    TESTCOUNT=`expr $TESTCOUNT "+" 1`
+    EXPECTED_ERROR_PATTERN=$1
+    if [ "$MODE" = "expected" -o "$MODE" = "verbose" ] ; then
+    	echo "<`get_timestamp`>run_test_error() #$TESTCOUNT $CLIENT $EXPECTED_ERROR_PATTERN $2 $3 $4 $5 $6 $7 $8 $9 "
+    fi;
+    FILENAME=$CLIENT.$TESTCOUNT
+    if [ "$MODE" = "expected" ] ; then
+        sh $CLIENT $HOSTPORT "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/expected/$SUITE/$FILENAME
+    else
+        sh $CLIENT $HOSTPORT "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" > $TESTHOME/result/$SUITE/$FILENAME 2>&1
+    	ERRORLINE=`grep "$EXPECTED_ERROR_PATTERN" "$TESTHOME/result/$SUITE/$FILENAME"`
         if [ -z "$ERRORLINE" ] ; then 
         		echo " "
                 DIFFCOUNT=`expr $DIFFCOUNT "+" 1`
                 echo "!!! DIFF#$DIFFCOUNT >>>"
-                echo "EXPECTED_ERRORMESSAGE=\"$EXPECTED_ERRORMESSAGE\" not found in result=" > $TESTHOME/diff/$SUITE/$FILENAME
-                cat $TESTHOME/result/$SUITE/$FILENAME
+    	        echo "<`get_timestamp`>run_test_error() #$TESTCOUNT $CLIENT $EXPECTED_OK_PATTERN $2 $3 $4 $5 $6 $7 $8 $9 "
+                echo "EXPECTED_ERROR_PATTERN=$EXPECTED_ERROR_PATTERN not found in result in $TESTHOME/result/$SUITE/$FILENAME"
+                echo "EXPECTED_ERROR_PATTERN=$EXPECTED_ERROR_PATTERN not found in result=" > $TESTHOME/diff/$SUITE/$FILENAME
+                cat $TESTHOME/result/$SUITE/$FILENAME > $TESTHOME/diff/$SUITE/$FILENAME
                 echo "!!! DIFF#$DIFFCOUNT <<<"
         		echo " "
         else
@@ -112,6 +146,31 @@ begin_suite(){
     TESTCOUNT=0
     DIFFCOUNT=0
     echo "<`get_timestamp`>begin_suite $1 \"$2"\"
+}
+
+user_pass(){
+    if [ ! -z "$1" ] ; then 
+        fgsUserName=$1
+        fgsPassword=$2
+        if [ -z "$fgsPassword" ] ; then 
+            fgsPassword=$fgsUserName
+        fi;
+    else
+        if [ -z "$fgsUserName" ] ; then 
+            echo -n "GSearch user name: "
+            read fgsUserName
+            echo -n "Password: "
+            stty -echo
+            read fgsPassword
+            stty echo
+            if [ -z "$fgsPassword" ] ; then 
+                fgsPassword=$fgsUserName
+            fi;
+            echo ""
+        fi;
+    fi;
+    export fgsUserName
+    export fgsPassword
 }
 
 end_suite(){

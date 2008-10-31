@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-              FedoraGSearch Version 2.1
+              FedoraGSearch Version 2.2
 -------------------------------------------------------------------
 
  * License and Copyright: FedoraGSearch is subject to the same open source 
@@ -40,7 +40,15 @@ installation, configuration and additional architectural information.
  
 The same information is available in the source download from sourceforge.net
 at src/html/search-service.html, and after installation at
-http://localhost:8080/fedoragsearch/index.html .
+http://localhost:8080/fedoragsearch .
+
+The new features in Version 2.2:
+
+- Fedora 3.1 compatibility
+- Lucene 2.4.0 compatibility
+- Solr 1.3.0 compatibility
+- Search result filtering by access constraints, as defined by XACML policies,
+  in order to show only those search hits that the user is actually permitted to read.
 
 The new features in Version 2.1:
 

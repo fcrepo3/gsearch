@@ -15,6 +15,7 @@ import java.io.StringWriter;
 
 import java.util.Date;
 
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -90,12 +91,12 @@ public class GTransformer {
         }
     }
 
-    public StringBuffer transform(String xsltName, StreamSource sourceStream, Object[] params) 
+    public StringBuffer transform(String xsltName, Source sourceStream, Object[] params) 
     throws GenericSearchException {
         return transform (xsltName, sourceStream, null, params);
     }
 
-    public StringBuffer transform(String xsltName, StreamSource sourceStream, URIResolver uriResolver, Object[] params) 
+    public StringBuffer transform(String xsltName, Source sourceStream, URIResolver uriResolver, Object[] params) 
     throws GenericSearchException {
         if (logger.isDebugEnabled())
             logger.debug("xsltName="+xsltName);

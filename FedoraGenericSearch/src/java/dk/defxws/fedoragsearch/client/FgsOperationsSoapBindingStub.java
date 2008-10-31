@@ -140,11 +140,11 @@ public class FgsOperationsSoapBindingStub extends org.apache.axis.client.Stub im
             if (super.maintainSessionSet) {
                 _call.setMaintainSession(super.maintainSession);
             }
-            if (super.cachedUsername != null) {
-                _call.setUsername(super.cachedUsername);
+            if (System.getProperty("fedoragsearch.fgsUserName") != null) {
+                _call.setUsername(System.getProperty("fedoragsearch.fgsUserName"));
             }
-            if (super.cachedPassword != null) {
-                _call.setPassword(super.cachedPassword);
+            if (System.getProperty("fedoragsearch.fgsPassword") != null) {
+                _call.setPassword(System.getProperty("fedoragsearch.fgsPassword"));
             }
             if (super.cachedEndpoint != null) {
                 _call.setTargetEndpointAddress(super.cachedEndpoint);

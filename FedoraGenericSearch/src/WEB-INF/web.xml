@@ -63,6 +63,50 @@
         <servlet-class>dk.defxws.fedoragsearch.server.UpdateListener</servlet-class>
         <load-on-startup>101</load-on-startup>
     </servlet>
+    <filter>
+      <filter-name>SetupFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.FilterSetup</filter-class>
+    </filter>
+    <filter>
+      <filter-name>XmlUserfileFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.xmluserfile.FilterXmlUserfile</filter-class>
+    </filter>
+    <filter>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.FilterEnforceAuthn</filter-class>
+    </filter>
+    <filter>
+      <filter-name>FinalizeFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.FilterFinalize</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>SetupFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>XmlUserfileFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <servlet-name>AxisServlet</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <servlet-name>GenericSearchREST</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <url-pattern>/index.html</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <url-pattern>/rest</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>FinalizeFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
 	<welcome-file-list id="WelcomeFileList_1">
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

@@ -47,7 +47,7 @@ public class OperationsServiceLocator extends org.apache.axis.client.Service imp
             endpoint = new java.net.URL(FgsOperations_address);
         }
         catch (java.net.MalformedURLException e) {
-            throw new javax.xml.rpc.ServiceException(e);
+            throw new javax.xml.rpc.ServiceException("FgsOperations_address="+FgsOperations_address, e);
         }
         return getFgsOperations(endpoint);
     }

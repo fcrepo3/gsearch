@@ -26,8 +26,8 @@
 			<div id="header">
 				<a href="" id="logo"></a>
 				<div id="title">
-				<h1>Fedora Generic Search Service Version 2.1.1 (August 2008)</h1>
-				<h2>For Fedora Version 3.0</h2>
+				<h1>Fedora Generic Search Service Version 2.2 (November 2008)</h1>
+				<h2>For Fedora Version 3.1</h2>
 				</div>
 			</div>
 			<div class="toc">
@@ -128,6 +128,18 @@
 				<a href="#additional">Additional Information</a></p>
 
 			</div>
+			<a name="new22"><h2>New Features in Version 2.2</h2></a>
+				<ul>
+					<li>Fedora 3.1 compatibility</li>
+					<li>Lucene 2.4.0 compatibility</li>
+					<li>Solr 1.3.0 compatibility</li>
+
+					<li>Search result filtering by access constraints, as defined by XACML policies,
+					in order to show only those search hits that the user is actually permitted to read.
+					<a href="#searchresfilt">Read more ...</a>.
+					</li>
+				</ul>
+
             <a name="new211"><h2>New Features in Version 2.1.1</h2></a>
 				<ul>
 					<li>Fedora 3.0 compatibility</li>
@@ -375,6 +387,7 @@
 				<dt><a href="#engines">Search Engine Plugins</a></dt>
 				<dt><a href="#arch">Architectural Snapshots</a></dt>
 				<dt><a href="#multilingual">Multilingual Configuration</a></dt>
+				<dt><a href="#searchresfilt">Search Result Filtering</a></dt>
 				</dl>
 			</div>
 			<a name="engines"><h3>Search Engine Plugins</h3></a>
@@ -481,6 +494,37 @@
 				Now I can search special Spanish characters like &quot;&ntilde;&quot;,
 				&quot;&iacute;&quot; etc. with fedoragsearch.
 				Luis</q>
+
+			<a name="searchresfilt"><h3>Search Result Filtering</h3></a>
+				<p>Search result filtering by access constraints, as defined by XACML policies,
+				will show only those search hits that the user is actually permitted to read.
+				Three solutions have been investigated and demonstrated 
+				and <a href="http://dorsdl2.cvt.dk/dorsdl2-10-pedersen.ppt">presented here</a>.
+				Besides, the demonstration is included with the GSearch distribution
+				in .../WEB-INF/classes/configDemoSearchResultFiltering/ . 
+				In brief, the three solutions are:
+				<ul>
+					<li><b>Post-search filtering</b>, which requires a request to the XACML mechanism for each hit, 
+					and the total number of permitted hits is only known at the end, 
+					a costly procedure especially when few hits are permitted out of a large number.
+					</li>
+					<li><b>In-search filtering</b>, which requires additional index fields and query rewriting, 
+					that is, a logical partitioning of the index.
+					</li>
+					<li><b>Pre-search filtering</b>, which requires a physical partitioning of the index 
+					and selection of the pertinent index at query time. 
+					</li>
+				</ul>
+				Both in-search and pre-search filtering face the challenge 
+				of exact correspondence between the filtering mechanism and the XACML policies.
+				</p>
+				<p>For your own purpose, in fedoragsearch.properties, you have to select 
+				the preferred searchResultFilteringType and set the searchResultFilteringModule
+				to a class that you have to program, as a subclass of the demo class
+				dk.defxws.fedoragsearch.server.SearchResultFilteringDemoImpl 
+				or as an implementation of the interface
+				dk.defxws.fedoragsearch.server.SearchResultFiltering .
+				</p>
   <div id="footer">
     <div id="copyright">
       Copyright &#xA9; 2006-2007-2008 Technical University of Denmark, Fedora Project
