@@ -1228,8 +1228,8 @@ public class Config {
                 throw new ConfigException("property " + propertyName + " not found");
         	}
         }
-        if (logger.isDebugEnabled())
-            logger.info("property " + propertyName + "=" + propertyValue);
+//        if (logger.isDebugEnabled())
+//            logger.debug("getProperty " + propertyName + "=" + propertyValue);
     	return propertyValue;
     }
     

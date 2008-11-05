@@ -18,9 +18,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {
-	gsearch.test.zebra.TestConfig.class,
-	gsearch.test.common.TestREST.class,
-	gsearch.test.common.TestSOAP.class
+	gsearch.test.zebra.TestConfigDemoOnZebra.class
 	} )
 public class AllTests {
 
@@ -28,9 +26,7 @@ public class AllTests {
     public static junit.framework.Test suite() throws Exception {
         junit.framework.TestSuite suite =
                 new junit.framework.TestSuite(AllTests.class.getName());
-        suite.addTest(gsearch.test.zebra.TestConfig.suite());
-        suite.addTest(gsearch.test.common.TestREST.suite());
-        suite.addTest(gsearch.test.common.TestSOAP.suite()); 
+        suite.addTest(gsearch.test.zebra.TestConfigDemoOnZebra.suite());
         return suite;
     }
 }

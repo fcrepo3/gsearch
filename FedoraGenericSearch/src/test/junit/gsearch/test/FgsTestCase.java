@@ -147,6 +147,6 @@ public abstract class FgsTestCase
     
     protected void delay(int ms) {
     	long ctm = System.currentTimeMillis();
-    	while (ctm+5000 > System.currentTimeMillis());
+    	while (ctm+ms > System.currentTimeMillis());
     }
 }

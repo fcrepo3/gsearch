@@ -30,9 +30,26 @@ public class TestUpdates
     }
 
     @Test
+    public void testUpdateIndexDocCount() throws Exception {
+  	    StringBuffer result = doOp("?operation=updateIndex&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("25", "/resultPage/updateIndex/@docCount", result.toString());
+    }
+
+    @Test
+    public void testUpdateIndexDeletePid() throws Exception {
+  	    StringBuffer result = doOp("?operation=updateIndex&action=deletePid&value=demo:10&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/updateIndex/@deleteTotal", result.toString());
+    }
+
+    @Test
+    public void testUpdateIndexInsertPid() throws Exception {
+  	    StringBuffer result = doOp("?operation=updateIndex&action=fromPid&value=demo:10&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/updateIndex/@insertTotal", result.toString());
+    }
+
+    @Test
     public void testUpdateIndexFromPid() throws Exception {
   	    StringBuffer result = doOp("?operation=updateIndex&action=fromPid&value=demo:10&restXslt=copyXml");
-        System.out.println("result="+result.toString());
   	    assertXpathEvaluatesTo("1", "/resultPage/updateIndex/@updateTotal", result.toString());
     }
 
@@ -45,13 +62,11 @@ public class TestUpdates
     @Test
     public void testUpdateIndexFromPidWithParam() throws Exception {
   	    StringBuffer result = doOp("?operation=updateIndex&action=fromPid&value=demo:10&indexDocXslt=testFoxmlToLuceneWithExplicitParams(EXPLICITPARAM1=explicitvalue1,EXPLICITPARAM2=explicitvalue2)&restXslt=copyXml");
-        System.out.println("result="+result.toString());
   	    assertXpathEvaluatesTo("1", "/resultPage/updateIndex/@updateTotal", result.toString());
     }
 
     @Test
     public void testExplicitParamFound() throws Exception {
-  	    delay(5000);
   	    StringBuffer result = doOp("?operation=gfindObjects&query=EXPLICITPARAM1:explicitvalue1+and+EXPLICITPARAM2:explicitvalue2&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
@@ -70,31 +85,36 @@ public class TestUpdates
   	    delay(5000);
   	    StringBuffer result = doOp("?operation=gfindObjects&query=fgs.label:labelmodifiedforindextest&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
-  	    delay(5000);
     	apim.modifyObject("demo:11", null, "labelremodifiedforindextest", "fedoraAdmin", "test label modify");
     }
 
-    @Test
-    public void testFedoraObjectStateModifyPre() throws Exception {
-  	    StringBuffer result = doOp("?operation=updateIndex&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("25", "/resultPage/updateIndex/@docCount", result.toString());
-    }
-
-    @Test
-    public void testFedoraObjectStateModify() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
-    	FedoraAPIM apim = fedoraClient.getAPIM();
-    	apim.modifyObject("demo:21", "I", null, "fedoraAdmin", "test state modify");
-  	    delay(5000);
-  	    StringBuffer result = doOp("?operation=updateIndex&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("24", "/resultPage/updateIndex/@docCount", result.toString());
-    	apim.modifyObject("demo:21", "A", null, "fedoraAdmin", "test state modify");
-    }
-
-    @Test
-    public void testFedoraObjectStateModifyPost() throws Exception {
-  	    delay(5000);
-  	    StringBuffer result = doOp("?operation=updateIndex&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("25", "/resultPage/updateIndex/@docCount", result.toString());
-    }
+// The next three tests are commented, because it is not clear how to treat the object states.
+// Applications may decide in the indexing stylesheet.
+    
+//    @Test
+//    public void testFedoraObjectStateModifyPre() throws Exception {
+//  	    delay(5000);
+//  	    StringBuffer result = doOp("?operation=updateIndex&restXslt=copyXml");
+//  	    assertXpathEvaluatesTo("25", "/resultPage/updateIndex/@docCount", result.toString());
+//    }
+//
+//    @Test
+//    public void testFedoraObjectStateDelete() throws Exception {
+//    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+//    	FedoraAPIM apim = fedoraClient.getAPIM();
+//    	apim.modifyObject("demo:21", "D", null, "fedoraAdmin", "test state delete");
+//  	    delay(10000);
+//  	    StringBuffer result = doOp("?operation=updateIndex&restXslt=copyXml");
+//  	    assertXpathEvaluatesTo("24", "/resultPage/updateIndex/@docCount", result.toString());
+//    }
+//
+//    @Test
+//    public void testFedoraObjectStateActivate() throws Exception {
+//    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+//    	FedoraAPIM apim = fedoraClient.getAPIM();
+//    	apim.modifyObject("demo:21", "A", null, "fedoraAdmin", "test state activate");
+//  	    delay(10000);
+//  	    StringBuffer result = doOp("?operation=updateIndex&restXslt=copyXml");
+//  	    assertXpathEvaluatesTo("25", "/resultPage/updateIndex/@docCount", result.toString());
+//    }
 }

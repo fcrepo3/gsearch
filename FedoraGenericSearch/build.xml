@@ -249,6 +249,13 @@
 		<property name="test" value="gsearch.test.solr.AllTests"/>
 	</target>
 	
+	<target name="junit-zebra" depends="junit-set-zebra, junit">
+	</target>
+	
+	<target name="junit-set-zebra">
+		<property name="test" value="gsearch.test.zebra.AllTests"/>
+	</target>
+	
 	<target name="junit-testsonlucene" depends="junit-set-testsonlucene, junit">
 	</target>
 	
