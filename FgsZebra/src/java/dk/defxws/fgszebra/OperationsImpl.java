@@ -97,7 +97,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 	throws java.rmi.RemoteException {
 		super.getIndexInfo(indexName, resultPageXslt);
 		InputStream infoStream =  null;
-		String indexInfoPath = "/config/index/"+config.getIndexName(indexName)+"/indexInfo.xml";
+        String indexInfoPath = "/"+config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/indexInfo.xml";
 		try {
 			infoStream =  OperationsImpl.class.getResourceAsStream(indexInfoPath);
 			if (infoStream == null) {
@@ -224,21 +224,44 @@ public class OperationsImpl extends GenericOperationsImpl {
 	{
 		if (file.isHidden()) return;
 		if (file.isDirectory())
-		{
-			String[] files = file.list();
-			for (int i = 0; i < files.length; i++)
-				indexDocs(new File(file, files[i]), repositoryName, indexName, resultXml, indexDocXslt);
-		}
+        {
+            String[] files = file.list();
+            for (int i = 0; i < files.length; i++) {
+                if (i % 100 == 0)
+                    logger.info("updateIndex fromFoxmlFiles "+file.getAbsolutePath()
+//                    		+" indexDirSpace="+indexDirSpace(new File(config.getIndexDir(indexName)))
+                    		+" docCount="+docCount);
+                indexDocs(new File(file, files[i]), repositoryName, indexName, resultXml, indexDocXslt);
+            }
+        }
+//		{
+//			String[] files = file.list();
+//			for (int i = 0; i < files.length; i++)
+//				indexDocs(new File(file, files[i]), repositoryName, indexName, resultXml, indexDocXslt);
+//		}
 		else
-		{
-			try {
-				indexDoc(file.getName(), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
-			} catch (RemoteException e) {
-				throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
-			} catch (FileNotFoundException e) {
-				throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
-			}
-		}
+        {
+            try {
+                indexDoc(file.getName(), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
+            } catch (RemoteException e) {
+                resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
+                logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
+//                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+            } catch (FileNotFoundException e) {
+              resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
+              logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
+//                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+            }
+        }
+//		{
+//			try {
+//				indexDoc(file.getName(), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
+//			} catch (RemoteException e) {
+//				throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+//			} catch (FileNotFoundException e) {
+//				throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+//			}
+//		}
 	}
 
 	private void fromPid(

@@ -104,7 +104,7 @@ public class Statement {
 		ResultSet rs = null;
 		URL url = null;
 		String st = startTerm;
-		if (st==null || st.trim().equals("")) st = "!";
+		if (st==null || st.trim().equals("")) st = "0";
 		try {
 			url =
 				new URL(
