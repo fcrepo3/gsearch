@@ -19,6 +19,7 @@
 		<pathelement path="${fedora.home}/server/logs"/>
 	</path>
 	<pathconvert targetos="unix" property="log.path" refid="logs.path"/>
+	<property name="fedora.version" value="3.1" />
 	<!-- The three soap properties are used for the deployment of the deploy.wsdd file for soap access -->
 	<property name="soap.deploy.hostport" value="localhost:8080" />
 	<property name="soap.deploy.user" value="fedoraAdmin" />
@@ -93,7 +94,7 @@
 		<property name="basic.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="basic.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="basic.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
-		<property name="basic.repos.1.fedoraversion" value="3.0" />
+		<property name="basic.repos.1.fedoraversion" value="{fedora.version}" />
 		<property name="basic.repos.names" value="${basic.repos.1}" />
 		
 		<replace file="${basic.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -148,7 +149,7 @@
 		<property name="srf.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="srf.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="srf.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
-		<property name="srf.repos.1.fedoraversion" value="3.0" />
+		<property name="srf.repos.1.fedoraversion" value="{fedora.version}" />
 		<property name="srf.repos.names" value="${srf.repos.1}" />
 		
 		<replace file="${srf.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -207,7 +208,7 @@
 		<property name="lucene.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="lucene.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="lucene.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
-		<property name="lucene.repos.1.fedoraversion" value="3.0" />
+		<property name="lucene.repos.1.fedoraversion" value="{fedora.version}" />
 		<property name="lucene.repos.names" value="${lucene.repos.1}" />
 		
 		<replace file="${lucene.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -258,7 +259,7 @@
 		<property name="test.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="test.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="test.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
-		<property name="test.repos.1.fedoraversion" value="3.0" />
+		<property name="test.repos.1.fedoraversion" value="{fedora.version}" />
 		<property name="test.repos.names" value="${test.repos.1}" />
 		
 		<replace file="${test.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -311,7 +312,7 @@
 		<property name="solr.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="solr.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="solr.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
-		<property name="solr.repos.1.fedoraversion" value="3.0" />
+		<property name="solr.repos.1.fedoraversion" value="{fedora.version}" />
 		<property name="solr.repos.names" value="${solr.repos.1}" />
 		
 		<replace file="${solr.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>
@@ -356,7 +357,7 @@
 		<property name="zebra.config.prefix" value="demo" />
 		<property name="zebra.mimetypes" value="text/plain text/xml text/html application/pdf" />
 		<property name="zebra.index.1" value="DemoOnZebra" />
-		<property name="zebra.index.1.indexbase" value="http://localhost:8983/zebra" />
+		<property name="zebra.index.1.indexbase" value="http://localhost:9999/" />
 		<property name="zebra.index.1.indexdir" value="${fedora.home}/gsearch/${zebra.index.1}" />
 		<property name="zebra.index.names" value="${zebra.index.1}" />
 		<property name="zebra.repos.1" value="DemoAtDtu" />
@@ -364,7 +365,7 @@
 		<property name="zebra.repos.1.fedorauser" value="fedoraAdmin" />
 		<property name="zebra.repos.1.fedorapass" value="fedoraAdmin" />
 		<property name="zebra.repos.1.fedoraobjectdir" value="${fedora.home}/data/objects" />
-		<property name="zebra.repos.1.fedoraversion" value="3.0" />
+		<property name="zebra.repos.1.fedoraversion" value="{fedora.version}" />
 		<property name="zebra.repos.names" value="${zebra.repos.1}" />
 		
 		<replace file="${zebra.config.path}/fedoragsearch.properties" token="SOAPHOSTPORT" value="${soap.deploy.hostport}"/>

@@ -37,7 +37,7 @@
 	<xsl:template match="/">
 		<!-- The following allows only active demo FedoraObjects to be indexed. -->
 		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
-			<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='http://www.w3.org/1999/02/22-rdf-syntax-ns#type' and @VALUE='FedoraObject']">
+			<xsl:if test="not(foxml:digitalObject/foxml:datastream[@ID='METHODMAP'] or foxml:digitalObject/foxml:datastream[@ID='DS-COMPOSITE-MODEL'])">
 				<xsl:if test="starts-with($PID,'demo')">
 		<IndexDocument> 
 		    <!-- The PID attribute is mandatory for indexing to work -->
@@ -85,9 +85,11 @@
 			     can be handled, the text becomes the value of the IndexField. -->
 			     
 			<!-- uncomment it, if you wish, it takes time, even if the foxml has no DS2. -->
+			<!--
 			<IndexField IFname="fgs:DS2" dsId="DS2">
 				<xsl:value-of select="exts:getDatastreamText($OPERATIONSIMPL, $PID, $REPOSITORYNAME, 'DS2')"/>
 			</IndexField>
+			-->
 
 			
 			<!-- when dsMimetypes is present, then the datastream is fetched

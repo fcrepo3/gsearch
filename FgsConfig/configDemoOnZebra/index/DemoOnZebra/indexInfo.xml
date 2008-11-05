@@ -2,9 +2,9 @@
 <resultPage indexName="DemoOnZebra">
  <indexInfo>
   <Url>http://www.indexdata.dk/zebra/</Url>
-  <ShortName>Zebra</ShortName>
-  <LongName>Zebra high-performance, general-purpose structured text 
-  indexing and retrieval engine</LongName>
+  <IndexShortName>Zebra</IndexShortName>
+  <IndexLongName>Zebra high-performance, general-purpose structured text 
+  indexing and retrieval engine</IndexLongName>
   <Description>Zebra is a high-performance, general-purpose structured 
   text indexing and retrieval engine. 
   It reads structured records in a variety of input formats 

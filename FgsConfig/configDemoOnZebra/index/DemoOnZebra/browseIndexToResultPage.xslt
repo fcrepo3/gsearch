@@ -7,7 +7,7 @@
 	xmlns:dc="http://purl.org/dc/elements/1.1/">
 
 	<!-- This xslt stylesheet generates the resultPage
-		from a Lucene browseIndex.
+		from a Zebra browseIndex.
 	-->
 
 	<xsl:output method="xml" indent="yes" encoding="UTF-8" />

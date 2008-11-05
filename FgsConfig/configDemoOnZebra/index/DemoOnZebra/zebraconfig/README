@@ -17,6 +17,7 @@ Files you must/may configure:
       for zebrasrv start by yazserver.xml.
     You do not need to change this default configuration. 
     See the Zebra documentation for options.
+    Specified directories must exist and be write-permitted.
 
 2 db/yazserver.xml:
 

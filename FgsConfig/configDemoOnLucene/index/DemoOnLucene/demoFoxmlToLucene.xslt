@@ -154,7 +154,9 @@
 			     
 			<!-- comment it, if you wish, it takes time, even if the foxml has no RIGHTS1 datastream.
 			-->
-			<xsl:call-template name="example-of-xml-not-inline"/>
+			<xsl:if test="$PID='demo:10' or $PID='demo:11'">
+				<xsl:call-template name="example-of-xml-not-inline"/>
+			</xsl:if>
 
 			<!-- This is an example of calling an extension function, see Apache Xalan, may be used for filters.
 			<IndexField IFname="fgs.DS" index="TOKENIZED" store="YES" termVector="NO">
