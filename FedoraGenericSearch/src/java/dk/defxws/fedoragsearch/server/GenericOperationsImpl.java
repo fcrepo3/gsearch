@@ -332,7 +332,7 @@ public class GenericOperationsImpl implements Operations {
         String fedoraVersion = config.getFedoraVersion(repositoryName);
         String format = Constants.FOXML1_1.uri;
         if(fedoraVersion != null && fedoraVersion.startsWith("2.")) {
-            format = Constants.FOXML1_0.uri;
+            format = Constants.FOXML1_0_LEGACY;
         }
         try {
         	foxmlRecord = apim.export(pid, format, "public");
