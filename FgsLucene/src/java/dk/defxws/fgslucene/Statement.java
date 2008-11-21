@@ -28,7 +28,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-//import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -45,7 +44,6 @@ import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-//import fedora.server.utilities.StreamUtility;
 import fedora.server.utilities.StreamUtility;
 
 /**
@@ -202,14 +200,14 @@ public class Statement {
     	}
     	throw new GenericSearchException(message);
     }
-  
-//sortFields      ::= [sortField[';'sortField]*]
-//sortField       ::= sortFieldName[','(sortType | locale | comparatorClass)[','reverse]]]]
-//sortFieldName   ::= #the name of an index field, which is UN_TOKENIZED and contains a single term per document
-//sortType        ::= 'AUTO' (default) | 'DOC' | 'SCORE' | 'INT' | 'FLOAT' | 'STRING'
-//locale          ::= language['-'country['-'variant]]
-//comparatorClass ::= package-path'.'className['('param['-'param]*')']
-//reverse         ::= 'false' (default) | 'true' | 'reverse'
+
+//  sortFields      ::= [sortField[';'sortField]*]
+//  sortField       ::= sortFieldName[','(sortType | locale | comparatorClass)[','reverse]]]]
+//  sortFieldName   ::= #the name of an index field, which is UN_TOKENIZED and contains a single term per document
+//  sortType        ::= 'AUTO' (default) | 'DOC' | 'SCORE' | 'INT' | 'FLOAT' | 'STRING'
+//  locale          ::= language['-'country['-'variant]]
+//  comparatorClass ::= package-path'.'className['('param['-'param]*')']
+//  reverse         ::= 'false' (default) | 'true' | 'reverse'
     private TopDocs getHits(Query query, int numHits, String sortFields) throws GenericSearchException {
     	TopDocs hits = null;
     	IndexReader ireader = searcher.getIndexReader();
