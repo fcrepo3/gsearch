@@ -231,8 +231,10 @@
 				</ul>
 				<p>The SOAP service operations are deployed with the .war file, and
 				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
-
-
+				<p>The choice of search engine is made with the fgsindex.operationsImpl property 
+				in your index.properties file. If you choose Solr or Zebra, 
+				you have to install and start the respective server, 
+				see <a href="#engines">Search Engine Plugins</a>.</p>
 
 			<a name="config"><h2>Configuring the Service</h2></a>
 				<ul>
@@ -242,7 +244,9 @@
 						(where &lt;WEBAPPNAME&gt; by default is 'fedoragsearch'):
 						<pre>
 	o Set the property values for your environment.
-	o Select the default config in configDefault.
+	o Select the default config in configDefault. Each example config in the distribution
+	has its choice of search server plugin in the fgsindex.operationsImpl property
+	in the index.properties file.
 	o Save this edited file outside of the web server.
 	o Run target configOnWebServer after deployment from command line:
 
@@ -250,6 +254,13 @@
   </pre>
   This will set your values into fedoragsearch.properties, repository.properties,
   and index.properties. Read these files to make sure they are correct.
+                    <li>
+						The default webapp configuration in
+						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/web.xml
+						does not enforce authorization.
+						If you want to enforce authorization, 
+						then copy the file web_withAuthN.xml onto web.xml.
+					</li>
                     <li>
 						Then you may restart &lt;WEBAPPNAME&gt; and call http://&lt;HOSTPORT&gt;/&lt;WEBAPPNAME&gt;/rest in order to index and search.
 						The name &quot;rest&quot; may be reconfigured in
