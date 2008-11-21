@@ -565,64 +565,6 @@ public class OperationsImpl extends GenericOperationsImpl {
       }
     }
 
-//    /**
-//     * Reads data from the data reader and posts it to solr,
-//     * writes the response to output
-//     */
-//    public void postData(String solrUrlString, Reader data, Writer output)
-//    throws GenericSearchException {
-//
-//      URL solrUrl = null;
-//	try {
-//		solrUrl = new URL(solrUrlString);
-//	} catch (MalformedURLException e) {
-//        throw new GenericSearchException("solrUrl="+solrUrlString+": ", e);
-//	}
-//      HttpURLConnection urlc = null;
-//      String POST_ENCODING = "UTF-8";
-//      try {
-//        urlc = (HttpURLConnection) solrUrl.openConnection();
-//        try {
-//          urlc.setRequestMethod("POST");
-//        } catch (ProtocolException e) {
-//          throw new GenericSearchException("Shouldn't happen: HttpURLConnection doesn't support POST??", e);
-//        }
-//        urlc.setDoOutput(true);
-//        urlc.setDoInput(true);
-//        urlc.setUseCaches(false);
-//        urlc.setAllowUserInteraction(false);
-//        urlc.setRequestProperty("Content-type", "text/xml; charset=" + POST_ENCODING);
-//        
-//        OutputStream out = urlc.getOutputStream();
-//        
-//        try {
-//          Writer writer = new OutputStreamWriter(out, POST_ENCODING);
-//          pipe(data, writer);
-//          writer.close();
-//        } catch (IOException e) {
-//          throw new GenericSearchException("IOException while posting data", e);
-//        } finally {
-//          if(out!=null) out.close();
-//        }
-//        
-//        InputStream in = urlc.getInputStream();
-//        try {
-//          Reader reader = new InputStreamReader(in);
-//          pipe(reader, output);
-//          reader.close();
-//        } catch (IOException e) {
-//          throw new GenericSearchException("IOException while reading response", e);
-//        } finally {
-//          if(in!=null) in.close();
-//        }
-//        
-//      } catch (IOException e) {
-//          throw new GenericSearchException("Connection error (is Solr running at " + solrUrl + " ?): " + e);
-//      } finally {
-//        if(urlc!=null) urlc.disconnect();
-//      }
-//    }
-
     /**
      * Pipes everything from the reader to the writer via a buffer
      */
