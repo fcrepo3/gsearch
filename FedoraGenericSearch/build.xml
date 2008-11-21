@@ -4,6 +4,7 @@
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
+    <property name="web.xml.file"              value="web-withoutAuthN.xml"/> <!-- or web-withAuthN.xml -->
     <property name="javac.debug"               value="on"/>
     <property name="javac.deprecation"         value="on"/>
     <property name="javac.maxwarns"            value="100"/>
@@ -129,9 +130,10 @@
 		<copy todir="${build.dir}">
 			<fileset dir="src/sh"/>
 		</copy>
-		<copy todir="${build.dir}/WEB-INF">
-			<fileset dir="src/WEB-INF"/>
-		</copy>
+		<copy file="src/WEB-INF/${web.xml.file}" tofile="${build.dir}/WEB-INF/web.xml" />
+		<copy file="src/WEB-INF/web-withoutAuthN.xml" todir="${build.dir}/WEB-INF" />
+		<copy file="src/WEB-INF/web-withAuthN.xml" todir="${build.dir}/WEB-INF" />
+		<copy file="src/WEB-INF/server-config.wsdd" todir="${build.dir}/WEB-INF" />
 		<copy todir="${build.dir}/WEB-INF/lib">
 			<fileset dir="lib" excludes="servlet-api.jar"/>
 		</copy>
@@ -183,6 +185,8 @@
 			depends="prep, includeengines"
 	        description="build the download">
         <ant dir="../FgsConfig" target="prep" inheritAll="false"/>
+		<delete file="${build.dir}/WEB-INF/web.xml" />
+		<copy file="src/WEB-INF/web-withoutAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" />
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
 
@@ -190,6 +194,8 @@
 		    depends="prep, includeengines"
 	        description="build local">
         <ant dir="../FgsConfig" target="config" inheritAll="false"/>
+		<delete file="${build.dir}/WEB-INF/web.xml" />
+		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" />
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
         <copy file="${dist.dir}/${war.name}" todir="${env.FEDORA_HOME}/${tomcat.basename}/webapps"/>
 		<delete dir="${env.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
