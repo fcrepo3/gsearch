@@ -96,8 +96,6 @@ public class OperationsImpl extends GenericOperationsImpl {
                 config.getSnippetBegin(usingIndexName),
                 config.getSnippetEnd(usingIndexName),
                 config.getSortFields(usingIndexName, sortFields));
-//        if (logger.isDebugEnabled())
-//            logger.debug("resultSet.getResultXml()=\n"+resultSet.getResultXml());
         params[12] = "RESULTPAGEXSLT";
         params[13] = resultPageXslt;
         String xsltPath = config.getConfigName()+"/index/"+usingIndexName+"/"+config.getGfindObjectsResultXslt(usingIndexName, resultPageXslt);
@@ -105,8 +103,6 @@ public class OperationsImpl extends GenericOperationsImpl {
         		xsltPath,
         		resultSet.getResultXml(),
                 params);
-//        if (logger.isDebugEnabled())
-//            logger.debug("after "+resultPageXslt+" result=\n"+resultXml.toString());
         if (srf != null && config.isSearchResultFilteringActive("postsearch")) {
         	resultXml = srf.filterResultsetForPostsearch(fgsUserName, resultXml, config);
             if (logger.isDebugEnabled())
@@ -303,8 +299,6 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
-//        if (logger.isDebugEnabled())
-//            logger.debug("createEmpty resultXml="+resultXml);
         getIndexWriter(indexName, true);
         resultXml.append("<createEmpty/>\n");
     }
@@ -370,8 +364,6 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws java.rmi.RemoteException
     {
 		if (file.isHidden()) return;
-//        if (logger.isDebugEnabled())
-//            logger.debug("indexDocs file="+file+" repositoryName="+repositoryName+" indexName="+indexName);
         if (file.isDirectory())
         {
             String[] files = file.list();
@@ -390,11 +382,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             } catch (RemoteException e) {
                 resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
                 logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
-//                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
             } catch (FileNotFoundException e) {
               resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
               logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
-//                throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
             }
         }
     }
