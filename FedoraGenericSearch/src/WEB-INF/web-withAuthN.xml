@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- $Id$ -->
+<!-- $Id: web.xml 7814 2008-10-31 13:23:21Z gertsp $ -->
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
     "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
 <web-app>
@@ -63,6 +63,50 @@
         <servlet-class>dk.defxws.fedoragsearch.server.UpdateListener</servlet-class>
         <load-on-startup>101</load-on-startup>
     </servlet>
+    <filter>
+      <filter-name>SetupFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.FilterSetup</filter-class>
+    </filter>
+    <filter>
+      <filter-name>XmlUserfileFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.xmluserfile.FilterXmlUserfile</filter-class>
+    </filter>
+    <filter>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.FilterEnforceAuthn</filter-class>
+    </filter>
+    <filter>
+      <filter-name>FinalizeFilter</filter-name>
+      <filter-class>fedora.server.security.servletfilters.FilterFinalize</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>SetupFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>XmlUserfileFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <servlet-name>AxisServlet</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <servlet-name>GenericSearchREST</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <url-pattern>/index.html</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>EnforceAuthnFilter</filter-name>
+      <url-pattern>/rest</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>FinalizeFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
 	<welcome-file-list id="WelcomeFileList_1">
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
