@@ -39,8 +39,6 @@ import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
-import fedora.common.Constants;
-import fedora.server.management.FedoraAPIM;
 import fedora.server.utilities.StreamUtility;
 
 /**
@@ -228,7 +226,6 @@ public class OperationsImpl extends GenericOperationsImpl {
         deleteTotal = 0;
         int initDocCount = 0;
         StringBuffer resultXml = new StringBuffer(); 
-        srf = config.getSearchResultFiltering();
         resultXml.append("<luceneUpdateIndex");
         resultXml.append(" indexName=\""+indexName+"\"");
         resultXml.append(">\n");
