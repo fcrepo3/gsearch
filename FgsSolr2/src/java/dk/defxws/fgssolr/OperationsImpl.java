@@ -71,31 +71,50 @@ public class OperationsImpl extends GenericOperationsImpl {
             String resultPageXslt)
     throws java.rmi.RemoteException {
         super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
+        String usingIndexName = config.getIndexName(indexName);
+        if (srf != null && config.isSearchResultFilteringActive("presearch")) {
+        	usingIndexName = srf.selectIndexNameForPresearch(fgsUserName, usingIndexName);
+            if (logger.isDebugEnabled())
+                logger.debug("gfindObjects presearch" +
+                        " fgsUserName="+fgsUserName+
+                        " usingIndexName="+usingIndexName);
+        }
+        String usingQuery = query;
+        if (srf != null && config.isSearchResultFilteringActive("insearch")) {
+        	usingQuery = srf.rewriteQueryForInsearch(fgsUserName, usingIndexName, query);
+            if (logger.isDebugEnabled())
+                logger.debug("gfindObjects insearch" +
+                        " fgsUserName="+fgsUserName+
+                        " usingQuery="+usingQuery);
+        }
         ResultSet resultSet = (new Connection()).createStatement().executeQuery(
-                query,
+        		usingQuery,
                 hitPageStart,
                 hitPageSize,
                 snippetsMax,
                 fieldMaxLength,
-                getQueryAnalyzer(indexName),
-                config.getDefaultQueryFields(indexName),
-                config.getIndexDir(indexName),
-                config.getIndexName(indexName),
-                config.getSnippetBegin(indexName),
-                config.getSnippetEnd(indexName),
-                config.getSortFields(indexName, sortFields));
-        if (logger.isDebugEnabled())
-            logger.debug("resultSet.getResultXml()=\n"+resultSet.getResultXml());
+                getQueryAnalyzer(usingIndexName),
+                config.getDefaultQueryFields(usingIndexName),
+                config.getIndexDir(usingIndexName),
+                usingIndexName,
+                config.getSnippetBegin(usingIndexName),
+                config.getSnippetEnd(usingIndexName),
+                config.getSortFields(usingIndexName, sortFields));
         params[12] = "RESULTPAGEXSLT";
         params[13] = resultPageXslt;
-        String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getGfindObjectsResultXslt(indexName, resultPageXslt);
-        StringBuffer sb = (new GTransformer()).transform(
+        String xsltPath = config.getConfigName()+"/index/"+usingIndexName+"/"+config.getGfindObjectsResultXslt(usingIndexName, resultPageXslt);
+        StringBuffer resultXml = (new GTransformer()).transform(
         		xsltPath,
-                resultSet.getResultXml(),
+        		resultSet.getResultXml(),
                 params);
-        if (logger.isDebugEnabled())
-            logger.debug("after "+resultPageXslt+" result=\n"+sb.toString());
-        return sb.toString();
+        if (srf != null && config.isSearchResultFilteringActive("postsearch")) {
+        	resultXml = srf.filterResultsetForPostsearch(fgsUserName, resultXml, config);
+            if (logger.isDebugEnabled())
+                logger.debug("gfindObjects postsearch" +
+                        " fgsUserName="+fgsUserName+
+                        " resultXml=\n"+resultXml);
+        }
+        return resultXml.toString();
     }
     
     public String browseIndex(
@@ -160,8 +179,6 @@ public class OperationsImpl extends GenericOperationsImpl {
                 "\" indexName=\""+indexName+
                 "\" termTotal=\""+termNo+"\">");
         resultXml.append("</solrbrowseindex>");
-        if (logger.isDebugEnabled())
-            logger.debug("resultXml="+resultXml);
         params[10] = "RESULTPAGEXSLT";
         params[11] = resultPageXslt;
         String xsltPath = config.getConfigName()+"/index/"+config.getIndexName(indexName)+"/"+config.getBrowseIndexResultXslt(indexName, resultPageXslt);
@@ -214,7 +231,6 @@ public class OperationsImpl extends GenericOperationsImpl {
         try {
         	if ("createEmpty".equals(action)) 
         		createEmpty(indexName, resultXml);
-//                throw new GenericSearchException("updateIndex createEmpty not implemented for solr.");
         	else {
         		getIndexReader(indexName);
         		initDocCount = docCount;
@@ -275,8 +291,6 @@ public class OperationsImpl extends GenericOperationsImpl {
         		xsltPath,
                 resultXml,
                 params);
-        if (logger.isDebugEnabled())
-            logger.debug("resultXml =\n"+sb.toString());
         return sb.toString();
     }
     
@@ -339,8 +353,6 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws java.rmi.RemoteException
     {
 		if (file.isHidden()) return;
-//        if (logger.isDebugEnabled())
-//            logger.debug("indexDocs file="+file+" repositoryName="+repositoryName+" indexName="+indexName);
         if (file.isDirectory())
         {
             String[] files = file.list();
