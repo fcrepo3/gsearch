@@ -303,7 +303,7 @@ public class RESTImpl extends HttpServlet {
 			}
     		resultXml.append("</index>");
     	}
-    	resultXml.append("<resultPage>");
+    	resultXml.append("</resultPage>");
         return resultXml.toString();
     }
     
