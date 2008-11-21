@@ -131,6 +131,7 @@ throws GenericSearchException {
     throws GenericSearchException {
         StringBuffer docText = new StringBuffer();
         COSDocument cosDoc = null;
+        PDDocument pdDoc = null;
         String password = "";
         try {
             cosDoc = parseDocument(new ByteArrayInputStream(doc));
@@ -167,17 +168,17 @@ throws GenericSearchException {
         // extract PDF document's textual content
         try {
             PDFTextStripper stripper = new PDFTextStripper();
-            docText = new StringBuffer(stripper.getText(new PDDocument(cosDoc)));
+            pdDoc = new PDDocument(cosDoc);
+            docText = new StringBuffer(stripper.getText(pdDoc));
         }
         catch (IOException e) {
-            closeCOSDocument(cosDoc);
             throw new GenericSearchException(
                     "Cannot parse PDF document", e);
-            //		           String errS = e.toString();
-            //		           if (errS.toLowerCase().indexOf("font") != -1) {
-            //		           }
         }
-        closeCOSDocument(cosDoc);
+        finally {
+            closeCOSDocument(cosDoc);
+            closePDDocument(pdDoc);
+        }
         return docText;
     }
     
@@ -194,12 +195,17 @@ throws GenericSearchException {
                 cosDoc.close();
             }
             catch (IOException e) {
-                // eat it, what else can we do?
             }
         }
     }
     
-    
-    public static void main(String[] args) {
+    private void closePDDocument(PDDocument pdDoc) {
+        if (pdDoc != null) {
+            try {
+            	pdDoc.close();
+            }
+            catch (IOException e) {
+            }
+        }
     }
 }
