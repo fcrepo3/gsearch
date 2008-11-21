@@ -28,12 +28,15 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortComparatorSource;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TopDocCollector;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldDocCollector;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Fragmenter;
@@ -105,9 +108,10 @@ public class Statement {
     	} catch (IOException e) {
     		throw new GenericSearchException(e.toString());
     	}
-    	Hits hits = getHits(query, sortFields);
     	int start = Integer.parseInt(Integer.toString(startRecord));
-    	int end = Math.min(hits.length(), start + maxResults - 1);
+    	TopDocs hits = getHits(query, start+maxResults-1, sortFields);
+    	ScoreDoc[] docs = hits.scoreDocs;
+    	int end = Math.min(hits.totalHits, start + maxResults - 1);
     	StringBuffer resultXml = new StringBuffer();
     	resultXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     	String queryStringEncoded = null;
@@ -123,20 +127,18 @@ public class Statement {
     			"\" sortFields=\""+sortFields+
     			"\" hitPageStart=\""+startRecord+
     			"\" hitPageSize=\""+maxResults+
-    			"\" hitTotal=\""+hits.length()+"\">");
+    			"\" hitTotal=\""+hits.totalHits+"\">");
+		ScoreDoc hit = null;
+		Document doc = null;
+		String hitsScore = null;
     	for (int i = start; i <= end; i++)
     	{
-    		Document doc = null;
     		try {
-    			doc = hits.doc(i-1);
+    			hit = docs[i-1];
+    			doc = searcher.doc(hit.doc);
+    			hitsScore = ""+hit.score;
     		} catch (CorruptIndexException e) {
     			errorExit(e.toString());
-    		} catch (IOException e) {
-    			errorExit(e.toString());
-    		}
-    		String hitsScore = null;
-    		try {
-    			hitsScore = ""+hits.score(i-1);
     		} catch (IOException e) {
     			errorExit(e.toString());
     		}
@@ -157,7 +159,6 @@ public class Statement {
     				} catch (IOException e) {
     					errorExit(e.toString());
     				}
-    				//snippets = snippets.replace('&', '#');
     				snippets = checkTruncatedWords(snippets, " ... ");
     				snippets = StreamUtility.enc(snippets);
     				snippets = snippets.replaceAll("!!!SNIPPETBEGIN", snippetBegin);
@@ -207,8 +208,8 @@ public class Statement {
 //  locale          ::= language['-'country['-'variant]]
 //  comparatorClass ::= package-path'.'className['('param['-'param]*')']
 //  reverse         ::= 'false' (default) | 'true' | 'reverse'
-    private Hits getHits(Query query, String sortFields) throws GenericSearchException {
-    	Hits hits = null;
+    private TopDocs getHits(Query query, int numHits, String sortFields) throws GenericSearchException {
+    	TopDocs hits = null;
     	IndexReader ireader = searcher.getIndexReader();
     	Collection fieldNames = ireader.getFieldNames(IndexReader.FieldOption.ALL);
     	String sortFieldsString = sortFields;
@@ -360,23 +361,31 @@ public class Statement {
     					else
     						sortField = new SortField(sortFieldName, locale, reverse);
     				}
-
     			}
     		}
     		sortFieldArray[i++] = sortField;
     	}
     	Sort sort = new Sort(sortFieldArray);
-    	try {
-    		if (sortFieldArray.length == 0) {
-    			hits = searcher.search(query);
-    		} else {
-    			hits = searcher.search(query, sort);
+    	TopDocCollector collector = null;
+    	if (sortFieldArray.length == 0) {
+    		collector = new TopDocCollector(numHits);
+    	} else {
+    		try {
+    			collector = new TopFieldDocCollector( ireader, sort, numHits);
+    		} catch (IOException e) {
+    			errorExit("getHits TopFieldDocCollector sortFields='"+sortFields+"' : "+e.toString());
+    		} catch (RuntimeException e) {
+    			errorExit("getHits TopFieldDocCollector RuntimeException sortFields='"+sortFields+"' : "+e.toString());
     		}
-    	} catch (IOException e) {
-    		errorExit("getHits IOException sortFields='"+sortFields+"' : "+e.toString());
-    	} catch (RuntimeException e) {
-    		errorExit("getHits RuntimeException sortFields='"+sortFields+"' : "+e.toString());
     	}
+    	try {
+    		searcher.search(query, collector);
+    	} catch (IOException e) {
+    		errorExit("getHits search sortFields='"+sortFields+"' : "+e.toString());
+    	} catch (RuntimeException e) {
+    		errorExit("getHits search RuntimeException sortFields='"+sortFields+"' : "+e.toString());
+    	}
+    	hits = collector.topDocs();
     	return hits;
     }
 
