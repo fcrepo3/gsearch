@@ -124,6 +124,8 @@ public class Config {
             configs.put(configName, config);
     	}
     	config.setProperty(propertyName, propertyValue);
+    	config.errors = new StringBuffer();
+    	config.checkConfig();
     }
     
     public static Config getCurrentConfig() throws ConfigException {
@@ -147,7 +149,7 @@ public class Config {
     		configName = "config";
         errors = new StringBuffer();
         
-//      Read and set fedoragsearch properties
+//      Get fedoragsearch properties
         try {
             InputStream propStream = Config.class
             .getResourceAsStream("/"+configName+"/fedoragsearch.properties");
@@ -166,70 +168,7 @@ public class Config {
         if (logger.isInfoEnabled())
             logger.info("fedoragsearch.properties=" + fgsProps.toString());
         
-//      Check rest stylesheets
-        checkRestStylesheet("fedoragsearch.defaultNoXslt");
-        checkRestStylesheet("fedoragsearch.defaultGfindObjectsRestXslt");
-        checkRestStylesheet("fedoragsearch.defaultUpdateIndexRestXslt");
-        checkRestStylesheet("fedoragsearch.defaultBrowseIndexRestXslt");
-        checkRestStylesheet("fedoragsearch.defaultGetRepositoryInfoRestXslt");
-        checkRestStylesheet("fedoragsearch.defaultGetIndexInfoRestXslt");
-        
-//      Check mimeTypes  
-        checkMimeTypes("fedoragsearch", fgsProps, "fedoragsearch.mimeTypes");
-        
-//      Check resultPage properties
-        try {
-            maxPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.maxPageSize"));
-        } catch (NumberFormatException e) {
-            errors.append("\n*** maxPageSize is not valid:\n" + e.toString());
-        }
-        try {
-            defaultBrowseIndexTermPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultBrowseIndexTermPageSize"));
-        } catch (NumberFormatException e) {
-            errors.append("\n*** defaultBrowseIndexTermPageSize is not valid:\n" + e.toString());
-        }
-        try {
-            defaultGfindObjectsHitPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsHitPageSize"));
-        } catch (NumberFormatException e) {
-            errors.append("\n*** defaultGfindObjectsHitPageSize is not valid:\n" + e.toString());
-        }
-        try {
-            defaultGfindObjectsSnippetsMax = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsSnippetsMax"));
-        } catch (NumberFormatException e) {
-            errors.append("\n*** defaultGfindObjectsSnippetsMax is not valid:\n" + e.toString());
-        }
-        try {
-            defaultGfindObjectsFieldMaxLength = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsFieldMaxLength"));
-        } catch (NumberFormatException e) {
-            errors.append("\n*** defaultGfindObjectsFieldMaxLength is not valid:\n" + e.toString());
-        }
-//		Check for unknown properties, indicating typos or wrong property names
-        String[] propNames = {
-        		"fedoragsearch.deployFile",
-        		"fedoragsearch.soapBase",
-        		"fedoragsearch.soapUser",
-        		"fedoragsearch.soapPass",
-        		"fedoragsearch.defaultNoXslt",
-        		"fedoragsearch.defaultGfindObjectsRestXslt",
-        		"fedoragsearch.defaultUpdateIndexRestXslt",
-        		"fedoragsearch.defaultBrowseIndexRestXslt",
-        		"fedoragsearch.defaultGetRepositoryInfoRestXslt",
-        		"fedoragsearch.defaultGetIndexInfoRestXslt",
-        		"fedoragsearch.mimeTypes",
-        		"fedoragsearch.maxPageSize",
-        		"fedoragsearch.defaultBrowseIndexTermPageSize",
-        		"fedoragsearch.defaultGfindObjectsHitPageSize",
-        		"fedoragsearch.defaultGfindObjectsSnippetsMax",
-        		"fedoragsearch.defaultGfindObjectsFieldMaxLength",
-        		"fedoragsearch.repositoryNames",
-        		"fedoragsearch.indexNames",
-        		"fedoragsearch.updaterNames",
-        		"fedoragsearch.searchResultFilteringModule",
-        		"fedoragsearch.searchResultFilteringType"
-        };
-        checkPropNames("fedoragsearch.properties", fgsProps, propNames);
-        
-//      Check repository properties
+//      Get repository properties
         repositoryNameToProps = new Hashtable();
         defaultRepositoryName = null;
         StringTokenizer repositoryNames = new StringTokenizer(fgsProps.getProperty("fedoragsearch.repositoryNames"));
@@ -244,65 +183,8 @@ public class Config {
                     Properties props = new Properties();
                     props.load(propStream);
                     propStream.close();
-                    
                     if (logger.isInfoEnabled())
                         logger.info("/"+configName+"/repository/" + repositoryName + "/repository.properties=" + props.toString());
-                    
-//                  Check repositoryName
-                    String propsRepositoryName = props.getProperty("fgsrepository.repositoryName");
-                    if (!repositoryName.equals(propsRepositoryName)) {
-                        errors.append("\n*** "+configName+"/repository/" + repositoryName +
-                                ": fgsrepository.repositoryName must be=" + repositoryName);
-                    }
-                    
-//                  Check repository access
-//                  String fedoraSoap = props.getProperty("fgsrepository.fedoraSoap");
-//                  String fedoraUser = props.getProperty("fgsrepository.fedoraUser");
-//                  String fedoraPass = props.getProperty("fgsrepository.fedoraPass");
-//                  
-//                  FedoraAPIMBindingSOAPHTTPStub stub = null;
-//                  try {
-//                  stub = new FedoraAPIMBindingSOAPHTTPStub(
-//                  new java.net.URL(fedoraSoap+"/management"), null);
-//                  stub.describeUser(fedoraUser, fedoraPass);
-//                  } catch (AxisFault e) {
-//                  errors.append("\n*** "+configName+"/repository/" + repositoryName +
-//                  ": Access to " + fedoraSoap + " failed:\n" + e.toString());
-//                  } catch (MalformedURLException e) {
-//                  errors.append("\n*** "+configName+"/repository/" + repositoryName +
-//                  ": Access to " + fedoraSoap + "failed:\n" + e.toString());
-//                  } catch (RemoteException e) {
-//                  errors.append("\n*** "+configName+"/repository/" + repositoryName
-//                  + ": Access to " + fedoraSoap + " failed:\n" + e.toString());
-//                  }
-                    
-//                  Check fedoraObjectDir
-                    String fedoraObjectDirName = insertSystemProperties(props.getProperty("fgsrepository.fedoraObjectDir"));
-                    File fedoraObjectDir = new File(fedoraObjectDirName);
-                    if (fedoraObjectDir == null) {
-                        errors.append("\n*** "+configName+"/repository/" + repositoryName
-                                + ": fgsrepository.fedoraObjectDir="
-                                + fedoraObjectDirName + " not found");
-                    }
-                    
-//                  Check result stylesheets
-                    checkResultStylesheet("repository/"+repositoryName, props, 
-                    "fgsrepository.defaultGetRepositoryInfoResultXslt");
-                    
-//            		Check for unknown properties, indicating typos or wrong property names
-                    String[] reposPropNames = {
-                    		"fgsrepository.repositoryName",
-                    		"fgsrepository.fedoraSoap",
-                    		"fgsrepository.fedoraUser",
-                    		"fgsrepository.fedoraPass",
-                    		"fgsrepository.fedoraObjectDir",
-                    		"fgsrepository.fedoraVersion",
-                    		"fgsrepository.defaultGetRepositoryInfoResultXslt",
-                    		"fgsrepository.trustStorePath",
-                    		"fgsrepository.trustStorePass"
-                    };
-                    checkPropNames(configName+"/repository/"+repositoryName+"/repository.properties", props, reposPropNames);
-                    
                     repositoryNameToProps.put(repositoryName, props);
                 }
                 else {
@@ -315,7 +197,7 @@ public class Config {
             }
         }
         
-//      Check index properties
+//      Get index properties
         indexNameToProps = new Hashtable();
         indexNameToUriResolvers = new Hashtable();
         defaultIndexName = null;
@@ -332,213 +214,8 @@ public class Config {
                     props = new Properties();
                     props.load(propStream);
                     propStream.close();
-                    
                     if (logger.isInfoEnabled())
                         logger.info("/"+configName+"/index/" + indexName + "/index.properties=" + props.toString());
-                    
-//                  Check indexName
-                    String propsIndexName = props.getProperty("fgsindex.indexName");
-                    if (!indexName.equals(propsIndexName)) {
-                        errors.append("\n*** "+configName+"/index/" + indexName
-                                + ": fgsindex.indexName must be=" + indexName);
-                    }
-                    
-//                  Check operationsImpl class
-                    String operationsImpl = props.getProperty("fgsindex.operationsImpl");
-                    if (operationsImpl == null || operationsImpl.equals("")) {
-                        errors.append("\n*** "+configName+"/index/" + indexName
-                                + ": fgsindex.operationsImpl must be set in "+configName+"/index/ "
-                                + indexName + ".properties");
-                    }
-                    try {
-                        Class operationsImplClass = Class.forName(operationsImpl);
-                        try {
-                            GenericOperationsImpl ops = (GenericOperationsImpl) operationsImplClass
-                            .getConstructor(new Class[] {})
-                            .newInstance(new Object[] {});
-                        } catch (InstantiationException e) {
-                            errors.append("\n*** "+configName+"/index/"+indexName
-                                    + ": fgsindex.operationsImpl="+operationsImpl
-                                    + ": instantiation error.\n"+e.toString());
-                        } catch (IllegalAccessException e) {
-                            errors.append("\n*** "+configName+"/index/"+indexName
-                                    + ": fgsindex.operationsImpl="+operationsImpl
-                                    + ": instantiation error.\n"+e.toString());
-                        } catch (InvocationTargetException e) {
-                            errors.append("\n*** "+configName+"/index/"+indexName
-                                    + ": fgsindex.operationsImpl="+operationsImpl
-                                    + ": instantiation error.\n"+e.toString());
-                        } catch (NoSuchMethodException e) {
-                            errors.append("\n*** "+configName+"/index/"+indexName
-                                    + ": fgsindex.operationsImpl="+operationsImpl
-                                    + ": instantiation error.\n"+e.toString());
-                        }
-                    } catch (ClassNotFoundException e) {
-                        errors.append("\n*** "+configName+"/index/" + indexName
-                                + ": fgsindex.operationsImpl="+operationsImpl
-                                + ": class not found.\n"+e);
-                    }
-                    
-//                  Check result stylesheets
-                    checkResultStylesheet("index/"+indexName, props, 
-                    "fgsindex.defaultUpdateIndexDocXslt");
-                    checkResultStylesheet("index/"+indexName, props, 
-                    "fgsindex.defaultUpdateIndexResultXslt");
-                    checkResultStylesheet("index/"+indexName, props, 
-                    "fgsindex.defaultGfindObjectsResultXslt");
-                    checkResultStylesheet("index/"+indexName, props, 
-                    "fgsindex.defaultBrowseIndexResultXslt");
-                    checkResultStylesheet("index/"+indexName, props, 
-                    "fgsindex.defaultGetIndexInfoResultXslt");
-                    
-//                  Check indexDir
-                    String indexDir = insertSystemProperties(props.getProperty("fgsindex.indexDir")); 
-                    File indexDirFile = new File(indexDir);
-                    if (indexDirFile == null) {
-                    	errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.indexDir="
-                    			+ indexDir + " must exist as a directory");
-                    }
-
-//                  	Check analyzer class for lucene
-                    if (operationsImpl.indexOf("fgslucene")>-1) {
-                    	String analyzer = props.getProperty("fgsindex.analyzer"); 
-                    	if (analyzer == null || analyzer.equals("")) {
-//                    		errors.append("\n*** "+configName+"/index/" + indexName
-//                    				+": fgsindex.analyzer must be set in "+configName+"/index/ "
-//                    				+ indexName + ".properties");
-                    		analyzer = defaultAnalyzer;
-                    	}
-                    	try {
-                    		Class analyzerClass = Class.forName(analyzer);
-                    		try {
-                    			Analyzer a = (Analyzer) analyzerClass
-                    			.getConstructor(new Class[] {})
-                    			.newInstance(new Object[] {});
-                    		} catch (InstantiationException e) {
-                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-                    					+ ": fgsindex.analyzer="+analyzer
-                    					+ ": instantiation error.\n"+e.toString());
-                    		} catch (IllegalAccessException e) {
-                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-                    					+ ": fgsindex.analyzer="+analyzer
-                    					+ ": instantiation error.\n"+e.toString());
-                    		} catch (InvocationTargetException e) {
-                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-                    					+ ": fgsindex.analyzer="+analyzer
-                    					+ ": instantiation error.\n"+e.toString());
-                    		} catch (NoSuchMethodException e) {
-                    			errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-                    					+ ": fgsindex.analyzer="+analyzer
-                    					+ ": instantiation error:\n"+e.toString());
-                    		}
-                    	} catch (ClassNotFoundException e) {
-                    		errors.append("\n*** "+configName+"/index/" + indexName
-                    				+ ": fgsindex.analyzer="+analyzer
-                    				+ ": class not found:\n"+e.toString());
-                    	}
-                    }
-                    
-//					Add untokenizedFields property for lucene
-
-                    if (operationsImpl.indexOf("fgslucene")>-1) {
-                    	String defaultUntokenizedFields = props.getProperty("fgsindex.untokenizedFields");
-                    	if (defaultUntokenizedFields == null)
-                    		props.setProperty("fgsindex.untokenizedFields", "");
-                        if (indexDirFile != null) {
-                        	StringBuffer untokenizedFields = new StringBuffer(props.getProperty("fgsindex.untokenizedFields"));
-                        	IndexReader ir = null;
-                        	try {
-								ir = IndexReader.open(indexDir);
-								int max = ir.numDocs();
-								if (max > 10) max = 10;
-								for (int i=0; i<max; i++) {
-									Document doc = ir.document(i);
-//									Enumeration fields = doc.fields();
-//									while (fields.hasMoreElements()) {
-									for (ListIterator li = doc.getFields().listIterator(); li.hasNext(); ) {
-										Field f = (Field)li.next();
-//										Field f = (Field)fields.nextElement();
-										if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
-											untokenizedFields.append(" "+f.name());
-										}
-									}
-								}
-							} catch (Exception e) {
-							}
-                        	props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
-                            if (logger.isDebugEnabled())
-                                logger.debug("indexName=" + indexName+ " fgsindex.untokenizedFields="+untokenizedFields);
-                        }
-                    }
-
-//                  Check defaultQueryFields - how can we check this?
-                    String defaultQueryFields = props.getProperty("fgsindex.defaultQueryFields");
-                    
-//                  Use custom URIResolver if given
-                    if (operationsImpl.indexOf("fgslucene")>-1) {
-                		Class uriResolverClass = null;
-                        String uriResolver = props.getProperty("fgsindex.uriResolver");
-                        if (!(uriResolver == null || uriResolver.equals(""))) {
-                        	try {
-                        		uriResolverClass = Class.forName(uriResolver);
-                        		try {
-                        			URIResolverImpl ur = (URIResolverImpl) uriResolverClass
-                        			.getConstructor(new Class[] {})
-                        			.newInstance(new Object[] {});
-                                    if (ur != null) {
-                                    	ur.setConfig(this);
-                                    	indexNameToUriResolvers.put(indexName, ur);
-                                    }
-                        		} catch (InstantiationException e) {
-                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
-                        					+ ": fgsindex.uriResolver="+uriResolver
-                        					+ ": instantiation error.\n"+e.toString());
-                        		} catch (IllegalAccessException e) {
-                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
-                        					+ ": fgsindex.uriResolver="+uriResolver
-                        					+ ": instantiation error.\n"+e.toString());
-                        		} catch (InvocationTargetException e) {
-                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
-                        					+ ": fgsindex.uriResolver="+uriResolver
-                        					+ ": instantiation error.\n"+e.toString());
-                        		} catch (NoSuchMethodException e) {
-                        			errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
-                        					+ ": fgsindex.uriResolver="+uriResolver
-                        					+ ": instantiation error:\n"+e.toString());
-                        		}
-                        	} catch (ClassNotFoundException e) {
-                        		errors.append("\n*** "+configName+"/index/" + indexName
-                        				+ ": fgsindex.uriResolver="+uriResolver
-                        				+ ": class not found:\n"+e.toString());
-                        	}
-                        }
-                    }
-//            		Check for unknown properties, indicating typos or wrong property names
-                    String[] indexPropNames = {
-                    		"fgsindex.indexName",
-                    		"fgsindex.indexBase",
-                    		"fgsindex.indexUser",
-                    		"fgsindex.indexPass",
-                    		"fgsindex.operationsImpl",
-                    		"fgsindex.defaultUpdateIndexDocXslt",
-                    		"fgsindex.defaultUpdateIndexResultXslt",
-                    		"fgsindex.defaultGfindObjectsResultXslt",
-                    		"fgsindex.defaultBrowseIndexResultXslt",
-                    		"fgsindex.defaultGetIndexInfoResultXslt",
-                    		"fgsindex.indexDir",
-                    		"fgsindex.analyzer",
-                    		"fgsindex.untokenizedFields",
-                    		"fgsindex.defaultQueryFields",
-                    		"fgsindex.snippetBegin",
-                    		"fgsindex.snippetEnd",
-                    		"fgsindex.maxBufferedDocs",
-                    		"fgsindex.mergeFactor",
-                    		"fgsindex.defaultWriteLockTimeout",
-                    		"fgsindex.defaultSortFields",
-                    		"fgsindex.uriResolver"
-                    };
-                    checkPropNames(configName+"/index/"+indexName+"/index.properties", props, indexPropNames);
-                    
                     indexNameToProps.put(indexName, props);
                 }
                 else {
@@ -549,127 +226,428 @@ public class Config {
                 errors.append("\n*** Error loading "+configName+"/index/" + indexName
                         + "/index.properties:\n"+e.toString());
             }
-            if (errors.length()>0)
-                throw new ConfigException(errors.toString());
         }
+        if (logger.isDebugEnabled())
+            logger.debug("config created configName="+configName+" errors="+errors.toString());
+    	checkConfig();
+    }
+  
+    private void checkConfig() throws ConfigException {
+
+        if (logger.isDebugEnabled())
+            logger.debug("fedoragsearch.properties=" + fgsProps.toString());
         
-        // Check updater properties
-        String updaterProperty = fgsProps.getProperty("fedoragsearch.updaterNames");
-        if(updaterProperty == null) {
-            updaterNameToProps = null; // No updaters will be created
-        } else {           
-            updaterNameToProps = new Hashtable();
-            StringTokenizer updaterNames = new StringTokenizer(updaterProperty);
-            while (updaterNames.hasMoreTokens()) {
-                String updaterName = updaterNames.nextToken();
-                try {
-                    InputStream propStream =
-                            Config.class.getResourceAsStream("/" + configName
-                                    + "/updater/" + updaterName
-                                    + "/updater.properties");
-                    if (propStream != null) {
-                        Properties props = new Properties();
-                        props.load(propStream);
-                        propStream.close();
-                        
-                        if (logger.isInfoEnabled()) {
-                            logger.info("/" + configName + "/updater/"
-                                    + updaterName + "/updater.properties="
-                                    + props.toString());
-                        }
-                        
-                        // Check properties
-                        String propsNamingFactory = props.getProperty("java.naming.factory.initial");
-                        String propsProviderUrl = props.getProperty("java.naming.provider.url");
-                        String propsConnFactory = props.getProperty("connection.factory.name");
-                        String propsClientId = props.getProperty("client.id");
-                        
-                        if(propsNamingFactory == null) {
-                            errors.append("\n*** java.naming.factory.initial not provided in "
-                                            + configName + "/updater/" + updaterName
-                                            + "/updater.properties");
-                        }
-                        if(propsProviderUrl == null) {
-                            errors.append("\n*** java.naming.provider.url not provided in "
-                                            + configName + "/updater/" + updaterName
-                                            + "/updater.properties");
-                        }
-                        if(propsConnFactory == null) {
-                            errors.append("\n*** connection.factory.name not provided in "
-                                            + configName + "/updater/" + updaterName
-                                            + "/updater.properties");
-                        }
-                        if(propsClientId == null) {
-                            errors.append("\n*** client.id not provided in "
-                                            + configName + "/updater/" + updaterName
-                                            + "/updater.properties");
-                        }
-                        
-                        updaterNameToProps.put(updaterName, props);
-                    }
-                    else {
-                        errors.append("\n*** "+configName+"/updater/" + updaterName
-                                + "/updater.properties not found in classpath");
-                    }
-                } catch (IOException e) {
-                    errors.append("\n*** Error loading "+configName+"/updater/" + updaterName
-                            + ".properties:\n" + e.toString());
-                }
-            }             
-        }
-        // Check searchResultFilteringModule property
-        searchResultFilteringModuleProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringModule");
-        if(searchResultFilteringModuleProperty != null && searchResultFilteringModuleProperty.length()>0) {
-            try {
-                Class srfClass = Class.forName(searchResultFilteringModuleProperty);
-                try {
-                	SearchResultFiltering srfInstance = (SearchResultFiltering) srfClass
-                    .getConstructor(new Class[] {})
-                    .newInstance(new Object[] {});
-                } catch (InstantiationException e) {
-                    errors.append("\n*** "+configName
-                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
-                            + ": instantiation error.\n"+e.toString());
-                } catch (IllegalAccessException e) {
-                    errors.append("\n*** "+configName
-                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
-                            + ": instantiation error.\n"+e.toString());
-                } catch (InvocationTargetException e) {
-                    errors.append("\n*** "+configName
-                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
-                            + ": instantiation error.\n"+e.toString());
-                } catch (NoSuchMethodException e) {
-                    errors.append("\n*** "+configName
-                            + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
-                            + ": instantiation error.\n"+e.toString());
-                }
-            } catch (ClassNotFoundException e) {
-                errors.append("\n*** "+configName
-                        + ": fedoragsearch.searchResultFilteringModule="+searchResultFilteringModuleProperty
-                        + ": class not found.\n"+e);
-            }
-            String searchResultFilteringTypeProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringType");
-            StringTokenizer srft = new StringTokenizer("");
-            if (searchResultFilteringTypeProperty != null) {
-            	srft = new StringTokenizer(searchResultFilteringTypeProperty);
-            }
-            int countTokens = srft.countTokens();
-            if (searchResultFilteringTypeProperty==null || countTokens==0 || countTokens>1) {
-                errors.append("\n*** "+configName
-                        + ": fedoragsearch.searchResultFilteringType="+searchResultFilteringTypeProperty
-                        + ": one and only one of 'presearch', 'insearch', 'postsearch' must be stated.\n");
-            } 
-            else {
-            	for (int i=0; i<countTokens; i++) {
-            		String token = srft.nextToken();
-            		if (!("presearch".equals(token) || "insearch".equals(token) || "postsearch".equals(token))) {
-                        errors.append("\n*** "+configName
-                                + ": fedoragsearch.searchResultFilteringType="+searchResultFilteringTypeProperty
-                                + ": only 'presearch', 'insearch', 'postsearch' may be stated, not '"+token+"'.\n");
-            		}
-            	}
-            }
-        }
+//  	Check for unknown properties, indicating typos or wrong property names
+    	String[] propNames = {
+    			"fedoragsearch.deployFile",
+    			"fedoragsearch.soapBase",
+    			"fedoragsearch.soapUser",
+    			"fedoragsearch.soapPass",
+    			"fedoragsearch.defaultNoXslt",
+    			"fedoragsearch.defaultGfindObjectsRestXslt",
+    			"fedoragsearch.defaultUpdateIndexRestXslt",
+    			"fedoragsearch.defaultBrowseIndexRestXslt",
+    			"fedoragsearch.defaultGetRepositoryInfoRestXslt",
+    			"fedoragsearch.defaultGetIndexInfoRestXslt",
+    			"fedoragsearch.mimeTypes",
+    			"fedoragsearch.maxPageSize",
+    			"fedoragsearch.defaultBrowseIndexTermPageSize",
+    			"fedoragsearch.defaultGfindObjectsHitPageSize",
+    			"fedoragsearch.defaultGfindObjectsSnippetsMax",
+    			"fedoragsearch.defaultGfindObjectsFieldMaxLength",
+    			"fedoragsearch.repositoryNames",
+    			"fedoragsearch.indexNames",
+    			"fedoragsearch.updaterNames",
+    			"fedoragsearch.searchResultFilteringModule",
+    			"fedoragsearch.searchResultFilteringType"
+    	};
+    	checkPropNames("fedoragsearch.properties", fgsProps, propNames);
+
+//  	Check rest stylesheets
+    	checkRestStylesheet("fedoragsearch.defaultNoXslt");
+    	checkRestStylesheet("fedoragsearch.defaultGfindObjectsRestXslt");
+    	checkRestStylesheet("fedoragsearch.defaultUpdateIndexRestXslt");
+    	checkRestStylesheet("fedoragsearch.defaultBrowseIndexRestXslt");
+    	checkRestStylesheet("fedoragsearch.defaultGetRepositoryInfoRestXslt");
+    	checkRestStylesheet("fedoragsearch.defaultGetIndexInfoRestXslt");
+
+//  	Check mimeTypes  
+    	checkMimeTypes("fedoragsearch", fgsProps, "fedoragsearch.mimeTypes");
+
+//  	Check resultPage properties
+    	try {
+    		maxPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.maxPageSize"));
+    	} catch (NumberFormatException e) {
+    		errors.append("\n*** maxPageSize is not valid:\n" + e.toString());
+    	}
+    	try {
+    		defaultBrowseIndexTermPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultBrowseIndexTermPageSize"));
+    	} catch (NumberFormatException e) {
+    		errors.append("\n*** defaultBrowseIndexTermPageSize is not valid:\n" + e.toString());
+    	}
+    	try {
+    		defaultGfindObjectsHitPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsHitPageSize"));
+    	} catch (NumberFormatException e) {
+    		errors.append("\n*** defaultGfindObjectsHitPageSize is not valid:\n" + e.toString());
+    	}
+    	try {
+    		defaultGfindObjectsSnippetsMax = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsSnippetsMax"));
+    	} catch (NumberFormatException e) {
+    		errors.append("\n*** defaultGfindObjectsSnippetsMax is not valid:\n" + e.toString());
+    	}
+    	try {
+    		defaultGfindObjectsFieldMaxLength = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsFieldMaxLength"));
+    	} catch (NumberFormatException e) {
+    		errors.append("\n*** defaultGfindObjectsFieldMaxLength is not valid:\n" + e.toString());
+    	}
+
+    	// Check updater properties
+    	String updaterProperty = fgsProps.getProperty("fedoragsearch.updaterNames");
+    	if(updaterProperty == null) {
+    		updaterNameToProps = null; // No updaters will be created
+    	} else {           
+    		updaterNameToProps = new Hashtable();
+    		StringTokenizer updaterNames = new StringTokenizer(updaterProperty);
+    		while (updaterNames.hasMoreTokens()) {
+    			String updaterName = updaterNames.nextToken();
+    			try {
+    				InputStream propStream =
+    					Config.class.getResourceAsStream("/" + configName
+    							+ "/updater/" + updaterName
+    							+ "/updater.properties");
+    				if (propStream != null) {
+    					Properties props = new Properties();
+    					props.load(propStream);
+    					propStream.close();
+
+    					if (logger.isInfoEnabled()) {
+    						logger.info("/" + configName + "/updater/"
+    								+ updaterName + "/updater.properties="
+    								+ props.toString());
+    					}
+
+    					// Check properties
+    					String propsNamingFactory = props.getProperty("java.naming.factory.initial");
+    					String propsProviderUrl = props.getProperty("java.naming.provider.url");
+    					String propsConnFactory = props.getProperty("connection.factory.name");
+    					String propsClientId = props.getProperty("client.id");
+
+    					if(propsNamingFactory == null) {
+    						errors.append("\n*** java.naming.factory.initial not provided in "
+    								+ configName + "/updater/" + updaterName
+    								+ "/updater.properties");
+    					}
+    					if(propsProviderUrl == null) {
+    						errors.append("\n*** java.naming.provider.url not provided in "
+    								+ configName + "/updater/" + updaterName
+    								+ "/updater.properties");
+    					}
+    					if(propsConnFactory == null) {
+    						errors.append("\n*** connection.factory.name not provided in "
+    								+ configName + "/updater/" + updaterName
+    								+ "/updater.properties");
+    					}
+    					if(propsClientId == null) {
+    						errors.append("\n*** client.id not provided in "
+    								+ configName + "/updater/" + updaterName
+    								+ "/updater.properties");
+    					}
+
+    					updaterNameToProps.put(updaterName, props);
+    				}
+    				else {
+    					errors.append("\n*** "+configName+"/updater/" + updaterName
+    							+ "/updater.properties not found in classpath");
+    				}
+    			} catch (IOException e) {
+    				errors.append("\n*** Error loading "+configName+"/updater/" + updaterName
+    						+ ".properties:\n" + e.toString());
+    			}
+    		}             
+    	}
+    	
+    	// Check searchResultFilteringModule property
+    	searchResultFilteringModuleProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringModule");
+    	if(searchResultFilteringModuleProperty != null && searchResultFilteringModuleProperty.length()>0) {
+    		try {
+    			getSearchResultFiltering();
+    		} catch (ConfigException e) {
+    			errors.append(e.getMessage());
+    		}
+    		String searchResultFilteringTypeProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringType");
+    		StringTokenizer srft = new StringTokenizer("");
+    		if (searchResultFilteringTypeProperty != null) {
+    			srft = new StringTokenizer(searchResultFilteringTypeProperty);
+    		}
+    		int countTokens = srft.countTokens();
+    		if (searchResultFilteringTypeProperty==null || countTokens==0 || countTokens>1) {
+    			errors.append("\n*** "+configName
+    					+ ": fedoragsearch.searchResultFilteringType="+searchResultFilteringTypeProperty
+    					+ ": one and only one of 'presearch', 'insearch', 'postsearch' must be stated.\n");
+    		} 
+    		else {
+    			for (int i=0; i<countTokens; i++) {
+    				String token = srft.nextToken();
+    				if (!("presearch".equals(token) || "insearch".equals(token) || "postsearch".equals(token))) {
+    					errors.append("\n*** "+configName
+    							+ ": fedoragsearch.searchResultFilteringType="+searchResultFilteringTypeProperty
+    							+ ": only 'presearch', 'insearch', 'postsearch' may be stated, not '"+token+"'.\n");
+    				}
+    			}
+    		}
+    	}
+
+//  	Check repository properties
+    	Enumeration repositoryNames = repositoryNameToProps.keys();
+    	while (repositoryNames.hasMoreElements()) {
+    		String repositoryName = (String)repositoryNames.nextElement();
+    		Properties props = (Properties)repositoryNameToProps.get(repositoryName);
+            if (logger.isDebugEnabled())
+                logger.debug("/"+configName+"/repository/" + repositoryName + "/repository.properties=" + props.toString());
+    		
+//  		Check for unknown properties, indicating typos or wrong property names
+    		String[] reposPropNames = {
+    				"fgsrepository.repositoryName",
+    				"fgsrepository.fedoraSoap",
+    				"fgsrepository.fedoraUser",
+    				"fgsrepository.fedoraPass",
+    				"fgsrepository.fedoraObjectDir",
+    				"fgsrepository.fedoraVersion",
+    				"fgsrepository.defaultGetRepositoryInfoResultXslt",
+    				"fgsrepository.trustStorePath",
+    				"fgsrepository.trustStorePass"
+    		};
+    		checkPropNames(configName+"/repository/"+repositoryName+"/repository.properties", props, reposPropNames);
+
+//  		Check repositoryName
+    		String propsRepositoryName = props.getProperty("fgsrepository.repositoryName");
+    		if (!repositoryName.equals(propsRepositoryName)) {
+    			errors.append("\n*** "+configName+"/repository/" + repositoryName +
+    					": fgsrepository.repositoryName must be=" + repositoryName);
+    		}
+
+//  		Check fedoraObjectDir
+    		String fedoraObjectDirName = insertSystemProperties(props.getProperty("fgsrepository.fedoraObjectDir"));
+    		File fedoraObjectDir = new File(fedoraObjectDirName);
+    		if (fedoraObjectDir == null) {
+    			errors.append("\n*** "+configName+"/repository/" + repositoryName
+    					+ ": fgsrepository.fedoraObjectDir="
+    					+ fedoraObjectDirName + " not found");
+    		}
+
+//  		Check result stylesheets
+    		checkResultStylesheet("repository/"+repositoryName, props, "fgsrepository.defaultGetRepositoryInfoResultXslt");
+    	}
+
+//  	Check index properties
+    	Enumeration indexNames = indexNameToProps.keys();
+    	while (indexNames.hasMoreElements()) {
+    		String indexName = (String)indexNames.nextElement();
+    		Properties props = (Properties)indexNameToProps.get(indexName);
+            if (logger.isDebugEnabled())
+                logger.debug("/"+configName+"/index/" + indexName + "/index.properties=" + props.toString());
+    		
+//  		Check for unknown properties, indicating typos or wrong property names
+    		String[] indexPropNames = {
+    				"fgsindex.indexName",
+    				"fgsindex.indexBase",
+    				"fgsindex.indexUser",
+    				"fgsindex.indexPass",
+    				"fgsindex.operationsImpl",
+    				"fgsindex.defaultUpdateIndexDocXslt",
+    				"fgsindex.defaultUpdateIndexResultXslt",
+    				"fgsindex.defaultGfindObjectsResultXslt",
+    				"fgsindex.defaultBrowseIndexResultXslt",
+    				"fgsindex.defaultGetIndexInfoResultXslt",
+    				"fgsindex.indexDir",
+    				"fgsindex.analyzer",
+    				"fgsindex.untokenizedFields",
+    				"fgsindex.defaultQueryFields",
+    				"fgsindex.snippetBegin",
+    				"fgsindex.snippetEnd",
+    				"fgsindex.maxBufferedDocs",
+    				"fgsindex.mergeFactor",
+    				"fgsindex.defaultWriteLockTimeout",
+    				"fgsindex.defaultSortFields",
+    				"fgsindex.uriResolver"
+    		};
+    		checkPropNames(configName+"/index/"+indexName+"/index.properties", props, indexPropNames);
+    		
+//  		Check indexName
+    		String propsIndexName = props.getProperty("fgsindex.indexName");
+    		if (!indexName.equals(propsIndexName)) {
+    			errors.append("\n*** "+configName+"/index/" + indexName
+    					+ ": fgsindex.indexName must be=" + indexName);
+    		}
+
+//  		Check operationsImpl class
+    		String operationsImpl = props.getProperty("fgsindex.operationsImpl");
+    		if (operationsImpl == null || operationsImpl.equals("")) {
+    			errors.append("\n*** "+configName+"/index/" + indexName
+    					+ ": fgsindex.operationsImpl must be set in "+configName+"/index/ "
+    					+ indexName + ".properties");
+    		}
+    		try {
+    			Class operationsImplClass = Class.forName(operationsImpl);
+    			try {
+    				GenericOperationsImpl ops = (GenericOperationsImpl) operationsImplClass
+    				.getConstructor(new Class[] {})
+    				.newInstance(new Object[] {});
+    			} catch (InstantiationException e) {
+    				errors.append("\n*** "+configName+"/index/"+indexName
+    						+ ": fgsindex.operationsImpl="+operationsImpl
+    						+ ": instantiation error.\n"+e.toString());
+    			} catch (IllegalAccessException e) {
+    				errors.append("\n*** "+configName+"/index/"+indexName
+    						+ ": fgsindex.operationsImpl="+operationsImpl
+    						+ ": instantiation error.\n"+e.toString());
+    			} catch (InvocationTargetException e) {
+    				errors.append("\n*** "+configName+"/index/"+indexName
+    						+ ": fgsindex.operationsImpl="+operationsImpl
+    						+ ": instantiation error.\n"+e.toString());
+    			} catch (NoSuchMethodException e) {
+    				errors.append("\n*** "+configName+"/index/"+indexName
+    						+ ": fgsindex.operationsImpl="+operationsImpl
+    						+ ": instantiation error.\n"+e.toString());
+    			}
+    		} catch (ClassNotFoundException e) {
+    			errors.append("\n*** "+configName+"/index/" + indexName
+    					+ ": fgsindex.operationsImpl="+operationsImpl
+    					+ ": class not found.\n"+e);
+    		}
+
+//  		Check result stylesheets
+    		checkResultStylesheet("index/"+indexName, props, 
+    		"fgsindex.defaultUpdateIndexDocXslt");
+    		checkResultStylesheet("index/"+indexName, props, 
+    		"fgsindex.defaultUpdateIndexResultXslt");
+    		checkResultStylesheet("index/"+indexName, props, 
+    		"fgsindex.defaultGfindObjectsResultXslt");
+    		checkResultStylesheet("index/"+indexName, props, 
+    		"fgsindex.defaultBrowseIndexResultXslt");
+    		checkResultStylesheet("index/"+indexName, props, 
+    		"fgsindex.defaultGetIndexInfoResultXslt");
+
+//  		Check indexDir
+    		String indexDir = insertSystemProperties(props.getProperty("fgsindex.indexDir")); 
+    		File indexDirFile = new File(indexDir);
+    		if (indexDirFile == null) {
+    			errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.indexDir="
+    					+ indexDir + " must exist as a directory");
+    		}
+
+//  		Check analyzer class for lucene and solr
+    		if (operationsImpl.indexOf("fgslucene")>-1 || operationsImpl.indexOf("fgssolr")>-1) {
+    			String analyzer = props.getProperty("fgsindex.analyzer"); 
+    			if (analyzer == null || analyzer.equals("")) {
+    				analyzer = defaultAnalyzer;
+    			}
+    			try {
+    				Class analyzerClass = Class.forName(analyzer);
+    				try {
+    					Analyzer a = (Analyzer) analyzerClass
+    					.getConstructor(new Class[] {})
+    					.newInstance(new Object[] {});
+    				} catch (InstantiationException e) {
+    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
+    							+ ": fgsindex.analyzer="+analyzer
+    							+ ": instantiation error.\n"+e.toString());
+    				} catch (IllegalAccessException e) {
+    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
+    							+ ": fgsindex.analyzer="+analyzer
+    							+ ": instantiation error.\n"+e.toString());
+    				} catch (InvocationTargetException e) {
+    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
+    							+ ": fgsindex.analyzer="+analyzer
+    							+ ": instantiation error.\n"+e.toString());
+    				} catch (NoSuchMethodException e) {
+    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
+    							+ ": fgsindex.analyzer="+analyzer
+    							+ ": instantiation error:\n"+e.toString());
+    				}
+    			} catch (ClassNotFoundException e) {
+    				errors.append("\n*** "+configName+"/index/" + indexName
+    						+ ": fgsindex.analyzer="+analyzer
+    						+ ": class not found:\n"+e.toString());
+    			}
+    		}
+
+//  		Add untokenizedFields property for lucene
+    		if (operationsImpl.indexOf("fgslucene")>-1) {
+    			String defaultUntokenizedFields = props.getProperty("fgsindex.untokenizedFields");
+    			if (defaultUntokenizedFields == null)
+    				props.setProperty("fgsindex.untokenizedFields", "");
+    			if (indexDirFile != null) {
+    				StringBuffer untokenizedFields = new StringBuffer(props.getProperty("fgsindex.untokenizedFields"));
+    				IndexReader ir = null;
+    				try {
+    					ir = IndexReader.open(indexDir);
+    					int max = ir.numDocs();
+    					if (max > 10) max = 10;
+    					for (int i=0; i<max; i++) {
+    						Document doc = ir.document(i);
+    						for (ListIterator li = doc.getFields().listIterator(); li.hasNext(); ) {
+    							Field f = (Field)li.next();
+    							if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
+    								untokenizedFields.append(" "+f.name());
+    							}
+    						}
+    					}
+    				} catch (Exception e) {
+    				}
+    				props.setProperty("fgsindex.untokenizedFields", untokenizedFields.toString());
+    				if (logger.isDebugEnabled())
+    					logger.debug("indexName=" + indexName+ " fgsindex.untokenizedFields="+untokenizedFields);
+    			}
+    		}
+
+//  		Check defaultQueryFields - how can we check this?
+    		String defaultQueryFields = props.getProperty("fgsindex.defaultQueryFields");
+
+//  		Use custom URIResolver if given
+    		if (operationsImpl.indexOf("fgslucene")>-1) {
+    			Class uriResolverClass = null;
+    			String uriResolver = props.getProperty("fgsindex.uriResolver");
+    			if (!(uriResolver == null || uriResolver.equals(""))) {
+    				try {
+    					uriResolverClass = Class.forName(uriResolver);
+    					try {
+    						URIResolverImpl ur = (URIResolverImpl) uriResolverClass
+    						.getConstructor(new Class[] {})
+    						.newInstance(new Object[] {});
+    						if (ur != null) {
+    							ur.setConfig(this);
+    							indexNameToUriResolvers.put(indexName, ur);
+    						}
+    					} catch (InstantiationException e) {
+    						errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+    								+ ": fgsindex.uriResolver="+uriResolver
+    								+ ": instantiation error.\n"+e.toString());
+    					} catch (IllegalAccessException e) {
+    						errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+    								+ ": fgsindex.uriResolver="+uriResolver
+    								+ ": instantiation error.\n"+e.toString());
+    					} catch (InvocationTargetException e) {
+    						errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+    								+ ": fgsindex.uriResolver="+uriResolver
+    								+ ": instantiation error.\n"+e.toString());
+    					} catch (NoSuchMethodException e) {
+    						errors.append("\n*** "+configName+"/index/"+indexName+" "+uriResolver
+    								+ ": fgsindex.uriResolver="+uriResolver
+    								+ ": instantiation error:\n"+e.toString());
+    					}
+    				} catch (ClassNotFoundException e) {
+    					errors.append("\n*** "+configName+"/index/" + indexName
+    							+ ": fgsindex.uriResolver="+uriResolver
+    							+ ": class not found:\n"+e.toString());
+    				}
+    			}
+    		}
+    	}
+        if (logger.isDebugEnabled())
+            logger.debug("configCheck configName="+configName+" errors="+errors.toString());
+    	if (errors.length()>0)
+    		throw new ConfigException(errors.toString());
     }
     
     //  Read soap deployment parameters and try to deploy the wsdd file    
@@ -880,7 +858,6 @@ public class Config {
     }
     
     public String getRepositoryNameFromUrl(URL url) {
-//    	String repositoryName = defaultRepositoryName;
     	String repositoryName = "";
     	String hostPort = url.getHost();
     	if (url.getPort()>-1)
