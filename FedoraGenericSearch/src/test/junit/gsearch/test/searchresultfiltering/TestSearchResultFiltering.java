@@ -11,7 +11,7 @@ import gsearch.test.FgsTestCase;
  * Test of search result filtering
  * 
  * assuming 
- * - configDemoSearchResultFiltering is current config, see TestRESTSetup.java,
+ * - configDemoSearchResultFiltering is current config, see TestSearchResultFilteringSetup.java,
  * - all Fedora demo objects are in the repository referenced in
  *   configDemoSearchResultFiltering/repository/DemoRepos/repository.properties
  * - the file configDemoSearchResultFiltering/fedora-users.xml
@@ -29,6 +29,7 @@ import gsearch.test.FgsTestCase;
  *   - for each type and for each user (fedoraAdmin, smileyAdmin1 and smileyUser1)
  *     do a gfindObjects operation. 
  * - do a gfindObjects operation for unknownUser1, in order to get an unauthorized reply. 
+ * - do gfindObjects operations for other errors. 
  */
 public class TestSearchResultFiltering
         extends FgsTestCase {
@@ -160,6 +161,31 @@ public class TestSearchResultFiltering
 //			System.out.println("UnknownUser: "+e.getMessage());
 			assertTrue(e.getMessage().indexOf("HTTP response code: 401")>-1);
 		}
+    }
+
+    @Test
+    public void testSetUnknownType() throws Exception {
         System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringType&propertyValue=unknowntype&restXslt=copyXml");
+		assertTrue(result.indexOf("may be stated, not 'unknowntype'")>-1);
+    }
+
+    @Test
+    public void testSetNoType() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringType&propertyValue=&restXslt=copyXml");
+		assertTrue(result.indexOf("must be stated")>-1);
+    }
+
+    @Test
+    public void testSetMoreTypes() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringType&propertyValue=presearch+insearch&restXslt=copyXml");
+		assertTrue(result.indexOf("one and only one")>-1);
+    }
+
+    @Test
+    public void testSetUnknownModule() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringModule&propertyValue=unknown.Module&restXslt=copyXml");
+		assertTrue(result.indexOf("class not found")>-1);
     }
 }
