@@ -34,6 +34,8 @@ It works with Fedora version 2.2.1.
 Version 2.1 was released in April 2008, updating GSearch to work with Fedora 3.0
 and taking advantage of Fedora's new messaging capability for index updates.
 
+Version 2.2 was released in December 2008, updating GSearch to work with Fedora 3.1.
+
 The Fedora System Documentation at http://www.fedora-commons.org/developers
 has a link to FedoraGSearch information with introduction, new features, 
 installation, configuration and additional architectural information.

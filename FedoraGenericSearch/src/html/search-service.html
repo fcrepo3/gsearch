@@ -26,7 +26,7 @@
 			<div id="header">
 				<a href="" id="logo"></a>
 				<div id="title">
-				<h1>Fedora Generic Search Service Version 2.2 (November 2008)</h1>
+				<h1>Fedora Generic Search Service Version 2.2 (December 2008)</h1>
 				<h2>For Fedora Version 3.1</h2>
 				</div>
 			</div>
@@ -231,9 +231,9 @@
 				</ul>
 				<p>The SOAP service operations are deployed with the .war file, and
 				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
-				<p>The choice of search engine is made with the fgsindex.operationsImpl property 
-				in your index.properties file. If you choose Solr or Zebra, 
-				you have to install and start the respective server, 
+				<p>The choice of search engine is made with the fgsindex.operationsImpl property
+				in your index.properties file. If you choose Solr or Zebra,
+				you have to install and start the respective server,
 				see <a href="#engines">Search Engine Plugins</a>.</p>
 
 			<a name="config"><h2>Configuring the Service</h2></a>
@@ -258,7 +258,7 @@
 						The default webapp configuration in
 						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/web.xml
 						does not enforce authorization.
-						If you want to enforce authorization, 
+						If you want to enforce authorization,
 						then copy the file web_withAuthN.xml onto web.xml.
 					</li>
                     <li>
@@ -512,30 +512,30 @@
 			<a name="searchresfilt"><h3>Search Result Filtering</h3></a>
 				<p>Search result filtering by access constraints, as defined by XACML policies,
 				will show only those search hits that the user is actually permitted to read.
-				Three solutions have been investigated and demonstrated 
+				Three solutions have been investigated and demonstrated
 				and <a href="http://dorsdl2.cvt.dk/dorsdl2-10-pedersen.ppt">presented here</a>.
 				Besides, the demonstration is included with the GSearch distribution
-				in .../WEB-INF/classes/configDemoSearchResultFiltering/ . 
+				in .../WEB-INF/classes/configDemoSearchResultFiltering/ .
 				In brief, the three solutions are:
 				<ul>
-					<li><b>Post-search filtering</b>, which requires a request to the XACML mechanism for each hit, 
-					and the total number of permitted hits is only known at the end, 
+					<li><b>Post-search filtering</b>, which requires a request to the XACML mechanism for each hit,
+					and the total number of permitted hits is only known at the end,
 					a costly procedure especially when few hits are permitted out of a large number.
 					</li>
-					<li><b>In-search filtering</b>, which requires additional index fields and query rewriting, 
+					<li><b>In-search filtering</b>, which requires additional index fields and query rewriting,
 					that is, a logical partitioning of the index.
 					</li>
-					<li><b>Pre-search filtering</b>, which requires a physical partitioning of the index 
-					and selection of the pertinent index at query time. 
+					<li><b>Pre-search filtering</b>, which requires a physical partitioning of the index
+					and selection of the pertinent index at query time.
 					</li>
 				</ul>
-				Both in-search and pre-search filtering face the challenge 
+				Both in-search and pre-search filtering face the challenge
 				of exact correspondence between the filtering mechanism and the XACML policies.
 				</p>
-				<p>For your own purpose, in fedoragsearch.properties, you have to select 
+				<p>For your own purpose, in fedoragsearch.properties, you have to select
 				the preferred searchResultFilteringType and set the searchResultFilteringModule
 				to a class that you have to program, as a subclass of the demo class
-				dk.defxws.fedoragsearch.server.SearchResultFilteringDemoImpl 
+				dk.defxws.fedoragsearch.server.SearchResultFilteringDemoImpl
 				or as an implementation of the interface
 				dk.defxws.fedoragsearch.server.SearchResultFiltering .
 				</p>

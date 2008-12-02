@@ -1,8 +1,8 @@
 This is the source tree for the Fedora Generic Search service.
-It currently works with Fedora 3.0.
+It currently works with Fedora 3.1.
 
 To build the downloadable war, which includes
-support for Lucene and Zebra plugins:
+support for Lucene, Solr, and Zebra plugins:
 
   cd FedoraGenericSearch
   ant builddownload
