@@ -9,6 +9,9 @@ import org.junit.runners.Suite;
  * assuming 
  * - all Fedora demo objects are in the repository referenced in
  *   configDemoOnSolr/repository/DemoAtDtu/repository.properties
+ * - the solr server is started:
+ *     cd $FEDORA_HOME/gsearch/DemoOnSolr/example
+ *     java -jar start.jar
  * 
  * the test suite will
  * - set configDemoOnSolr as current config,

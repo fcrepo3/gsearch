@@ -8,7 +8,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses( {
 	gsearch.test.lucene.AllTests.class,
 	gsearch.test.solr.AllTests.class,
-//	gsearch.test.zebra.AllTests.class,
+	gsearch.test.zebra.AllTests.class,
 	gsearch.test.testsonlucene.AllTests.class,
 	gsearch.test.searchresultfiltering.AllTests.class
 	})
@@ -23,7 +23,7 @@ public class AllTests {
 
         suite.addTest(gsearch.test.lucene.AllTests.suite());
         suite.addTest(gsearch.test.solr.AllTests.suite());
-//        suite.addTest(gsearch.test.zebra.AllTests.suite());
+        suite.addTest(gsearch.test.zebra.AllTests.suite());
         suite.addTest(gsearch.test.testsonlucene.AllTests.suite());
         suite.addTest(gsearch.test.searchresultfiltering.AllTests.suite());
 
