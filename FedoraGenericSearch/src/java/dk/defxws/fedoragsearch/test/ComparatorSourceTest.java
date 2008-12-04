@@ -52,26 +52,30 @@ public class ComparatorSourceTest implements SortComparatorSource {
 		
 		public ScoreDocComparatorTest(IndexReader reader, String fieldName, String param1, String param2) {
 			// inspired by Lucene in Action section 6.1
+			this.reader = reader;
+			this.fieldName = fieldName;
 			this.param1 = Integer.parseInt(param1);
 			this.param2 = Integer.parseInt(param2);
 		}
 		
 		public int compare(ScoreDoc i, ScoreDoc j) {
+			String fieldValue1;
+			String fieldValue2;
+			try {
+				fieldValue1 = reader.document(i.doc).get(fieldName);
+				fieldValue2 = reader.document(j.doc).get(fieldName);
+			} catch (CorruptIndexException e1) {
+				return 0;
+			} catch (IOException e1) {
+				return 0;
+			}
 			if (param1 < 0 && param2 < 0) {
 				// just for testing, compare field value as is
-				try {
-					String fieldValue1 = reader.document(i.doc).get(fieldName);
-					String fieldValue2 = reader.document(j.doc).get(fieldName);
 					return Collator.getInstance(Locale.getDefault()).compare(fieldValue1, fieldValue2);
-				} catch (CorruptIndexException e) {
-					return 0;
-				} catch (IOException e) {
-					return 0;
-				}
 			}
 			// just for testing, "orientation" of doc pair wrt. param pair
-			int deltax = i.doc - param1;
-			int deltay = j.doc - param2;
+			int deltax = fieldValue1.length() - param1;
+			int deltay = fieldValue2.length() - param2;
 			if (deltax>deltay) return 1;
 			if (deltax<deltay) return -1;
 			return 0;
