@@ -53,7 +53,7 @@ public class TestSortFields
 
     @Test
     public void testGfindObjectsSortCompClassWithParams() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=image&sortFields=dc.title,dk.defxws.fedoragsearch.test.ComparatorSourceTest(1-9),reverse&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=image&sortFields=dc.title,dk.defxws.fedoragsearch.test.ComparatorSourceTest(1-4),reverse&restXslt=copyXml");
   	    assertXpathEvaluatesTo("demo:11", "/resultPage/gfindObjects/objects/object[1]/field[@name='PID']/text()", result.toString());
     }
 
