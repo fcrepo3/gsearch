@@ -21,14 +21,14 @@ import sun.misc.BASE64Encoder;
 
 /**
  * Performs REST operations from command line with runRESTClient.
- * 
+ *
  * @author  gsp@dtv.dk
- * @version 
+ * @version
  */
 public class RESTClient {
-    
+
     private Object content;
-    
+
     private void updateIndex(
             String restUrl,
             String action,
@@ -45,7 +45,7 @@ public class RESTClient {
                         + "&indexDocXslt=" + indexDocXslt
                         + "&restXslt=copyXml");
     }
-    
+
     private void browseIndex(
             String restUrl,
             String startTerm,
@@ -66,7 +66,7 @@ public class RESTClient {
 			e.printStackTrace();
 		}
     }
-    
+
     private void gfindObjects(
             String restUrl,
             String query,
@@ -93,7 +93,7 @@ public class RESTClient {
 			e.printStackTrace();
 		}
     }
-    
+
     private void getRepositoryInfo(
             String restUrl,
             String repositoryName,
@@ -104,7 +104,7 @@ public class RESTClient {
                         + "&restXslt=copyXml"
                         + "&resultPageXslt=" + resultPageXslt);
     }
-    
+
     private void getIndexInfo(
             String restUrl,
             String indexName,
@@ -115,7 +115,7 @@ public class RESTClient {
                         + "&restXslt=copyXml"
                         + "&resultPageXslt=" + resultPageXslt);
     }
-    
+
     private void configure(
             String restUrl,
             String configName,
@@ -126,13 +126,13 @@ public class RESTClient {
                         + "&propertyName=" + propertyName
                         + "&propertyValue=" + propertyValue);
     }
-    
+
     private void run(
             String restUrl,
             String queryString) {
     	doOp(restUrl + queryString);
     }
-    
+
     private void doOp(
             String urlString) {
         URL url = null;
@@ -145,7 +145,7 @@ public class RESTClient {
         URLConnection conn = null;
         try {
             conn = url.openConnection();
-            conn.setRequestProperty("Authorization", 
+            conn.setRequestProperty("Authorization",
             		"Basic "+(new BASE64Encoder()).encode((System.getProperty("fedoragsearch.fgsUserName")+":"+System.getProperty("fedoragsearch.fgsPassword")).getBytes()));
             conn.connect();
         } catch (IOException e) {
@@ -169,14 +169,13 @@ public class RESTClient {
             e1.printStackTrace();
         }
     }
-    
+
     public static void main(String[] args) {
         try {
             System.out.println("Args");
-            int argsLength = 0;
-            while (args[argsLength].length()>0) {
-                System.out.println(" "+argsLength+"="+args[argsLength]);
-                argsLength++;
+            int argsLength = args.length;
+            for(int i=0; i<argsLength; i++) {
+                System.out.println(" "+i+"="+args[i]);
             }
             if (argsLength<2) usage();
             RESTClient client = new RESTClient();
@@ -229,7 +228,7 @@ public class RESTClient {
                         }
                     }
                     String resultPageXslt = "";
-                    if (argsLength>6) 
+                    if (argsLength>6)
                         resultPageXslt = args[6];
                     client.browseIndex(restUrl, startTerm, fieldName, indexName, termPageSize, resultPageXslt);
                 }
@@ -269,10 +268,10 @@ public class RESTClient {
                             }
                         }
                         String sortFields = "";
-                        if (argsLength>8) 
+                        if (argsLength>8)
                         	sortFields = args[8];
                         String resultPageXslt = "";
-                        if (argsLength>9) 
+                        if (argsLength>9)
                             resultPageXslt = args[9];
                         client.gfindObjects(restUrl, query, indexName, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, sortFields, resultPageXslt);
                     }
@@ -282,7 +281,7 @@ public class RESTClient {
                             if (argsLength>2)
                                 repositoryName = args[2];
                             String resultPageXslt = "";
-                            if (argsLength>3) 
+                            if (argsLength>3)
                                 resultPageXslt = args[3];
                             client.getRepositoryInfo(restUrl, repositoryName, resultPageXslt);
                         }
@@ -292,7 +291,7 @@ public class RESTClient {
                                 if (argsLength>2)
                                     indexName = args[2];
                                 String resultPageXslt = "";
-                                if (argsLength>3) 
+                                if (argsLength>3)
                                     resultPageXslt = args[3];
                                 client.getIndexInfo(restUrl, indexName, resultPageXslt);
                             }
@@ -321,10 +320,10 @@ public class RESTClient {
         } catch (Exception e) {
             System.out.println("Exception in main: " +  e.getMessage());
             e.printStackTrace();
-        }		  
+        }
     }
-    
-    public static void usage() {	  
+
+    public static void usage() {
         System.out.println("Usage");
         System.out.println("host:port updateIndex # shows number of index documents #");
         System.out.println("host:port updateIndex createEmpty [indexName] # index dir must exist #");
@@ -341,5 +340,5 @@ public class RESTClient {
         System.out.println("host:port may be [protocol://]host:port[/webappname/restname], default is http://host:port/fedoragsearch/rest");
         System.exit(1);
     }
-    
+
 }
