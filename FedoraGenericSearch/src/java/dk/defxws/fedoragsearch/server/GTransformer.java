@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URL;
 
 import java.util.Date;
 
@@ -40,6 +41,7 @@ public class GTransformer {
     
     private static final Logger logger =
         Logger.getLogger(GTransformer.class);
+    int debuglength = 500;
     
     public GTransformer() {
     }
@@ -74,6 +76,54 @@ public class GTransformer {
             throw new ConfigException("getTransformerFactory "+xsltPathName+":\n", e);
         }
         return transformer;
+    }
+
+    public StringBuffer transform(String xsltPath, StringBuffer sb, String[] params, String systemId) 
+    throws ConfigException {
+    	if (logger.isDebugEnabled())
+    		logger.debug("transform xsltPath="+xsltPath+" sb="+getDebugString(sb.toString())+" systemId="+systemId);
+        StringReader sr = new StringReader(sb.toString());
+        StreamSource sourceStream = new StreamSource(sr, systemId);
+        String xsltPathName = "/"+xsltPath+".xslt";
+        URL stylesheet = GTransformer.class.getResource(xsltPathName);
+        if (stylesheet==null) {
+            throw new ConfigException("transform "+xsltPathName+" not found");
+        }
+        TransformerFactory tfactory = null;
+		try {
+			tfactory = TransformerFactory.newInstance();
+		} catch (TransformerFactoryConfigurationError e) {
+            throw new ConfigException("transform "+xsltPathName+":\n", e);
+		}
+        StreamSource xslt = null;
+		try {
+			xslt = new StreamSource(stylesheet.openStream(), stylesheet.toString());
+		} catch (IOException e) {
+            throw new ConfigException("transform "+xsltPathName+":\n", e);
+		}
+        Transformer transformer = null;
+        try {
+			transformer = tfactory.newTransformer(xslt);
+		} catch (TransformerConfigurationException e) {
+            throw new ConfigException("transform "+xsltPathName+":\n", e);
+		}
+        for (int i=0; i<params.length; i=i+2) {
+            Object value = params[i+1];
+            if (value==null) value = "";
+            transformer.setParameter((String)params[i], value);
+        }
+        transformer.setParameter("DATETIME", new Date());
+        StreamResult destStream = new StreamResult(new StringWriter());
+        try {
+            transformer.transform(sourceStream, destStream);
+        } catch (TransformerException e) {
+            throw new ConfigException("transform "+xsltPathName+":\n", e);
+        }
+        StringWriter sw = (StringWriter)destStream.getWriter();
+        StringBuffer result = sw.getBuffer();
+        if (logger.isDebugEnabled())
+        	logger.debug("transform result=\n"+getDebugString(result.toString()));
+        return result;
     }
     
     /**
@@ -177,6 +227,14 @@ public class GTransformer {
     public StringBuffer transform(String xsltName, StringBuffer sb) 
     throws GenericSearchException {
         return transform(xsltName, sb, new String[]{});
+    }
+    
+    private String getDebugString(String debugString) {
+    	String result = debugString;
+    	if (debugString.length()>debuglength) {
+    		result = result.substring(0,debuglength)+"...\n...";
+    	}
+    	return result;
     }
     
     public static void main(String[] args) {

@@ -4,6 +4,7 @@
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
+	<property name="env.FEDORA.HOME" 			location="/Users/gertschmeltzpedersen/f33" />
     <property name="web.xml.file"              value="web-withoutAuthN.xml"/> <!-- or web-withAuthN.xml -->
     <property name="javac.debug"               value="on"/>
     <property name="javac.deprecation"         value="on"/>
@@ -115,6 +116,7 @@
 		<mkdir dir="${dist.dir}" />
 		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" />
 		<copy file="../FgsConfig/configvalues.xml" todir="${build.dir}" />
+		<copy file="../FgsConfig/configvalues23.xml" todir="${build.dir}" />
 		<copy todir="${build.dir}/css">
 			<fileset dir="src/css"/>
 		</copy>
@@ -195,13 +197,13 @@
 		<delete file="${build.dir}/WEB-INF/web.xml" />
 		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" />
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
-        <copy file="${dist.dir}/${war.name}" todir="${env.FEDORA_HOME}/${tomcat.basename}/webapps"/>
-		<delete dir="${env.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
-		<mkdir dir="${env.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
-		<copy todir="${env.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies">
+        <copy file="${dist.dir}/${war.name}" todir="${env.FEDORA.HOME}/${tomcat.basename}/webapps"/>
+		<delete dir="${env.FEDORA.HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
+		<mkdir dir="${env.FEDORA.HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
+		<copy todir="${env.FEDORA.HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies">
 			<fileset dir="${build.dir}/WEB-INF/classes/configDemoSearchResultFiltering/fgs-policies"/>
 		</copy>
-		<exec executable="sh" dir="${env.FEDORA_HOME}/server/bin/">
+		<exec executable="sh" dir="${env.FEDORA.HOME}/server/bin/">
             <arg line=" fedora-reload-policies.sh http fedoraAdmin fedoraAdmin"/>
 		</exec>
 	</target>

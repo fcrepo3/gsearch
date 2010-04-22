@@ -144,7 +144,8 @@ public class RESTImpl extends HttpServlet {
         params[7] = config.getSearchResultFilteringType();
         resultXml = (new GTransformer()).transform(
         				config.getConfigName()+"/rest/"+restXslt, 
-        				resultXml, params);
+        				resultXml, params,
+        				getServletContext().getRealPath("/WEB-INF/classes"));
 //        if (logger.isDebugEnabled())
 //            logger.debug("after "+restXslt+" result=\n"+resultXml);
         

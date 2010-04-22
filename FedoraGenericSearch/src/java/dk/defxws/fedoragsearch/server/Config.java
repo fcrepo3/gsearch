@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ListIterator;
@@ -676,43 +677,48 @@ public class Config {
     private void checkRestStylesheet(String propName) {
         String propValue = fgsProps.getProperty(propName);
         String configPath = "/"+configName+"/rest/"+propValue+".xslt";
-        InputStream stylesheet = Config.class.getResourceAsStream(configPath);
-        if (stylesheet==null) {
-            errors.append("\n*** Rest stylesheet "+propName+"="+propValue+" not found");
-        } else
-            checkStylesheet(configPath, stylesheet);
+        checkStylesheet(configPath);
     }
     
     private void checkResultStylesheet(String xsltPath, Properties props, String propName) {
         String propValue = props.getProperty(propName);
         String configPath = "/"+configName+"/"+xsltPath+"/"+propValue+".xslt";
-        InputStream stylesheet = Config.class.getResourceAsStream(configPath);
-        if (stylesheet==null) {
-            errors.append("\n*** Result stylesheet "+configPath + ": " 
-                    + propName + "=" + propValue + " not found");
-        }
-        else
-            checkStylesheet(configPath, stylesheet);
+        checkStylesheet(configPath);
     }
     
-    private void checkStylesheet(String configPath, InputStream stylesheet) {
+    private void checkStylesheet(String configPath) {
         if (logger.isDebugEnabled())
             logger.debug("checkStylesheet for " + configPath);
+        URL stylesheet = Config.class.getResource(configPath);
+        if (stylesheet==null) {
+          errors.append("\n*** Stylesheet "+configPath+" not found");
+          return;
+        }
+        TransformerFactory tfactory = null;
+		try {
+			tfactory = TransformerFactory.newInstance();
+		} catch (TransformerFactoryConfigurationError e) {
+            errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
+		}
+        StreamSource xslt = null;
+		try {
+			xslt = new StreamSource(stylesheet.openStream(), stylesheet.toString());
+		} catch (IOException e) {
+            errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
+		}
         Transformer transformer = null;
         try {
-            TransformerFactory tfactory = TransformerFactory.newInstance();
-            StreamSource xslt = new StreamSource(stylesheet);
-            transformer = tfactory.newTransformer(xslt);
-            String testSource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+
-            "<emptyTestDocumentRoot/>";
-            StringReader sr = new StringReader(testSource);
-            StreamResult destStream = new StreamResult(new StringWriter());
-            try {
-                transformer.transform(new StreamSource(sr), destStream);
-            } catch (TransformerException e) {
-                errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
-            }
-        } catch (TransformerConfigurationException e) {
+			transformer = tfactory.newTransformer(xslt);
+		} catch (TransformerConfigurationException e) {
+            errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
+		}
+        String testSource = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+
+        "<emptyTestDocumentRoot/>";
+        StringReader sr = new StringReader(testSource);
+        StreamResult destStream = new StreamResult(new StringWriter());
+        try {
+            transformer.transform(new StreamSource(sr), destStream);
+        } catch (TransformerException e) {
             errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());
         } catch (TransformerFactoryConfigurationError e) {
             errors.append("\n*** Stylesheet "+configPath+" error:\n"+e.toString());

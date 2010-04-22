@@ -7,14 +7,14 @@
  * Copyright 2006, 2007, 2008, 2009, 2010 by The Technical University of Denmark.
  * All rights reserved.
  
- The FedoraGSearch development is funded by 
+ The FedoraGSearch development is originally funded by 
  
      DEFF, Denmark's Electronic Research Library, http://www.deff.dk .
      
-The developer is Gert Schmeltz Pedersen, gsp@dtic.dtu.dk, at 
+The developer is Gert Schmeltz Pedersen, gsp@dtic.dtu.dk, at DTU Library,
 the Technical Information Center of Denmark at the Technical University of Denmark.
 
-Contact in the Fedora core developer team is Chris Wilper, cwilper@fedora-commons.org .
+Contact in the Fedora Commons core developer team is Chris Wilper, cwilper@fedora-commons.org .
 
 Feedback, requests, etc. may also be sent to 
   fedora-commons-developers@lists.sourceforge.net or to
@@ -34,10 +34,10 @@ It works with Fedora version 2.2.1.
 Version 2.1 was released in April 2008, updating GSearch to work with Fedora 3.0
 and taking advantage of Fedora's new messaging capability for index updates.
 
-Version 2.2 was released in December 2008, updating GSearch to work with Fedora 3.1.
+Version 2.2 was released in December 2008, updating GSearch to work with Fedora 3.1+.
 
-Version 2.3 was released in February 2010, updating GSearch to work with Fedora 3.3,
-Lucene 3.0, and Solr 1.4.
+Version 2.3 was released in May 2010, updating GSearch to work with Fedora 3.3.
+See feature list below.
 
 The Fedora Commons Documentation for FedoraGSearch is at 
 http://fedora-commons.org/confluence/display/FCSVCS/Generic+Search+Service+2.3.
@@ -51,6 +51,8 @@ The new features in Version 2.3:
 - Fedora 3.3 compatibility
 - Lucene 3.0 compatibility
 - Solr 1.4 compatibility
+- Simplified configuration, see the new configFgs23/ and configvalues23.xml
+  (resolving FCREPO-464, thanks to Renaud Waldura)
 - ...
 
 The new features in Version 2.2:
