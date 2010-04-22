@@ -11,8 +11,9 @@
 	</description>
 
 	<property environment="env" />
+	<property name="env.FEDORA.HOME" 			location="/Users/gertschmeltzpedersen/f33" />
 	<path id="fedora.path">
-		<pathelement path="${env.FEDORA_HOME}"/>
+		<pathelement path="${env.FEDORA.HOME}"/>
 	</path>
 	<pathconvert targetos="unix" property="fedora.home" refid="fedora.path"/>
 	<path id="logs.path">

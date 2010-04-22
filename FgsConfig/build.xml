@@ -11,16 +11,23 @@
 			depends="prep, configManyToMany"
         	description="build the config">
         <ant antfile="configvalues.xml" target="configForLocalDevelopment" inheritAll="false"/>
+        <ant antfile="configvalues23.xml" target="configForLocalDevelopment" inheritAll="false"/>
 	</target>
 
 	<target name="configForWebServer"
 			depends="prep, configManyToMany"
         	description="build the config">
         <ant antfile="configvalues.xml" target="configOnWebServer" inheritAll="false"/>
+        <ant antfile="configvalues23.xml" target="configOnWebServer" inheritAll="false"/>
 	</target>
 
 	<target name="prep"
 	          description="prepare">
+		<delete dir="${plugin.dir}/configFgs23" />
+		<mkdir dir="${plugin.dir}/configFgs23" />
+		<copy todir="${plugin.dir}/configFgs23">
+			<fileset dir="configFgs23"/>
+		</copy>
 		<delete dir="${plugin.dir}/configBasic" />
 		<mkdir dir="${plugin.dir}/configBasic" />
 		<copy todir="${plugin.dir}/configBasic">
