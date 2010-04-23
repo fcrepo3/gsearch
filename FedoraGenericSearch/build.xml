@@ -276,6 +276,13 @@
 		<property name="test" value="gsearch.test.searchresultfiltering.AllTests"/>
 	</target>
 	
+	<target name="junit-fgs23" depends="junit-set-fgs23, junit">
+	</target>
+	
+	<target name="junit-set-fgs23">
+		<property name="test" value="gsearch.test.fgs23.AllTests"/>
+	</target>
+	
 	<target name="junit" depends="compile-junit">
 		<property name="fedoragsearch.protocol" value="http"/>
 		<property name="fedoragsearch.hostport" value="localhost:8080"/>
