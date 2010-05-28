@@ -51,7 +51,7 @@ public class TransformerToText {
     throws GenericSearchException {
         if (mimetype.equals("text/plain")) {
             return getTextFromText(doc);
-        } else if(mimetype.equals("text/xml")) {
+        } else if(mimetype.equals("text/xml") || mimetype.equals("application/xml")) {
             return getTextFromXML(doc);
         } else if(mimetype.equals("text/html")) {
             return getTextFromHTML(doc);

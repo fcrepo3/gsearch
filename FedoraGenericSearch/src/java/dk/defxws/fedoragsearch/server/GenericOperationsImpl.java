@@ -578,7 +578,7 @@ public class GenericOperationsImpl implements Operations {
                     throw new GenericSearchException("getDissemination returned null");
                 }
                 ds = mts.getStream();
-                mimetype = mts.getMIMEType();
+                mimetype = mts.getMIMEType().split(";")[0]; // MIMETypedStream can include encoding, eg "text/xml;charset=utf-8" - split this off
                 if (logger.isDebugEnabled())
                     logger.debug("getDisseminationText" +
                             " mimetype="+mimetype);
