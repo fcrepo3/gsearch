@@ -2,7 +2,7 @@
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fedoragsearch.server;
@@ -46,6 +46,7 @@ public class GenericOperationsImpl implements Operations {
     
     private static final Logger logger =
         Logger.getLogger(GenericOperationsImpl.class);
+    int debuglength = 500;
 
     private static final Map fedoraClients = new HashMap();
 
@@ -362,8 +363,7 @@ public class GenericOperationsImpl implements Operations {
     		String fedoraUser,
     		String fedoraPass,
     		String trustStorePath,
-    		String trustStorePass)
-    throws GenericSearchException {
+    		String trustStorePass) {
         if (logger.isInfoEnabled())
             logger.info("getDatastreamText"
             		+" pid="+pid
@@ -390,26 +390,20 @@ public class GenericOperationsImpl implements Operations {
                         dsId, null);
                 if (mts==null) return "";
                 ds = mts.getStream();
-                mimetype = mts.getMIMEType();
-            } catch (AxisFault e) {
-                if (e.getFaultString().indexOf("DatastreamNotFoundException")>-1 ||
-                        e.getFaultString().indexOf("DefaulAccess")>-1)
-                    return new String();
-                else
-                    throw new GenericSearchException(e.getFaultString()+": "+e.toString());
-            } catch (RemoteException e) {
-                throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
+                mimetype = mts.getMIMEType().split(";")[0]; // MIMETypedStream can include encoding, eg "text/xml;charset=utf-8" - split this off
+                if (ds != null) {
+                    dsBuffer = (new TransformerToText().getText(ds, mimetype));
+                }
+            } catch (Exception e) {
+            	return emptyIndexField("getDatastreamText", pid, dsId, mimetype, e);
             }
-        }
-        if (ds != null) {
-            dsBuffer = (new TransformerToText().getText(ds, mimetype));
         }
         if (logger.isDebugEnabled())
             logger.debug("getDatastreamText" +
                     " pid="+pid+
                     " dsId="+dsId+
                     " mimetype="+mimetype+
-                    " dsBuffer="+dsBuffer.toString());
+                    " dsBuffer="+getDebugString(dsBuffer.toString()));
         return dsBuffer.toString();
     }
     
@@ -446,6 +440,7 @@ public class GenericOperationsImpl implements Operations {
             		+" trustStorePath="+trustStorePath
             		+" trustStorePass="+trustStorePass);
         StringBuffer dsBuffer = new StringBuffer();
+        String mimetype = "";
         Datastream[] dsds = null;
         try {
             FedoraAPIM apim = getAPIM(
@@ -456,16 +451,12 @@ public class GenericOperationsImpl implements Operations {
             		trustStorePath,
             		trustStorePass );
             dsds = apim.getDatastreams(pid, null, "A");
-        } catch (AxisFault e) {
-            throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
-        } catch (RemoteException e) {
-            throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
+        } catch (Exception e) {
+        	return new StringBuffer(emptyIndexField("getFirstDatastreamText", pid, "", mimetype, e));
         }
-//      String mimetypes = "text/plain text/html application/pdf application/ps application/msword";
         String mimetypes = config.getMimeTypes();
         if (dsMimetypes!=null && dsMimetypes.length()>0)
             mimetypes = dsMimetypes;
-        String mimetype = "";
         dsID = null;
         if (dsds != null) {
             int best = 99999;
@@ -474,7 +465,7 @@ public class GenericOperationsImpl implements Operations {
                 if (j > -1 && best > j) {
                     dsID = dsds[i].getID();
                     best = j;
-                    mimetype = dsds[i].getMIMEType();
+                    mimetype = dsds[i].getMIMEType().split(";")[0]; // MIMETypedStream can include encoding, eg "text/xml;charset=utf-8" - split this off
                 }
             }
         }
@@ -491,10 +482,9 @@ public class GenericOperationsImpl implements Operations {
                 MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
                         dsID, null);
                 ds = mts.getStream();
-            } catch (AxisFault e) {
-                throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
-            } catch (RemoteException e) {
-                throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
+                mimetype = mts.getMIMEType().split(";")[0]; // MIMETypedStream can include encoding, eg "text/xml;charset=utf-8" - split this off
+            } catch (Exception e) {
+            	return new StringBuffer(emptyIndexField("getFirstDatastreamText", pid, dsID, mimetype, e));
             }
         }
         if (ds != null) {
@@ -582,18 +572,8 @@ public class GenericOperationsImpl implements Operations {
                 if (logger.isDebugEnabled())
                     logger.debug("getDisseminationText" +
                             " mimetype="+mimetype);
-            } catch (GenericSearchException e) {
-                if (e.toString().indexOf("DisseminatorNotFoundException")>-1)
-                    return new StringBuffer();
-                else
-                    throw new GenericSearchException(e.toString());
-            } catch (AxisFault e) {
-                if (e.getFaultString().indexOf("DisseminatorNotFoundException")>-1)
-                    return new StringBuffer();
-                else
-                    throw new GenericSearchException(e.getFaultString()+": "+e.toString());
-            } catch (RemoteException e) {
-                throw new GenericSearchException(e.getClass().getName()+": "+e.toString());
+            } catch (Exception e) {
+            	return new StringBuffer(emptyIndexField("getDisseminationText", pid, bDefPid, mimetype, e));
             }
         }
         if (ds != null) {
@@ -606,6 +586,31 @@ public class GenericOperationsImpl implements Operations {
                     " mimetype="+mimetype+
                     " dsBuffer="+dsBuffer.toString());
         return dsBuffer;
+    }
+    
+    private String emptyIndexField(
+    			String methodName, 
+    			String pid,
+    			String dsId,
+    			String mimetype,
+    			Exception e) {
+//    	no exception to be thrown,
+//    	because then the index document being created will be deleted,
+//    	instead put log warning and send empty index field text.
+    	logger.warn("exception and empty index field from " + methodName +
+                " pid="+pid+
+                " dsId="+dsId+
+                " mimetype="+mimetype+
+                " exception="+e.toString());
+        return "";
+    }
+    
+    private String getDebugString(String debugString) {
+    	String result = debugString;
+    	if (debugString.length()>debuglength) {
+    		result = result.substring(0,debuglength)+"...\n...";
+    	}
+    	return result;
     }
     
 }

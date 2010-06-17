@@ -2,27 +2,23 @@
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fedoragsearch.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.demo.html.HTMLParser;
-import org.pdfbox.cos.COSDocument;
-import org.pdfbox.encryption.DocumentEncryption;
-import org.pdfbox.exceptions.CryptographyException;
-import org.pdfbox.exceptions.InvalidPasswordException;
-import org.pdfbox.pdfparser.PDFParser;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
@@ -37,7 +33,7 @@ public class TransformerToText {
     private static final Logger logger =
         Logger.getLogger(TransformerToText.class);
     
-    public static final String[] handledMimeTypes = {"text/plain", "text/xml",  "text/html", "application/pdf"};
+    public static final String[] handledMimeTypes = {"text/plain", "text/xml", "application/xml",  "text/html", "application/pdf"};
     
     public TransformerToText() {
     }
@@ -132,40 +128,22 @@ throws GenericSearchException {
         StringBuffer docText = new StringBuffer();
         COSDocument cosDoc = null;
         PDDocument pdDoc = null;
-        String password = "";
         try {
-            cosDoc = parseDocument(new ByteArrayInputStream(doc));
+            PDFParser parser = new PDFParser(new ByteArrayInputStream(doc));
+            parser.parse();
+            cosDoc = parser.getDocument();
         }
         catch (IOException e) {
             closeCOSDocument(cosDoc);
             throw new GenericSearchException(
-                    "Cannot parse PDF document", e);
+                    "Cannot parse PDF document: ", e);
         }
-        
-        // decrypt the PDF document, if it is encrypted
-        try {
-            if (cosDoc.isEncrypted()) {
-                DocumentEncryption decryptor = new DocumentEncryption(cosDoc);
-                decryptor.decryptDocument(password);
-            }
-        }
-        catch (CryptographyException e) {
-            closeCOSDocument(cosDoc);
-            throw new GenericSearchException(
-                    "Cannot decrypt PDF document", e);
-        }
-        catch (InvalidPasswordException e) {
-            closeCOSDocument(cosDoc);
-            throw new GenericSearchException(
-                    "Cannot decrypt PDF document", e);
-        }
-        catch (IOException e) {
-            closeCOSDocument(cosDoc);
-            throw new GenericSearchException(
-                    "Cannot decrypt PDF document", e);
-        }
-        
-        // extract PDF document's textual content
+
+//        encrypted and/or password protected PDF documents cannot be indexed by GSearch,
+//        an exception will be thrown here, which will be caught by the calling
+//        GenericOperationsImpl method, which will return an empty index field
+
+//        extract PDF document's textual content
         try {
             PDFTextStripper stripper = new PDFTextStripper();
             pdDoc = new PDDocument(cosDoc);
@@ -173,20 +151,23 @@ throws GenericSearchException {
         }
         catch (IOException e) {
             throw new GenericSearchException(
-                    "Cannot parse PDF document", e);
+                    "Cannot get text from PDF document: ", e);
         }
         finally {
             closeCOSDocument(cosDoc);
             closePDDocument(pdDoc);
         }
+//      put space instead of characters 00-31 (which are not allowed in the indexing stylesheet)
+        char c;
+      	for (int i=0; i<docText.length(); i++) {
+      		c = docText.charAt(i);
+        	if (c<32) {
+                if (logger.isDebugEnabled())
+                	logger.debug("getTextFromPDF index="+i+" char="+c+" set to 32");
+                docText.replace(i, i+1, " ");
+        	}
+        }
         return docText;
-    }
-    
-    private static COSDocument parseDocument(InputStream is)
-    throws IOException {
-        PDFParser parser = new PDFParser(is);
-        parser.parse();
-        return parser.getDocument();
     }
     
     private void closeCOSDocument(COSDocument cosDoc) {
