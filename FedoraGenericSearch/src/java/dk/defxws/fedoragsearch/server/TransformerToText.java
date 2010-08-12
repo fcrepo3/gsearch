@@ -157,11 +157,11 @@ throws GenericSearchException {
             closeCOSDocument(cosDoc);
             closePDDocument(pdDoc);
         }
-//      put space instead of characters 00-31 (which are not allowed in the indexing stylesheet)
+//      put space instead of characters not allowed in the indexing stylesheet
         char c;
       	for (int i=0; i<docText.length(); i++) {
       		c = docText.charAt(i);
-        	if (c<32) {
+        	if (c < 32 && c != 9 && c != 10 && c != 13) {
                 if (logger.isDebugEnabled())
                 	logger.debug("getTextFromPDF index="+i+" char="+c+" set to 32");
                 docText.replace(i, i+1, " ");
