@@ -156,7 +156,7 @@ public class Statement {
     				TokenStream tokenStream = analyzer.tokenStream( f.name(), new StringReader(f.stringValue()));
     				try {
     					snippets = highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax, " ... ");
-    				} catch (IOException e) {
+    				} catch (Exception e) {
     					errorExit(e.toString());
     				}
     				snippets = checkTruncatedWords(snippets, " ... ");
