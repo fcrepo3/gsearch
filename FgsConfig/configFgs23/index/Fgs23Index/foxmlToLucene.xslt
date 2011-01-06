@@ -97,7 +97,7 @@
 
 			<!-- a managed datastream is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the field. -->
-			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M']">
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E']">
 				<IndexField index="TOKENIZED" store="YES" termVector="NO">
 					<xsl:attribute name="IFname">
 						<xsl:value-of select="concat('dsm.', @ID)"/>
