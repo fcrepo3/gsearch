@@ -44,7 +44,7 @@ import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
-import fedora.server.utilities.StreamUtility;
+import org.fcrepo.server.utilities.StreamUtility;
 
 /**
  * performs the Solr specific parts of the operations

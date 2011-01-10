@@ -44,7 +44,7 @@ import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-import fedora.server.utilities.StreamUtility;
+import org.fcrepo.server.utilities.StreamUtility;
 
 /**
  * queries the Lucene index 
