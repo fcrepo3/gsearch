@@ -14,7 +14,9 @@
 
 <!--
 	 This xslt stylesheet generates the Solr doc element consisting of field elements
-     from a FOXML record. The PID field is mandatory.
+     from a FOXML record. 
+     You must specify the index field elements in solr's schema.xml file,
+     including the uniqueKey element, which in this demo case is set to "PID".
      Options for tailoring:
        - generation of fields from other XML metadata streams than DC
        - generation of fields from other datastream types than XML
@@ -32,8 +34,6 @@
 	<xsl:variable name="docBoost" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
 	
 	<xsl:template match="/">
-		<add> 
-		<doc> 
 			<xsl:attribute name="boost">
 				<xsl:value-of select="$docBoost"/>
 			</xsl:attribute>
@@ -45,11 +45,19 @@
 				</xsl:if>
 			</xsl:if>
 		</xsl:if>
-		</doc>
-		</add>
+		<!-- The following allows inactive demo FedoraObjects to be deleted from the index. -->
+		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Inactive']">
+			<xsl:if test="not(foxml:digitalObject/foxml:datastream[@ID='METHODMAP'] or foxml:digitalObject/foxml:datastream[@ID='DS-COMPOSITE-MODEL'])">
+				<xsl:if test="starts-with($PID,'demo')">
+					<xsl:apply-templates mode="inactiveDemoFedoraObject"/>
+				</xsl:if>
+			</xsl:if>
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="/foxml:digitalObject" mode="activeDemoFedoraObject">
+		<add> 
+		<doc> 
 			<field name="PID" boost="2.5">
 				<xsl:value-of select="$PID"/>
 			</field>
@@ -80,7 +88,14 @@
 					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</field>
 			</xsl:for-each>
-			
+		</doc>
+		</add>
+	</xsl:template>
+
+	<xsl:template match="/foxml:digitalObject" mode="inactiveDemoFedoraObject">
+		<delete> 
+			<id><xsl:value-of select="$PID"/></id>
+		</delete>
 	</xsl:template>
 	
 </xsl:stylesheet>	
