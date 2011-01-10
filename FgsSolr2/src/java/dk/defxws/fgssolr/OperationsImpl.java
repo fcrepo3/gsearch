@@ -56,8 +56,6 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private static final Logger logger = Logger.getLogger(OperationsImpl.class);
     
-    private static final String UNIQUEKEY = "PID";
-    
     private IndexReader ir = null;
     
     public String gfindObjects(
@@ -446,10 +444,8 @@ public class OperationsImpl extends GenericOperationsImpl {
                 params);
         if (logger.isDebugEnabled())
             logger.debug("indexDoc=\n"+sb.toString());
-        if (sb.indexOf("name=\""+UNIQUEKEY) > 0) {
-        	postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
-            updateTotal++;
-        }
+    	postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
+        updateTotal++;
     }
     
     public Analyzer getAnalyzer(String analyzerClassName)
