@@ -44,7 +44,7 @@ import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-import org.fcrepo.server.utilities.StreamUtility;
+import fedora.server.utilities.StreamUtility;
 
 /**
  * queries the Solr index 
