@@ -9,8 +9,9 @@
     </layout>
   </appender>
   
-  <appender name="FILEOUT" class="org.apache.log4j.FileAppender">
-    <param name="File" value="LOGPATH/fedoragsearch.log"/>
+  <appender name="FILEOUT" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="LOGPATH/fedoragsearch.daily.log"/>
+    <param name="DatePattern" value="'.'yyyy-MM-dd"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%p %d (%c{1}) %m%n"/>
     </layout>
