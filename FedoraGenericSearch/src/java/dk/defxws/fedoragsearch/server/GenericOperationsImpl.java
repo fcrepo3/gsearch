@@ -391,11 +391,42 @@ public class GenericOperationsImpl implements Operations {
                 if (mts==null) return "";
                 ds = mts.getStream();
                 mimetype = mts.getMIMEType().split(";")[0]; // MIMETypedStream can include encoding, eg "text/xml;charset=utf-8" - split this off
-                if (ds != null) {
-                    dsBuffer = (new TransformerToText().getText(ds, mimetype));
-                }
             } catch (Exception e) {
-            	return emptyIndexField("getDatastreamText", pid, dsId, mimetype, e);
+            	return emptyIndexField("getDatastreamText mimetype", pid, dsId, mimetype, e);
+            }
+            if (logger.isDebugEnabled())
+                logger.debug("getDatastreamText" +
+                        " pid="+pid+
+                        " dsId="+dsId+
+                        " mimetype="+mimetype);
+        	TransformerToText transformerToText = null;
+            if (ds != null) {
+            	try {
+					transformerToText = new TransformerToText();
+				} catch (Exception e) {
+	            	return emptyIndexField("getDatastreamText TransformerToText", pid, dsId, mimetype, e);
+				}
+	            if (logger.isDebugEnabled())
+	                logger.debug("getDatastreamText" +
+	                        " pid="+pid+
+	                        " dsId="+dsId+
+	                        " TransformerToText="+transformerToText);
+                try {
+					dsBuffer = transformerToText.getText(ds, mimetype);
+				} catch (Exception e) {
+		            if (logger.isDebugEnabled())
+		                logger.debug("getDatastreamText" +
+		                        " pid="+pid+
+		                        " dsId="+dsId+
+		                        " TransformerToText="+transformerToText+
+		                        " Exception="+e);
+	            	return emptyIndexField("getDatastreamText getText", pid, dsId, mimetype, e);
+				} finally {
+		            if (logger.isDebugEnabled())
+		                logger.debug("getDatastreamText finally " +
+		                        " pid="+pid+
+		                        " dsId="+dsId);
+				}
             }
         }
         if (logger.isDebugEnabled())

@@ -10,6 +10,8 @@ package dk.defxws.fedoragsearch.server;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -125,38 +127,112 @@ throws GenericSearchException {
      */
     private StringBuffer getTextFromPDF(byte[] doc) 
     throws GenericSearchException {
+//      extract PDF document's textual content
+    	
+//      encrypted and/or password protected PDF documents cannot be indexed by GSearch,
+//      an exception will be thrown here, which will be caught by the calling
+//      GenericOperationsImpl method, which will return an empty index field
+
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF");
         StringBuffer docText = new StringBuffer();
-        COSDocument cosDoc = null;
-        PDDocument pdDoc = null;
+        ByteArrayInputStream bais = null;
+		try {
+			bais = new ByteArrayInputStream(doc);
+		} catch (Exception e) {
+			closeBAIS(bais);
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF new ByteArrayInputStream: ", e);
+            throw new GenericSearchException(
+                    "getTextFromPDF new ByteArrayInputStream: ", e);
+		}
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF new ByteArrayInputStream");
+        PDFParser parser;
+		try {
+			parser = new PDFParser(bais);
+		} catch (Exception e) {
+			closeBAIS(bais);
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF new PDFParser: ", e);
+            throw new GenericSearchException(
+                    "getTextFromPDF new PDFParser: ", e);
+		}
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF new PDFParser");
         try {
-            PDFParser parser = new PDFParser(new ByteArrayInputStream(doc));
-            parser.parse();
+			parser.parse();
+		} catch (Exception e) {
+			closeBAIS(bais);
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF parser.parse: ", e);
+            throw new GenericSearchException(
+                    "getTextFromPDF parser.parse: ", e);
+		}
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF parser.parse");
+        COSDocument cosDoc = null;
+        try {
             cosDoc = parser.getDocument();
         }
-        catch (IOException e) {
+        catch (Exception e) {
+			closeBAIS(bais);
             closeCOSDocument(cosDoc);
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF parser.getDocument: ", e);
             throw new GenericSearchException(
-                    "Cannot parse PDF document: ", e);
+                    "getTextFromPDF parser.getDocument: ", e);
         }
-
-//        encrypted and/or password protected PDF documents cannot be indexed by GSearch,
-//        an exception will be thrown here, which will be caught by the calling
-//        GenericOperationsImpl method, which will return an empty index field
-
-//        extract PDF document's textual content
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF parser.getDocument");
+        PDDocument pdDoc = null;
         try {
-            PDFTextStripper stripper = new PDFTextStripper();
-            pdDoc = new PDDocument(cosDoc);
-            docText = new StringBuffer(stripper.getText(pdDoc));
-        }
-        catch (IOException e) {
+			pdDoc = new PDDocument(cosDoc);
+		} catch (Exception e) {
+			closeBAIS(bais);
+            closeCOSDocument(cosDoc);
+            closePDDocument(pdDoc);
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF new PDDocument: ", e);
             throw new GenericSearchException(
-                    "Cannot get text from PDF document: ", e);
+                    "getTextFromPDF new PDDocument: ", e);
+        }
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF new PDDocument isEncrypted="+pdDoc.isEncrypted()+" getNumberOfPages="+pdDoc.getNumberOfPages());
+        PDFTextStripper stripper;
+		try {
+			stripper = new PDFTextStripper();
+		} catch (Exception e) {
+			closeBAIS(bais);
+            closeCOSDocument(cosDoc);
+            closePDDocument(pdDoc);
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF new PDFTextStripper: ", e);
+            throw new GenericSearchException(
+                    "getTextFromPDF new PDFTextStripper: ", e);
+        }
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF new PDFTextStripper getStartPage="+stripper. getStartPage()+" getEndPage="+stripper.getEndPage());
+        String docString = "";
+        try {
+            docString = stripper.getText(pdDoc);
+        }
+        catch (Exception e) {
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF stripper.getText: ", e);
+            throw new GenericSearchException(
+                    "getTextFromPDF stripper.getText: ", e);
         }
         finally {
+            if (logger.isDebugEnabled())
+                logger.debug("getTextFromPDF stripper.getText finally");
+			closeBAIS(bais);
             closeCOSDocument(cosDoc);
             closePDDocument(pdDoc);
         }
+        if (logger.isDebugEnabled())
+            logger.debug("getTextFromPDF stripper.getText");
+        docText = new StringBuffer(docString);
 //      put space instead of characters not allowed in the indexing stylesheet
         char c;
       	for (int i=0; i<docText.length(); i++) {
@@ -170,22 +246,41 @@ throws GenericSearchException {
         return docText;
     }
     
-    private void closeCOSDocument(COSDocument cosDoc) {
+    private void closeCOSDocument(COSDocument cosDoc) 
+    throws GenericSearchException {
         if (cosDoc != null) {
             try {
                 cosDoc.close();
             }
-            catch (IOException e) {
+            catch (Exception e) {
+                throw new GenericSearchException(
+                        "Cannot close COSDocument: ", e);
             }
         }
     }
     
-    private void closePDDocument(PDDocument pdDoc) {
+    private void closePDDocument(PDDocument pdDoc) 
+    throws GenericSearchException {
         if (pdDoc != null) {
             try {
             	pdDoc.close();
             }
-            catch (IOException e) {
+            catch (Exception e) {
+                throw new GenericSearchException(
+                        "Cannot close PDDocument: ", e);
+            }
+        }
+    }
+    
+    private void closeBAIS(ByteArrayInputStream bais) 
+    throws GenericSearchException {
+        if (bais != null) {
+            try {
+            	bais.close();
+            }
+            catch (Exception e) {
+                throw new GenericSearchException(
+                        "Cannot close ByteArrayInputStream: ", e);
             }
         }
     }
