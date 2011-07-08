@@ -141,7 +141,7 @@ public class IndexDocumentHandler extends DefaultHandler {
                 if (aName=="store") 
                     if ("YES".equals(val)) store = Field.Store.YES;
                     else if ("NO".equals(val)) store = Field.Store.NO;
-                    else if ("COMPRESS".equals(val)) store = Field.Store.COMPRESS;
+//                    else if ("COMPRESS".equals(val)) store = Field.Store.COMPRESS; Deprecated after 2.4
                 if (aName=="termVector") 
                     if ("NO".equals(val)) termVector = Field.TermVector.NO;
                     else if ("YES".equals(val)) termVector = Field.TermVector.YES;

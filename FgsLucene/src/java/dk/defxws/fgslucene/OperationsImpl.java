@@ -33,7 +33,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.StaleReaderException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.store.SimpleFSDirectory;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
@@ -552,7 +554,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 			}
 		} else {
 	        try {
-				ir = IndexReader.open(config.getIndexDir(indexName));
+				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
+				ir = IndexReader.open(dir, true);
 			} catch (CorruptIndexException e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			} catch (IOException e) {
@@ -584,7 +587,8 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws GenericSearchException {
     	if (iw != null) return;
         try {
-            iw = new IndexWriter(config.getIndexDir(indexName), getAnalyzer(config.getAnalyzer(indexName)), create, IndexWriter.MaxFieldLength.LIMITED);
+			Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
+            iw = new IndexWriter(dir, getAnalyzer(config.getAnalyzer(indexName)), create, IndexWriter.MaxFieldLength.LIMITED);
             if (config.getMaxBufferedDocs(indexName)>1)
             	iw.setMaxBufferedDocs(config.getMaxBufferedDocs(indexName));
             if (config.getMergeFactor(indexName)>1)
@@ -595,7 +599,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         	iw = null;
             if (e.toString().indexOf("/segments")>-1) {
                 try {
-                    iw = new IndexWriter(config.getIndexDir(indexName), getAnalyzer(config.getAnalyzer(indexName)), true, IndexWriter.MaxFieldLength.LIMITED);
+    				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
+                    iw = new IndexWriter(dir, getAnalyzer(config.getAnalyzer(indexName)), true, IndexWriter.MaxFieldLength.LIMITED);
                 } catch (IOException e2) {
                     throw new GenericSearchException("IndexWriter new error, creating index indexName=" + indexName+ " :\n", e2);
                 }

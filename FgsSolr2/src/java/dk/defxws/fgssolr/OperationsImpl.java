@@ -39,6 +39,8 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.SimpleFSDirectory;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
@@ -504,7 +506,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 	try {
 		solrUrl = new URL(solrUrlString);
 	} catch (MalformedURLException e) {
-        throw new GenericSearchException("solrUrl="+solrUrl.toString()+": ", e);
+        throw new GenericSearchException("solrUrl="+solrUrlString+": ", e);
 	}
       HttpURLConnection urlc = null;
       String POST_ENCODING = "UTF-8";
@@ -620,7 +622,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 			}
 		} else {
 	        try {
-				ir = IndexReader.open(config.getIndexDir(indexName));
+				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
+				ir = IndexReader.open(dir, true);
 			} catch (CorruptIndexException e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			} catch (IOException e) {
