@@ -35,7 +35,11 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 
@@ -462,6 +466,7 @@ public class Config {
     				"fgsindex.defaultGetIndexInfoResultXslt",
     				"fgsindex.indexDir",
     				"fgsindex.analyzer",
+    				"fgsindex.stopwordsLocation",
     				"fgsindex.untokenizedFields",
     				"fgsindex.defaultQueryFields",
     				"fgsindex.snippetBegin",
@@ -539,38 +544,30 @@ public class Config {
 
 //  		Check analyzer class for lucene and solr
     		if (operationsImpl.indexOf("fgslucene")>-1 || operationsImpl.indexOf("fgssolr")>-1) {
-    			String analyzer = props.getProperty("fgsindex.analyzer"); 
-    			if (analyzer == null || analyzer.equals("")) {
-    				analyzer = defaultAnalyzer;
+    			String analyzerClassName = props.getProperty("fgsindex.analyzer"); 
+    			if (analyzerClassName == null || analyzerClassName.equals("")) {
+    				analyzerClassName = defaultAnalyzer;
     			}
+    			String stopwordsLocation = props.getProperty("fgsindex.stopwordsLocation"); 
     			try {
-    				Class analyzerClass = Class.forName(analyzer);
-    				try {
-    					Analyzer a = (Analyzer) analyzerClass
-    					.getConstructor(new Class[] {})
-    					.newInstance(new Object[] {});
-    				} catch (InstantiationException e) {
-    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-    							+ ": fgsindex.analyzer="+analyzer
-    							+ ": instantiation error.\n"+e.toString());
-    				} catch (IllegalAccessException e) {
-    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-    							+ ": fgsindex.analyzer="+analyzer
-    							+ ": instantiation error.\n"+e.toString());
-    				} catch (InvocationTargetException e) {
-    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-    							+ ": fgsindex.analyzer="+analyzer
-    							+ ": instantiation error.\n"+e.toString());
-    				} catch (NoSuchMethodException e) {
-    					errors.append("\n*** "+configName+"/index/"+indexName+" "+analyzer
-    							+ ": fgsindex.analyzer="+analyzer
-    							+ ": instantiation error:\n"+e.toString());
-    				}
-    			} catch (ClassNotFoundException e) {
+    				Directory dir = new SimpleFSDirectory(indexDirFile);
+    				IndexReader ir = IndexReader.open(dir, true);
+    				long ver = ir.getVersion();
+    				Version version = Version.LUCENE_29;
+    				if (ver == 24) version = Version.LUCENE_24;
+    				Class analyzerClass = Class.forName(analyzerClassName);
+        			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
+    					analyzerClass.getConstructor(new Class[] { Version.class})
+    					.newInstance(new Object[] { version });
+        			} else {
+    					analyzerClass.getConstructor(new Class[] { Version.class, File.class})
+    					.newInstance(new Object[] { version, new File(stopwordsLocation) });
+        			}
+    			} catch (Exception e) {
     				errors.append("\n*** "+configName+"/index/" + indexName
-    						+ ": fgsindex.analyzer="+analyzer
+    						+ ": fgsindex.analyzer="+analyzerClassName
     						+ ": class not found:\n"+e.toString());
-    			}
+				}
     		}
 
 //  		Add untokenizedFields property for lucene
@@ -582,7 +579,8 @@ public class Config {
     				StringBuffer untokenizedFields = new StringBuffer(props.getProperty("fgsindex.untokenizedFields"));
     				IndexReader ir = null;
     				try {
-    					ir = IndexReader.open(indexDir);
+    					Directory dir = new SimpleFSDirectory(indexDirFile);
+    					ir = IndexReader.open(dir, true);
     					int max = ir.numDocs();
     					if (max > 10) max = 10;
     					for (int i=0; i<max; i++) {
@@ -1003,6 +1001,10 @@ public class Config {
     
     public String getAnalyzer(String indexName) {
         return getIndexProps(indexName).getProperty("fgsindex.analyzer");
+    }
+    
+    public String getStopwordsLocation(String indexName) {
+        return getIndexProps(indexName).getProperty("fgsindex.stopwordsLocation");
     }
     
     public URIResolver getURIResolver(String indexName) {

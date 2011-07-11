@@ -36,6 +36,7 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
@@ -487,32 +488,28 @@ public class OperationsImpl extends GenericOperationsImpl {
     	}
     }
     
-    public Analyzer getAnalyzer(String analyzerClassName)
+    public Analyzer getAnalyzer(String indexName)
     throws GenericSearchException {
-        Analyzer analyzer = null;
+    	String analyzerClassName= config.getAnalyzer(indexName);
+		String stopwordsLocation = config.getStopwordsLocation(indexName); 
         if (logger.isDebugEnabled())
-            logger.debug("analyzerClassName=" + analyzerClassName);
-        try {
-            Class analyzerClass = Class.forName(analyzerClassName);
+            logger.debug("analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
+        Analyzer analyzer = null;
+		try {
+			Version version = Version.LUCENE_29;
+			Class analyzerClass = Class.forName(analyzerClassName);
             if (logger.isDebugEnabled())
                 logger.debug("analyzerClass=" + analyzerClass.toString());
-            analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] {})
-            .newInstance(new Object[] {});
+			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
+				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class})
+				.newInstance(new Object[] { version });
+			} else {
+				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class, File.class})
+				.newInstance(new Object[] { version, new File(stopwordsLocation) });
+			}
             if (logger.isDebugEnabled())
                 logger.debug("analyzer=" + analyzer.toString());
-        } catch (ClassNotFoundException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": class not found.\n", e);
-        } catch (InstantiationException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
-        } catch (IllegalAccessException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
-        } catch (InvocationTargetException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
-        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
             throw new GenericSearchException(analyzerClassName
                     + ": instantiation error.\n", e);
         }
@@ -521,7 +518,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     public Analyzer getQueryAnalyzer(String indexName)
     throws GenericSearchException {
-        Analyzer analyzer = getAnalyzer(config.getAnalyzer(indexName));
+        Analyzer analyzer = getAnalyzer(indexName);
         PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer);
     	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
     	while (untokenizedFields.hasMoreElements()) {
@@ -588,7 +585,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     	if (iw != null) return;
         try {
 			Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-            iw = new IndexWriter(dir, getAnalyzer(config.getAnalyzer(indexName)), create, IndexWriter.MaxFieldLength.LIMITED);
+            iw = new IndexWriter(dir, getAnalyzer(indexName), create, IndexWriter.MaxFieldLength.LIMITED);
             if (config.getMaxBufferedDocs(indexName)>1)
             	iw.setMaxBufferedDocs(config.getMaxBufferedDocs(indexName));
             if (config.getMergeFactor(indexName)>1)
@@ -600,7 +597,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             if (e.toString().indexOf("/segments")>-1) {
                 try {
     				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-                    iw = new IndexWriter(dir, getAnalyzer(config.getAnalyzer(indexName)), true, IndexWriter.MaxFieldLength.LIMITED);
+                    iw = new IndexWriter(dir, getAnalyzer(indexName), true, IndexWriter.MaxFieldLength.LIMITED);
                 } catch (IOException e2) {
                     throw new GenericSearchException("IndexWriter new error, creating index indexName=" + indexName+ " :\n", e2);
                 }

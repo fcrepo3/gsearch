@@ -53,6 +53,7 @@
 		<property name="fgs23.mimetypes" value="text/plain text/xml text/html application/pdf" />
 		<property name="fgs23.index.1" value="Fgs23Index" />
 		<property name="fgs23.index.1.indexdir" value="${fedora.home}/gsearch/${fgs23.index.1}" />
+		<property name="fgs23.index.1.stopwords" value="${fedora.home}/gsearch/stopwords.txt" />
 		<property name="fgs23.index.names" value="${fgs23.index.1}" />
 		<property name="fgs23.repos.1" value="Fgs23Repos" />
 		<property name="fgs23.repos.1.fedorabase" value="http://localhost:8080" />
@@ -79,6 +80,7 @@
 		<replace file="${fgs23.config.path}/repository/${fgs23.repos.1}/repository.properties" token="FEDORAVERSION" value="${fgs23.repos.1.fedoraversion}"/>
 		
 		<replace file="${fgs23.config.path}/index/${fgs23.index.1}/index.properties" token="INDEXDIR" value="${fgs23.index.1.indexdir}"/>
+		<replace file="${fgs23.config.path}/index/${fgs23.index.1}/index.properties" token="STOPWORDSFILE" value="${fgs23.index.1.stopwords}"/>
 		
 	</target>
 

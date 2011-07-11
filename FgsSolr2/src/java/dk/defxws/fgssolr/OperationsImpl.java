@@ -1,4 +1,4 @@
-//$Id: OperationsImpl.java 6565 2008-02-07 14:53:30Z gertsp $
+//$Id$
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
@@ -41,6 +41,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
@@ -450,32 +451,28 @@ public class OperationsImpl extends GenericOperationsImpl {
         updateTotal++;
     }
     
-    public Analyzer getAnalyzer(String analyzerClassName)
+    public Analyzer getAnalyzer(String indexName)
     throws GenericSearchException {
-        Analyzer analyzer = null;
+    	String analyzerClassName= config.getAnalyzer(indexName);
+		String stopwordsLocation = config.getStopwordsLocation(indexName); 
         if (logger.isDebugEnabled())
-            logger.debug("analyzerClassName=" + analyzerClassName);
-        try {
-            Class analyzerClass = Class.forName(analyzerClassName);
+            logger.debug("analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
+        Analyzer analyzer = null;
+		try {
+			Version version = Version.LUCENE_29;
+			Class analyzerClass = Class.forName(analyzerClassName);
             if (logger.isDebugEnabled())
                 logger.debug("analyzerClass=" + analyzerClass.toString());
-            analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] {})
-            .newInstance(new Object[] {});
+			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
+				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class})
+				.newInstance(new Object[] { version });
+			} else {
+				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class, File.class})
+				.newInstance(new Object[] { version, new File(stopwordsLocation) });
+			}
             if (logger.isDebugEnabled())
                 logger.debug("analyzer=" + analyzer.toString());
-        } catch (ClassNotFoundException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": class not found.\n", e);
-        } catch (InstantiationException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
-        } catch (IllegalAccessException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
-        } catch (InvocationTargetException e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
-        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
             throw new GenericSearchException(analyzerClassName
                     + ": instantiation error.\n", e);
         }
@@ -484,7 +481,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     public Analyzer getQueryAnalyzer(String indexName)
     throws GenericSearchException {
-        Analyzer analyzer = getAnalyzer(config.getAnalyzer(indexName));
+        Analyzer analyzer = getAnalyzer(indexName);
         PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer);
     	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
     	while (untokenizedFields.hasMoreElements()) {
