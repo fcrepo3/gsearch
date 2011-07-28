@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  $Id$ -->
-<project name="FgsConfig" default="config" basedir=".">
+<project name="FgsConfig" default="configForLocalDevelopment" basedir=".">
 	<description>Fedora Generic Search Service configuration</description>
 
 	<property name="build.dir" location="../FgsBuild/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
-	<property name="project.dir" location="../FgsBuild/eclipseprojects/FgsConfig" />
 
-	<target name="config"
+	<target name="configForLocalDevelopment"
 			depends="prep, configManyToMany"
         	description="build the config">
         <ant antfile="configvalues.xml" target="configForLocalDevelopment" inheritAll="false"/>
-        <ant antfile="configvalues23.xml" target="configForLocalDevelopment" inheritAll="false"/>
+        <ant antfile="fedoragsearch-config-2.3.xml" target="configForLocalDevelopment" inheritAll="false"/>
 	</target>
 
 	<target name="configForWebServer"
 			depends="prep, configManyToMany"
         	description="build the config">
-        <ant antfile="configvalues.xml" target="configOnWebServer" inheritAll="false"/>
-        <ant antfile="configvalues23.xml" target="configOnWebServer" inheritAll="false"/>
 	</target>
 
 	<target name="prep"
@@ -65,11 +62,6 @@
 		</copy>
 		<delete file="${plugin.dir}/log4j.xml" />
 		<copy file="log4j.xml" todir="${plugin.dir}" />
-		<delete dir="${project.dir}" />
-		<mkdir dir="${project.dir}" />
-		<copy todir="${project.dir}">
-			<fileset dir="."/>
-		</copy>
 	</target>
 
 	<target name="configManyToMany"

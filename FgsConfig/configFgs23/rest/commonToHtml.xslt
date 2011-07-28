@@ -13,7 +13,7 @@
 	<xsl:template match="/resultPage">
 		<html>
 			<head>
-				<title>Fgs23 Client for Fedora Generic Search Service</title>
+				<title>Admin Client for Fedora Generic Search Service</title>
 				<link rel="stylesheet" type="text/css" href="css/basic.css"/>
 				<style type="text/css">
 					.highlight {
@@ -27,7 +27,7 @@
 				<div id="header">
 					<a href="" id="logo"></a>
 					<div id="title">
-						<h1>Fgs23 Client for Fedora Generic Search Service</h1>
+						<h1>Admin Client for Fedora Generic Search Service</h1>
 					</div>
 				</div>
 				<table cellspacing="10" cellpadding="10">
@@ -50,13 +50,13 @@
 				<xsl:call-template name="opSpecifics"/>
 				<div id="footer">
    					<div id="copyright">
-						Copyright &#xA9; 2010 Technical University of Denmark, Fedora Project
+						Copyright &#xA9; 2010, 2011 Technical University of Denmark, Fedora Project
 					</div>
 					<div id="lastModified">
 						Last Modified
 						<script type="text/javascript">
 							//<![CDATA[
-							var cvsDate = "$Date: 2010-04-22 $";
+							var cvsDate = "$Date: 2011-07-28 $";
 							var parts = cvsDate.split(" ");
 							var modifiedDate = parts[1];
 							document.write(modifiedDate);

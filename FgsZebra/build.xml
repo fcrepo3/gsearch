@@ -3,48 +3,37 @@
 <project name="FedoraGenericSearch" default="pluginbuild" basedir=".">
 	<description>Fedora Generic Search Service plugin for the Zebra engine</description>
 
-    <property environment="env"/>
-
-    <loadproperties srcFile="lib.properties" /> 
-
-    <property name="build.basedir" location="../FgsBuild"/>
+    <property name="source.dir" location="src/java"/>
+    <property name="lib.dir" location="../FedoraGenericSearch/lib"/>
     <property name="compile.dir" location="bin"/>
-
-	<property name="build.dir" location="../FgsBuild/webapp" />
-	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
-	<property name="project.dir" location="../FgsBuild/eclipseprojects/FgsZebra" />
+	<property name="plugin.dir" location="../FgsBuild/webapp/WEB-INF/classes" />
 
     <path id="compile.classpath">
-      <pathelement path="../FedoraGenericSearch/bin"/>
-      <pathelement path="${lib.log4j}"/>
+        <pathelement path="../FedoraGenericSearch/bin"/>
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>                    
     </path>
 
-    <target name="clean"
-            description="removes build-generated artifacts">
+    <target name="clean">
 		<delete dir="${compile.dir}"/>
     </target>
 
-    <target name="compile">
-      <mkdir dir="${compile.dir}"/>
-      <javac classpathref="compile.classpath"
+    <target name="compile"
+    	    depends="clean">
+        <mkdir dir="${compile.dir}"/>
+        <javac classpathref="compile.classpath"
              debug="true"
              destdir="${compile.dir}"
-             srcdir="src/java"
+             srcdir="${source.dir}"
              optimize="off"/>
     </target>
 
 	<target name="pluginbuild"
 	        description="build the plugin"
 	        depends="compile">
-		<delete dir="${plugin.dir}/dk/defxws/fgszebra" />
-		<mkdir dir="${plugin.dir}/dk/defxws/fgszebra" />
 		<copy todir="${plugin.dir}">
 			<fileset dir="bin"/>
-		</copy>
-		<delete dir="${project.dir}" />
-		<mkdir dir="${project.dir}" />
-		<copy todir="${project.dir}">
-			<fileset dir="."/>
 		</copy>
 	</target>
 

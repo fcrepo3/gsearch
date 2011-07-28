@@ -133,11 +133,11 @@
 								 		<xsl:value-of select="@PID"/>
 									</xsl:when>
 									<xsl:otherwise>
-								 		<xsl:value-of select="field[@name='PID']/text()"/>
+								 		<xsl:value-of select="normalize-space(field[@name='PID'])"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:variable>
-							<xsl:attribute name="href">REPOS1FEDORABASE/fedora/get/<xsl:value-of select="$PIDVALUE"/>
+							<xsl:attribute name="href">REPOS1FEDORABASE/fedora/objects/<xsl:value-of select="$PIDVALUE"/>
 							</xsl:attribute>
 							<xsl:value-of select="$PIDVALUE"/>
 						</a>

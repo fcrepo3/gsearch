@@ -14,39 +14,23 @@
 
     <loadproperties srcFile="lib/lib.properties" /> 
 
-    <property name="genericsearch.version" value="2.3"/>
+    <property name="fedoragsearch.version" value="2.3"/>
 
-    <property name="build.basedir" location="../FgsBuild"/>
+    <property name="source.dir" location="src/java"/>
+    <property name="lib.dir" location="lib"/>
     <property name="compile.dir" location="bin"/>
-
+    <property name="build.basedir" location="../FgsBuild"/>
 	<property name="build.dir" location="${build.basedir}/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
-	<property name="project.dir" location="${build.basedir}/eclipseprojects/FedoraGenericSearch" />
 	<property name="tomcat.basename" value="tomcat" />
 	<property name="dist.dir" location="dist" />
-    <property name="lib.dir" location="lib"/>
+	<property name="localdist.dir" location="${dist.dir}/local" />
 	<property name="app.name" value="fedoragsearch" />
 	<property name="war.name" value="${app.name}.war" />
 
 	<property name="junit.build.dir"		   location="${build.basedir}/junit"/>
 	<property name="junit.src.dir"             location="src/test/junit"/>
-	<!-- 
-    <path id="compile.classpath">
-      <pathelement path="${lib.axis}"/>
-      <pathelement path="${lib.commons-httpclient}"/>
-      <pathelement path="${lib.commons-logging}"/>
-      <pathelement path="${lib.fedora-client}"/>
-      <pathelement path="${lib.fedora-messaging-client}"/>
-      <pathelement path="${lib.jaxrpc}"/>
-      <pathelement path="${lib.junit}"/>
-      <pathelement path="${lib.log4j}"/>
-      <pathelement path="${lib.lucene}"/>
-      <pathelement path="${lib.lucene-demos}"/>
-      <pathelement path="${lib.pdfbox}"/>
-      <pathelement path="${lib.servlet-api}"/>
-      <pathelement path="${lib.activemq-all}"/>
-    </path>
-   -->
+
     <path id="compile.classpath">
         <fileset dir="${lib.dir}">
             <include name="**/*.jar"/>
@@ -60,34 +44,6 @@
 		<pathelement path="${build.basedir}/classes"/>
 	</path>
 	
-    <!-- MacroDefs -->
-    <macrodef name="md-compile">
-        <attribute name="classpathref" default="compile.classpath"/>
-        <attribute name="destdir"/>
-        <attribute name="excludes" default=""/>
-        <attribute name="fork" default="no"/>
-        <attribute name="includes" default=""/>
-        <attribute name="srcdir"/>
-        <attribute name="compilerargs" default=""/>
-        <!-- default="-Xlint -Xlint:-path -Xmaxwarns ${javac.maxwarns}" -->
-        <sequential>
-            <mkdir dir="@{destdir}"/>
-            <javac classpathref="@{classpathref}" 
-                   debug="${javac.debug}" 
-                   deprecation="${javac.deprecation}" 
-                   destdir="@{destdir}" 
-                   excludes="@{excludes}" 
-                   fork="@{fork}"
-                   includes="@{includes}"
-                   source="${javac.source}" 
-                   srcdir="@{srcdir}"
-                   target="${javac.target}"
-            	   encoding="UTF-8">
-            	<compilerarg line="@{compilerargs}"/>
-            </javac>
-        </sequential>
-    </macrodef>
-
     <target name="clean"
             description="removes build-generated artifacts">
 		<delete dir="../FgsLucene/bin"/>
@@ -102,21 +58,25 @@
       <mkdir dir="${compile.dir}"/>
       <javac classpathref="compile.classpath"
              debug="true"
+      		 includeantruntime="false"
              destdir="${compile.dir}"
-             srcdir="src/java"
+             srcdir="${source.dir}"
              optimize="off"/>
     </target>
 
 	<target name="prep"
             depends="compile"
             description="prepare">
-		<delete dir="${dist.dir}" />
 		<delete dir="${build.dir}" />
-		<delete dir="${project.dir}" />
 		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${localdist.dir}" />
 		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" />
 		<copy file="../FgsConfig/configvalues.xml" todir="${build.dir}" />
 		<copy file="../FgsConfig/configvalues23.xml" todir="${build.dir}" />
+		<copy file="../FgsConfig/fedoragsearch-config-2.3.sh" todir="${build.dir}" />
+		<copy file="../FgsConfig/fedoragsearch-config-2.3.xml" todir="${build.dir}" />
+		<copy file="../FgsConfig/fedoragsearch-config-2.3-default.properties" todir="${build.dir}" />
+		<copy file="../FgsConfig/fedoragsearch-config-2.3-input.properties" todir="${build.dir}" />
 		<copy todir="${build.dir}/css">
 			<fileset dir="src/css"/>
 		</copy>
@@ -140,37 +100,32 @@
 		<copy todir="${plugin.dir}">
 			<fileset dir="bin"/>
 		</copy>
-		<delete dir="${project.dir}" />
-		<mkdir dir="${project.dir}" />
-		<copy todir="${project.dir}">
-			<fileset dir="."/>
-		</copy>
 	</target>
 
     <target name="binrelease" depends="builddownload">
-      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}"
+      <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}"
             file="${dist.dir}/${war.name}"/>
-      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}/doc">
+      <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}/doc">
         <fileset dir="${build.dir}">
           <include name="index.html"/>
           <include name="css/**"/>
           <include name="images/**"/>
         </fileset>
       </copy>
-      <zip zipfile="${build.basedir}/release/genericsearch-${genericsearch.version}.zip"
-           basedir="${build.basedir}/release" includes="genericsearch-${genericsearch.version}/**"/>
-      <delete dir="${build.basedir}/release/genericsearch-${genericsearch.version}"/>
+      <zip zipfile="${build.basedir}/release/genericsearch-${fedoragsearch.version}.zip"
+           basedir="${build.basedir}/release" includes="genericsearch-${fedoragsearch.version}/**"/>
+      <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}"/>
     </target>
   
     <target name="srcrelease" depends="clean">
-      <copy todir="${build.basedir}/release/genericsearch-${genericsearch.version}-src">
+      <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src">
         <fileset dir="..">
           <exclude name="${build.basedir}/**"/>
         </fileset>
       </copy>
-      <zip zipfile="${build.basedir}/release/genericsearch-${genericsearch.version}-src.zip" 
-           basedir="${build.basedir}/release" includes="genericsearch-${genericsearch.version}-src/**"/>
-      <delete dir="${build.basedir}/release/genericsearch-${genericsearch.version}-src"/>
+      <zip zipfile="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src.zip" 
+           basedir="${build.basedir}/release" includes="genericsearch-${fedoragsearch.version}-src/**"/>
+      <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src"/>
     </target>
 
     <target name="release" depends="srcrelease,binrelease" description="Build the source and binary distributions">
@@ -184,7 +139,7 @@
 	<target name="builddownload"
 			depends="prep, includeengines"
 	        description="build the download">
-        <ant dir="../FgsConfig" target="prep" inheritAll="false"/>
+        <ant dir="../FgsConfig" target="configForWebServer" inheritAll="false"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
 		<copy file="src/WEB-INF/web-withoutAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" />
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
@@ -193,19 +148,21 @@
 	<target name="buildlocal"
 		    depends="prep, includeengines"
 	        description="build local">
-        <ant dir="../FgsConfig" target="config" inheritAll="false"/>
+        <ant dir="../FgsConfig" target="configForLocalDevelopment" inheritAll="false"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
 		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" />
-	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
-        <copy file="${dist.dir}/${war.name}" todir="${env.FEDORA.HOME}/${tomcat.basename}/webapps"/>
+	    <jar jarfile="${localdist.dir}/${war.name}" basedir="${build.dir}"/>
+        <copy file="${localdist.dir}/${war.name}" todir="${env.FEDORA.HOME}/${tomcat.basename}/webapps"/>
 		<delete dir="${env.FEDORA.HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
 		<mkdir dir="${env.FEDORA.HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
 		<copy todir="${env.FEDORA.HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies">
 			<fileset dir="${build.dir}/WEB-INF/classes/configDemoSearchResultFiltering/fgs-policies"/>
 		</copy>
+		<!--
 		<exec executable="sh" dir="${env.FEDORA.HOME}/server/bin/">
             <arg line=" fedora-reload-policies.sh http fedoraAdmin fedoraAdmin"/>
 		</exec>
+		-->
 	</target>
 
 	<target name="builddemo"

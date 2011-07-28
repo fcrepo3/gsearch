@@ -550,11 +550,7 @@ public class Config {
     			}
     			String stopwordsLocation = props.getProperty("fgsindex.stopwordsLocation"); 
     			try {
-    				Directory dir = new SimpleFSDirectory(indexDirFile);
-    				IndexReader ir = IndexReader.open(dir, true);
-    				long ver = ir.getVersion();
     				Version version = Version.LUCENE_29;
-    				if (ver == 24) version = Version.LUCENE_24;
     				Class analyzerClass = Class.forName(analyzerClassName);
         			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
     					analyzerClass.getConstructor(new Class[] { Version.class})
