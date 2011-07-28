@@ -73,10 +73,12 @@
 		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" />
 		<copy file="../FgsConfig/configvalues.xml" todir="${build.dir}" />
 		<copy file="../FgsConfig/configvalues23.xml" todir="${build.dir}" />
-		<copy file="../FgsConfig/fedoragsearch-config-2.3.sh" todir="${build.dir}" />
 		<copy file="../FgsConfig/fedoragsearch-config-2.3.xml" todir="${build.dir}" />
-		<copy file="../FgsConfig/fedoragsearch-config-2.3-default.properties" todir="${build.dir}" />
 		<copy file="../FgsConfig/fedoragsearch-config-2.3-input.properties" todir="${build.dir}" />
+		<!--
+		<copy file="../FgsConfig/fedoragsearch-config-2.3.sh" todir="${build.dir}" />
+		<copy file="../FgsConfig/fedoragsearch-config-2.3-default.properties" todir="${build.dir}" />
+		-->
 		<copy todir="${build.dir}/css">
 			<fileset dir="src/css"/>
 		</copy>
