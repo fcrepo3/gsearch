@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-              FedoraGSearch Version 2.3
+              FedoraGSearch Version 2.3 ... UNDER DEVELOPMENT ...
 -------------------------------------------------------------------
 
  * License and Copyright: FedoraGSearch is subject to the same open source 
@@ -7,7 +7,7 @@
  * Copyright 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
  * All rights reserved.
  
- The FedoraGSearch development is originally funded by 
+ The FedoraGSearch development is funded by 
  
      DEFF, Denmark's Electronic Research Library, http://www.deff.dk .
      
@@ -36,22 +36,23 @@ and taking advantage of Fedora's new messaging capability for index updates.
 
 Version 2.2 was released in December 2008, updating GSearch to work with Fedora 3.1+.
 
-Version 2.3 was released in July 2011. See feature list below.
+Version 2.3 is planned to be released in August 2011. See 
+  https://conferences.tdl.org/or/OR2011/OR2011main/paper/view/416/127 
 
 The Fedora Commons Documentation for FedoraGSearch is at 
 http://fedora-commons.org/confluence/display/FCSVCS/Generic+Search+Service+2.3.
  
 The same information is available in the source download
-at src/html/search-service.html, and after installation at
+at src/html/search-service.html, and after local installation at
 http://localhost:8080/fedoragsearch .
 
 The new features in Version 2.3:
 
-- Lucene 2.9 compatibility
-- Solr 1.4 compatibility
-- Simplified configuration, see the new configFgs23/ and configvalues23.xml
-  (resolving FCREPO-464, thanks to Renaud Waldura)
-- log4j.xml set to daily rolling file
+- Fedora 3.x compatibility
+- Lucene 3.x compatibility
+- Solr 3.x compatibility
+- Zebra 2.x compatibility
+- Simplified installation and configuration
 - ...
 
 The new features in Version 2.2:
