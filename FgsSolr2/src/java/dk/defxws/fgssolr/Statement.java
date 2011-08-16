@@ -87,14 +87,14 @@ public class Statement {
     	Query query = null;
     	if (defaultFields.length == 1) {
     		try {
-    			query = (new QueryParser(Version.LUCENE_29, defaultFields[0], analyzer)).parse(queryString);
+    			query = (new QueryParser(Version.LUCENE_33, defaultFields[0], analyzer)).parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}
     	}
     	else {
     		try {
-    			query = (new MultiFieldQueryParser(Version.LUCENE_29, defaultFields, analyzer)).parse(queryString);
+    			query = (new MultiFieldQueryParser(Version.LUCENE_33, defaultFields, analyzer)).parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}

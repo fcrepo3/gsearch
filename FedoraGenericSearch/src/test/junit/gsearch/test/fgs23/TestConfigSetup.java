@@ -21,7 +21,7 @@ public class TestConfigSetup
     public void setUp() throws Exception {
         System.out.println("setUp configFgs23");
         System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdminA");
+        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
     }
 
     @Override

@@ -19,7 +19,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -459,7 +458,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             logger.debug("analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
         Analyzer analyzer = null;
 		try {
-			Version version = Version.LUCENE_29;
+			Version version = Version.LUCENE_33;
 			Class analyzerClass = Class.forName(analyzerClassName);
             if (logger.isDebugEnabled())
                 logger.debug("analyzerClass=" + analyzerClass.toString());

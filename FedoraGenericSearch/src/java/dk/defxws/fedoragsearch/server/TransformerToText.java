@@ -16,7 +16,8 @@ import java.io.Writer;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.demo.html.HTMLParser;
+import org.apache.lucene.benchmark.byTask.feeds.demohtml.HTMLParser;
+//import org.apache.lucene.demo.html.HTMLParser;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;

@@ -11,10 +11,10 @@ import org.apache.lucene.util.Version;
  * assumes the file stopwords.txt to be in the classpath.
  */
 
-public class StopwordsAnalyzer extends StandardAnalyzer {
+public class StopwordsAnalyzer {
 	
     public StopwordsAnalyzer() throws IOException {
-    	super(Version.LUCENE_29, new InputStreamReader(StopwordsAnalyzer.class
+    	new StandardAnalyzer(Version.LUCENE_33, new InputStreamReader(StopwordsAnalyzer.class
     			.getResourceAsStream("/stopwords.txt")));
     }
 }
