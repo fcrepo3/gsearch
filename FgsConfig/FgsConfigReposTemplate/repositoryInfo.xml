@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resultPage>
+ <repositoryInfo>
+  The contents of this page is just an example, it is displayed by the getRepositoryInfo operation.
+  <RepositoryShortName>REPOSNAME</RepositoryShortName>
+  <RepositoryLongName>Repository for REPOSNAME configuration</RepositoryLongName>
+  <RepositoryDeveloper>Gert Schmeltz Pedersen, DTIC@DTU</RepositoryDeveloper>
+  <RepositoryContact>gsp@dtic.dtu.dk</RepositoryContact>
+ </repositoryInfo>
+</resultPage>

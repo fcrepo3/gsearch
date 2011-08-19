@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: fgsconfig.xml $ -->
+<project name="FgsConfig" default="configFgs" basedir=".">
+	<description>
+		Fedora Generic Search Service configuration
+		This ant script is run from fgsconfig.sh:
+					>ant -f fgsconfig.xml
+	</description>
+
+	<property file="fgsconfig-input.properties" />
+
+	<target name="configFgs"
+        	description="insert config values into config files">
+
+        <delete dir="${finalConfigPath}/${finalConfigName}-backup" />
+        <copy todir="${finalConfigPath}/${finalConfigName}-backup">
+        	<fileset dir="${finalConfigPath}/${finalConfigName}"/>
+        </copy>
+		<delete dir="${finalConfigPath}/${finalConfigName}" />
+		<mkdir dir="${finalConfigPath}/${finalConfigName}" />
+		<copy todir="${finalConfigPath}/${finalConfigName}">
+			<fileset dir="${templateConfigPath}/${templateConfigName}"/>
+		</copy>
+		<copy file="${templateConfigPath}/${templateConfigName}/log4j.xml" todir="${finalConfigPath}" />
+
+		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHBASE" value="${gsearchBase}"/>
+		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="${gsearchAppName}"/>
+		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHUSER" value="${gsearchUser}"/>
+		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHPASS" value="${gsearchPass}"/>
+		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="CONFIGPATH" value="${finalConfigPath}"/>
+		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="REPOSNAMES" value="${namesOfRepositories}"/>
+		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
+	
+		<replace file="${finalConfigPath}/log4j.xml" token="LOGPATH" value="${logFilePath}"/>
+		<replace file="${finalConfigPath}/log4j.xml" token="LOGLEVEL" value="${logLevel}"/>
+	</target>
+
+</project>
