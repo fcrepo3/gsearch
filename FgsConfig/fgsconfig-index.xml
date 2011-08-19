@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id: fgsconfig.xml gertsp $ -->
+<project name="FgsConfigIndex" default="configFgsIndex" basedir=".">
+	<description>
+		Fedora Generic Search Service configuration of an Index
+		This ant script is run from fgsconfig-index.sh:
+					>ant -f fgsconfig-index.xml -DindexName=indexName
+	</description>
+
+	<property file="fgsconfig-index-${indexName}-input.properties" />
+	
+	<target name="configFgsIndex"
+        	description="insert config values into config files">
+		
+		<delete dir="${finalConfigIndexPath}" />
+		<mkdir dir="${finalConfigIndexPath}" />
+		<copy todir="${finalConfigIndexPath}">
+			<fileset dir="${templateConfigIndexPath}"/>
+		</copy>
+
+		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXNAME" value="${indexName}"/>
+		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXPATH" value="${indexPath}"/>
+		<replace file="${finalConfigIndexPath}/index.properties" token="STOPWORDSFILEPATH" value="${finalConfigIndexPath}/stopwords.txt"/>
+
+	</target>
+
+</project>

@@ -6,7 +6,7 @@
 		This ant script is run from fgsconfig.sh:
 					>ant -f fgsconfig.xml
 	</description>
-
+ 
 	<property file="fgsconfig-input.properties" />
 
 	<target name="configFgs"
