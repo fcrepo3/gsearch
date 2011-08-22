@@ -13,15 +13,15 @@
         	description="insert config values into config files">
 
         <delete dir="${finalConfigPath}/${finalConfigName}-backup" />
-        <copy todir="${finalConfigPath}/${finalConfigName}-backup">
+        <copy todir="${finalConfigPath}/${finalConfigName}-backup" preservelastmodified="true">
         	<fileset dir="${finalConfigPath}/${finalConfigName}"/>
         </copy>
 		<delete dir="${finalConfigPath}/${finalConfigName}" />
 		<mkdir dir="${finalConfigPath}/${finalConfigName}" />
-		<copy todir="${finalConfigPath}/${finalConfigName}">
+		<copy todir="${finalConfigPath}/${finalConfigName}" preservelastmodified="true">
 			<fileset dir="${templateConfigPath}/${templateConfigName}"/>
 		</copy>
-		<copy file="${templateConfigPath}/${templateConfigName}/log4j.xml" todir="${finalConfigPath}" />
+		<copy file="${templateConfigPath}/${templateConfigName}/log4j.xml" todir="${finalConfigPath}" preservelastmodified="true" />
 
 		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHBASE" value="${gsearchBase}"/>
 		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="${gsearchAppName}"/>

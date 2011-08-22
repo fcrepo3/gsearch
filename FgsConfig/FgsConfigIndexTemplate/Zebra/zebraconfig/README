@@ -1,0 +1,74 @@
+$Id$
+
+Instructions on zebra configuration
+-----------------------------------
+
+Copy the .../zebraconfig/ directory to the directory 
+that you specified in index.properties/fgsindex.indexDir
+(which should not be a subdirectory of your web server) :
+
+  cp .../zebraconfig/* <indexDir>
+  
+Files you must/may configure:
+
+1 db/zebra.cfg:
+
+    The file is used for zebraidx calls, and indirectly
+      for zebrasrv start by yazserver.xml.
+    You do not need to change this default configuration. 
+    See the Zebra documentation for options.
+    Specified directories must exist and be write-permitted.
+
+2 db/yazserver.xml:
+
+    The file is used for zebrasrv start.
+    The host and port number must be set to the same as 
+      in index.properties/fgsindex.indexBase.
+    The references to zebra.cfg, filter_fgs_conf.xml,
+      sru2.xsl, and to cql2pqf.txt must be valid
+      (and by default they are).
+
+3 db/explain.xml
+
+    This file configures the SRU/SRW explain response.
+    The important thing is the list of index fields.
+    By default it lists fgs and dc indexes.
+    You must update this list, if you tailor the 
+    demoFoxmlToZebra.xslt file, so that
+    your set of index fields change.
+    In that case, you must edit the cql2pqf.txt file also.
+    Alternatively, you may generate another cql2pqf.txt file,
+    you do this (in linux) by running this xslt transformation
+    from command line in <INDEXDIR>/db
+    > xsltproc explain2cqlpqftxt.xsl explain.xml > cql2pqf.txt
+
+3 db/cql2pqf.txt
+
+    These are zebra's rules for translation 
+      from cql to internal pqf query format.
+    The file must have a line per index field.
+
+4 db/filter_fgs_conf.xml
+5 db/fgs2index.xsl
+    
+    You should not change these default configuration files
+    unless you have a special need and special insight. 
+    
+    
+For Zebra download, see http://www.indexdata./zebra/.
+
+Alternative download as debian package:
+
+  apt-get install idzebra-2.0 libidzebra-2.0-mod-alvis yaz
+
+Zebra documentation is at http://www.indexdata./zebra/doc/zebra.pdf
+
+Start the zebra server from the directory in
+  index.properties/fgsindex.indexDir with
+
+  zebrasrv-2.0 -f db/yazserver.xml
+
+In the default configuration the query language is CQL,
+  see http://www.loc.gov/standards/sru/cql/,
+  the alternative is PQF, see the Zebra documentation
+  and http://www.indexdata./yaz/doc/tools.tkl#PQF .

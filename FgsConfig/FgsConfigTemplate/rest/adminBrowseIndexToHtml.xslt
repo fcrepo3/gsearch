@@ -62,11 +62,11 @@
 						<td>
 							<xsl:text> </xsl:text>Index name: 
 								<select name="indexName">
-									<option value="Fgs23Index">Fgs23Index</option>
+									<option value="FgsIndex">FgsIndex</option>
 								</select>
 							<xsl:text> </xsl:text>restXslt: 
 								<select name="restXslt">
-									<option value="browseIndexToHtml">browseIndexToHtml</option>
+									<option value="adminBrowseIndexToHtml">adminBrowseIndexToHtml</option>
 									<option value="copyXml">no transformation</option>
 								</select>
 							<xsl:text> </xsl:text>resultPageXslt: 

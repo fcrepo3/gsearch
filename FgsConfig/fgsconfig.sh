@@ -88,7 +88,10 @@ get_input_with_default "gsearchAppName"         "$gsearchAppName"        "gsearc
 get_input_with_default "gsearchUser"            "$gsearchUser"           "gsearchUser is used for SOAP deployment."
 get_input_with_default "gsearchPass"            "$gsearchPass"           "gsearchPass is used for SOAP deployment."
 
-finalConfigPath=$CATALINA_HOME/webapps/fedoragsearch/WEB-INF/classes
+if [ ! $finalConfigPath ]
+then
+  finalConfigPath=$CATALINA_HOME/webapps/fedoragsearch/WEB-INF/classes
+fi
 get_input_with_default "finalConfigPath"            "$finalConfigPath"            "finalConfigPath must be in the classpath of the web server."
 finalConfigPath=$defaultedinput
 finalConfigName=FgsConfigFinal
@@ -101,10 +104,24 @@ add_to_prop_file "templateConfigPath=$templateConfigPath"
 add_to_prop_file "# templateConfigName is the dir name that contains the template config for GSearch."
 add_to_prop_file "templateConfigName=$templateConfigName"
 
-logFilePath=$FEDORA_HOME/server/logs
+if [ ! $logFilePath ]
+then
+  logFilePath=$FEDORA_HOME/server/logs
+fi
 get_input_with_default "logFilePath"            "$logFilePath"           "logFilePath is where to find the log file."
 
-get_input_with_default "logLevel"               "$logLevel"              "logLevel can be DEBUG, INFO, WARN, ERROR, FATAL."
+while [ true ]
+do
+  get_input_with_default "logLevel"               "$logLevel"              "logLevel can be DEBUG, INFO, WARN, ERROR, FATAL."
+  logLevel=$defaultedinput
+  if [ $logLevel = 'DEBUG' -o $logLevel = 'INFO' -o $logLevel = 'WARN' -o $logLevel = 'ERROR' -o $logLevel = 'FATAL' ]
+  then
+    break
+  else
+    echo "\nMUST BE DEBUG, INFO, WARN, ERROR, or FATAL!"
+    logLevel=INFO
+  fi
+done
 
 get_input_with_default "namesOfRepositories"    "$namesOfRepositories"   "namesOfRepositories separated by space."
 namesOfRepositories=$defaultedinput
@@ -174,7 +191,7 @@ done
 
 addtopropfilename=
 
-add_to_prop_file "# repos.end.time=\"`date`\""
+add_to_prop_file "# repos.end.time=`date`"
   
 add_to_prop_file "# index.begin.time=`date`"
 
@@ -201,13 +218,37 @@ for indexName in $namesOfIndexes ; do
   
   add_to_prop_file "# index.begin.time=`date`"
   
+  while [ true ]
+  do
+    get_input_with_default "indexEngine"               "$indexEngine"            "$indexName: indexEngine is Lucene, Solr, or Zebra."
+    indexEngine=$defaultedinput
+    if [ $indexEngine = 'Lucene' -o $indexEngine = 'Solr' -o $indexEngine = 'Zebra' ]
+    then
+      break
+    else
+      echo "\nMUST BE Lucene, Solr, or Zebra!"
+      indexEngine=Lucene
+    fi
+  done
+  
   add_to_prop_file "# templateConfigIndexPath is the dir name that contains the template index config for GSearch."
-  add_to_prop_file "templateConfigIndexPath=$templateConfigPath/FgsConfigIndexTemplate"
+  add_to_prop_file "templateConfigIndexPath=$templateConfigPath/FgsConfigIndexTemplate/$indexEngine"
   
   add_to_prop_file "finalConfigIndexPath=$finalConfigPath/$finalConfigName/index/$indexName"
 
   indexPath=$FEDORA_HOME/gsearch/$indexName
   get_input_with_default "indexPath"               "$indexPath"            "$indexName: indexPath is the path to the index."
+
+  if [ $indexEngine = 'Solr' -o $indexEngine = 'Zebra' ]
+  then
+    if [ $indexEngine = 'Solr' ]
+    then
+      indexBase=http://localhost:8983/solr
+    else
+      indexBase=http://localhost:9999/ # the Zebra server hostport
+    fi
+    get_input_with_default "indexBase"               "$indexBase"            "$indexName: indexBase is server base url."
+  fi
 
   add_to_prop_file "# input.end.time=`date`"
   add_to_prop_file "# Now inserting the property values into the config files with ant ..."
@@ -223,7 +264,7 @@ done
 
 addtopropfilename=
 
-add_to_prop_file "# index.end.time=\"`date`\""
+add_to_prop_file "# index.end.time=`date`"
 
 echo "\nYou should read the final config files."
 
@@ -238,7 +279,7 @@ echo "\nChanges to the final config files take effect after restart.\n"
 #... Prompt for a foxml file, used to generate the indexing stylesheet (foxmlToLucene.xslt or foxmlToSolr.xslt) ...!
 #... which may be used next to generate REST xslt for end-user interface ...!
 
-add_to_prop_file "# end.time=\"`date`\""
+add_to_prop_file "# end.time=`date`"
 
 #get_input_with_default "fedoragsearchVersion"  "$fedoragsearchVersion"  "fedoragsearch.version is the GSearch version that you configure now."
 

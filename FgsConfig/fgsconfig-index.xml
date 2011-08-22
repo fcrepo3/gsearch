@@ -14,7 +14,7 @@
 		
 		<delete dir="${finalConfigIndexPath}" />
 		<mkdir dir="${finalConfigIndexPath}" />
-		<copy todir="${finalConfigIndexPath}">
+		<copy todir="${finalConfigIndexPath}" preservelastmodified="true">
 			<fileset dir="${templateConfigIndexPath}"/>
 		</copy>
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resultPage indexName="DemoOnZebra">
+ <indexInfo>
+  <Url>http://www.indexdata.dk/zebra/</Url>
+  <IndexShortName>Zebra</IndexShortName>
+  <IndexLongName>Zebra high-performance, general-purpose structured text 
+  indexing and retrieval engine</IndexLongName>
+  <Description>Zebra is a high-performance, general-purpose structured 
+  text indexing and retrieval engine. 
+  It reads structured records in a variety of input formats 
+  (eg. email, XML, MARC) and allows access to them 
+  through exact boolean search expressions 
+  and relevance-ranked free-text queries.</Description>
+  <Image>http://www.indexdata.dk/zebra/zebra.png</Image>
+  <SampleSearch>metal</SampleSearch>
+  <Developer>Index Data A/S</Developer>
+  <Contact>info@indexdata.dk</Contact>
+  <Attribution>Index Data A/S &amp;copy; 2005, Index Data A/S,
+   All Rights Reserved</Attribution>
+ </indexInfo>
+</resultPage>

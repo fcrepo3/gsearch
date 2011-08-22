@@ -9,46 +9,75 @@
 	<target name="configForLocalDevelopment"
 			depends="prep, configManyToMany"
         	description="build the config">
-        <ant antfile="configvalues.xml" target="configForLocalDevelopment" inheritAll="false"/>
-        <ant antfile="fedoragsearch-config-2.3.xml" target="configForLocalDevelopment" inheritAll="false"/>
+        <ant target="configLocal">
+			<property name="configName" value="config"/>
+			<property name="indexEngine" value="Lucene"/>
+        </ant>
+        <ant target="configLocal">
+			<property name="configName" value="configDemoOnSolr"/>
+			<property name="indexEngine" value="Solr"/>
+			<property name="indexBase" value="http://localhost:8983/solr"/>
+        </ant>
+	</target>
+
+	<target name="configLocal"
+			depends="prep"
+        	description="build a local config">
+
+		<property name="namesOfRepositories" value="FgsRepos"/>
+		<property name="reposName" value="FgsRepos"/>
+		<property name="namesOfIndexes" value="FgsIndex"/>
+		<property name="indexName" value="FgsIndex"/>
+		
+		<delete dir="${plugin.dir}/${configName}" />
+		<mkdir dir="${plugin.dir}/${configName}" />
+		<copy todir="${plugin.dir}/${configName}" preservelastmodified="true">
+			<fileset dir="FgsConfigTemplate"/>
+		</copy>
+		<copy todir="${plugin.dir}/${configName}/repository/${reposName}" preservelastmodified="true">
+			<fileset dir="FgsConfigReposTemplate"/>
+		</copy>
+		<copy todir="${plugin.dir}/${configName}/index/${indexName}" preservelastmodified="true">
+			<fileset dir="FgsConfigIndexTemplate/${indexEngine}"/>
+		</copy>
+		
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHBASE" value="http://localhost:8080"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="fedoragsearch"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHUSER" value="fedoraAdmin"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHPASS" value="fedoraAdmin"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="CONFIGPATH" value="${local.FEDORA_HOME}/${tomcat.basename}/webapps/fedoragsearch/WEB-INF/classes/${configName}"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="REPOSNAMES" value="${namesOfRepositories}"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
+	
+		<replace file="${plugin.dir}/log4j.xml" token="LOGPATH" value="${local.FEDORA_HOME}/server/logs"/>
+		<replace file="${plugin.dir}/log4j.xml" token="LOGLEVEL" value="DEBUG"/>
+
+		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXNAME" value="${indexName}"/>
+		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXBASE" value="${indexBase}"/>
+		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXPATH" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXDIR" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+	
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="REPOSNAME" value="${reposName}"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORABASE" value="http://localhost:8080"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAAPPNAME" value="fedora"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAVERSION" value="3.5"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="data/objects"/>
+		
 	</target>
 
 	<target name="configForWebServer"
-			depends="prep, configManyToMany"
+			depends="prep"
         	description="build the config">
 	</target>
 
 	<target name="prep"
 	          description="prepare">
-		<delete dir="${plugin.dir}/configFgs23" />
-		<mkdir dir="${plugin.dir}/configFgs23" />
-		<copy todir="${plugin.dir}/configFgs23">
-			<fileset dir="configFgs23"/>
-		</copy>
-		<delete dir="${plugin.dir}/configBasic" />
-		<mkdir dir="${plugin.dir}/configBasic" />
-		<copy todir="${plugin.dir}/configBasic">
-			<fileset dir="configBasic"/>
-		</copy>
 		<delete dir="${plugin.dir}/configDemoSearchResultFiltering" />
 		<mkdir dir="${plugin.dir}/configDemoSearchResultFiltering" />
 		<copy todir="${plugin.dir}/configDemoSearchResultFiltering">
 			<fileset dir="configDemoSearchResultFiltering"/>
-		</copy>
-		<delete dir="${plugin.dir}/configDemoOnLucene" />
-		<mkdir dir="${plugin.dir}/configDemoOnLucene" />
-		<copy todir="${plugin.dir}/configDemoOnLucene">
-			<fileset dir="configDemoOnLucene"/>
-		</copy>
-		<delete dir="${plugin.dir}/configDemoOnSolr" />
-		<mkdir dir="${plugin.dir}/configDemoOnSolr" />
-		<copy todir="${plugin.dir}/configDemoOnSolr">
-			<fileset dir="configDemoOnSolr"/>
-		</copy>
-		<delete dir="${plugin.dir}/configDemoOnZebra" />
-		<mkdir dir="${plugin.dir}/configDemoOnZebra" />
-		<copy todir="${plugin.dir}/configDemoOnZebra">
-			<fileset dir="configDemoOnZebra"/>
 		</copy>
 		<delete dir="${plugin.dir}/configManyToMany" />
 		<mkdir dir="${plugin.dir}/configManyToMany" />
@@ -61,7 +90,7 @@
 			<fileset dir="configTestOnLucene"/>
 		</copy>
 		<delete file="${plugin.dir}/log4j.xml" />
-		<copy file="log4j.xml" todir="${plugin.dir}" />
+		<copy file="FgsConfigTemplate/log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
 	</target>
 
 	<target name="configManyToMany"
