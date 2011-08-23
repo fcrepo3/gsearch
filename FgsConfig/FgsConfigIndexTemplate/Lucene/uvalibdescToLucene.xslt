@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<!-- $Id: demoUvalibdescToLucene.xslt 5716 2006-10-10 14:09:04Z gertsp $ -->
+<!-- $Id: uvalibdescToLucene.xslt $ -->
 <xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
 		xmlns:foxml="info:fedora/fedora-system:def/foxml#"

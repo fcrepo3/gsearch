@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  $Id: fgsconfig.xml gertsp $ -->
+<!--  $Id: fgsconfig-index.xml $ -->
 <project name="FgsConfigIndex" default="configFgsIndex" basedir=".">
 	<description>
 		Fedora Generic Search Service configuration of an Index
-		This ant script is run from fgsconfig-index.sh:
-					>ant -f fgsconfig-index.xml -DindexName=indexName
+		This ant script is run from fgsconfig.sh:
+					>ant -f fgsconfig-index.xml -DindexName=$indexName
 	</description>
 
 	<property file="fgsconfig-index-${indexName}-input.properties" />

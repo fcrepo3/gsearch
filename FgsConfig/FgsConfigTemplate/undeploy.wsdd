@@ -1,4 +1,4 @@
-<!--  $Id: undeploy.wsdd 5716 2006-10-10 14:09:04Z gertsp $ -->
+<!--  $Id: undeploy.wsdd $ -->
 <!-- Use this file to undeploy some handlers/chains and services    -->
 <!-- Two ways to do this:                                           -->
 <!--   java org.apache.axis.client.AdminClient undeploy.wsdd        -->

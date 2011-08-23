@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<!-- $Id: demoFoxmlToLucene.xslt 5734 2006-11-28 11:20:15Z gertsp $ -->
+<!-- $Id: foxmlToLucene.xslt $ -->
 <xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
     	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
     		exclude-result-prefixes="exts"
-		xmlns:str="http://exslt.org/strings"
 		xmlns:zs="http://www.loc.gov/zing/srw/"
 		xmlns:foxml="info:fedora/fedora-system:def/foxml#"
 		xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -78,7 +77,7 @@
 				<xsl:value-of select="$REPOSITORYNAME"/>
 			</IndexField>
 			<IndexField IFname="REPOSBASEURL" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
-				<xsl:value-of select="str:replace($FEDORASOAP,'/services','')"/>
+				<xsl:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
 			</IndexField>
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
 				<IndexField index="UN_TOKENIZED" store="YES" termVector="NO">

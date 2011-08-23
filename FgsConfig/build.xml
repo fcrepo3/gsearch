@@ -1,22 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  $Id$ -->
-<project name="FgsConfig" default="configForLocalDevelopment" basedir=".">
+<project name="FgsConfig" default="configForWebServer" basedir=".">
 	<description>Fedora Generic Search Service configuration</description>
 
 	<property name="build.dir" location="../FgsBuild/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 
+	<target name="configForWebServer"
+			depends="prep"
+        	description="build the config">
+	</target>
+
 	<target name="configForLocalDevelopment"
-			depends="prep, configManyToMany"
+			depends="prep"
         	description="build the config">
         <ant target="configLocal">
 			<property name="configName" value="config"/>
 			<property name="indexEngine" value="Lucene"/>
         </ant>
         <ant target="configLocal">
+			<property name="configName" value="configDemoOnLucene"/>
+			<property name="indexEngine" value="Lucene"/>
+        </ant>
+        <ant target="configLocal">
 			<property name="configName" value="configDemoOnSolr"/>
 			<property name="indexEngine" value="Solr"/>
 			<property name="indexBase" value="http://localhost:8983/solr"/>
+        </ant>
+        <ant target="configLocal">
+			<property name="configName" value="configDemoOnZebra"/>
+			<property name="indexEngine" value="Zebra"/>
+			<property name="indexBase" value="http://localhost:9999"/>
+        </ant>
+        <ant target="configLocal">
+			<property name="configName" value="configTestOnLucene"/>
+			<property name="indexEngine" value="Lucene"/>
         </ant>
 	</target>
 
@@ -63,137 +81,14 @@
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAVERSION" value="3.5"/>
-		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="data/objects"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="data/objectStore"/>
 		
-	</target>
-
-	<target name="configForWebServer"
-			depends="prep"
-        	description="build the config">
 	</target>
 
 	<target name="prep"
 	          description="prepare">
-		<delete dir="${plugin.dir}/configDemoSearchResultFiltering" />
-		<mkdir dir="${plugin.dir}/configDemoSearchResultFiltering" />
-		<copy todir="${plugin.dir}/configDemoSearchResultFiltering">
-			<fileset dir="configDemoSearchResultFiltering"/>
-		</copy>
-		<delete dir="${plugin.dir}/configManyToMany" />
-		<mkdir dir="${plugin.dir}/configManyToMany" />
-		<copy todir="${plugin.dir}/configManyToMany">
-			<fileset dir="configManyToMany"/>
-		</copy>
-		<delete dir="${plugin.dir}/configTestOnLucene" />
-		<mkdir dir="${plugin.dir}/configTestOnLucene" />
-		<copy todir="${plugin.dir}/configTestOnLucene">
-			<fileset dir="configTestOnLucene"/>
-		</copy>
 		<delete file="${plugin.dir}/log4j.xml" />
 		<copy file="FgsConfigTemplate/log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
-	</target>
-
-	<target name="configManyToMany"
-			depends=""
-        	description="build the config for local deployment">
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPHOSTPORT" value="localhost:8080"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPPASS" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="WEBSERVERPATH" value="/home/gsp/f221/tomcat"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="REPOSNAMES" value="DemoAtDtu SindapAtDtu"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="INDEXNAMES" value="DemoOnLucene SmileyDemoOnLucene SindapDemoOnLucene DemoOnZebra"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="demoUpdateIndexToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="demoGfindObjectsToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="demoBrowseIndexToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="demoGetRepositoryInfoToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="demoGetIndexInfoToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoUpdateIndexToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/f221/tomcat"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGfindObjectsToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/f221/tomcat"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoBrowseIndexToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/f221/tomcat"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGetIndexInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/f221/tomcat"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGetRepositoryInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/gsp/f221/tomcat"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGfindObjectsToHtml.xslt" token="DEMOATDTUSOAPHOSTPORT" value="http://localhost:8080"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="SOAPHOSTPORT" value="localhost:8080"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/f221/data/objects"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGfindObjectsToHtml.xslt" token="SINDAPATDTUSOAPHOSTPORT" value="http://defxws2005.cvt.dk"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="SOAPHOSTPORT" value="defxws2005.cvt.dk"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/gsp/fedora22/data/objects/sindap"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnLucene/demoFoxmlToLucene.xslt" token="WEBSERVERPATH" value="/home/gsp/f221/tomcat"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnLucene/index.properties" token="INDEXDIR" value="/home/gsp/f221/gsearch/demoOnLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="demoFoxmlToLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SmileyDemoOnLucene/index.properties" token="INDEXDIR" value="/home/gsp/f221/gsearch/smileyDemoOnLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SmileyDemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="smileyDemoFoxmlToLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SindapDemoOnLucene/index.properties" token="INDEXDIR" value="/home/gsp/f221/gsearch/sindapDemoOnLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SindapDemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="sindapFoxmlToLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnZebra/index.properties" token="INDEXBASE" value="http://localhost:9999"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnZebra/index.properties" token="INDEXDIR" value="/home/gsp/f221/gsearch/demoOnZebra"/>
-
-	</target>
-
-	<target name="configManyToManyDemo"
-			depends="prep"
-        	description="build the config for demo deployment">
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPHOSTPORT" value="defxws2006.cvt.dk"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="SOAPPASS" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="REPOSNAMES" value="DemoAtDtu SindapAtDtu"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="INDEXNAMES" value="DemoOnLucene SmileyDemoOnLucene SindapDemoOnLucene DemoOnZebra"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="demoUpdateIndexToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTBROWSEINDEXRESTXSLT" value="demoBrowseIndexToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="demoGfindObjectsToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTGETREPOSITORYINFORESTXSLT" value="demoGetRepositoryInfoToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="demoGetIndexInfoToHtml"/>
-		<replace file="${plugin.dir}/configManyToMany/fedoragsearch.properties" token="MIMETYPES" value="text/plain text/html application/pdf"/>
-		<replace file="${plugin.dir}/log4j.xml" token="LOGPATH" value="/home/fedora2/fedora-2.1/server/logs"/>
-		<replace file="${plugin.dir}/log4j.xml" token="DEBUGLEVELG" value="DEBUG"/>
-		<replace file="${plugin.dir}/log4j.xml" token="DEBUGLEVELL" value="DEBUG"/>
-		<replace file="${plugin.dir}/log4j.xml" token="DEBUGLEVELZ" value="DEBUG"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoUpdateIndexToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGfindObjectsToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoBrowseIndexToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGetIndexInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGetRepositoryInfoToHtml.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGfindObjectsToHtml.xslt" token="DEMOATDTUSOAPHOSTPORT" value="http://defxws2006.cvt.dk"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="SOAPHOSTPORT" value="defxws2006.cvt.dk"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/DemoAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/fedora2/fedora-2.1/data/objects/2006"/>
-		<replace file="${plugin.dir}/configManyToMany/rest/demoGfindObjectsToHtml.xslt" token="SINDAPATDTUSOAPHOSTPORT" value="http://defxws2005.cvt.dk"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="SOAPHOSTPORT" value="defxws2005.cvt.dk"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/configManyToMany/repository/SindapAtDtu/repository.properties" token="FEDORAOBJECTDIR" value="/home/fedora2/fedora-2.1/data/objects/sindap"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnLucene/demoFoxmlToLucene.xslt" token="WEBSERVERPATH" value="/home/fedora2/fedora-2.1/server/jakarta-tomcat-5.0.28"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnLucene/index.properties" token="INDEXDIR" value="/data/defxws2006/fgslucene/demoOnLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="demoFoxmlToLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SmileyDemoOnLucene/index.properties" token="INDEXDIR" value="/data/defxws2006/fgslucene/smileyDemoOnLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SmileyDemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="smileyDemoFoxmlToLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SindapDemoOnLucene/index.properties" token="INDEXDIR" value="/data/defxws2006/fgslucene/sindapDemoOnLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/SindapDemoOnLucene/index.properties" token="DEFAULTUPDATEINDEXDOCXSLT" value="sindapFoxmlToLucene"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnZebra/index.properties" token="INDEXBASE" value="http://localhost:9998/"/>
-		<replace file="${plugin.dir}/configManyToMany/index/DemoOnZebra/index.properties" token="INDEXDIR" value="/data/defxws2006/fgszebra/demoOnZebra"/>
-	</target>
-
-	<target name="config2005demo"
-			depends="prep"
-        	description="build the config for 2005demo deployment">
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="OWNER" value="fedora2"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="FEDORAHOSTPORT" value="defxws2005.cvt.dk"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="FEDORAVERSION" value="2.1b"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="FEDORAUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="FEDORAPASS" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="INDEXNAMES" value="Zebra Lucene"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTGFINDOBJECTSRESTXSLT" value="demoGfindObjectsToHtml"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTGETINDEXINFORESTXSLT" value="demoGetIndexInfoToHtml"/>
-		<replace file="${plugin.dir}/config/fedoragsearch.properties" token="DEFAULTUPDATEINDEXRESTXSLT" value="demoUpdateIndexToHtml"/>
-		<replace file="${plugin.dir}/Lucene.properties" token="INDEXDIR" value="/data/fedora2/LuceneForFedora/bin/index"/>
-		<replace file="${plugin.dir}/Zebra.properties" token="INDEXBASE" value="http://alvis.cvt.dk:9905/"/>
 	</target>
 
 </project>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resultPage>
- <repositoryInfo>
-  <RepositoryShortName>DemoLocal</RepositoryShortName>
-  <RepositoryLongName>Local demo repository</RepositoryLongName>
-  <RepositoryDeveloper>Gert Schmeltz Pedersen, DTIC@DTU</RepositoryDeveloper>
-  <RepositoryContact>gsp@dtic.dtu.dk</RepositoryContact>
- </repositoryInfo>
-</resultPage>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  $Id: fgsconfig.xml gertsp $ -->
+<!--  $Id: fgsconfig-repos.xml $ -->
 <project name="FgsConfigRepos" default="configFgsRepos" basedir=".">
 	<description>
 		Fedora Generic Search Service configuration of a repository
-		This ant script is run from fgsconfig-repos.sh:
-					>ant -f fgsconfig-repos.xml -DreposName=reposName
+		This ant script is run from fgsconfig.sh:
+					>ant -f fgsconfig-repos.xml -DreposName=$reposName
 	</description>
 
 	<property file="fgsconfig-repos-${reposName}-input.properties" />

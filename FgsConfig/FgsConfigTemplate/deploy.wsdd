@@ -1,4 +1,4 @@
-<!--  $Id: deploy.wsdd 5717 2006-10-11 14:42:55Z gertsp $ -->
+<!--  $Id: deploy.wsdd $ -->
 <!-- Use this file to deploy some handlers/chains and services      -->
 <!-- Two ways to do this:                                           -->
 <!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<!-- $Id: demoFoxmlToLucene.xslt 5734 2006-11-28 11:20:15Z gertsp $ -->
+<!-- $Id: foxmlToSolr.xslt $ -->
 <xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
     	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
@@ -16,12 +16,11 @@
 	 This xslt stylesheet generates the Solr doc element consisting of field elements
      from a FOXML record. 
      You must specify the index field elements in solr's schema.xml file,
-     including the uniqueKey element, which in this demo case is set to "PID".
+     including the uniqueKey element, which in this case is set to "PID".
      Options for tailoring:
        - generation of fields from other XML metadata streams than DC
        - generation of fields from other datastream types than XML
-         - from datastream by ID, text fetched, if mimetype can be handled
-             currently the mimetypes text/plain, text/xml, text/html, application/pdf can be handled.
+         - from datastream by ID, text fetched, if mimetype can be handled.
 -->
 
 	<xsl:param name="REPOSITORYNAME" select="repositoryName"/>
@@ -37,25 +36,25 @@
 			<xsl:attribute name="boost">
 				<xsl:value-of select="$docBoost"/>
 			</xsl:attribute>
-		<!-- The following allows only active demo FedoraObjects to be indexed. -->
+		<!-- The following allows only active FedoraObjects to be indexed. -->
 		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
 			<xsl:if test="not(foxml:digitalObject/foxml:datastream[@ID='METHODMAP'] or foxml:digitalObject/foxml:datastream[@ID='DS-COMPOSITE-MODEL'])">
-				<xsl:if test="starts-with($PID,'demo')">
-					<xsl:apply-templates mode="activeDemoFedoraObject"/>
+				<xsl:if test="starts-with($PID,'')">
+					<xsl:apply-templates mode="activeFedoraObject"/>
 				</xsl:if>
 			</xsl:if>
 		</xsl:if>
-		<!-- The following allows inactive demo FedoraObjects to be deleted from the index. -->
+		<!-- The following allows inactive FedoraObjects to be deleted from the index. -->
 		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Inactive']">
 			<xsl:if test="not(foxml:digitalObject/foxml:datastream[@ID='METHODMAP'] or foxml:digitalObject/foxml:datastream[@ID='DS-COMPOSITE-MODEL'])">
-				<xsl:if test="starts-with($PID,'demo')">
-					<xsl:apply-templates mode="inactiveDemoFedoraObject"/>
+				<xsl:if test="starts-with($PID,'')">
+					<xsl:apply-templates mode="inactiveFedoraObject"/>
 				</xsl:if>
 			</xsl:if>
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="/foxml:digitalObject" mode="activeDemoFedoraObject">
+	<xsl:template match="/foxml:digitalObject" mode="activeFedoraObject">
 		<add> 
 		<doc> 
 			<field name="PID" boost="2.5">
@@ -92,7 +91,7 @@
 		</add>
 	</xsl:template>
 
-	<xsl:template match="/foxml:digitalObject" mode="inactiveDemoFedoraObject">
+	<xsl:template match="/foxml:digitalObject" mode="inactiveFedoraObject">
 		<delete> 
 			<id><xsl:value-of select="$PID"/></id>
 		</delete>

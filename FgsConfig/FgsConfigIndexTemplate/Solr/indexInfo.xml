@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resultPage indexName="DemoOnLucene">
+<resultPage indexName="INDEXNAME">
  <indexInfo>
-  <IndexShortName>DemoOnSolr</IndexShortName>
-  <IndexLongName>Demonstration index on Solr</IndexLongName>
+  The contents of this page is just an example, it is displayed by the getIndexInfo operation.
+  <IndexShortName>INDEXNAME</IndexShortName>
+  <IndexLongName>INDEXNAME index on Solr</IndexLongName>
   <EngineUrl>http://lucene.apache.org/</EngineUrl>
   <EngineShortName>Solr</EngineShortName>
   <EngineLongName>Apache Lucene project</EngineLongName>

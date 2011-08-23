@@ -47,18 +47,6 @@ echo "*****************************************************"
 
 echo "\nAssumption: You have copied the directory FgsConfig from .../webapps/fedoragsearch to a location, where you have write permission, and where you are now."
 
-echo "\nHere is a file list with explanations:\n "
-
-echo "\nfgsconfig.sh                        The shell script that you are running now\n "
-
-echo "\nfgsconfig-default.properties        The default initial property values - for the configuration overall\n "
-
-echo "\nfgsconfig-repos-default.properties                                      - for the repository configuration\n "
-
-echo "\nfgsconfig-index-default.properties                                      - for the index configuration\n "
-
-echo "\nfgsconfig.xml                       The ant script that will insert property values into your final config files\n "
-
 echo "\nTo configure GSearch, please enter the following properties, default value is in []."
 
 echo "\nIn the simplest case, you may choose default values all the way.\n "
@@ -94,9 +82,7 @@ then
 fi
 get_input_with_default "finalConfigPath"            "$finalConfigPath"            "finalConfigPath must be in the classpath of the web server."
 finalConfigPath=$defaultedinput
-finalConfigName=FgsConfigFinal
-templateConfigPath=.
-templateConfigName=FgsConfigTemplate
+
 add_to_prop_file "# finalConfigName is the dir name that is to contain the instantiated final config for GSearch, which the GSearch Config.java class looks for in classpath at runtime."
 add_to_prop_file "finalConfigName=$finalConfigName"
 add_to_prop_file "# templateConfigPath is the path to the template config for GSearch."
@@ -280,16 +266,3 @@ echo "\nChanges to the final config files take effect after restart.\n"
 #... which may be used next to generate REST xslt for end-user interface ...!
 
 add_to_prop_file "# end.time=`date`"
-
-#get_input_with_default "fedoragsearchVersion"  "$fedoragsearchVersion"  "fedoragsearch.version is the GSearch version that you configure now."
-
-fedoraHome=$FEDORA_HOME
-#get_input_with_default "fedora.home"            "$fedoraHome"            "fedora.home is per default set to \$FEDORA_HOME."
-fedoraHome=$defaultedinput
-
-webserverHome=$CATALINA_HOME
-#get_input_with_default "webserver.home"         "$webserverHome"         "webserver.home is per default set to \$CATALINA_HOME."
-
-fedoragsearchHome=$fedoraHome/gsearch
-#get_input_with_default  "fedoragsearch.home"    "$fedoragsearchHome"     "fedoragsearch.home is per default under \$fedora.home."
-fedoragsearchHome=$defaultedinput
