@@ -6,7 +6,7 @@ Basic FedoraGenericSearch (GSearch) 2.3 Installation and Configuration
 
 Installation was simply dumping fedoragsearch.war into tomcat webapps.
 
-After tomcat unpacking you have copied the directory FgsConfig from 
+After tomcat unpacking copy the directory FgsConfig from 
 .../webapps/fedoragsearch to a location outside of tomcat, 
 where you have write permission, and where you are now.
 

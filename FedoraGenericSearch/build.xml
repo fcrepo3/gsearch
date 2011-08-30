@@ -99,17 +99,9 @@
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${localdist.dir}" />
 		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-basic.properties" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-basic.xml" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-basic-README.txt" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-basic-manytomany.xml" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig.sh" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-default.properties" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-index-default.properties" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-repos-default.properties" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig.xml" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-index.xml" todir="${build.dir}" preservelastmodified="true" />
-		<copy file="../FgsConfig/fgsconfig-repos.xml" todir="${build.dir}" preservelastmodified="true" />
+		<copy todir="${build.dir}/FgsConfig" preservelastmodified="true">
+			<fileset dir="../FgsConfig"/>
+		</copy>
 		<copy todir="${build.dir}/css" preservelastmodified="true">
 			<fileset dir="src/css"/>
 		</copy>
