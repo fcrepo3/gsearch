@@ -94,7 +94,7 @@
 	<target name="prep"
 	          description="prepare">
 		<delete file="${plugin.dir}/log4j.xml" />
-		<copy file="FgsConfigTemplate/log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
+		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
 	</target>
 
 </project>

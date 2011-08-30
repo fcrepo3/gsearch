@@ -99,6 +99,10 @@
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${localdist.dir}" />
 		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" preservelastmodified="true" />
+		<copy file="../FgsConfig/fgsconfig-basic.properties" todir="${build.dir}" preservelastmodified="true" />
+		<copy file="../FgsConfig/fgsconfig-basic.xml" todir="${build.dir}" preservelastmodified="true" />
+		<copy file="../FgsConfig/fgsconfig-basic-README.txt" todir="${build.dir}" preservelastmodified="true" />
+		<copy file="../FgsConfig/fgsconfig-basic-manytomany.xml" todir="${build.dir}" preservelastmodified="true" />
 		<copy file="../FgsConfig/fgsconfig.sh" todir="${build.dir}" preservelastmodified="true" />
 		<copy file="../FgsConfig/fgsconfig-default.properties" todir="${build.dir}" preservelastmodified="true" />
 		<copy file="../FgsConfig/fgsconfig-index-default.properties" todir="${build.dir}" preservelastmodified="true" />

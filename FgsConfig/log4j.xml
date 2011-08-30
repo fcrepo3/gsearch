@@ -10,7 +10,7 @@
   </appender>
   
   <appender name="FILEOUT" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="/Users/gertschmeltzpedersen/f33/server/logs/fedoragsearch.daily.log"/>
+    <param name="File" value="LOGPATH/fedoragsearch.daily.log"/>
     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%p %d (%c{1}) %m%n"/>
@@ -18,22 +18,22 @@
   </appender>
   
   <logger name="dk.defxws.fedoragsearch" additivity="false">
-    <level value="DEBUG" />
+    <level value="LOGLEVEL" />
     <appender-ref ref="FILEOUT"/>
   </logger>
   
   <logger name="dk.defxws.fgszebra" additivity="false">
-    <level value="DEBUG" />
+    <level value="LOGLEVEL" />
     <appender-ref ref="FILEOUT"/>
   </logger>
   
   <logger name="dk.defxws.fgslucene" additivity="false">
-    <level value="DEBUG" />
+    <level value="LOGLEVEL" />
     <appender-ref ref="FILEOUT"/>
   </logger>
   
   <logger name="dk.defxws.fgssolr" additivity="false">
-    <level value="DEBUG" />
+    <level value="LOGLEVEL" />
     <appender-ref ref="FILEOUT"/>
   </logger>
 
