@@ -8,10 +8,11 @@ import org.junit.runners.Suite;
  * 
  * assuming 
  * - all Fedora demo objects are in the repository referenced in
- *   configTestOnLucene/repository/DemoAtDtu/repository.properties
+ *   configTestOnLucene/repository/FgsRepos/repository.properties
  * 
  * the test suite will
- * - set configTestOnLucene as current config. 
+ * - set configTestOnLucene as current config,
+ * - test sortFields and updateIndex functionality. 
  */
 
 @RunWith(Suite.class)

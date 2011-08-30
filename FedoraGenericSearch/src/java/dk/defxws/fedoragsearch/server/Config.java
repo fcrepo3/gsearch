@@ -550,7 +550,7 @@ public class Config {
     			}
     			String stopwordsLocation = props.getProperty("fgsindex.stopwordsLocation"); 
     			try {
-    				Version version = Version.LUCENE_29;
+    				Version version = Version.LUCENE_33;
     				Class analyzerClass = Class.forName(analyzerClassName);
         			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
     					analyzerClass.getConstructor(new Class[] { Version.class})

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  $Id$ -->
-<project name="FedoraGenericSearch" default="buildlocal" basedir=".">
+<project name="FedoraGenericSearch" default="buildfordownload" basedir=".">
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
@@ -44,6 +44,34 @@
 		<pathelement path="${build.basedir}/classes"/>
 	</path>
 	
+    <!-- MacroDefs -->
+    <macrodef name="md-compile">
+        <attribute name="classpathref" default="compile.classpath"/>
+        <attribute name="destdir"/>
+        <attribute name="excludes" default=""/>
+        <attribute name="fork" default="no"/>
+        <attribute name="includes" default=""/>
+        <attribute name="srcdir"/>
+        <attribute name="compilerargs" default=""/>
+        <!-- default="-Xlint -Xlint:-path -Xmaxwarns ${javac.maxwarns}" -->
+        <sequential>
+            <mkdir dir="@{destdir}"/>
+            <javac classpathref="@{classpathref}" 
+                   debug="${javac.debug}" 
+                   deprecation="${javac.deprecation}" 
+                   destdir="@{destdir}" 
+                   excludes="@{excludes}" 
+                   fork="@{fork}"
+                   includes="@{includes}"
+                   source="${javac.source}" 
+                   srcdir="@{srcdir}"
+                   target="${javac.target}"
+            	   encoding="UTF-8">
+            	<compilerarg line="@{compilerargs}"/>
+            </javac>
+        </sequential>
+    </macrodef>
+	
     <target name="clean"
             description="removes build-generated artifacts">
 		<delete dir="../FgsLucene/bin"/>
@@ -71,7 +99,6 @@
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${localdist.dir}" />
 		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" preservelastmodified="true" />
-		<copy file="../FgsConfig/configvalues.xml" todir="${build.dir}" preservelastmodified="true" />
 		<copy file="../FgsConfig/fgsconfig.sh" todir="${build.dir}" preservelastmodified="true" />
 		<copy file="../FgsConfig/fgsconfig-default.properties" todir="${build.dir}" preservelastmodified="true" />
 		<copy file="../FgsConfig/fgsconfig-index-default.properties" todir="${build.dir}" preservelastmodified="true" />
@@ -104,7 +131,7 @@
 		</copy>
 	</target>
 
-    <target name="binrelease" depends="builddownload">
+    <target name="binrelease" depends="buildfordownload">
       <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}" preservelastmodified="true"
             file="${dist.dir}/${war.name}"/>
       <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}/doc" preservelastmodified="true">
@@ -138,7 +165,7 @@
       </checksum>
     </target>
 
-	<target name="builddownload"
+	<target name="buildfordownload"
 			depends="prep, includeengines"
 	        description="build the download">
         <ant dir="../FgsConfig" target="configForWebServer"/>
@@ -147,10 +174,10 @@
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
 
-	<target name="buildlocal"
+	<target name="buildforlocaltest"
 		    depends="prep, includeengines"
 	        description="build local">
-        <ant dir="../FgsConfig" target="configForLocalDevelopment"/>
+        <ant dir="../FgsConfig" target="configForLocalTest"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
 		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
 	    <jar jarfile="${localdist.dir}/${war.name}" basedir="${build.dir}"/>
@@ -165,19 +192,6 @@
             <arg line=" fedora-reload-policies.sh http fedoraAdmin fedoraAdmin"/>
 		</exec>
 		-->
-	</target>
-
-	<target name="builddemo"
-			depends="builddownload"
-	        description="build public">
-        <ant dir="../FgsConfig" target="configdemo" inheritAll="false"/>
-		<mkdir dir="${dist.dir}" />
-	    <zip zipfile="${build.dir}/eclipseprojects.zip" basedir="${build.basedir}/eclipseprojects"/>
-	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
-		<exec executable="scp">
-            <arg line=" -p ${dist.dir}/${war.name} fedora2@defxws2006.cvt.dk:/home/fedora2/fedora-2.1/server/${tomcat.basename}/webapps"/>
-        </exec>
-
 	</target>
 	
     <target name="includeengines" depends="">

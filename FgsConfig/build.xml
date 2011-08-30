@@ -6,46 +6,53 @@
 	<property name="build.dir" location="../FgsBuild/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 
+	<property name="namesOfRepositories" value="FgsRepos"/>
+	<property name="reposName" value="FgsRepos"/>
+	<property name="namesOfIndexes" value="FgsIndex"/>
+	<property name="indexName" value="FgsIndex"/>
+
 	<target name="configForWebServer"
 			depends="prep"
         	description="build the config">
 	</target>
 
-	<target name="configForLocalDevelopment"
+	<target name="configForLocalTest"
 			depends="prep"
         	description="build the config">
         <ant target="configLocal">
 			<property name="configName" value="config"/>
 			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
         </ant>
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnLucene"/>
 			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
         </ant>
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnSolr"/>
 			<property name="indexEngine" value="Solr"/>
 			<property name="indexBase" value="http://localhost:8983/solr"/>
+			<property name="indexDir" value="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.3.0/example/solr/data/index"/>
+
         </ant>
+		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.3.0-for-fgs-2.3.xml" tofile="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.3.0/example/solr/conf/schema.xml" preservelastmodified="true" />
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnZebra"/>
 			<property name="indexEngine" value="Zebra"/>
 			<property name="indexBase" value="http://localhost:9999"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
         </ant>
         <ant target="configLocal">
 			<property name="configName" value="configTestOnLucene"/>
 			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
         </ant>
+		<copy file="FgsConfigIndexTemplate/LuceneTest/testFoxmlToLuceneWithExplicitParams.xslt" todir="${plugin.dir}/configTestOnLucene/index/${indexName}" preservelastmodified="true" />
 	</target>
 
 	<target name="configLocal"
-			depends="prep"
         	description="build a local config">
-
-		<property name="namesOfRepositories" value="FgsRepos"/>
-		<property name="reposName" value="FgsRepos"/>
-		<property name="namesOfIndexes" value="FgsIndex"/>
-		<property name="indexName" value="FgsIndex"/>
 		
 		<delete dir="${plugin.dir}/${configName}" />
 		<mkdir dir="${plugin.dir}/${configName}" />
@@ -72,8 +79,7 @@
 
 		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXNAME" value="${indexName}"/>
 		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXBASE" value="${indexBase}"/>
-		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXPATH" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
-		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXDIR" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+		<replace file="${plugin.dir}/${configName}/index/${indexName}/index.properties" token="INDEXDIR" value="${indexDir}"/>
 	
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="REPOSNAME" value="${reposName}"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORABASE" value="http://localhost:8080"/>
@@ -81,7 +87,7 @@
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAVERSION" value="3.5"/>
-		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="data/objectStore"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="data/objects"/>
 		
 	</target>
 

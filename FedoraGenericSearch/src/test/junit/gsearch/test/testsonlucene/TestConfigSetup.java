@@ -8,10 +8,11 @@ import junit.framework.Test;
  * 
  * assuming 
  * - all Fedora demo objects are in the repository referenced in
- *   configTestOnLucene/repository/DemoAtDtu/repository.properties
+ *   configTestOnLucene/repository/FgsRepos/repository.properties
  * 
  * the test suite will
- * - set configTestOnLucene as current config. 
+ * - set configTestOnLucene as current config,
+ * - test sortFields and updateIndex functionality. 
  */
 public class TestConfigSetup
         extends junit.extensions.TestSetup {
@@ -29,6 +30,6 @@ public class TestConfigSetup
 
     @Override
     public void tearDown() throws Exception {
-//        System.out.println("tearDown configTestOnLucene");
+        System.out.println("tearDown configTestOnLucene");
     }
 }

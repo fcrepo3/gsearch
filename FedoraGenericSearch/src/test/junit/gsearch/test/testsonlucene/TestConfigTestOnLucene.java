@@ -12,9 +12,9 @@ import gsearch.test.FgsTestCase;
  * 
  * assuming 
  * - all Fedora demo objects are in the repository referenced in
- *   configTestOnLucene/repository/DemoAtDtu/repository.properties
+ *   configTestOnLucene/repository/FgsRepos/repository.properties
  * 
- * the test suite will
+ * the tests will
  * - set configTestOnLucene as current config
  * - reindex 
  */
@@ -44,6 +44,6 @@ public class TestConfigTestOnLucene
     @Test
     public void testUpdateIndexFromFoxmlFiles() throws Exception {
   	    StringBuffer result = doOp("?operation=updateIndex&action=fromFoxmlFiles&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("25", "/resultPage/updateIndex/@docCount", result.toString());
+  	    assertXpathEvaluatesTo("20", "/resultPage/updateIndex/@docCount", result.toString());
     }
 }

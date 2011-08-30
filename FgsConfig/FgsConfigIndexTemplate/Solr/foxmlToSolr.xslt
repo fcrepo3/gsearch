@@ -4,12 +4,9 @@
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
     	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
     		exclude-result-prefixes="exts"
-		xmlns:zs="http://www.loc.gov/zing/srw/"
 		xmlns:foxml="info:fedora/fedora-system:def/foxml#"
 		xmlns:dc="http://purl.org/dc/elements/1.1/"
-		xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
-		xmlns:uvalibdesc="http://dl.lib.virginia.edu/bin/dtd/descmeta/descmeta.dtd"
-		xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
+		xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/">
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
 <!--
@@ -30,12 +27,8 @@
 	<xsl:param name="TRUSTSTOREPATH" select="repositoryName"/>
 	<xsl:param name="TRUSTSTOREPASS" select="repositoryName"/>
 	<xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
-	<xsl:variable name="docBoost" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
 	
 	<xsl:template match="/">
-			<xsl:attribute name="boost">
-				<xsl:value-of select="$docBoost"/>
-			</xsl:attribute>
 		<!-- The following allows only active FedoraObjects to be indexed. -->
 		<xsl:if test="foxml:digitalObject/foxml:objectProperties/foxml:property[@NAME='info:fedora/fedora-system:def/model#state' and @VALUE='Active']">
 			<xsl:if test="not(foxml:digitalObject/foxml:datastream[@ID='METHODMAP'] or foxml:digitalObject/foxml:datastream[@ID='DS-COMPOSITE-MODEL'])">
@@ -57,8 +50,14 @@
 	<xsl:template match="/foxml:digitalObject" mode="activeFedoraObject">
 		<add> 
 		<doc> 
-			<field name="PID" boost="2.5">
+			<field name="PID">
 				<xsl:value-of select="$PID"/>
+			</field>
+			<field name="REPOSITORYNAME">
+				<xsl:value-of select="$REPOSITORYNAME"/>
+			</field>
+			<field name="REPOSBASEURL">
+				<xsl:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
 			</field>
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
 				<field >
@@ -80,7 +79,7 @@
 			<!-- a managed datastream is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the field. -->
 			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M']">
-				<field index="TOKENIZED" store="YES" termVector="NO">
+				<field >
 					<xsl:attribute name="name">
 						<xsl:value-of select="concat('dsm.', @ID)"/>
 					</xsl:attribute>

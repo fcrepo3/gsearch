@@ -234,18 +234,18 @@ public class OperationsImpl extends GenericOperationsImpl {
         resultXml.append(" indexName=\""+indexName+"\"");
         resultXml.append(">\n");
         try {
-        	if ("createEmpty".equals(action)) 
-        		createEmpty(indexName, resultXml);
+    		if ("deletePid".equals(action)) {
+    			deletePid(value, indexName, resultXml);
+    		}
         	else {
-        		getIndexReader(indexName);
+                getIndexWriter(indexName);
         		initDocCount = docCount;
-        		if ("deletePid".equals(action)) 
-        			deletePid(value, indexName, resultXml);
+            	if ("createEmpty".equals(action)) 
+            		createEmpty(indexName, resultXml);
         		else {
         			if ("fromPid".equals(action)) 
 						fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
         			else {
-                        getIndexWriter(indexName);
         				if ("fromFoxmlFiles".equals(action)) 
         					fromFoxmlFiles(value, repositoryName, indexName, resultXml, indexDocXslt);
         				else
@@ -256,13 +256,13 @@ public class OperationsImpl extends GenericOperationsImpl {
         	}
         } finally {
             closeIndexWriter(indexName);
-//        	getIndexReader(indexName);
+        	getIndexReader(indexName);
+        	closeIndexReader(indexName);
         	if (updateTotal > 0) {
         		int diff = docCount - initDocCount;
         		insertTotal = diff;
         		updateTotal -= diff;
         	}
-//        	closeIndexReader(indexName);
         }
         logger.info("updateIndex "+action+" indexName="+indexName
         		+" indexDirSpace="+indexDirSpace(new File(config.getIndexDir(indexName)))
@@ -300,13 +300,10 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
-        getIndexWriter(indexName);
         try {
 			iw.deleteAll();
 		} catch (IOException e) {
             throw new GenericSearchException("createEmpty deleteAll error indexName=" + indexName+ " :\n", e);
-		} finally {
-			closeIndexWriter(indexName);
 		}
     	if (logger.isDebugEnabled())
     		logger.debug("getIndexWriter indexName=" + indexName+ " docCount=" + docCount);
@@ -318,8 +315,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
+    	getIndexReader(indexName, false);
         try {
-        	deleteTotal = ir.deleteDocuments(new Term("PID", pid));
+        	deleteTotal += ir.deleteDocuments(new Term("PID", pid));
 		} catch (StaleReaderException e) {
             throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
 		} catch (CorruptIndexException e) {
@@ -328,6 +326,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
         } catch (IOException e) {
             throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
+        } finally {
+        	closeIndexReader(indexName);
         }
         resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
     }
@@ -473,13 +473,13 @@ public class OperationsImpl extends GenericOperationsImpl {
     			repositoryName,
     			pidOrFilename,
     			sb);
+		String pid = hdlr.getPid();
     	try {
     		ListIterator li = hdlr.getIndexDocument().getFields().listIterator();
     		if (li.hasNext()) {
-                getIndexWriter(indexName);
-                iw.updateDocument(new Term("PID", hdlr.getPid()), hdlr.getIndexDocument());
+                iw.updateDocument(new Term("PID", pid), hdlr.getIndexDocument());
     				updateTotal++;
-        			resultXml.append("<updated>"+hdlr.getPid()+"</updated>\n");
+        			resultXml.append("<updated>"+pid+"</updated>\n");
     			StringBuffer untokenizedFields = new StringBuffer(config.getUntokenizedFields(indexName));
     			while (li.hasNext()) {
     				Field f = (Field)li.next();
@@ -488,10 +488,13 @@ public class OperationsImpl extends GenericOperationsImpl {
     					config.setUntokenizedFields(indexName, untokenizedFields.toString());
     				}
     			}
-    			logger.info("IndexDocument="+hdlr.getPid()+" docCount="+iw.numDocs());
+    			logger.info("IndexDocument="+pid);
     		}
     		else {
-    			logger.warn("IndexDocument "+hdlr.getPid()+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
+    			logger.warn("IndexDocument "+pid+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
+                closeIndexWriter(indexName);
+    			deletePid(pid, indexName, resultXml);
+                getIndexWriter(indexName);
     		}
     	} catch (IOException e) {
     		throw new GenericSearchException("Update error pidOrFilename="+pidOrFilename, e);
@@ -541,8 +544,13 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private void getIndexReader(String indexName)
     throws GenericSearchException {
+    	getIndexReader(indexName, true);
+    }
+    
+    private void getIndexReader(String indexName, boolean readonly)
+    throws GenericSearchException {
 		IndexReader irreopened = null;
-		if (ir != null) {
+		if (ir != null && readonly) {
 	    	try {
 				irreopened = ir.reopen();
 			} catch (CorruptIndexException e) {
@@ -561,8 +569,9 @@ public class OperationsImpl extends GenericOperationsImpl {
 			}
 		} else {
 	        try {
+	        	closeIndexReader(indexName);
 				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-				ir = IndexReader.open(dir, true);
+				ir = IndexReader.open(dir, readonly);
 			} catch (CorruptIndexException e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			} catch (IOException e) {
@@ -592,50 +601,44 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private void getIndexWriter(String indexName)
     throws GenericSearchException {
-    	if (iw != null) return;
-		Directory dir;
-		try {
-			dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-		} catch (IOException e) {
-            throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
-		}
-		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_33, getAnalyzer(indexName));
-		int maxBufferedDocs = config.getMaxBufferedDocs(indexName);
-		if (maxBufferedDocs > 0) {
-			iwconfig.setMaxBufferedDocs(maxBufferedDocs);
-		}
-		int mergeFactor = config.getMergeFactor(indexName);
-		if (mergeFactor > 0) {
-			LogDocMergePolicy ldmp = new LogDocMergePolicy();
-			ldmp.setMergeFactor(mergeFactor);
-			iwconfig.setMergePolicy(ldmp);
-		}
-		long defaultWriteLockTimeout = config.getDefaultWriteLockTimeout(indexName);
-		if (defaultWriteLockTimeout > 0) {
-			IndexWriterConfig.setDefaultWriteLockTimeout(defaultWriteLockTimeout);
-		}
-	    try {
-            iw = new IndexWriter(dir, iwconfig);
-//            iw = new IndexWriter(dir, getAnalyzer(indexName), create, IndexWriter.MaxFieldLength.LIMITED);
-//            if (config.getMaxBufferedDocs(indexName)>1)
-//            	iw.setMaxBufferedDocs(config.getMaxBufferedDocs(indexName));
-//            if (config.getMergeFactor(indexName)>1)
-//            	iw.setMergeFactor(config.getMergeFactor(indexName));
-//            if (config.getDefaultWriteLockTimeout(indexName)>1)
-//            	IndexWriter.setDefaultWriteLockTimeout(config.getDefaultWriteLockTimeout(indexName));
-        } catch (IOException e) {
-//         	iw = null;
-//            if (e.toString().indexOf("/segments")>-1) {
-//                try {
-//    				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-//                    iw = new IndexWriter(dir, getAnalyzer(indexName), true, IndexWriter.MaxFieldLength.LIMITED);
-//                } catch (IOException e2) {
-//                    throw new GenericSearchException("IndexWriter new error, creating index indexName=" + indexName+ " :\n", e2);
-//                }
-//            }
-//            else
+    	if (iw == null) {
+    		Directory dir;
+    		try {
+    			dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
+    		} catch (IOException e) {
                 throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
-        }
+    		}
+    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_33, getAnalyzer(indexName));
+    		int maxBufferedDocs = config.getMaxBufferedDocs(indexName);
+    		if (maxBufferedDocs > 0) {
+    			iwconfig.setMaxBufferedDocs(maxBufferedDocs);
+    		}
+    		int mergeFactor = config.getMergeFactor(indexName);
+    		if (mergeFactor > 0) {
+    			LogDocMergePolicy ldmp = new LogDocMergePolicy();
+    			ldmp.setMergeFactor(mergeFactor);
+    			iwconfig.setMergePolicy(ldmp);
+    		}
+    		long defaultWriteLockTimeout = config.getDefaultWriteLockTimeout(indexName);
+    		if (defaultWriteLockTimeout > 0) {
+    			IndexWriterConfig.setDefaultWriteLockTimeout(defaultWriteLockTimeout);
+    		}
+    	    try {
+                iw = new IndexWriter(dir, iwconfig);
+            } catch (IOException e) {
+//             	iw = null;
+//                if (e.toString().indexOf("/segments")>-1) {
+//                    try {
+//        				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
+//                        iw = new IndexWriter(dir, getAnalyzer(indexName), true, IndexWriter.MaxFieldLength.LIMITED);
+//                    } catch (IOException e2) {
+//                        throw new GenericSearchException("IndexWriter new error, creating index indexName=" + indexName+ " :\n", e2);
+//                    }
+//                }
+//                else
+                    throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
+            }
+    	}
         try {
 			docCount = iw.numDocs();
 		} catch (IOException e) {
@@ -657,7 +660,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             } finally {
             	iw = null;
             	if (logger.isDebugEnabled())
-            		logger.debug("closeIndexWriter indexName=" + indexName+ " docCount=" + docCount);
+            		logger.debug("closeIndexWriter indexName=" + indexName);
             }
 		}
     }

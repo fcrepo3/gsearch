@@ -254,6 +254,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             if (logger.isDebugEnabled())
                 logger.debug("initDocCount="+initDocCount+" docCount="+docCount+" updateTotal="+updateTotal);
         	if (updateTotal > 0) {
+            	docCount = docCount + updateTotal;
         		int diff = docCount - initDocCount;
         		insertTotal = diff;
         		updateTotal -= diff;
@@ -446,8 +447,10 @@ public class OperationsImpl extends GenericOperationsImpl {
                 params);
         if (logger.isDebugEnabled())
             logger.debug("indexDoc=\n"+sb.toString());
-    	postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
-        updateTotal++;
+        if (sb.length() > sb.indexOf("?>")+12) {  // skip if no fields
+        	postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
+            updateTotal++;
+        }
     }
     
     public Analyzer getAnalyzer(String indexName)
