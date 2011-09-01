@@ -49,6 +49,11 @@
 			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
         </ant>
 		<copy file="FgsConfigIndexTemplate/LuceneTest/testFoxmlToLuceneWithExplicitParams.xslt" todir="${plugin.dir}/configTestOnLucene/index/${indexName}" preservelastmodified="true" />
+        <ant target="configLocal">
+			<property name="configName" value="configTestOnLuceneFgs23"/>
+			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+        </ant>
 	</target>
 
 	<target name="configLocal"

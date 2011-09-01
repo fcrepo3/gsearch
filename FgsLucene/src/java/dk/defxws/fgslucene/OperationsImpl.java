@@ -93,6 +93,7 @@ public class OperationsImpl extends GenericOperationsImpl {
                 fieldMaxLength,
                 getQueryAnalyzer(usingIndexName),
                 config.getDefaultQueryFields(usingIndexName),
+                config.getAllowLeadingWildcard(usingIndexName),
                 config.getIndexDir(usingIndexName),
                 usingIndexName,
                 config.getSnippetBegin(usingIndexName),

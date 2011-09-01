@@ -469,6 +469,7 @@ public class Config {
     				"fgsindex.stopwordsLocation",
     				"fgsindex.untokenizedFields",
     				"fgsindex.defaultQueryFields",
+    				"fgsindex.allowLeadingWildcard",
     				"fgsindex.snippetBegin",
     				"fgsindex.snippetEnd",
     				"fgsindex.maxBufferedDocs",
@@ -1020,6 +1021,10 @@ public class Config {
     
     public String getDefaultQueryFields(String indexName) {
         return getIndexProps(indexName).getProperty("fgsindex.defaultQueryFields");
+    }
+    
+    public boolean getAllowLeadingWildcard(String indexName) {
+        return new Boolean( getIndexProps(indexName).getProperty("fgsindex.allowLeadingWildcard") );
     }
     
     public String getSnippetBegin(String indexName) {

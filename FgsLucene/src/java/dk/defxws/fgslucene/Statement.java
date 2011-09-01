@@ -71,6 +71,7 @@ public class Statement {
             int fieldMaxLength,
             Analyzer analyzer, 
             String defaultQueryFields, 
+            boolean allowLeadingWildcard, 
             String indexPath, 
             String indexName, 
             String snippetBegin,
@@ -86,7 +87,8 @@ public class Statement {
                     " fieldMaxLength="+fieldMaxLength+
                     " indexName="+indexName+
                     " sortFields="+sortFields+
-                    " defaultQueryFields="+defaultQueryFields);
+                    " defaultQueryFields="+defaultQueryFields+
+                    " allowLeadingWildcard="+allowLeadingWildcard);
     	ResultSet rs = null;
     	StringTokenizer defaultFieldNames = new StringTokenizer(defaultQueryFields);
     	int countFields = defaultFieldNames.countTokens();
@@ -96,15 +98,25 @@ public class Statement {
     	}
     	Query query = null;
     	if (defaultFields.length == 1) {
+    		QueryParser queryParser = new QueryParser(Version.LUCENE_33, defaultFields[0], analyzer);
+    		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
+            if (logger.isDebugEnabled())
+                logger.debug("executeQuery queryParser" +
+                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard());
     		try {
-    			query = (new QueryParser(Version.LUCENE_33, defaultFields[0], analyzer)).parse(queryString);
+    			query = queryParser.parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}
     	}
     	else {
+    		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_33, defaultFields, analyzer);
+    		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
+            if (logger.isDebugEnabled())
+                logger.debug("executeQuery mfqueryParser" +
+                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard());
     		try {
-    			query = (new MultiFieldQueryParser(Version.LUCENE_33, defaultFields, analyzer)).parse(queryString);
+    			query = queryParser.parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}

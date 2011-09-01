@@ -8,19 +8,16 @@ import org.junit.runners.Suite;
  * 
  * assuming 
  * - all Fedora demo objects are in the repository referenced in
- *   configFgs23/repository/Fgs23Repos/repository.properties
+ *   configTestOnLuceneFgs23/repository/FgsRepos/repository.properties
  * 
  * the test suite will
  * - set configFgs23 as current config,
- * - run common operations as a REST client
- * - run common operations as a SOAP client. 
+ * - run tests concerning GSearch 2.3. 
  */
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {
-	gsearch.test.fgs23.TestConfigFgs23.class,
-	gsearch.test.common.TestREST.class,
-	gsearch.test.common.TestSOAP.class
+	gsearch.test.fgs23.TestConfigFgs23.class
 	} )
 public class AllTests {
 
@@ -29,8 +26,6 @@ public class AllTests {
         junit.framework.TestSuite suite =
                 new junit.framework.TestSuite(AllTests.class.getName());
         suite.addTest(gsearch.test.fgs23.TestConfigFgs23.suite());
-        suite.addTest(gsearch.test.common.TestREST.suite());
-        suite.addTest(gsearch.test.common.TestSOAP.suite());
         return suite;
     }
 }
