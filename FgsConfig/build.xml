@@ -87,7 +87,7 @@
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAVERSION" value="3.5"/>
-		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="data/objects"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="data/objectStore"/>
 		
 	</target>
 
