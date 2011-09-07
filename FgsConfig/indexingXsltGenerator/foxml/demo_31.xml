@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="demo:31"
+xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:objectProperties>
+<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Data Object (SVG) for Simple Document Demo"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2008-07-02T05:09:42.015Z"/>
+<foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2011-08-30T15:17:24.435Z"/>
+</foxml:objectProperties>
+<foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+<foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2008-07-02T05:09:42.015Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
+<foxml:xmlContent>
+<audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#">
+<audit:record ID="AUDREC1">
+<audit:process type="Fedora API-M"/>
+<audit:action>ingest</audit:action>
+<audit:componentID></audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2011-08-30T15:17:24.435Z</audit:date>
+<audit:justification>Ingested from local file /Users/gertschmeltzpedersen/f35/client/demo/foxml/local-server-demos/simple-document-demo/obj_demo_31.xml</audit:justification>
+</audit:record>
+</audit:auditTrail>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2008-07-02T05:09:43.328Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="836">
+<foxml:xmlContent>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:title>Data Object (SVG) for Simple Document Demo</dc:title>
+  <dc:creator>Chris Wilper</dc:creator>
+  <dc:creator>The Apache Group</dc:creator>
+  <dc:subject>svg</dc:subject>
+  <dc:subject>batik</dc:subject>
+  <dc:subject>apache</dc:subject>
+  <dc:description>Demonstration digital object containing SVG from the Batik 1.5 distribution</dc:description>
+  <dc:publisher>The Apache Group</dc:publisher>
+  <dc:format>image/svg+xml</dc:format>
+  <dc:identifier>demo:31</dc:identifier>
+  <dc:relation>http://xml.apache.org/batik/</dc:relation>
+  <dc:rights>The Apache License</dc:rights>
+</oai_dc:dc>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="DS1" STATE="A" CONTROL_GROUP="E" VERSIONABLE="true">
+<foxml:datastreamVersion ID="DS1.0" LABEL="Local copy of batikBatik.svg (control group E)" CREATED="2008-07-02T05:09:43.328Z" MIMETYPE="image/svg+xml">
+<foxml:contentLocation TYPE="URL" REF="http://local.fedora.server/fedora-demo/simple-document-demo/batikBatik.svg"/>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="DS3" STATE="A" CONTROL_GROUP="R" VERSIONABLE="true">
+<foxml:datastreamVersion ID="DS3.0" LABEL="Another local copy of batikBatik.svg (control group R)" CREATED="2011-08-30T15:17:24.471Z" MIMETYPE="image/svg+xml">
+<foxml:contentLocation TYPE="URL" REF="http://local.fedora.server/fedora-demo/simple-document-demo/batikBatik.svg"/>
+</foxml:datastreamVersion>
+</foxml:datastream>
+</foxml:digitalObject>

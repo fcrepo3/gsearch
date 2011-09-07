@@ -60,7 +60,7 @@
 				<xsl:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
 			</field>
 			<xsl:for-each select="foxml:objectProperties/foxml:property">
-				<field >
+				<field>
 					<xsl:attribute name="name"> 
 						<xsl:value-of select="concat('fgs.', substring-after(@NAME,'#'))"/>
 					</xsl:attribute>
@@ -68,7 +68,7 @@
 				</field>
 			</xsl:for-each>
 			<xsl:for-each select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/oai_dc:dc/*">
-				<field >
+				<field>
 					<xsl:attribute name="name">
 						<xsl:value-of select="concat('dc.', substring-after(name(),':'))"/>
 					</xsl:attribute>
@@ -76,16 +76,32 @@
 				</field>
 			</xsl:for-each>
 
-			<!-- a managed datastream is fetched, if its mimetype 
+			<!-- a datastream is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the field. -->
-			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M']">
-				<field >
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
+				<field>
 					<xsl:attribute name="name">
 						<xsl:value-of select="concat('dsm.', @ID)"/>
 					</xsl:attribute>
 					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</field>
 			</xsl:for-each>
+			
+			<!-- 
+			creating an index field with all text from the foxml record and its datastreams
+			-->
+
+			<field IFname="foxml.all.text">
+				<xsl:for-each select="//text()">
+					<xsl:value-of select="."/>
+					<xsl:text>&#160;</xsl:text>
+				</xsl:for-each>
+				<xsl:for-each select="//foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
+					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+					<xsl:text>&#160;</xsl:text>
+				</xsl:for-each>
+			</field>
+			
 		</doc>
 		</add>
 	</xsl:template>

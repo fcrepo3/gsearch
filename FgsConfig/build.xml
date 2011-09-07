@@ -100,6 +100,67 @@
 	          description="prepare">
 		<delete file="${plugin.dir}/log4j.xml" />
 		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
+        <ant target="generateIndexingXslt">
+			<property name="foxml.dir" value="indexingXsltGenerator/foxml"/>
+        </ant>
+	</target>
+
+	<target name="generateIndexingXslt"
+	          description="generate indexing stylesheet from a set of foxml records">
+		<property name="foxml.dir" location="indexingXsltGenerator/foxml" />
+		<delete dir="indexingXsltGenerator/generatedFiles" />
+		<delete file="indexingXsltGenerator/generatedFiles/foxmls.xml" />
+		<concat destfile="indexingXsltGenerator/generatedFiles/foxmls.xml">
+			<header>&lt;root></header>
+		    <fileset dir="${foxml.dir}"/>
+			<filterchain>
+				<filterreader classname="org.apache.tools.ant.filters.LineContains">
+					<param type="negate" value="true"/>
+					<param type="contains" value="?>"/>
+				</filterreader>
+			</filterchain>
+			<footer>&lt;/root></footer>
+		</concat>
+		<xslt 
+			in="indexingXsltGenerator/generatedFiles/foxmls.xml"
+			out="indexingXsltGenerator/generatedFiles/fields.xml"
+			extension=".xml"
+			style="indexingXsltGenerator/foxmlToFields.xslt">
+				<param name="date" expression="07-01-2000"/>
+		</xslt>
+		<xslt 
+			in="indexingXsltGenerator/generatedFiles/fields.xml"
+			out="indexingXsltGenerator/generatedFiles/fieldsSorted.xml"
+			extension=".xml"
+			style="indexingXsltGenerator/fieldsToFieldsSorted.xslt">
+				<param name="date" expression="07-01-2000"/>
+		</xslt>
+		<xslt 
+			in="indexingXsltGenerator/generatedFiles/fieldsSorted.xml"
+			out="indexingXsltGenerator/generatedFiles/fieldsUnique.xml"
+			extension=".xml"
+			style="indexingXsltGenerator/fieldsSortedToFieldsUnique.xslt">
+				<param name="date" expression="07-01-2000"/>
+		</xslt>
+
+			<xslt 
+				in="indexingXsltGenerator/generatedFiles/fieldsUnique.xml"
+				out="indexingXsltGenerator/generatedFiles/foxmlToLuceneGenerated.xslt"
+				extension=".xslt"
+				style="indexingXsltGenerator/fieldsUniqueToXsltForLucene.xslt">
+					<param name="date" expression="07-01-2000"/>
+			</xslt>
+	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToLuceneGenerated.xslt" todir="FgsConfigIndexTemplate/Lucene/" preservelastmodified="true"/>
+
+			<xslt 
+				in="indexingXsltGenerator/generatedFiles/fieldsUnique.xml"
+				out="indexingXsltGenerator/generatedFiles/foxmlToSolrGenerated.xslt"
+				extension=".xslt"
+				style="indexingXsltGenerator/fieldsUniqueToXsltForSolr.xslt">
+					<param name="date" expression="07-01-2000"/>
+			</xslt>
+	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToSolrGenerated.xslt" todir="FgsConfigIndexTemplate/Solr/" preservelastmodified="true"/>
+
 	</target>
 
 </project>

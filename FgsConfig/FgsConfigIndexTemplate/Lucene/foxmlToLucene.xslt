@@ -9,11 +9,11 @@
 		xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/">
 	<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 		
-	<xsl:param name="REPOSITORYNAME" select="'reposName'"/>
+	<xsl:param name="REPOSITORYNAME" select="'FgsRepos'"/>
 	<xsl:param name="REPOSBASEURL" select="'http://localhost:8080/fedora'"/>
 	<xsl:param name="FEDORASOAP" select="'http://localhost:8080/fedora/services'"/>
-	<xsl:param name="FEDORAUSER" select="'fedoraUser'"/>
-	<xsl:param name="FEDORAPASS" select="'fedoraPass'"/>
+	<xsl:param name="FEDORAUSER" select="'fedoraAdmin'"/>
+	<xsl:param name="FEDORAPASS" select="'fedoraAdmin'"/>
 	<xsl:param name="TRUSTSTOREPATH" select="'trustStorePath'"/>
 	<xsl:param name="TRUSTSTOREPASS" select="'trustStorePass'"/>
 <!--
@@ -96,9 +96,9 @@
 				</IndexField>
 			</xsl:for-each>
 
-			<!-- a managed datastream is fetched, if its mimetype 
+			<!-- a datastream is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the field. -->
-			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E']">
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
 				<IndexField index="TOKENIZED" store="YES" termVector="NO">
 					<xsl:attribute name="IFname">
 						<xsl:value-of select="concat('dsm.', @ID)"/>
@@ -127,6 +127,21 @@
 				<xsl:value-of select="exts:someMethod($PID)"/>
 			</IndexField>
 			-->
+			     
+			<!-- 
+			creating an index field with all text from the foxml record and its datastreams
+			-->
+
+			<IndexField IFname="foxml.all.text" index="TOKENIZED" store="YES" termVector="YES">
+				<xsl:for-each select="//text()">
+					<xsl:value-of select="."/>
+					<xsl:text>&#160;</xsl:text>
+				</xsl:for-each>
+				<xsl:for-each select="//foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
+					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+					<xsl:text>&#160;</xsl:text>
+				</xsl:for-each>
+			</IndexField>
 			
 	</xsl:template>
 	
