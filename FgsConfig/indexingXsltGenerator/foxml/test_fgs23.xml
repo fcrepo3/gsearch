@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject PID="test:fgs23" VERSION="1.1" xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+  <foxml:objectProperties>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Test Object for GSearch 2.3"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2011-09-08T12:23:35.978Z"/>
+    <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2011-09-08T12:23:35.978Z"/>
+  </foxml:objectProperties>
+  <foxml:datastream CONTROL_GROUP="M" ID="testMtextXml" STATE="A" VERSIONABLE="true">
+    <foxml:datastreamVersion CREATED="2011-09-08T12:23:36.048Z" ID="testMtextXml.0"
+      LABEL="Test datastream managed text/xml" MIMETYPE="text/xml" SIZE="422">
+      <foxml:contentLocation REF="http://localhost:8080/fedora/get/test:fgs23/testMtextXml/2011-09-08T12:23:36.048Z" TYPE="INTERNAL_ID"/>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <foxml:datastream CONTROL_GROUP="M" ID="testMapplXml" STATE="A" VERSIONABLE="true">
+    <foxml:datastreamVersion CREATED="2011-09-08T12:23:36.049Z" ID="testMapplXml.0"
+      LABEL="Test datastream managed application/xml" MIMETYPE="application/xml" SIZE="429">
+      <foxml:contentLocation REF="http://localhost:8080/fedora/get/test:fgs23/testMapplXml/2011-09-08T12:23:36.049Z" TYPE="INTERNAL_ID"/>
+      <!-- The following is a manually inserted example of the managed datastream content, 
+      	to be used by the indexingXsltGenerator, it is not schema valid -->
+      <foxml:xmlContent>
+        <dtu_meta:meta xmlns:dtu_meta="http://www.dtu.dk/dtu_meta/" xmlns:meta="http://www.dtu.dk/dtu_meta/meta/">
+	      <meta:title>Test Object for GSearch 2.3</meta:title>
+	      <meta:creator>Gert Schmeltz Pedersen</meta:creator>
+	      <meta:subject>GSearch</meta:subject>
+	      <meta:description>
+		    Test object for GSearch 2.3 with managed datastream of mimetype application/xml
+	      </meta:description>
+	      <meta:publisher>DTU</meta:publisher>
+        </dtu_meta:meta>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+  <!-- Following is  -->
+  <foxml:datastream CONTROL_GROUP="X" ID="DC" STATE="A" VERSIONABLE="true">
+    <foxml:datastreamVersion CREATED="2011-09-08T12:23:35.978Z" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/"
+      ID="DC1.0" LABEL="Dublin Core Record for this object" MIMETYPE="text/xml" SIZE="390">
+      <foxml:xmlContent>
+        <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/"
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+          <dc:title>Test Object for GSearch 2.3</dc:title>
+          <dc:identifier>test:fgs23</dc:identifier>
+        </oai_dc:dc>
+      </foxml:xmlContent>
+    </foxml:datastreamVersion>
+  </foxml:datastream>
+</foxml:digitalObject>

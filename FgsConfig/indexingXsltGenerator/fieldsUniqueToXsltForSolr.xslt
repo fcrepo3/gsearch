@@ -27,7 +27,8 @@
 		xmlns:audit="info:fedora/fedora-system:def/audit#"
 		xmlns:dc="http://purl.org/dc/elements/1.1/"
 		xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
-    	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
+		xmlns:dtu_meta="http://www.dtu.dk/dtu_meta/" xmlns:meta="http://www.dtu.dk/dtu_meta/meta/"
+    	xmlns:exts="java://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
     		exclude-result-prefixes="exts">
 	<xslt:output method="xml" indent="yes" encoding="UTF-8"/>
 		
@@ -73,35 +74,33 @@
 			<field name="REPOSBASEURL">
 				<xslt:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
 			</field>
-		    <xsl:comment>The PID index field lets you search on the PID value</xsl:comment>
-			<field IFname="PID" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
-				<xslt:value-of select="$PID"/>
-			</field>
-			<field IFname="REPOSITORYNAME" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
-				<xslt:value-of select="$REPOSITORYNAME"/>
-			</field>
-			<field IFname="REPOSBASEURL" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
-				<xslt:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
-			</field>
+			
+			<xsl:comment>indexing foxml property fields</xsl:comment>			
+			<xslt:for-each select="foxml:objectProperties/foxml:property">
+				<field>
+					<xslt:attribute name="name"> 
+						<xslt:value-of select="concat('fgs.', substring-after(@NAME,'#'))"/>
+					</xslt:attribute>
+					<xslt:value-of select="@VALUE"/>
+				</field>
+			</xslt:for-each>
 			
 			<xsl:comment>indexing foxml fields</xsl:comment>
 			<xsl:for-each select="//IFname">
 				<xsl:if test="name(..)='element'">
 					<xslt:for-each>
-						<xsl:attribute name="select"><xsl:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
-						<field index="TOKENIZED" store="YES" termVector="YES" boost="1.0">
-							<xsl:attribute name="IFname"><xsl:value-of select="text()"/></xsl:attribute>
-							<xsl:attribute name="displayName"><xsl:value-of select="text()"/></xsl:attribute>
+						<xsl:attribute name="select"><xslt:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
+						<field>
+							<xsl:attribute name="name"><xslt:value-of select="text()"/></xsl:attribute>
 							<xslt:value-of select="text()"/>
 						</field>
 					</xslt:for-each>
 				</xsl:if>
 				<xsl:if test="name(..)='attribute'">
 					<xslt:for-each>
-						<xsl:attribute name="select"><xsl:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
-						<field index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
-							<xsl:attribute name="IFname"><xsl:value-of select="text()"/></xsl:attribute>
-							<xsl:attribute name="displayName"><xsl:value-of select="text()"/></xsl:attribute>
+						<xsl:attribute name="select"><xslt:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
+						<field>
+							<xsl:attribute name="name"><xslt:value-of select="text()"/></xsl:attribute>
 							<xslt:value-of select="."/>
 						</field>
 					</xslt:for-each>
@@ -111,8 +110,8 @@
 			<xsl:comment>a datastream is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the field.</xsl:comment>
 			<xslt:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
-				<field index="TOKENIZED" store="YES" termVector="NO">
-					<xslt:attribute name="IFname">
+				<field>
+					<xslt:attribute name="name">
 						<xslt:value-of select="concat('dsm.', @ID)"/>
 					</xslt:attribute>
 					<xslt:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
@@ -121,13 +120,12 @@
 			
 			<xsl:comment>creating an index field with all text from the foxml record and its datastreams</xsl:comment>
 
-			<field IFname="foxml.all.text" index="TOKENIZED" store="YES" termVector="YES">
+			<field name="foxml.all.text">
 				<xslt:for-each select="//text()">
 					<xslt:value-of select="."/>
 					<xslt:text>&#160;</xslt:text>
 				</xslt:for-each>
 				<xslt:for-each select="//foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
-					<xslt:value-of select="@ID"/>
 					<xslt:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 					<xslt:text>&#160;</xslt:text>
 				</xslt:for-each>

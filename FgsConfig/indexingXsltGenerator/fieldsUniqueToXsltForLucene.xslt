@@ -27,7 +27,8 @@
 		xmlns:audit="info:fedora/fedora-system:def/audit#"
 		xmlns:dc="http://purl.org/dc/elements/1.1/"
 		xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
-    	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
+		xmlns:dtu_meta="http://www.dtu.dk/dtu_meta/" xmlns:meta="http://www.dtu.dk/dtu_meta/meta/"
+    	xmlns:exts="java://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
     		exclude-result-prefixes="exts">
 	<xslt:output method="xml" indent="yes" encoding="UTF-8"/>
 		
@@ -70,6 +71,16 @@
 			<IndexField IFname="REPOSBASEURL" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
 				<xslt:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
 			</IndexField>
+			
+			<xsl:comment>indexing foxml property fields</xsl:comment>			
+			<xslt:for-each select="foxml:objectProperties/foxml:property">
+				<IndexField index="UN_TOKENIZED" store="YES" termVector="NO">
+					<xslt:attribute name="IFname"> 
+						<xslt:value-of select="concat('fgs.', substring-after(@NAME,'#'))"/>
+					</xslt:attribute>
+					<xslt:value-of select="@VALUE"/>
+				</IndexField>
+			</xslt:for-each>
 			
 			<xsl:comment>indexing foxml fields</xsl:comment>
 			<xsl:for-each select="//IFname">
@@ -114,7 +125,6 @@
 					<xslt:text>&#160;</xslt:text>
 				</xslt:for-each>
 				<xslt:for-each select="//foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
-					<xslt:value-of select="@ID"/>
 					<xslt:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 					<xslt:text>&#160;</xslt:text>
 				</xslt:for-each>
