@@ -26,8 +26,8 @@
 			<div id="header">
 				<a href="" id="logo"></a>
 				<div id="title">
-				<h1>Fedora Generic Search Service Version 2.3 (February 2010)</h1>
-				<h2>compatible with Fedora Version 3.3</h2>
+				<h1>Fedora Generic Search Service Version 2.3 (September 2011)</h1>
+				<h2>compatible with Fedora Version 3.5</h2>
 				</div>
 			</div>
 			<div class="toc">
@@ -48,33 +48,50 @@
 			</div>
 			<div>
 			<a name="about"><h2>About This Service</h2></a>
+				
 				<p>The Fedora Generic Search Service, abbreviated GSearch, is part of the
-				<a href="http://www.fedora.info/download/2.2.1/userdocs/server/features/serviceframework.htm">
-				Fedora Service Framework</a>. It was developed by
+				<a href="https://wiki.duraspace.org/display/FCSVCS/Fedora+Framework+Services">
+				Fedora Service Framework</a>. </p>
+				<p>The primary feature of GSearch is that it makes it easy 
+				to make your digital contents in Fedora searchable for yourself and your end-users.</p>
+				<p>GSearch was developed by
 				<a href="mailto:gsp@dtv.dk">Gert Schmeltz Pedersen</a>
 				at the Technical University of Denmark,
 				with feedback and contributions from members
 				of the Fedora community, including
-				Beth Kirschner, Binaya Poudyal, Blake Anderson,
-				Boon Low, Christian T&#248;nsberg,
+				Adam Soroka,
+				Alfred Heller,
+				Beth Kirschner, 
+				Binaya Poudyal, 
+				Blake Anderson,
+				Boon Low, 
+				Chris Wilper,
+				Christian T&#248;nsberg,
 				Eric Brown,
+				Jonathan Green,
 				Jun Yamog,
 				Junran Lei,
+				Lasse Aagren,
 				Leire Urcelay,
 				Luis Zorita,
 				Matt Zumwalt,
 				Matthias Razum,
 				Michael Appleby,
 				Michael Hoppe,
+				Morten S&#248;rensen,
 				Nikolai Schwertner,
+				Nilani Ganeshwaran,
 				Patrick Monbaron,
 				Pierre-Yves Landron,
 				Ranju Upadhyaya,
 				Robert Sherratt,
+				Roel de Cock,
 				Ryan E. Scherle,
 				Sam Liberman,
 				Shunde Zhang,
-				Steve DiDomenico
+				Simon Lamb,
+				Stephen Bayliss,
+				Steve DiDomenico,
 				Thierry Michel,
 				and
 				Xinjian Guo. </p>
@@ -92,16 +109,11 @@
 				<a href="http://lucene.apache.org/solr">Solr</a> and
 				<a href="http://www.indexdata.dk/zebra/">Zebra</a>.</li>
 				</ul>
-				<p>The service has been developed and tested on Linux.
-				This release targets only Linux installations.
-				If you want to use the service on other platforms,
-				you may be expert enough to do so, at least several people
-				have succeeded on Windows and Mac platforms.
-				You are encouraged to share problems and experience with the
+				<p>You are encouraged to share problems and experience with the
 				Fedora community, send mail to
 				<a href="mailto:fedora-commons-users@lists.sourceforge.net">fedora-commons-users</a>, or to
-				<a href="mailto:cwilper@cs.cornell.edu">Chris Wilper</a>, or to
-				<a href="mailto:gsp@dtv.dk">Gert Schmeltz Pedersen</a>.</p>
+				<a href="mailto:cwilper@duraspace.org">Chris Wilper</a>, or to
+				<a href="mailto:gsp@dtic.dtu.dk">Gert Schmeltz Pedersen</a>.</p>
 				<p>The following figure serves to give a first
 				understanding for a developer, who will use GSearch in a Fedora application:
 				<p><img src="images/fgs-model.png"/></p>
@@ -132,12 +144,22 @@
 			</div>
 			<a name="new23"><h2>New Features in Version 2.3</h2></a>
 				<ul>
-					<li>Fedora 3.3 compatibility</li>
-					<li>Lucene 3.0 compatibility</li>
-					<li>Solr 1.4 compatibility</li>
-					<li>...</li>
+					<li>Fedora 3.5 compatibility</li>
+					<li>Lucene 3.3 compatibility</li>
+					<li>Solr 3.3 compatibility</li>
+					<li>Zebra 2.0 compatibility</li>
+					<li>PDFBox 1.6 compatibility</li>
+					<li>Simplified configuration with two main parts:
+						<ul>
+							<li>Indexing stylesheet generated from example foxml files, requiring less xslt experience
+							</li>
+							<li>Basic properties specified in simple property file, instead of in ant script
+							</li>
+						</ul>
+					</li>
 				</ul>
-			
+				You may also <a href="https://jira.duraspace.org/secure/IssueNavigator.jspa?mode=hide&requestId=10305">see the complete list of issues for GSearch 2.3.</a>
+				
 			<a name="new22"><h2>New Features in Version 2.2</h2></a>
 				<ul>
 					<li>Fedora 3.1 compatibility</li>
@@ -229,15 +251,12 @@
 				    Indexes should be reindexed.</li>
 				</ul>
 			<a name="installation"><h2>Installation</h2></a>
-				<p>To install the service:</p>
-				<ul>
-					<li>Deploy fedoragsearch.war
+				<p>To install the service, deploy fedoragsearch.war
                 to the webapps directory of your web server,
 				e.g. the tomcat supplied with Fedora, or similar.
+				Tomcat will unpack it in webapps/fedoragsearch.
 				You may rename the .war file, before you copy it
-				into the webapps directory, in order to give it another webapp name.</li>
-					<li>Edit the configuration settings.</li>
-				</ul>
+				into the webapps directory, in order to give it another webapp name.
 				<p>The SOAP service operations are deployed with the .war file, and
 				<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a></p>
 				<p>The choice of search engine is made with the fgsindex.operationsImpl property
@@ -248,73 +267,106 @@
 			<a name="config"><h2>Configuring the Service</h2></a>
 				<ul>
 					<li>
-						Edit the property values in the configvalues.xml file in
-						.../webapps/&lt;WEBAPPNAME&gt;/
-						(where &lt;WEBAPPNAME&gt; by default is 'fedoragsearch'):
-						<pre>
-	o Set the property values for your environment.
-	o Select the default config in configDefault. Each example config in the distribution
-	has its choice of search server plugin in the fgsindex.operationsImpl property
-	in the index.properties file.
-	o Save this edited file outside of the web server.
-	o Run target configOnWebServer after deployment from command line:
-
-	  &gt;ant -f configvalues.xml configOnWebServer
-  </pre>
-  This will set your values into fedoragsearch.properties, repository.properties,
-  and index.properties. Read these files to make sure they are correct.
+						If you migrate from GSearch 2.2 to 2.3, you simply reuse the configuration files you have.
+					</li>
+                    <li>
+						If you start with GSearch 2.3, here are the two basic parts mentioned above:
+					<ul>
+					  <li>Indexing stylesheet generation from example foxml files:
+					  	<ul>
+					  		<li>Put your example foxml files in FgsConfig/indexingXsltGenerator/foxml . 
+					  			They must end with newline. 
+					  			If you want to index managed xml datastreams, insert an example inline, 
+					  			see the example test_fgs23.xml.
+					  		</li>
+					  		<li>At FgsConfig run <pre>>ant generateIndexingXslt</pre>
+					  		</li>
+					  		<li>Now you have 
+					  			<pre>FgsConfig/FgsConfigIndexTemplate/Lucene/foxmlToLuceneGenerated.xslt</pre> 
+					  			and <pre>FgsConfig/FgsConfigIndexTemplate/Solr/foxmlToSolrGenerated.xslt</pre>
+					  			You may use them as they are or copy-to-another-name and edit them, 
+					  			probably there are many index fields that you do not want.
+					  			There are foxmlToLucene.xslt and foxmlToSolr.xslt files, useful for the Fedora demo objects.
+					  			You will put the name into the basic property file
+					  			in order to use that indexing stylesheet at indexing time.
+					  		</li>
+					  	</ul>
+					  </li>
+					  <li>
+						You edit a basic property file and run an ant script with it. 
+						This will insert your property values into your copy of a set of template configuration files, 
+						providing the final set of configuration files. 
+						These may be edited, if you want to select among more than the basic configuration options. 
+						Here are the basic steps in more detail:
+						<ul>
+							<li>Copy the directory webapps/fedoragsearch/FgsConfig to a location outside tomcat.
+							</li>
+							<li>Go to this location.
+							</li>
+							<li>Edit the file fgsconfig-basic.properties
+							</li>
+							<li>Run<pre>
+> ant -f fgsconfig-basic.xml
+							</pre>
+							</li>
+							<li>This has used the property values in fgsconfig-basic.properties 
+								and inserted them into the copies of the template config files,
+								that now make up the final config files, which have been copied
+								to the location, that you stated in fgsconfig-basic.properties.
+							</li>
+							<li>This location of the final config files must be in tomcat classpath,
+								in order that GSearch can find them at startup.
+								By default webapps/fedoragsearch/WEB-INF/classes is in tomcat classpath.
+								Alternatively, you may add another classpath location to tomcat
+								in catalina.properties in the line starting with <pre>shared loader=</pre>
+								and state that location in fgsconfig-basic.properties.
+							</li>
+							<li>You should read through the final config files.
+								You may edit all the properties of the final config files.
+								If you do edit them, and they are within tomcat, 
+								be sure to keep a copy outside tomcat.
+								The reason is, that if you put a new fedoragsearch.war into tomcat webapps, 
+								then tomcat will delete the existing unpacked fedoragsearch directory
+								with your edited final config files.
+							</li>
+						</ul>
+					  </li>
+					</ul>
+					</li>
                     <li>
 						The default webapp configuration in
-						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/web.xml
+						.../webapps/fedoragsearch/WEB-INF/web.xml
 						does not enforce authorization.
 						If you want to enforce authorization,
 						then copy the file web_withAuthN.xml onto web.xml.
 					</li>
                     <li>
-						Then you may restart &lt;WEBAPPNAME&gt; and call http://&lt;HOSTPORT&gt;/&lt;WEBAPPNAME&gt;/rest in order to index and search.
+						Then you may restart fedoragsearch and call http://&lt;HOSTPORT&gt;/fedoragsearch/rest in order to index and search.
 						The name &quot;rest&quot; may be reconfigured in
-						.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/web.xml
+						.../webapps/fedoragsearch/WEB-INF/web.xml
 					</li>
                     <li>
-						Try the demo command line client. Change directory to
-	<pre>.../webapps/&lt;WEBAPPNAME&gt;/client/</pre>
+                    	The default rest interface is meant for the administrator.
+                    	The default indexing stylesheet (by default in webapps/fedoragsearch/WEB-INF/classes/config/index/FgsIndex/foxmlToLucene.xslt)
+                    	assumes that you have ingested the Fedora demo objects.
+                    	If so, you may index them at the updateIndex page,
+                    	browse through values in the index fields at the browseIndex page,
+                    	and search at the gfindObjects page.
+					</li>
+                    <li>
+						Try the command line client. Change directory to
+	<pre>.../webapps/fedoragsearch/client/</pre>
 						make the file executable, and run
 	<pre>sh runRESTClient.sh</pre>
 						then you will get the usage instruction.
 					</li>
-                    <li>
-						Tailor the demos for your own purpose by editing
-						renamed copies of the demo xslt stylesheets in
-	<pre>.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/rest/</pre>
-						Then edit fedoragsearch.properties.
-					</li>
-                    <li>
-						Tailor the demo Lucene indexing stylesheet for your own purpose by editing
-						a renamed copy of the demo xslt stylesheet in
-	<pre>.../webapps/&lt;WEBAPPNAME&gt;/WEB-INF/classes/config/index/&lt;INDEXNAME&gt;/demoFoxmlToLucene.xslt</pre>
-						For the sake of the example, the stylesheet indexes only active Fedora objects
-						with PID starting with &quot;demo&quot;
-						The options for tailoring include fields from other metadata datastreams
-						than DC, field types and field boosts,
-						see the stylesheet for options. Then edit index.properties.
-					</li>
-                    <li>For your real applications, you must carefully edit all stylesheets for your purpose.
-					</li>
-                    <li>For your real applications in production use, you should have only one GSearch configuration called 'config'.
+                    <li>For your real applications, you may provide alternative stylesheets
+                    	in webapps/fedoragsearch/WEB-INF/classes/config/rest
+                    	and set their names in webapps/fedoragsearch/WEB-INF/classes/config/fedoragsearch.properties.
 					</li>
                     <li>
 						Inspect the Lucene index with <a href="http://www.getopt.org/luke/">Luke</a>.
 						Notice, Luke cannot open an empty Lucene index.
-					</li>
-                    <li>You may tailor the highlight of search terms in demo.css.
-					</li>
-                    <li>You may want to experiment with more than one configuration,
-                    in which case you may maintain them under different names
-                    in parallel to the &quot;config&quot; configuration,
-                    which is the default configuration.
-                    In order to activate an alternative configuration you may use
-                    the semi-secret operation configure with parameter configName,
-                    either using the demo command line client or the REST interface.
 					</li>
 				</ul>
 
@@ -416,10 +468,8 @@
 			<a name="engines"><h3>Search Engine Plugins</h3></a>
 				<h4><a href="http://lucene.apache.org/">Lucene</a></h4>
 				<p>The Lucene plugin comes as the java package dk.defxws.fgslucene
-				together with the Apache Lucene java libraries.
-				The set of classes was inspired by the JDBC API specification.</p>
-				<p>The Lucene plugin is used by configuration as explained above,
-				see also the DemoOnLucene example.</p>
+				together with the Apache Lucene java libraries.</p>
+				<p>The Lucene plugin is used by configuration as explained above.</p>
 				<p>Lucene has a very rich functionality, and this plugin
 				exploits a small fraction of it. As a java programmer, you may
 				have ideas for further exploitation, which you may realize
@@ -427,8 +477,7 @@
 				Please, share such ideas and implementations with the Fedora community.</p>
 				<h4><a href="http://lucene.apache.org/solr">Solr</a></h4>
 				<p>The Solr plugin comes as the java package dk.defxws.fgssolr.</p>
-				<p>The Solr plugin is used by configuration as explained above,
-				see also the DemoOnSolr example.</p>
+				<p>The Solr plugin is used by configuration as explained above.</p>
 				<p>This plugin indexes documents via the HTTP POST interface of Solr.
 				Searches may be performed via the Solr native HTTP GET to the Solr server
 				and via gfindObjects, which accesses the Lucene index directly.
@@ -437,7 +486,7 @@
 				<h4><a href="http://www.indexdata.dk/zebra/">Zebra</a></h4>
 				<p>The Zebra plugin comes as the java package dk.defxws.fgszebra .</p>
 				<p>The Zebra plugin is used by configuration as
-				seen from the DemoOnZebra example, which includes a README file,
+				seen from FgsConfig/FgsConfigIndexTemplate/Zebra/zebraconfig, which includes a README file,
 				which explains how to get and install Zebra, and how to configure it.</p>
 				<p></p>
 			<a name="arch"><h3>Architectural Snapshots</h3></a>
@@ -550,19 +599,7 @@
 				</p>
   <div id="footer">
     <div id="copyright">
-      Copyright &#xA9; 2006-2007-2008-2009-2010 Technical University of Denmark, Fedora Project
-    </div>
-
-    <div id="lastModified">
-      Last Modified <script type="text/javascript">
-      //<![CDATA[
-            var cvsDate = "$Date$";
-            var parts = cvsDate.split(" ");
-            var modifiedDate = parts[1];
-            document.write(modifiedDate);
-      //]]>
-      </script>
-		by Gert Schmeltz Pedersen
+      Copyright &#xA9; 2006-2007-2008-2009-2010-2011 Technical University of Denmark
     </div>
   </div>
 		</body>
