@@ -120,7 +120,7 @@ public class Config {
     /**
      * The configure operation with a property 
      * - creates a new Config object with the configName, if it does not exist,
-     * - and sets that property.
+     * - and sets that property, if it does not give error.
      */
     public static void configure(String configName, String propertyName, String propertyValue) throws ConfigException {
     	Config config = (Config)configs.get(configName);
@@ -128,9 +128,15 @@ public class Config {
     		config = new Config(configName);
             configs.put(configName, config);
     	}
+    	String beforeValue = config.getProperty(propertyName);
     	config.setProperty(propertyName, propertyValue);
     	config.errors = new StringBuffer();
-    	config.checkConfig();
+    	try {
+			config.checkConfig();
+		} catch (ConfigException e) {
+	    	config.setProperty(propertyName, beforeValue);
+    		throw new ConfigException(config.errors.toString());
+		}
     }
     
     public static Config getCurrentConfig() throws ConfigException {
@@ -264,9 +270,16 @@ public class Config {
     			"fedoragsearch.indexNames",
     			"fedoragsearch.updaterNames",
     			"fedoragsearch.searchResultFilteringModule",
-    			"fedoragsearch.searchResultFilteringType"
+    			"fedoragsearch.searchResultFilteringType",
+    			"fedoragsearch.xsltProcessor"
     	};
     	checkPropNames("fedoragsearch.properties", fgsProps, propNames);
+
+//  	Check fedoragsearch.xsltProcessor
+    	String xsltProcessor = getXsltProcessor();
+        if (!(xsltProcessor==null || xsltProcessor.equals("") || xsltProcessor.equals("xalan") || xsltProcessor.equals("saxon"))) {
+            errors.append("\n*** fedoragsearch.xsltProcessor value="+xsltProcessor+", must be xalan or saxon");
+          }
 
 //  	Check rest stylesheets
     	checkRestStylesheet("fedoragsearch.defaultNoXslt");
@@ -600,6 +613,14 @@ public class Config {
 //  		Check defaultQueryFields - how can we check this?
     		String defaultQueryFields = props.getProperty("fgsindex.defaultQueryFields");
 
+//      	Check allowLeadingWildcard
+    		if (operationsImpl.indexOf("fgslucene")>-1) {
+            	String allowLeadingWildcard = getIndexProps(indexName).getProperty("fgsindex.allowLeadingWildcard");
+                if (!(allowLeadingWildcard==null || allowLeadingWildcard.equals("") || allowLeadingWildcard.equals("false") || allowLeadingWildcard.equals("true"))) {
+                    errors.append("\n*** fedoragsearch.allowLeadingWildcard value="+allowLeadingWildcard+", must be false or true");
+                  }
+    		}
+    		
 //  		Use custom URIResolver if given
     		if (operationsImpl.indexOf("fgslucene")>-1 ||
     		    operationsImpl.indexOf("fgssolr")>-1) {
@@ -1024,7 +1045,11 @@ public class Config {
     }
     
     public boolean getAllowLeadingWildcard(String indexName) {
-        return new Boolean( getIndexProps(indexName).getProperty("fgsindex.allowLeadingWildcard") );
+    	String allowLeadingWildcard = getIndexProps(indexName).getProperty("fgsindex.allowLeadingWildcard");
+        if (!(allowLeadingWildcard==null || allowLeadingWildcard.equals(""))) {
+        	allowLeadingWildcard = "false";
+          }
+        return new Boolean( allowLeadingWildcard );
     }
     
     public String getSnippetBegin(String indexName) {
@@ -1111,6 +1136,10 @@ public class Config {
         	return true;
     	else
     		return false;
+    }
+    
+    public String getXsltProcessor() {
+        return fgsProps.getProperty("fedoragsearch.xsltProcessor");
     }
     
     public GenericOperationsImpl getOperationsImpl(String indexNameParam)
