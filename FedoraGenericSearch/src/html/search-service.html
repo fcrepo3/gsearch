@@ -144,7 +144,12 @@
 			</div>
 			<a name="new23"><h2>New Features in Version 2.3</h2></a>
 				<ul>
-					<li>Fedora 3.5 compatibility</li>
+					<li>Fedora 3.5 compatibility
+						<ul>
+							<li>Indexing of managed xml datastreams shown with test object
+							</li>
+						</ul>
+					</li>
 					<li>Lucene 3.3 compatibility</li>
 					<li>Solr 3.3 compatibility</li>
 					<li>Zebra 2.0 compatibility</li>
@@ -157,6 +162,7 @@
 							</li>
 						</ul>
 					</li>
+					<li>Selection of xslt processor, xalan or saxon</li>
 				</ul>
 				You may also <a href="https://jira.duraspace.org/secure/IssueNavigator.jspa?mode=hide&requestId=10305">see the complete list of issues for GSearch 2.3.</a>
 				
@@ -268,6 +274,15 @@
 				<ul>
 					<li>
 						If you migrate from GSearch 2.2 to 2.3, you simply reuse the configuration files you have.
+						You may want to add the new properties:
+					  	<ul>
+					  		<li>fedoragsearch.xsltprocessor
+					  		</li>
+					  		<li>fgsindex.allowLeadingWildcard
+					  		</li>
+					  		<li>fgsindex.stopwordsLocation
+					  		</li>
+					  	</ul>
 					</li>
                     <li>
 						If you start with GSearch 2.3, here are the two basic parts mentioned above:
