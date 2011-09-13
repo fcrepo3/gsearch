@@ -2,7 +2,7 @@
 <!-- $Id: foxmlToSolr.xslt $ -->
 <xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
-    	xmlns:exts="java://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
+    	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
     		exclude-result-prefixes="exts"
 		xmlns:foxml="info:fedora/fedora-system:def/foxml#"
 		xmlns:dc="http://purl.org/dc/elements/1.1/"

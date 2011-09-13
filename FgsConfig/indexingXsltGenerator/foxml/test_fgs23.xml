@@ -33,7 +33,6 @@
       </foxml:xmlContent>
     </foxml:datastreamVersion>
   </foxml:datastream>
-  <!-- Following is  -->
   <foxml:datastream CONTROL_GROUP="X" ID="DC" STATE="A" VERSIONABLE="true">
     <foxml:datastreamVersion CREATED="2011-09-08T12:23:35.978Z" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/"
       ID="DC1.0" LABEL="Dublin Core Record for this object" MIMETYPE="text/xml" SIZE="390">

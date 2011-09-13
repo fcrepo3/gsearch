@@ -28,7 +28,7 @@
 		xmlns:dc="http://purl.org/dc/elements/1.1/"
 		xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
 		xmlns:dtu_meta="http://www.dtu.dk/dtu_meta/" xmlns:meta="http://www.dtu.dk/dtu_meta/meta/"
-    	xmlns:exts="java://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
+    	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
     		exclude-result-prefixes="exts">
 	<xslt:output method="xml" indent="yes" encoding="UTF-8"/>
 		

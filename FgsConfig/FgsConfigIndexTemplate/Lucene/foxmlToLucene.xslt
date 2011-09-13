@@ -2,7 +2,7 @@
 <!-- $Id: foxmlToLucene.xslt $ -->
 <xsl:stylesheet version="1.0"
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
-    	xmlns:exts="java://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
+    	xmlns:exts="xalan://dk.defxws.fedoragsearch.server.GenericOperationsImpl"
     		exclude-result-prefixes="exts"
 		xmlns:foxml="info:fedora/fedora-system:def/foxml#"
 		xmlns:dtu_meta="http://www.dtu.dk/dtu_meta/" 
@@ -97,6 +97,18 @@
 					<xsl:value-of select="text()"/>
 				</IndexField>
 			</xsl:for-each>
+
+			<!-- a datastream is fetched, if its mimetype 
+			     can be handled, the text becomes the value of the field. -->
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
+				<IndexField index="TOKENIZED" store="YES" termVector="NO">
+					<xsl:attribute name="IFname">
+						<xsl:value-of select="concat('ds.', @ID)"/>
+					</xsl:attribute>
+					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				</IndexField>
+			</xsl:for-each>
+
 			<!-- example of a dissemination identified in bDefPid, methodName, parameters, asOfDateTime is fetched,  
 			     if its mimetype can be handled, the text becomes the value of the IndexField. 
 			     parameters format is 'name=value name2=value2'-->
@@ -107,17 +119,9 @@
 			-->
 
 			<!-- for not inline XML, the datastream may be fetched with the document() function -->
-			     
-			<!-- 
-			<xsl:call-template name="example-of-xml-not-inline"/>
-			-->
 			
-		<IndexField IFname="testMapplXml.meta.title2"> 
-			<xsl:copy-of select="document('http://localhost:8080/fedora/objects/test:fgs23/datastreams/testMapplXml/content')"/>
-		</IndexField> 
-		<IndexField IFname="testMapplXml.meta.title3"> 
-			<xsl:copy-of select="document('http://localhost:8080/fedora/objects/test:fgs23/datastreams/testMapplXml/content')//meta:title"/>
-		</IndexField> 
+			<xsl:call-template name="example-of-xml-not-inline"/>
+			
 
 			<!-- This is an example of calling an extension function, see Apache Xalan, may be used for filters.
 			<IndexField IFname="fgs.DS" index="TOKENIZED" store="YES" termVector="NO">
@@ -128,31 +132,29 @@
 			<!-- 
 			creating an index field with all text from the foxml record and its datastreams
 			-->
-<!-- 
+
 			<IndexField IFname="foxml.all.text" index="TOKENIZED" store="YES" termVector="YES">
 				<xsl:for-each select="//text()">
 					<xsl:value-of select="."/>
-					<xsl:text>&#160;</xsl:text>
 				</xsl:for-each>
 				<xsl:for-each select="//foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
 					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-					<xsl:text>&#160;</xsl:text>
 				</xsl:for-each>
 			</IndexField>
- -->			
+
 	</xsl:template>
 	
 
 	<xsl:template name="example-of-xml-not-inline">
 	
 		<!-- due to Simon Lamb and Steve Bayliss -->
-
-		<xsl:variable name="externalDS" select="document(concat('http://localhost:8080/fedora/objects/', $PID, '/datastreams/externalDS/content'))" /> 
-
-		<!-- (if you need authentication you'll have to encode that in the URL)  -->
-
-		<IndexField IFname="external.field"> 
-			<xsl:value-of select="$externalDS/xpath/to/element"/> 
+		<!-- using the test object test:fgs23 -->
+		<!-- namespaces to be included in the stylesheet element -->
+			
+		<xsl:variable name="testMapplXml" select="document('http://localhost:8080/fedora/objects/test:fgs23/datastreams/testMapplXml/content')"/>
+		
+		<IndexField IFname="testMapplXml.meta.title"> 
+			<xsl:value-of select="$testMapplXml//meta:title"/>
 		</IndexField> 
 		
 	</xsl:template>
