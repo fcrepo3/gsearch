@@ -89,18 +89,18 @@
 			<xsl:for-each select="//IFname">
 				<xsl:if test="name(..)='element'">
 					<xslt:for-each>
-						<xsl:attribute name="select"><xslt:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
+						<xsl:attribute name="select"><xsl:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
 						<field>
-							<xsl:attribute name="name"><xslt:value-of select="text()"/></xsl:attribute>
+							<xsl:attribute name="name"><xsl:value-of select="text()"/></xsl:attribute>
 							<xslt:value-of select="text()"/>
 						</field>
 					</xslt:for-each>
 				</xsl:if>
 				<xsl:if test="name(..)='attribute'">
 					<xslt:for-each>
-						<xsl:attribute name="select"><xslt:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
+						<xsl:attribute name="select"><xsl:value-of select="preceding-sibling::*/text()"/></xsl:attribute>
 						<field>
-							<xsl:attribute name="name"><xslt:value-of select="text()"/></xsl:attribute>
+							<xsl:attribute name="name"><xsl:value-of select="text()"/></xsl:attribute>
 							<xslt:value-of select="."/>
 						</field>
 					</xslt:for-each>

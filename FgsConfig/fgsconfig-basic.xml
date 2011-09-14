@@ -44,9 +44,9 @@
 	<target name="configFgsRoot"
         	description="insert config values into config files">
 
-        <delete dir="${finalConfigPath}/${finalConfigName}-backup" />
-        <mkdir dir="${finalConfigPath}/${finalConfigName}-backup" />
-        <copy todir="${finalConfigPath}/${finalConfigName}-backup" preservelastmodified="true">
+        <delete dir="${templateConfigPath}/${finalConfigName}-backup" />
+        <mkdir dir="${templateConfigPath}/${finalConfigName}-backup" />
+        <copy todir="${templateConfigPath}/${finalConfigName}-backup" preservelastmodified="true">
         	<fileset dir="${finalConfigPath}/${finalConfigName}"/>
         </copy>
 		<delete dir="${finalConfigPath}/${finalConfigName}" />
@@ -63,6 +63,8 @@
 		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="CONFIGPATH" value="${finalConfigPath}"/>
 		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="REPOSNAMES" value="${namesOfRepositories}"/>
 		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
+
+		<replace file="${finalConfigPath}/${finalConfigName}/rest/adminCommonToHtml.xslt" token="FGSCONFIGNAME" value="${finalConfigName}"/>
 	
 		<replace file="${finalConfigPath}/log4j.xml" token="LOGPATH" value="${logFilePath}"/>
 		<replace file="${finalConfigPath}/log4j.xml" token="LOGLEVEL" value="${logLevel}"/>

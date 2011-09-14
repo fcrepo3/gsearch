@@ -1,11 +1,16 @@
 //$Id:  $
 package gsearch.test.fgs23;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import junit.framework.TestSuite;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import fedora.client.FedoraClient;
+import fedora.server.management.FedoraAPIM;
 import gsearch.test.FgsTestCase;
 
 /**
@@ -69,6 +74,12 @@ public class TestConfigFgs23
     }
 
     @Test
+    public void testSetUriResolverToNone() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configTestOnLuceneFgs23&propertyName=FgsIndex/fgsindex.uriResolver&propertyValue=&restXslt=copyXml");
+  	    assertXpathNotExists("/resultPage/error", result.toString());
+    }
+
+    @Test
     public void testGfindObjectsWildcardBeforeAllow() throws Exception {
   	    StringBuffer result = doOp("?operation=gfindObjects&query=?mage&restXslt=copyXml");
   	    assertXpathExists("/resultPage/error", result.toString());
@@ -108,5 +119,29 @@ public class TestConfigFgs23
     public void testSetXsltProcessorToNotvalid() throws Exception {
         StringBuffer result = doOp("?operation=configure&configName=configTestOnLuceneFgs23&propertyName=fedoragsearch.xsltProcessor&propertyValue=notvalid&restXslt=copyXml");
   	    assertXpathExists("/resultPage/error", result.toString());
+    }
+
+    @Test
+    public void testManagedXmlDatastreamBefore() throws Exception {
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+    	FedoraAPIM apim = fedoraClient.getAPIM();
+    	apim.purgeObject("test:fgs23", "test purge", false);
+  	    delay(5000);
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testManagedXmlDatastreamIngestAndAfter() throws Exception {
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+    	FedoraAPIM apim = fedoraClient.getAPIM();
+    	File testfile = new File("../FgsConfig/test/test_fgs23.xml");
+    	FileInputStream fis = new FileInputStream(testfile);
+    	byte[] testobject = new byte[(int)testfile.length()];
+    	fis.read(testobject);
+    	apim.ingest(testobject, "info:fedora/fedora-system:FOXML-1.1", "test ingest");
+  	    delay(10000);
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 }

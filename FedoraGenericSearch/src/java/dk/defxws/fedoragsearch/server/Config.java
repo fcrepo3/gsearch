@@ -66,6 +66,8 @@ public class Config {
     
     private static boolean wsddDeployed = false;
     
+    private static String defaultConfigName = "config";
+    
     private String configName = null;
     
     private Properties fgsProps = null;
@@ -112,7 +114,7 @@ public class Config {
     public static void configure(String configNameIn) throws ConfigException {
     	String configName = configNameIn;
     	if (configName==null || configName.equals(""))
-    		configName = "config";
+    		configName = defaultConfigName;
         currentConfig = new Config(configName);
         configs.put(configName, currentConfig);
     }
@@ -141,7 +143,7 @@ public class Config {
     
     public static Config getCurrentConfig() throws ConfigException {
         if (currentConfig == null)
-            currentConfig = new Config("config");
+            currentConfig = new Config(defaultConfigName);
         return currentConfig;
     }
     
@@ -157,7 +159,7 @@ public class Config {
     public Config(String configNameIn) throws ConfigException {
     	configName = configNameIn;
     	if (configName==null || configName.equals(""))
-    		configName = "config";
+    		configName = defaultConfigName;
         errors = new StringBuffer();
         
 //      Get fedoragsearch properties
@@ -624,6 +626,8 @@ public class Config {
 //  		Use custom URIResolver if given
     		if (operationsImpl.indexOf("fgslucene")>-1 ||
     		    operationsImpl.indexOf("fgssolr")>-1) {
+    			if (indexNameToUriResolvers != null)
+    				indexNameToUriResolvers.remove(indexName);
     			Class uriResolverClass = null;
     			String uriResolver = props.getProperty("fgsindex.uriResolver");
     			if (!(uriResolver == null || uriResolver.equals(""))) {

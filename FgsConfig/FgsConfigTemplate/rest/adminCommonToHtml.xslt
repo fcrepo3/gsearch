@@ -8,6 +8,7 @@
 	
 	<xsl:output method="html" indent="yes" encoding="UTF-8"/>
 	
+	<xsl:param name="FGSUSERNAME" select="''"/>
 	<xsl:param name="TIMEUSEDMS" select="''"/>
 
 	<xsl:template match="/resultPage">
@@ -28,6 +29,9 @@
 					<a href="" id="logo"></a>
 					<div id="title">
 						<h1>Admin Client for Fedora Generic Search Service</h1>
+					</div>
+					<div align="right">
+						<h4>You are logged in as <xsl:value-of select="$FGSUSERNAME"/> using FGSCONFIGNAME</h4>
 					</div>
 				</div>
 				<table cellspacing="10" cellpadding="10">

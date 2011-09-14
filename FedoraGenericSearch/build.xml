@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  $Id$ -->
-<project name="FedoraGenericSearch" default="buildfordownload" basedir=".">
+<!-- build.xml -->
+<!-- run as ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -->
+<project name="FedoraGenericSearch" default="buildDist" basedir=".">
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
@@ -98,7 +99,7 @@
 		<delete dir="${build.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${localdist.dir}" />
-		<copy file="src/html/search-service.html" tofile="${build.dir}/index.html" preservelastmodified="true" />
+		<copy file="src/html/fedoragsearch-doc.html" tofile="${build.dir}/index.html" preservelastmodified="true" />
 		<copy todir="${build.dir}/FgsConfig" preservelastmodified="true">
 			<fileset dir="../FgsConfig"/>
 		</copy>
@@ -160,6 +161,15 @@
         </fileset>
       </checksum>
     </target>
+
+	<target name="buildDist"
+		    depends="prep, includeengines"
+	        description="build distribution">
+        <ant dir="../FgsConfig" target="configForDist"/>
+		<delete file="${build.dir}/WEB-INF/web.xml" />
+		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
+	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
+	</target>
 
 	<target name="buildfordownload"
 			depends="prep, includeengines"

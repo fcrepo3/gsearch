@@ -87,9 +87,6 @@ public class TestUpdates
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     	apim.modifyObject("demo:14", null, "labelremodifiedforindextest", "fedoraAdmin", "test label modify");
     }
-
-// The next three tests are commented, because it is not clear how to treat the object states.
-// Applications may decide in the indexing stylesheet.
     
     @Test
     public void testFedoraObjectStateModifyBefore() throws Exception {

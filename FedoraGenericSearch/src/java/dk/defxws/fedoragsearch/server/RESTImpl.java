@@ -82,6 +82,7 @@ public class RESTImpl extends HttpServlet {
     	Date startTime = new Date();
         String configName = request.getParameter(PARAM_CONFIGNAME);
         String operation = request.getParameter(PARAM_OPERATION);
+        String remoteUser = request.getRemoteUser();
         config = Config.getCurrentConfig();
         if (configName!=null && !"configure".equals(operation)) {
         	// mainly for test purposes
@@ -89,7 +90,7 @@ public class RESTImpl extends HttpServlet {
         }
         StringBuffer resultXml = new StringBuffer("<resultPage/>");
         if (logger.isInfoEnabled())
-            logger.info("request="+request.getQueryString()+" remoteUser="+request.getRemoteUser());
+            logger.info("request="+request.getQueryString()+" remoteUser="+remoteUser);
         repositoryName = request.getParameter(PARAM_REPOSITORYNAME);
         if (repositoryName==null) repositoryName="";
         indexName = request.getParameter(PARAM_INDEXNAME);
@@ -111,10 +112,22 @@ public class RESTImpl extends HttpServlet {
             } else if (OP_GETINDEXINFO.equals(operation)) {
                 resultXml = new StringBuffer(getIndexInfo(request, response));
             } else if (OP_UPDATEINDEX.equals(operation)) {
+                if (restXslt==null || restXslt.equals("")) {
+                    restXslt = config.getDefaultUpdateIndexRestXslt();
+                }
+                String action = request.getParameter(PARAM_ACTION);
+                if ("gsearchGuest".equals(remoteUser) && !(action==null || action.equals(""))) {
+                    throw new GenericSearchException("You are not authorized to perform updateIndex actions!");
+            	}
                 resultXml = new StringBuffer(updateIndex(request, response));
             } else if (OP_BROWSEINDEX.equals(operation)) {
                 resultXml = new StringBuffer(browseIndex(request, response));
             } else if ("configure".equals(operation)) {
+                if (restXslt==null || restXslt.equals("")) 
+                    restXslt = config.getDefaultGfindObjectsRestXslt();
+                if ("gsearchGuest".equals(remoteUser)) {
+                    throw new GenericSearchException("You are not authorized to perform configure actions!");
+            	}
                 resultXml = new StringBuffer(configure(request, response));
             } else if ("getIndexConfigInfo".equals(operation)) {
                 resultXml = new StringBuffer(getIndexConfigInfo(request, response));
@@ -139,7 +152,7 @@ public class RESTImpl extends HttpServlet {
         String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         params[3] = timeusedms;
         params[4] = "FGSUSERNAME";
-        params[5] = request.getRemoteUser();
+        params[5] = remoteUser;
         params[6] = "SRFTYPE";
         params[7] = config.getSearchResultFilteringType();
         resultXml = (new GTransformer()).transform(
@@ -248,9 +261,6 @@ public class RESTImpl extends HttpServlet {
     
     public String updateIndex(HttpServletRequest request, HttpServletResponse response)
     throws java.rmi.RemoteException {
-        if (restXslt==null || restXslt.equals("")) {
-            restXslt = config.getDefaultUpdateIndexRestXslt();
-        }
         String action = request.getParameter(PARAM_ACTION);
         if (action==null) action="";
         String value = request.getParameter(PARAM_VALUE);
@@ -277,8 +287,6 @@ public class RESTImpl extends HttpServlet {
             Config.configure(configName);
             config = Config.getCurrentConfig();
         }
-        if (restXslt==null || restXslt.equals("")) 
-            restXslt = config.getDefaultGfindObjectsRestXslt();
         return "<resultPage/>";
     }
     
