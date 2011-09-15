@@ -1050,7 +1050,7 @@ public class Config {
     
     public boolean getAllowLeadingWildcard(String indexName) {
     	String allowLeadingWildcard = getIndexProps(indexName).getProperty("fgsindex.allowLeadingWildcard");
-        if (!(allowLeadingWildcard==null || allowLeadingWildcard.equals(""))) {
+        if (allowLeadingWildcard==null || allowLeadingWildcard.equals("")) {
         	allowLeadingWildcard = "false";
           }
         return new Boolean( allowLeadingWildcard );

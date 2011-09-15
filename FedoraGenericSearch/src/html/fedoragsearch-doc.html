@@ -30,9 +30,7 @@
 				<h2>compatible with Fedora Version 3.5</h2>
 				</div>
 			</div>
-			<div>
-			<a name="intro"><h2>Intro</h2></a>
-			
+			<div>			
 				<p>This is the one-and-only documentation page for the Fedora Generic Search Service, 
 				abbreviated fedoragsearch or GSearch.
 				</p>
@@ -43,12 +41,14 @@
 			<div class="toc">
 				<p><b>Table of Contents</b></p>
 				<dl>
-				<dt><a href="#DTUdemo">See a demo at DTU</a></dt>
-				<dt><a href="#owndemo">See a demo at your own site, out-of-the-box</a></dt>
+				<dt><a href="#owndemo">See a demo at your own site, almost out-of-the-box</a></dt>
 				<dt><a href="#realapp">Install and configure for your application</a></dt>
+				<dt><a href="#config">Create the configuration files</a></dt>
+				<dt><a href="#indexingstylesheet">Generate indexing stylesheet from example foxml files</a></dt>
+				<dt><a href="basicproperties">Edit and use the basic property values</a></dt>
 				<dt><a href="#sauto">Configuring the Service for Automatic Updates</a></dt>
 				<dt><a href="#fauto">Configuring Fedora for Automatic Updates</a></dt>
-				<dt><a href="#test">Test your installation</a></dt>
+				<dt><a href="#source">Building from source</a></dt>
 				<dt><a href="#new23">New Features in Version 2.3</a></dt>
 				<dt><a href="#new22">New Features in Version 2.2</a></dt>
 				<dt><a href="#new211">New Features in Version 2.1.1</a></dt>
@@ -59,6 +59,7 @@
 				</dl>
 			</div>
 			<div>
+			<!-- 
 			<a name="DTUdemo"><h2>See a demo at DTU</h2></a>
 			<p>This documentation page is also visible at 
 			<a href="http://miranth.cvt.dk/fedoragsearch" target="DTUdemo">the DTU demo site</a>.
@@ -86,8 +87,9 @@
 			<p>You may press buttons and enter queries, but you will notice that you are not authorized to do the updateIndex actions.
 			</p>
 			</div>
+			 -->
 			<div>
-			<a name="owndemo"><h2>See a demo at your own site, out-of-the-box</h2></a>
+			<a name="owndemo"><h2>See a demo at your own site, almost out-of-the-box</h2></a>
 			<p>Perform these steps:</p>
 			<ol>
 				<li>Create a Fedora 3.5 installation by quick install. The only piece of custom configuration needed is setting
@@ -96,16 +98,42 @@
     &lt;comment&gt;Fedora's Java Messaging Service (JMS) Module&lt;/comment&gt;
     &lt;param name="enabled" value="true"/&gt;</pre>
 				</li>
-				<li>Download fedoragsearch.war from either <a href="http://miranth.cvt.dk/fedoragsearch/fedoragsearch.war">the DTU demo site (the prerelease)</a>, 
+				<li>Download fedoragsearch.war from either <a href="http://miranth.cvt.dk/fedoragsearch/fedoragsearch.war">the DTU prerelease site</a>, 
 					or from the official Duraspace site (when released).
 				</li>
 				<li>Copy fedoragsearch.war into the tomcat webapps directory of your Fedora installation.
 					Tomcat will unpack it, if it is running, or else when you start it.
 				</li>
+				<li>Create the set of configuration files, see
+					<a href="basicproperties">Edit and use the basic property values</a>.
+					All you need to do is edit a few of the property values 
+					in the file fgsconfig-basic.properties, including passwords,
+					and run <pre>
+> ant -f fgsconfig-basic.xml
+							</pre>
+				</li>
 				<li>Now this documentation page is visible at 
 					<a href="http://localhost:8080/fedoragsearch/" target="owndemo">your own demo site</a>.
-					and
-					<a href="http://localhost:8080/fedoragsearch/rest?operation=getRepositoryInfo" target="owndemo">the admin pages here</a>.
+					and the admin pages are visible here:
+				</li>
+				<li>
+					<ol>
+						<li>
+							<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=updateIndex" target="owndemorest">The Update Index page</a>.
+						</li>
+						<li>
+							<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=browseIndex" target="owndemorest">The Browse Index page</a>.
+						</li>
+						<li>
+							<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=gfindObjects" target="owndemorest">The Search page</a>.
+						</li>
+						<li>
+							<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=getRepositoryInfo" target="owndemorest">The Repository Info page</a>.
+						</li>
+						<li>
+							<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=getIndexInfo" target="owndemorest">The Index Info page</a>.
+						</li>
+					</ol> 
 				</li>
 				<li>Ingest the Fedora 3.5 demo objects, there are 41, 20 of them are data objects and will be indexed.
 					View the admin pages.
@@ -126,7 +154,7 @@
 				<li>Now this documentation page is visible at 
 					<a href="http://localhost:8080/fedoragsearch/" target="owndemo">your own site</a>.
 					and
-					<a href="http://localhost:8080/fedoragsearch/rest?operation=getRepositoryInfo" target="owndemo">the admin pages here</a>.
+					<a href="http://localhost:8080/fedoragsearch/rest?operation=updateIndex" target="owndemo">the admin pages here</a>.
 				</li>
 				<li>The SOAP service operations are deployed with the .war file, and
 					<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a>
@@ -136,7 +164,7 @@
 					If you choose Solr or Zebra, you have to install and start the respective server,
 					see <a href="#engines">Search Engine Plugins</a>.
 				</li>
-				<li><a name="config"><h2>The Configuration files</h2></a>
+				<li><a name="config"><h2>Create the configuration files</h2></a>
 				<ul>
 					<li>
 						If you <b>migrate from GSearch 2.2 to 2.3</b>, you simply reuse the configuration files you have.
@@ -149,11 +177,15 @@
 					  		<li>fgsindex.stopwordsLocation
 					  		</li>
 					  	</ul>
+					  	If you kept the configuration files within tomcat in the default classpath,
+					  	you may want to move them outside, see below.
+					  	If so, be sure to remove the old 'config'-directory within tomcat.
 					</li>
                     <li>
 						If you <b>start with GSearch 2.3</b>, here are the two basic parts mentioned in <a href="#new23">New Features in Version 2.3</a>:
 					<ul>
 					  <li>Indexing stylesheet generation from example foxml files:
+					  <a name="indexingstylesheet"><h2>Generate indexing stylesheet from example foxml files</h2></a>
 					  	<ul>
 					  		<li>Put your example foxml files in FgsConfig/indexingXsltGenerator/foxml . 
 					  			They must end with newline. 
@@ -174,6 +206,7 @@
 					  	</ul>
 					  </li>
 					  <li>
+					  <a name="basicproperties"><h2>Edit and use the basic property values</h2></a>
 						You edit a basic property file and run an ant script with it. 
 						This will insert your property values into your copy of a set of template configuration files, 
 						providing the final set of configuration files. 
@@ -201,6 +234,7 @@
 								Alternatively, you may add another classpath location to tomcat
 								in catalina.properties in the line starting with <pre>shared loader=</pre>
 								and state that location in fgsconfig-basic.properties.
+								Make sure that there is only one 'config'-directory in the classpath.
 							</li>
 							<li>You should read through the final config files.
 								You may edit all the properties of the final config files.
@@ -331,12 +365,45 @@
               </ul>
 			</div>
 			<div>
-			<a name="test"><h2>Test your installation</h2></a>
+			<a name="source"><h2>Building from source</h2></a>
 			<p>Perform these steps:</p>
 			<ol>
 				<li>Run ant -f build.xml junit-lucene (etc.) 
 				</li>
-			</ol> 
+			</ol>
+			<p>To build the downloadable war, which includes
+				support for Lucene, Solr, and Zebra plugins:</p>
+<pre>
+  cd FedoraGenericSearch
+  ant buildfordownload
+</pre>
+			<p>To build the war for local testing:</p>
+<pre>
+  cd FedoraGenericSearch
+  ant buildforlocaltest
+</pre>
+			<p>To run tests use dist/local/fedoragsearch.war in tomcat webapps
+				on a Fedora repository with demo objects with MessagingModule enabled.
+			</p>
+			<p>Operations on the lucene plugin:
+			</p>
+<pre>
+    ant junit-lucene  
+    ant junit-testsonlucene
+</pre>
+			<p>Operations on the solr plugin:
+			</p>
+<pre>
+    cd $FEDORA_HOME/gsearch/DemoOnSolr/example 
+    java -jar start.jar
+    ant junit-solr
+</pre>
+			<p>Operations on the zebra plugin, install, configure and startup the zebra server:</br>
+			</p>
+<pre>
+    see $FEDORA_HOME/tomcat/webapps/fedoragsearch/WEB-INF/classes/configDemoOnZebra/index/DemoOnZebra/zebraconfig/README
+    ant junit-zebra
+</pre>
 			</div>
 			<div>
 			<a name="new23"><h2>New Features in Version 2.3</h2></a>

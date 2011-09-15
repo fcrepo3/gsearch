@@ -25,6 +25,6 @@ public class TestConfigSetup
 
     @Override
     public void tearDown() throws Exception {
-//        System.out.println("tearDown configDemoOnSolr");
+        System.out.println("tearDown configDemoOnSolr");
     }
 }

@@ -27,54 +27,43 @@
 			<property name="indexName" value="${namesOfIndexes}"/>
     	</ant>
 		
-		<!--
-		<for list="${namesOfRepositories}" param="reposName" delimiter=" " trim="true">
-	    	<ant target="configFgsRepos">
-	    	</ant>
-		</for>
-		
-		<for list="${namesOfIndexes}" param="indexName" delimiter=" " trim="true">
-	    	<ant target="configFgsIndex">
-	    	</ant>
-		</for>
-		-->
+		<delete dir="${finalConfigPath}/${finalConfigName}" />
+		<mkdir dir="${finalConfigPath}/${finalConfigName}" />
+		<copy todir="${finalConfigPath}/${finalConfigName}" preservelastmodified="true">
+			<fileset dir="${templateConfigPath}/${configDisplayName}/${finalConfigName}"/>
+		</copy>
 		
 	</target>
 
 	<target name="configFgsRoot"
         	description="insert config values into config files">
 
-        <delete dir="${templateConfigPath}/${finalConfigName}-backup" />
-        <mkdir dir="${templateConfigPath}/${finalConfigName}-backup" />
-        <copy todir="${templateConfigPath}/${finalConfigName}-backup" preservelastmodified="true">
-        	<fileset dir="${finalConfigPath}/${finalConfigName}"/>
-        </copy>
-		<delete dir="${finalConfigPath}/${finalConfigName}" />
-		<mkdir dir="${finalConfigPath}/${finalConfigName}" />
-		<copy todir="${finalConfigPath}/${finalConfigName}" preservelastmodified="true">
+		<delete dir="${templateConfigPath}/${configDisplayName}/${finalConfigName}" />
+		<mkdir dir="${templateConfigPath}/${configDisplayName}/${finalConfigName}" />
+		<copy todir="${templateConfigPath}/${configDisplayName}/${finalConfigName}" preservelastmodified="true">
 			<fileset dir="${templateConfigPath}/${templateConfigName}"/>
 		</copy>
-		<copy file="${templateConfigPath}/log4j.xml" todir="${finalConfigPath}" preservelastmodified="true" />
+		<copy file="${templateConfigPath}/log4j.xml" todir="${templateConfigPath}/${configDisplayName}" preservelastmodified="true" />
 
-		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHBASE" value="${gsearchBase}"/>
-		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="${gsearchAppName}"/>
-		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHUSER" value="${gsearchUser}"/>
-		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHPASS" value="${gsearchPass}"/>
-		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="CONFIGPATH" value="${finalConfigPath}"/>
-		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="REPOSNAMES" value="${namesOfRepositories}"/>
-		<replace file="${finalConfigPath}/${finalConfigName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHBASE" value="${gsearchBase}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="${gsearchAppName}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHUSER" value="${gsearchUser}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHPASS" value="${gsearchPass}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="CONFIGPATH" value="${templateConfigPath}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="REPOSNAMES" value="${namesOfRepositories}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
 
-		<replace file="${finalConfigPath}/${finalConfigName}/rest/adminCommonToHtml.xslt" token="FGSCONFIGNAME" value="${finalConfigName}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/rest/adminCommonToHtml.xslt" token="FGSCONFIGNAME" value="${configDisplayName}"/>
 	
-		<replace file="${finalConfigPath}/log4j.xml" token="LOGPATH" value="${logFilePath}"/>
-		<replace file="${finalConfigPath}/log4j.xml" token="LOGLEVEL" value="${logLevel}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/log4j.xml" token="LOGPATH" value="${logFilePath}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/log4j.xml" token="LOGLEVEL" value="${logLevel}"/>
 	</target>
 
 	<target name="configFgsRepos"
         	description="insert config values into config files">
 
 		<property name="templateConfigReposPath" value="${templateConfigPath}/FgsConfigReposTemplate"/>
-		<property name="finalConfigReposPath" value="${finalConfigPath}/${finalConfigName}/repository/${reposName}"/>
+		<property name="finalConfigReposPath" value="${templateConfigPath}/${configDisplayName}/${finalConfigName}/repository/${reposName}"/>
 		
 		<delete dir="${finalConfigReposPath}" />
 		<mkdir dir="${finalConfigReposPath}" />
@@ -96,7 +85,7 @@
         	description="insert config values into config files">
 
 		<property name="templateConfigIndexPath" value="${templateConfigPath}/FgsConfigIndexTemplate/${indexEngine}"/>
-		<property name="finalConfigIndexPath" value="${finalConfigPath}/${finalConfigName}/index/${indexName}"/>
+		<property name="finalConfigIndexPath" value="${templateConfigPath}/${configDisplayName}/${finalConfigName}/index/${indexName}"/>
 		
 		<delete dir="${finalConfigIndexPath}" />
 		<mkdir dir="${finalConfigIndexPath}" />

@@ -111,7 +111,7 @@
 			<xslt:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
 				<IndexField index="TOKENIZED" store="YES" termVector="NO">
 					<xslt:attribute name="IFname">
-						<xslt:value-of select="concat('dsm.', @ID)"/>
+						<xslt:value-of select="concat('ds.', @ID)"/>
 					</xslt:attribute>
 					<xslt:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</IndexField>

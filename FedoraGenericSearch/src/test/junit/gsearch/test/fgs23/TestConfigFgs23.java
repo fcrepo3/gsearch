@@ -143,5 +143,6 @@ public class TestConfigFgs23
   	    delay(10000);
   	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    	apim.purgeObject("test:fgs23", "test purge", false);
     }
 }

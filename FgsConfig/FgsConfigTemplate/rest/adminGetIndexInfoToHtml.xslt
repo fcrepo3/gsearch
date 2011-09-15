@@ -15,16 +15,6 @@
 	<xsl:template name="opSpecifics">
 		<xsl:variable name="INDEXNAME" select="@indexName"/>
 		<h2>getIndexInfo</h2>
-			<form method="get" action="rest">
-				<table border="3" cellpadding="5" cellspacing="0">
-					<tr>
-						<td>
-							<input type="hidden" name="operation" value="getIndexInfo"/>
-							<xsl:text> </xsl:text><input type="submit" value="Show it"/>
-						</td>
-					</tr>
-				</table>
-			</form>
 			<p/>
 		<table border="3" cellpadding="5" cellspacing="0" width="784">
 			<xsl:for-each select="indexInfo/*">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- build.xml -->
 <!-- run as ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -->
-<project name="FedoraGenericSearch" default="buildDist" basedir=".">
+<project name="FedoraGenericSearch" default="buildfordownload" basedir=".">
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
@@ -161,15 +161,6 @@
         </fileset>
       </checksum>
     </target>
-
-	<target name="buildDist"
-		    depends="prep, includeengines"
-	        description="build distribution">
-        <ant dir="../FgsConfig" target="configForDist"/>
-		<delete file="${build.dir}/WEB-INF/web.xml" />
-		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
-	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
-	</target>
 
 	<target name="buildfordownload"
 			depends="prep, includeengines"
