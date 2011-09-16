@@ -7,6 +7,8 @@
  */
 package dk.defxws.fedoragsearch.server.errors;
 
+import java.util.Date;
+
 /**
  * the most general exception for the search service
  * 
@@ -23,11 +25,11 @@ public class GenericSearchException extends java.rmi.RemoteException {
      *                (possibly) how to fix it.
      */
     public GenericSearchException(String message) {
-        super(message);
+        super(new Date()+" "+message);
     }
     
     public GenericSearchException(String message, Throwable cause) {
-        super(message, cause);
+        super(new Date()+" "+message, cause);
     }
     
 }

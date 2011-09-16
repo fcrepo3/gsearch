@@ -79,7 +79,7 @@ public class TestUpdates
 
     @Test
     public void testFedoraObjectLabelModifyAndAfter() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
     	FedoraAPIM apim = fedoraClient.getAPIM();
     	apim.modifyObject("demo:14", null, "labelmodifiedforindextest", "fedoraAdmin", "test label modify");
   	    delay(5000);
@@ -97,7 +97,7 @@ public class TestUpdates
 
     @Test
     public void testFedoraObjectStateDelete() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
     	FedoraAPIM apim = fedoraClient.getAPIM();
     	apim.modifyObject("demo:21", "D", null, "fedoraAdmin", "test state delete");
   	    delay(10000);
@@ -107,7 +107,7 @@ public class TestUpdates
 
     @Test
     public void testFedoraObjectStateActivate() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
     	FedoraAPIM apim = fedoraClient.getAPIM();
     	apim.modifyObject("demo:21", "A", null, "fedoraAdmin", "test state activate");
   	    delay(10000);

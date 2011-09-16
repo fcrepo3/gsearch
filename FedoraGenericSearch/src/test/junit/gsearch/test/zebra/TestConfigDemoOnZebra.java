@@ -39,7 +39,7 @@ public class TestConfigDemoOnZebra
     @Test
     public void testUpdateIndexFromFoxmlFiles() throws Exception {
   	    StringBuffer result = doOp("?operation=updateIndex&action=fromFoxmlFiles&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("24", "/resultPage/updateIndex/@docCount", result.toString());
+  	    assertXpathEvaluatesTo("20", "/resultPage/updateIndex/@docCount", result.toString());
     }
 
     @Test

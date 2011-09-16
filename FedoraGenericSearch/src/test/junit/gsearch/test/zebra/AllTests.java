@@ -8,14 +8,12 @@ import org.junit.runners.Suite;
  * 
  * assuming 
  * - all Fedora demo objects are in the repository referenced in
- *   configDemoOnZebra/repository/DemoAtDtu/repository.properties
+ *   configDemoOnZebra/repository/FgsRepos/repository.properties
  * - the zebra server is configured and started, 
  *   see $FEDORA_HOME/tomcat/webapps/fedoragsearch/WEB-INF/classes/configDemoOnZebra/index/DemoOnZebra/zebraconfig/README
  * 
  * the test suite will
- * - set configDemoOnZebra as current config,
- * - run common operations as a REST client
- * - run common operations as a SOAP client. 
+ * - set configDemoOnZebra as current config. 
  */
 
 @RunWith(Suite.class)

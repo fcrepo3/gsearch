@@ -19,8 +19,8 @@ public class TestConfigSetup
     @Override
     public void setUp() throws Exception {
         System.out.println("setUp configDemoOnSolr");
-        System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
     }
 
     @Override

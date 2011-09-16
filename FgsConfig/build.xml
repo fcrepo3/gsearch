@@ -3,7 +3,7 @@
 <project name="FgsConfig" default="configForWebServer" basedir=".">
 	<description>Fedora Generic Search Service configuration</description>
 
-	<property name="local.SOLR_HOME" 			location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.3.0" />
+	<property name="local.SOLR_HOME" 			location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0" />
 	<property name="build.dir" location="../FgsBuild/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 
@@ -21,7 +21,7 @@
 			depends="prep"
         	description="build the config">
         <ant target="configLocal">
-			<property name="configName" value="config"/>
+			<property name="configName" value="fgsconfigFinal"/>
 			<property name="indexEngine" value="Lucene"/>
 			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
 			<property name="indexingDocXslt" value="foxmlToLucene"/>
@@ -30,17 +30,17 @@
 			<property name="configName" value="configDemoOnLucene"/>
 			<property name="indexEngine" value="Lucene"/>
 			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
-			<property name="indexingDocXslt" value="foxmlToLuceneGenerated"/>
+			<property name="indexingDocXslt" value="foxmlToLuceneDemo"/>
         </ant>
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnSolr"/>
 			<property name="indexEngine" value="Solr"/>
 			<property name="indexBase" value="http://localhost:8983/solr"/>
-			<property name="indexDir" value="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.3.0/example/solr/data/index"/>
+			<property name="indexDir" value="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0/example/solr/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
 
         </ant>
-		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.3.0-for-fgs-2.3.xml" tofile="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.3.0/example/solr/conf/schema.xml" preservelastmodified="true" />
+		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.4.0-for-fgs-2.3.xml" tofile="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0/example/solr/conf/schema.xml" preservelastmodified="true" />
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnZebra"/>
 			<property name="indexEngine" value="Zebra"/>
@@ -80,8 +80,8 @@
 		
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHBASE" value="http://localhost:8080"/>
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="fedoragsearch"/>
-		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHPASS" value="fedoraAdmin"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHUSER" value="fgsAdmin"/>
+		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHPASS" value="fgsAdminPassword"/>
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="CONFIGPATH" value="${local.FEDORA_HOME}/${tomcat.basename}/webapps/fedoragsearch/WEB-INF/classes/${configName}"/>
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="REPOSNAMES" value="${namesOfRepositories}"/>
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
@@ -99,8 +99,8 @@
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="REPOSNAME" value="${reposName}"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORABASE" value="http://localhost:8080"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAAPPNAME" value="fedora"/>
-		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAUSER" value="fedoraAdmin"/>
-		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAPASS" value="fedoraAdmin"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAUSER" value="fgsAdmin"/>
+		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAPASS" value="fgsAdminPassword"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAVERSION" value="3.5"/>
 		<replace file="${plugin.dir}/${configName}/repository/${reposName}/repository.properties" token="FEDORAOBJECTDIR" value="${local.FEDORA_HOME}/data/objectStore"/>
 		

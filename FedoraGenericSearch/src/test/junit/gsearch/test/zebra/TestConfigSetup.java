@@ -19,12 +19,12 @@ public class TestConfigSetup
     @Override
     public void setUp() throws Exception {
         System.out.println("setUp configDemoOnZebra");
-        System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
     }
 
     @Override
     public void tearDown() throws Exception {
-//        System.out.println("tearDown configDemoOnZebra");
+        System.out.println("tearDown configDemoOnZebra");
     }
 }

@@ -66,7 +66,7 @@ public class Config {
     
     private static boolean wsddDeployed = false;
     
-    private static String defaultConfigName = "config";
+    private static String finalConfigName = "fgsconfigFinal";
     
     private String configName = null;
     
@@ -114,7 +114,7 @@ public class Config {
     public static void configure(String configNameIn) throws ConfigException {
     	String configName = configNameIn;
     	if (configName==null || configName.equals(""))
-    		configName = defaultConfigName;
+    		configName = finalConfigName;
         currentConfig = new Config(configName);
         configs.put(configName, currentConfig);
     }
@@ -143,7 +143,7 @@ public class Config {
     
     public static Config getCurrentConfig() throws ConfigException {
         if (currentConfig == null)
-            currentConfig = new Config(defaultConfigName);
+            currentConfig = new Config(finalConfigName);
         return currentConfig;
     }
     
@@ -159,7 +159,7 @@ public class Config {
     public Config(String configNameIn) throws ConfigException {
     	configName = configNameIn;
     	if (configName==null || configName.equals(""))
-    		configName = defaultConfigName;
+    		configName = finalConfigName;
         errors = new StringBuffer();
         
 //      Get fedoragsearch properties

@@ -12,7 +12,8 @@ import gsearch.test.FgsTestCase;
  * Test of lucene plugin
  * 
  * the test suite will
- * - set configDemoOnLucene as current config. 
+ * - set configDemoOnLucene as current config
+ * - create an empty index. 
  */
 public class TestConfigDemoOnLucene
         extends FgsTestCase {
@@ -28,7 +29,6 @@ public class TestConfigDemoOnLucene
     public void testSetConfigDemoOnLucene() throws Exception {
         System.setProperty("fedoragsearch.clientType", "REST");
   	    StringBuffer result = doOp("?operation=configure&configName=configDemoOnLucene&restXslt=copyXml");
-//        System.out.println("result="+result.toString());
   	    assertXpathNotExists("/resultPage/error", result.toString());
     }
 
@@ -37,10 +37,4 @@ public class TestConfigDemoOnLucene
   	    StringBuffer result = doOp("?operation=updateIndex&action=createEmpty&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/updateIndex/@docCount", result.toString());
     }
-
-//  @BeforeClass
-//  public void setConfig() throws Exception {
-//      System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-//      System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
-//  }
 }

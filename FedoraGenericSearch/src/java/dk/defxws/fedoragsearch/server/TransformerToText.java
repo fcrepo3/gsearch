@@ -93,7 +93,7 @@ private StringBuffer getTextFromXML(byte[] doc)
 throws GenericSearchException {
     InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(doc));
     StringBuffer docText = (new GTransformer()).transform(
-    		"config/textFromXml", 
+    		"fgsconfigFinal/textFromXml", 
             new StreamSource(isr));
     docText.delete(0, docText.indexOf(">")+1);
     return docText;

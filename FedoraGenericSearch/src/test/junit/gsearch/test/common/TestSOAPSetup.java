@@ -25,8 +25,8 @@ public class TestSOAPSetup
     public void setUp() throws Exception {
         System.out.println("setUp common SOAP");
         System.setProperty("fedoragsearch.clientType", "SOAP");
-        System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
     }
 
     @Override

@@ -5,13 +5,14 @@
 		Fedora Generic Search Service configuration
 		This ant script is run from command line:
 					>ant -f fgsconfig-basic.xml
+		Be sure you have permissions to write to finalConfigPath.
 	</description>
  
 	<property file="fgsconfig-basic.properties" />
 
 	<property name="templateConfigPath" location="."/>
 	<property name="templateConfigName" value="FgsConfigTemplate"/>
-	<property name="finalConfigName" value="config"/>
+	<property name="finalConfigName" value="fgsconfigFinal"/>
 
 	<target name="configFgsBasic"
     	description="copy template files and insert property values">

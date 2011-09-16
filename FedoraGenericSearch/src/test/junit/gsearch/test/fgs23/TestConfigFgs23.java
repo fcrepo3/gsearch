@@ -123,26 +123,31 @@ public class TestConfigFgs23
 
     @Test
     public void testManagedXmlDatastreamBefore() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
-    	FedoraAPIM apim = fedoraClient.getAPIM();
-    	apim.purgeObject("test:fgs23", "test purge", false);
-  	    delay(5000);
   	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test
-    public void testManagedXmlDatastreamIngestAndAfter() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdmin");
+    public void testManagedXmlDatastreamIngest() throws Exception {
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
     	FedoraAPIM apim = fedoraClient.getAPIM();
     	File testfile = new File("../FgsConfig/test/test_fgs23.xml");
     	FileInputStream fis = new FileInputStream(testfile);
     	byte[] testobject = new byte[(int)testfile.length()];
     	fis.read(testobject);
     	apim.ingest(testobject, "info:fedora/fedora-system:FOXML-1.1", "test ingest");
-  	    delay(10000);
+  	    delay(5000);
   	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testManagedXmlDatastreamAfter() throws Exception {
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
+    	FedoraAPIM apim = fedoraClient.getAPIM();
     	apim.purgeObject("test:fgs23", "test purge", false);
+ 	    delay(5000);
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 }

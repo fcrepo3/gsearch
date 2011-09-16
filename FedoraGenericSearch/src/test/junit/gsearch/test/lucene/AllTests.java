@@ -8,7 +8,7 @@ import org.junit.runners.Suite;
  * 
  * assuming 
  * - all Fedora demo objects are in the repository referenced in
- *   configDemoOnLucene/repository/DemoAtDtu/repository.properties
+ *   configDemoOnLucene/repository/FgsRepos/repository.properties
  * 
  * the test suite will
  * - set configDemoOnLucene as current config,

@@ -104,6 +104,14 @@
 				<li>Copy fedoragsearch.war into the tomcat webapps directory of your Fedora installation.
 					Tomcat will unpack it, if it is running, or else when you start it.
 				</li>
+				<li>Create a GSearch administrator in fedora-users.xml<pre>
+    <user name="fgsAdmin" password="fgsAdminPassword">
+      <attribute name="fedoraRole">
+        <value>administrator</value>
+      </attribute>
+    </user>
+				</pre>
+				</li>
 				<li>Create the set of configuration files, see
 					<a href="basicproperties">Edit and use the basic property values</a>.
 					All you need to do is edit a few of the property values 
@@ -168,6 +176,8 @@
 				<ul>
 					<li>
 						If you <b>migrate from GSearch 2.2 to 2.3</b>, you simply reuse the configuration files you have.
+						The only thing you must do is rename the root directory of the configuration files 
+						from 'config' to 'fgsconfigFinal'.
 						You may want to add the new properties:
 					  	<ul>
 					  		<li>fedoragsearch.xsltprocessor
@@ -179,7 +189,6 @@
 					  	</ul>
 					  	If you kept the configuration files within tomcat in the default classpath,
 					  	you may want to move them outside, see below.
-					  	If so, be sure to remove the old 'config'-directory within tomcat.
 					</li>
                     <li>
 						If you <b>start with GSearch 2.3</b>, here are the two basic parts mentioned in <a href="#new23">New Features in Version 2.3</a>:
@@ -234,7 +243,7 @@
 								Alternatively, you may add another classpath location to tomcat
 								in catalina.properties in the line starting with <pre>shared loader=</pre>
 								and state that location in fgsconfig-basic.properties.
-								Make sure that there is only one 'config'-directory in the classpath.
+								Make sure that there is only one 'fgsconfigFinal'-directory in the classpath.
 							</li>
 							<li>You should read through the final config files.
 								You may edit all the properties of the final config files.
@@ -385,16 +394,25 @@
 			<p>To run tests use dist/local/fedoragsearch.war in tomcat webapps
 				on a Fedora repository with demo objects with MessagingModule enabled.
 			</p>
+			<p>Create a test user in fedora-users.xml<pre>
+    <user name="fgsTester" password="fgsTesterPassword">
+      <attribute name="fedoraRole">
+        <value>tester</value>
+      </attribute>
+    </user>
+			</pre>
+			</p>
 			<p>Operations on the lucene plugin:
 			</p>
 <pre>
     ant junit-lucene  
+    ant junit-fgs23  
     ant junit-testsonlucene
 </pre>
 			<p>Operations on the solr plugin:
 			</p>
 <pre>
-    cd $FEDORA_HOME/gsearch/DemoOnSolr/example 
+    cd $local.SOLR_HOME 
     java -jar start.jar
     ant junit-solr
 </pre>

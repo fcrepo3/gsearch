@@ -25,8 +25,8 @@ public class TestRESTSetup
     public void setUp() throws Exception {
         System.out.println("setUp common REST");
         System.setProperty("fedoragsearch.clientType", "REST");
-        System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
     }
 
     @Override

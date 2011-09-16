@@ -13,8 +13,7 @@ import gsearch.test.FgsTestCase;
  * - the system property fedoragsearch.clientType is either 'REST' or 'SOAP'
  * 
  * the tests are
- * - create an empty index as configured and 
- * - update it with the data demo objects
+ * - update the index with the data demo objects
  * - do a getRepositoryInfo operation 
  * - do a getIndexInfo operation 
  * - do a gfindObjects operation 
@@ -22,12 +21,6 @@ import gsearch.test.FgsTestCase;
  */
 public class Operations
         extends FgsTestCase {
-
-//    @Test
-//    public void testCreateEmpty() throws Exception {
-//  	    StringBuffer result = doOp("?operation=updateIndex&action=createEmpty&restXslt=copyXml");
-//  	    assertXpathEvaluatesTo("0", "/resultPage/updateIndex/@docCount", result.toString());
-//    }
 
     @Test
     public void testUpdateIndexFromFoxmlFiles() throws Exception {

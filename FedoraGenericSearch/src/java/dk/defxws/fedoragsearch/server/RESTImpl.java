@@ -2,7 +2,7 @@
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fedoragsearch.server;
@@ -116,7 +116,7 @@ public class RESTImpl extends HttpServlet {
                     restXslt = config.getDefaultUpdateIndexRestXslt();
                 }
                 String action = request.getParameter(PARAM_ACTION);
-                if ("gsearchGuest".equals(remoteUser) && !(action==null || action.equals(""))) {
+                if (!("fedoraAdmin".equals(remoteUser) || "fgsAdmin".equals(remoteUser) || "fgsTester".equals(remoteUser)) && !(action==null || action.equals(""))) {
                     throw new GenericSearchException("You are not authorized to perform updateIndex actions!");
             	}
                 resultXml = new StringBuffer(updateIndex(request, response));
@@ -125,7 +125,7 @@ public class RESTImpl extends HttpServlet {
             } else if ("configure".equals(operation)) {
                 if (restXslt==null || restXslt.equals("")) 
                     restXslt = config.getDefaultGfindObjectsRestXslt();
-                if ("gsearchGuest".equals(remoteUser)) {
+                if (!("fedoraAdmin".equals(remoteUser) || "fgsAdmin".equals(remoteUser) || "fgsTester".equals(remoteUser))) {
                     throw new GenericSearchException("You are not authorized to perform configure actions!");
             	}
                 resultXml = new StringBuffer(configure(request, response));
