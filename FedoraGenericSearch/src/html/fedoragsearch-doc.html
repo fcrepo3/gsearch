@@ -38,6 +38,7 @@
 				searchable for your end-users. GSearch makes this task easy.
 				</p>
 			</div>
+			<p></p>
 			<div class="toc">
 				<p><b>Table of Contents</b></p>
 				<dl>
@@ -98,18 +99,21 @@
     &lt;comment&gt;Fedora's Java Messaging Service (JMS) Module&lt;/comment&gt;
     &lt;param name="enabled" value="true"/&gt;</pre>
 				</li>
-				<li>Download fedoragsearch.war from either <a href="http://miranth.cvt.dk/fedoragsearch/fedoragsearch.war">the DTU prerelease site</a>, 
+				<li>Download fedoragsearch.war, which includes support 
+					for Lucene, Solr, and Zebra plugins 
+					from either <a href="http://www.cvt.dk/fedoragsearch">the DTU prerelease site</a>, 
 					or from the official Duraspace site (when released).
+					Alternatively, you may <a href="source">build fedoragsearch.war from source</a>.
 				</li>
 				<li>Copy fedoragsearch.war into the tomcat webapps directory of your Fedora installation.
 					Tomcat will unpack it, if it is running, or else when you start it.
 				</li>
 				<li>Create a GSearch administrator in fedora-users.xml<pre>
-    <user name="fgsAdmin" password="fgsAdminPassword">
-      <attribute name="fedoraRole">
-        <value>administrator</value>
-      </attribute>
-    </user>
+    &lt;user name="fgsAdmin" password="fgsAdminPassword"&gt;
+      &lt;attribute name="fedoraRole"&gt;
+        &lt;value&gt;administrator&lt;/value&gt;
+      &lt;/attribute&gt;
+    &lt;/user&gt;
 				</pre>
 				</li>
 				<li>Create the set of configuration files, see
@@ -119,6 +123,11 @@
 					and run <pre>
 > ant -f fgsconfig-basic.xml
 							</pre>
+					This ant script ends with writing the fgsconfigFinal files 
+					to the classpath location that you have chosen. 
+					Therefore, you need to run it with privilege to write there.
+				</li>
+				<li>Restart tomcat.
 				</li>
 				<li>Now this documentation page is visible at 
 					<a href="http://localhost:8080/fedoragsearch/" target="owndemo">your own demo site</a>.
@@ -228,14 +237,15 @@
 							</li>
 							<li>Edit the file fgsconfig-basic.properties
 							</li>
-							<li>Run<pre>
+							<li>Run with privilege to write to the final config location, 
+							that you stated in fgsconfig-basic.properties:<pre>
 > ant -f fgsconfig-basic.xml
 							</pre>
 							</li>
 							<li>This has used the property values in fgsconfig-basic.properties 
 								and inserted them into the copies of the template config files,
 								that now make up the final config files, which have been copied
-								to the location, that you stated in fgsconfig-basic.properties.
+								to the final config location.
 							</li>
 							<li>This location of the final config files must be in tomcat classpath,
 								in order that GSearch can find them at startup.
@@ -375,48 +385,46 @@
 			</div>
 			<div>
 			<a name="source"><h2>Building from source</h2></a>
-			<p>Perform these steps:</p>
-			<ol>
-				<li>Run ant -f build.xml junit-lucene (etc.) 
-				</li>
-			</ol>
-			<p>To build the downloadable war, which includes
-				support for Lucene, Solr, and Zebra plugins:</p>
+			<p>Get the source from github:</p>
+<pre>
+  git clone https://github.com/fcrepo/gsearch.git
+</pre>
+			<p>To build fedoragsearch.war in FedoraGenericSearch/dist:</p>
 <pre>
   cd FedoraGenericSearch
   ant buildfordownload
 </pre>
-			<p>To build the war for local testing:</p>
+			<p>To build fedoragsearch.war in FedoraGenericSearch/dist/local for local testing:</p>
 <pre>
   cd FedoraGenericSearch
   ant buildforlocaltest
 </pre>
-			<p>To run tests use dist/local/fedoragsearch.war in tomcat webapps
+			<p>To run tests, copy dist/local/fedoragsearch.war into tomcat webapps
 				on a Fedora repository with demo objects with MessagingModule enabled.
 			</p>
 			<p>Create a test user in fedora-users.xml<pre>
-    <user name="fgsTester" password="fgsTesterPassword">
-      <attribute name="fedoraRole">
-        <value>tester</value>
-      </attribute>
-    </user>
+    &lt;user name="fgsTester" password="fgsTesterPassword"&gt;
+      &lt;attribute name="fedoraRole"&gt;
+        &lt;value&gt;tester&lt;/value&gt;
+      &lt;/attribute&gt;
+    &lt;/user&gt;
 			</pre>
 			</p>
-			<p>Operations on the lucene plugin:
+			<p>Test operations on the lucene plugin:
 			</p>
 <pre>
     ant junit-lucene  
     ant junit-fgs23  
     ant junit-testsonlucene
 </pre>
-			<p>Operations on the solr plugin:
+			<p>Test operations on the solr plugin:
 			</p>
 <pre>
     cd $local.SOLR_HOME 
     java -jar start.jar
     ant junit-solr
 </pre>
-			<p>Operations on the zebra plugin, install, configure and startup the zebra server:</br>
+			<p>Test operations on the zebra plugin, install, configure and startup the zebra server:</br>
 			</p>
 <pre>
     see $FEDORA_HOME/tomcat/webapps/fedoragsearch/WEB-INF/classes/configDemoOnZebra/index/DemoOnZebra/zebraconfig/README
@@ -432,8 +440,8 @@
 							</li>
 						</ul>
 					</li>
-					<li>Lucene 3.3 compatibility</li>
-					<li>Solr 3.3 compatibility</li>
+					<li>Lucene 3.4 compatibility</li>
+					<li>Solr 3.4 compatibility</li>
 					<li>Zebra 2.0 compatibility</li>
 					<li>PDFBox 1.6 compatibility</li>
 					<li>Simplified configuration with two main parts:

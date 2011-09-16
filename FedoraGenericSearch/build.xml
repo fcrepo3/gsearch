@@ -6,7 +6,7 @@
 
     <property environment="env"/>
 	<property name="local.FEDORA_HOME" 			location="/Users/gertschmeltzpedersen/f35" />
-    <property name="web.xml.file"              value="web-withoutAuthN.xml"/> <!-- or web-withAuthN.xml -->
+    <property name="web.xml.file"              value="web-withAuthN.xml"/> <!-- or web-withoutAuthN.xml -->
     <property name="javac.debug"               value="on"/>
     <property name="javac.deprecation"         value="on"/>
     <property name="javac.maxwarns"            value="100"/>
@@ -167,7 +167,7 @@
 	        description="build the download">
         <ant dir="../FgsConfig" target="configForWebServer"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
-		<copy file="src/WEB-INF/web-withoutAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
+		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
 

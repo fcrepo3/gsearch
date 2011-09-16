@@ -77,6 +77,8 @@
 		<copy todir="${plugin.dir}/${configName}/index/${indexName}" preservelastmodified="true">
 			<fileset dir="FgsConfigIndexTemplate/${indexEngine}"/>
 		</copy>
+
+		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
 		
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHBASE" value="http://localhost:8080"/>
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="fedoragsearch"/>
@@ -108,8 +110,6 @@
 
 	<target name="prep"
 	          description="prepare">
-		<delete file="${plugin.dir}/log4j.xml" />
-		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
         <ant target="generateIndexingXslt">
 			<property name="foxml.dir" value="indexingXsltGenerator/foxml"/>
         </ant>
