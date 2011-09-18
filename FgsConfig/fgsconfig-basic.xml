@@ -27,7 +27,10 @@
     	<ant antfile="fgsconfig-basic.xml" target="configFgsIndex">
 			<property name="indexName" value="${namesOfIndexes}"/>
     	</ant>
-		
+
+		<copy file="fgsconfig-basic.properties" tofile="fgsconfig-basic-${configDisplayName}.properties" preservelastmodified="true" />
+		<copy file="fgsconfig-basic.properties" tofile="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfig-basic-${configDisplayName}.properties" preservelastmodified="true" />
+
 		<delete dir="${finalConfigPath}/${finalConfigName}" />
 		<mkdir dir="${finalConfigPath}/${finalConfigName}" />
 		<copy todir="${finalConfigPath}/${finalConfigName}" preservelastmodified="true">

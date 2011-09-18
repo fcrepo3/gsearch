@@ -46,7 +46,7 @@
 				<dt><a href="#realapp">Install and configure for your application</a></dt>
 				<dt><a href="#config">Create the configuration files</a></dt>
 				<dt><a href="#indexingstylesheet">Generate indexing stylesheet from example foxml files</a></dt>
-				<dt><a href="basicproperties">Edit and use the basic property values</a></dt>
+				<dt><a href="#basicproperties">Edit and use the basic property values</a></dt>
 				<dt><a href="#sauto">Configuring the Service for Automatic Updates</a></dt>
 				<dt><a href="#fauto">Configuring Fedora for Automatic Updates</a></dt>
 				<dt><a href="#source">Building from source</a></dt>
@@ -103,7 +103,7 @@
 					for Lucene, Solr, and Zebra plugins 
 					from either <a href="http://www.cvt.dk/fedoragsearch">the DTU prerelease site</a>, 
 					or from the official Duraspace site (when released).
-					Alternatively, you may <a href="source">build fedoragsearch.war from source</a>.
+					Alternatively, you may <a href="#source">build fedoragsearch.war from source</a>.
 				</li>
 				<li>Copy fedoragsearch.war into the tomcat webapps directory of your Fedora installation.
 					Tomcat will unpack it, if it is running, or else when you start it.
@@ -202,7 +202,7 @@
                     <li>
 						If you <b>start with GSearch 2.3</b>, here are the two basic parts mentioned in <a href="#new23">New Features in Version 2.3</a>:
 					<ul>
-					  <li>Indexing stylesheet generation from example foxml files:
+					  <li> 
 					  <a name="indexingstylesheet"><h2>Generate indexing stylesheet from example foxml files</h2></a>
 					  	<ul>
 					  		<li>Put your example foxml files in FgsConfig/indexingXsltGenerator/foxml . 
@@ -253,7 +253,8 @@
 								Alternatively, you may add another classpath location to tomcat
 								in catalina.properties in the line starting with <pre>shared loader=</pre>
 								and state that location in fgsconfig-basic.properties.
-								Make sure that there is only one 'fgsconfigFinal'-directory in the classpath.
+								Make sure that there is only one 'fgsconfigFinal'-directory
+								and one log4j.xml file in the classpath.
 							</li>
 							<li>You should read through the final config files.
 								You may edit all the properties of the final config files.
