@@ -36,7 +36,9 @@
 		<copy todir="${finalConfigPath}/${finalConfigName}" preservelastmodified="true">
 			<fileset dir="${templateConfigPath}/${configDisplayName}/${finalConfigName}"/>
 		</copy>
-		
+
+		<copy file="${templateConfigPath}/${configDisplayName}/log4j.xml" todir="${finalConfigPath}" preservelastmodified="true" />
+
 	</target>
 
 	<target name="configFgsRoot"

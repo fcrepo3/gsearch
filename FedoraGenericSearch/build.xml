@@ -13,8 +13,6 @@
     <property name="javac.source"              value="1.5"/>
     <property name="javac.target"              value="1.5"/>
 
-    <loadproperties srcFile="lib/lib.properties" /> 
-
     <property name="fedoragsearch.version" value="2.3"/>
 
     <property name="source.dir" location="src/java"/>
@@ -80,7 +78,6 @@
 		<delete dir="../FgsZebra/bin"/>
 		<delete dir="${compile.dir}"/>
 		<delete dir="${build.basedir}"/>
-		<delete dir="${dist.dir}"/>
     </target>
 
     <target name="compile">
@@ -94,9 +91,8 @@
     </target>
 
 	<target name="prep"
-            depends="compile"
+            depends="clean, compile"
             description="prepare">
-		<delete dir="${build.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${localdist.dir}" />
 		<copy file="src/html/fedoragsearch-doc.html" tofile="${build.dir}/index.html" preservelastmodified="true" />
