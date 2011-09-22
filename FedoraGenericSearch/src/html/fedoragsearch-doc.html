@@ -185,11 +185,11 @@
 				<ul>
 					<li>
 						If you <b>migrate from GSearch 2.2 to 2.3</b>, you simply reuse the configuration files you have.
-						The only thing you must do is rename the root directory of the configuration files 
-						from 'config' to 'fgsconfigFinal'.
+						The only things you must do are rename the root directory of the configuration files 
+						from 'config' to 'fgsconfigFinal', and if you use sortType AUTO in index.properties, change to STRING.
 						You may want to add the new properties:
 					  	<ul>
-					  		<li>fedoragsearch.xsltprocessor
+					  		<li>fedoragsearch.xsltProcessor
 					  		</li>
 					  		<li>fgsindex.allowLeadingWildcard
 					  		</li>
@@ -371,7 +371,7 @@
             <p>
               To enable REST-based updates, edit your <code>fedora.fcfg</code> file
               and change the class of the <code>fedora.server.storage.DOManager</code>
-              module to <code>fedora.server.storage.GSearchDOManager</code>.
+              module to <code>org.fcrepo.server.storage.GSearchDOManager</code>.
               Then populate the following module parameters as needed:
             </p>
               <ul>
@@ -453,7 +453,7 @@
 							</li>
 						</ul>
 					</li>
-					<li>Selection of xslt processor, xalan or saxon</li>
+					<li>Selection of xslt processor, xalan or saxon, see fedoragsearch.properties</li>
 				</ul>
 				You may also <a href="https://jira.duraspace.org/secure/IssueNavigator.jspa?mode=hide&requestId=10305">see the complete list of issues for GSearch 2.3.</a>
 				
