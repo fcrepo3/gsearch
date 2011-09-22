@@ -7,4 +7,4 @@ FedoraGenericSearch (GSearch) Version 2.3
  * Copyright 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
  * All rights reserved.
  
-See the text at src/html/fedoragsearch-doc.html or http://localhost:8080/fedoragsearch
+See the text at FedoraGenericSearch/src/html/fedoragsearch-doc.html or http://localhost:8080/fedoragsearch
