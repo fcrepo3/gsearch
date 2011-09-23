@@ -175,9 +175,6 @@
 					and
 					<a href="http://localhost:8080/fedoragsearch/rest?operation=updateIndex" target="owndemo">the admin pages here</a>.
 				</li>
-				<li>Notice, only users with names 'fedoraAdmin', 'fgsTester' and names starting with 'fgsAdmin'
-					are authorized to perform updateIndex actions.
-				</li>
 				<li>The SOAP service operations are deployed with the .war file, and
 					<a href="services/FgsOperations?wsdl">the .wsdl file is available here.</a>
 				</li>
@@ -276,10 +273,17 @@
                     <li>
 						The default webapp configuration in
 						.../webapps/fedoragsearch/WEB-INF/web.xml
-						does not enforce authorization.
-						If you want to enforce authorization,
-						then copy the file web_withAuthN.xml onto web.xml.
+						enforces authorization based on fedora-users.xml.
+						Then only users with names 'fedoraAdmin', 'fgsTester' 
+						and names starting with 'fgsAdmin'
+						are authorized to perform updateIndex actions.
+						If you want not to enforce authorization,
+						then copy the file web_withoutAuthN.xml onto web.xml.
+						Then even updateIndex actions are not protected.
 					</li>
+				<li>Notice, only users with names 'fedoraAdmin', 'fgsTester' and names starting with 'fgsAdmin'
+					are authorized to perform updateIndex actions.
+				</li>
                     <li>
 						Then you may restart fedoragsearch and call http://&lt;HOSTPORT&gt;/fedoragsearch/rest in order to index and search.
 						The name &quot;rest&quot; may be reconfigured in
