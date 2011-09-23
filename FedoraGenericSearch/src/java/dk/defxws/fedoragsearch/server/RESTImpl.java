@@ -116,7 +116,7 @@ public class RESTImpl extends HttpServlet {
                     restXslt = config.getDefaultUpdateIndexRestXslt();
                 }
                 String action = request.getParameter(PARAM_ACTION);
-                if (!("fedoraAdmin".equals(remoteUser) || "fgsAdmin".equals(remoteUser) || "fgsTester".equals(remoteUser)) && !(action==null || action.equals(""))) {
+                if (!("fedoraAdmin".equals(remoteUser) || remoteUser.startsWith("fgsAdmin") || "fgsTester".equals(remoteUser)) && !(action==null || action.equals(""))) {
                     throw new GenericSearchException("You are not authorized to perform updateIndex actions!");
             	}
                 resultXml = new StringBuffer(updateIndex(request, response));
