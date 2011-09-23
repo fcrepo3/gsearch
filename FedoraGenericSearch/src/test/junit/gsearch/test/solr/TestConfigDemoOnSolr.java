@@ -123,7 +123,7 @@ public class TestConfigDemoOnSolr
   public void testManagedXmlDatastreamIngest() throws Exception {
   	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
   	FedoraAPIM apim = fedoraClient.getAPIM();
-  	File testfile = new File("../FgsConfig/test/test_fgs23.xml");
+  	File testfile = new File("../FgsConfig/test_fgs23/test_fgs23.xml");
   	FileInputStream fis = new FileInputStream(testfile);
   	byte[] testobject = new byte[(int)testfile.length()];
   	fis.read(testobject);
