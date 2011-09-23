@@ -100,6 +100,7 @@
 		</copy>
 
 		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXNAME" value="${indexName}"/>
+		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXBASE" value="${indexBase}"/>
 		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXDIR" value="${indexPath}"/>
 		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXINGDOCXSLT" value="${indexingDocXslt}"/>
 
