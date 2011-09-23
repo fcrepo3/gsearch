@@ -13,6 +13,7 @@
 	<property name="templateConfigPath" location="."/>
 	<property name="templateConfigName" value="FgsConfigTemplate"/>
 	<property name="finalConfigName" value="fgsconfigFinal"/>
+	<property name="indexBase" value="defaultindexBase"/>
 
 	<target name="configFgsBasic"
     	description="copy template files and insert property values">
@@ -101,7 +102,7 @@
 
 		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXNAME" value="${indexName}"/>
 		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXBASE" value="${indexBase}"/>
-		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXDIR" value="${indexPath}"/>
+		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXDIR" value="${indexDir}"/>
 		<replace file="${finalConfigIndexPath}/index.properties" token="INDEXINGDOCXSLT" value="${indexingDocXslt}"/>
 
 	</target>
