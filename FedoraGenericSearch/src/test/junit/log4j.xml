@@ -9,7 +9,7 @@
   </appender>
 
   <appender name="LogFile" class="org.apache.log4j.FileAppender">
-    <param name="File" value="~/fgstest.log"/>
+    <param name="File" value="src/test/junit/fgstest.log"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%p %d{yyyy-MM-dd' 'HH:mm:ss.SSS} [%t] (%c{1}) %m%n"/>
     </layout>

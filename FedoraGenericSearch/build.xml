@@ -22,8 +22,8 @@
 	<property name="build.dir" location="${build.basedir}/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 	<property name="tomcat.basename" value="tomcat" />
-	<property name="dist.dir" location="dist" />
-	<property name="localdist.dir" location="${dist.dir}/local" />
+	<property name="dist.dir" location="${build.basedir}/dist" />
+	<property name="localdist.dir" location="${build.basedir}/localdist" />
 	<property name="app.name" value="fedoragsearch" />
 	<property name="war.name" value="${app.name}.war" />
 
@@ -77,7 +77,7 @@
 		<delete dir="../FgsSolr2/bin"/>
 		<delete dir="../FgsZebra/bin"/>
 		<delete dir="${compile.dir}"/>
-		<delete dir="${build.basedir}"/>
+		<delete dir="${build.dir}"/>
     </target>
 
     <target name="compile">
@@ -139,10 +139,18 @@
       <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}"/>
     </target>
   
-    <target name="srcrelease" depends="clean">
+    <target name="srcrelease" depends="">
+      <delete file="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src.zip" />
+      <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src"/>
       <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src" preservelastmodified="true">
         <fileset dir="..">
-          <exclude name="${build.basedir}/**"/>
+            <exclude name=".*/**"/>
+            <exclude name="*/.*/**"/>
+            <exclude name="FgsBuild/**"/>
+            <exclude name="bin/**"/>
+            <exclude name="*/bin/**"/>
+            <exclude name="*/dist/**"/>
+            <exclude name="*/lib/**"/>
         </fileset>
       </copy>
       <zip zipfile="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src.zip" 
@@ -150,7 +158,7 @@
       <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src"/>
     </target>
 
-    <target name="release" depends="srcrelease,binrelease" description="Build the source and binary distributions">
+    <target name="release" depends="binrelease,srcrelease" description="Build the binary and source distributions">
       <checksum fileext=".md5">
         <fileset dir="${build.basedir}/release">
           <include name="*.zip"/>
