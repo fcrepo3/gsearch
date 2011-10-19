@@ -9,9 +9,13 @@ package dk.defxws.fedoragsearch.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLEncoder;
+import java.util.StringTokenizer;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -22,6 +26,11 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.SAXException;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
@@ -41,11 +50,56 @@ public class TransformerToText {
     public TransformerToText() {
     }
     
-    /**
-     * 
-     *
-     * @throws TransformerConfigurationException, TransformerException.
-     */
+    public StringBuffer getFromTika(byte[] doc, String pluginName, String indexfieldnamePrefix, String selectedFieldnames) 
+    throws GenericSearchException {
+        StringBuffer docText = new StringBuffer();
+        InputStream isr = new ByteArrayInputStream(doc);
+        BodyContentHandler textHandler = new BodyContentHandler();
+        Metadata metadata = new Metadata();
+        AutoDetectParser parser = new AutoDetectParser();
+        try {
+			parser.parse(isr, textHandler, metadata);
+		} catch (IOException e) {
+            throw new GenericSearchException(e.toString());
+		} catch (SAXException e) {
+            throw new GenericSearchException(e.toString());
+		} catch (TikaException e) {
+            throw new GenericSearchException(e.toString());
+		} finally {
+			try {
+				isr.close();
+			} catch (IOException e) {
+	            throw new GenericSearchException(e.toString());
+			}
+		}
+		docText.append(textHandler.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
+		if ("Lucene".equals(pluginName) || "Solr".equals(pluginName)) {
+	        String[] names = metadata.names();
+	        if (selectedFieldnames != null && selectedFieldnames.length()>0){
+	        	names = selectedFieldnames.split(",");
+	        }
+	        for (int i=0; i<names.length; i++) {
+	        	String metadataName = names[i].trim();
+	        	StringBuffer metadataValue = new StringBuffer(metadata.get(metadataName));
+	        	String[] metadataValues = metadata.getValues(metadataName);
+	        	if (metadataValues.length>1) {
+	        		for (int j=1; j<metadataValues.length; j++) {
+	        			metadataValue.append(" "+metadataValues[j]);
+	        		}
+	        	}
+	        	if (metadataValue.length()>0) {
+		        	if ("Lucene".equals(pluginName)) {
+			        	docText.append("</IndexField>\n<IndexField IFname=\""+indexfieldnamePrefix+metadataName+"\" index=\"UN_TOKENIZED\" store=\"YES\" termVector=\"NO\">");
+		        	} else if ("Solr".equals(pluginName)) {
+			        	docText.append("</field>\n<field name=\""+indexfieldnamePrefix+metadataName+"\">");
+		        	}
+		        	docText.append(metadataValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
+	        	}
+	        }
+		}
+        return docText;
+    }
+    
     public StringBuffer getText(byte[] doc, String mimetype) 
     throws GenericSearchException {
         if (mimetype.equals("text/plain")) {
@@ -63,11 +117,6 @@ public class TransformerToText {
         } else return new StringBuffer();
     }
     
-    /**
-     * 
-     *
-     * @throws GenericSearchException.
-     */
     private StringBuffer getTextFromText(byte[] doc) 
     throws GenericSearchException {
         StringBuffer docText = new StringBuffer();
@@ -84,26 +133,16 @@ public class TransformerToText {
         return docText;
     }
 
-/**
- * 
- *
- * @throws GenericSearchException.
- */
-private StringBuffer getTextFromXML(byte[] doc) 
-throws GenericSearchException {
-    InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(doc));
-    StringBuffer docText = (new GTransformer()).transform(
+    private StringBuffer getTextFromXML(byte[] doc) 
+    throws GenericSearchException {
+    	InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(doc));
+    	StringBuffer docText = (new GTransformer()).transform(
     		"fgsconfigFinal/textFromXml", 
             new StreamSource(isr));
-    docText.delete(0, docText.indexOf(">")+1);
-    return docText;
-}
-    
-    /**
-     * 
-     *
-     * @throws GenericSearchException.
-     */
+    	docText.delete(0, docText.indexOf(">")+1);
+    	return docText;
+    }
+
     private StringBuffer getTextFromHTML(byte[] doc) 
     throws GenericSearchException {
         StringBuffer docText = new StringBuffer();
@@ -120,12 +159,7 @@ throws GenericSearchException {
         }
         return docText;
     }
-    
-    /**
-     * 
-     *
-     * @throws GenericSearchException.
-     */
+
     private StringBuffer getTextFromPDF(byte[] doc) 
     throws GenericSearchException {
 //      extract PDF document's textual content

@@ -61,6 +61,21 @@
 			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
 			<property name="indexingDocXslt" value="foxmlToLucene"/>
         </ant>
+        <ant target="configLocal">
+			<property name="configName" value="configTestOnLuceneFgs24_1010"/>
+			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+			<property name="indexingDocXslt" value="foxmlToLucene"/>
+        </ant>
+		<copy file="FgsConfigIndexTemplate/LuceneTest/foxmlToLucene_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnLuceneFgs24_1010/index/${indexName}/foxmlToLucene.xslt" preservelastmodified="true" />
+    	<ant target="configLocal">
+			<property name="configName" value="configTestOnSolrFgs24_1010"/>
+			<property name="indexEngine" value="Solr"/>
+			<property name="indexBase" value="http://localhost:8983/solr"/>
+			<property name="indexDir" value="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0/example/solr/data/index"/>
+			<property name="indexingDocXslt" value="foxmlToSolr"/>
+   		</ant>
+		<copy file="FgsConfigIndexTemplate/SolrTest/foxmlToSolr_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnSolrFgs24_1010/index/${indexName}/foxmlToSolr.xslt" preservelastmodified="true" />
 	</target>
 
 	<target name="configLocal"

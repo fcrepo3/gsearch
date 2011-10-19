@@ -619,6 +619,107 @@ public class GenericOperationsImpl implements Operations {
         return dsBuffer;
     }
     
+    public String getDatastreamFromTika(
+            String pid,
+            String repositoryName,
+            String dsId,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass) {
+    	return getDatastreamFromTikaWithMetadata(pid, repositoryName, dsId, null, null, null, fedoraSoap, fedoraUser, fedoraPass, trustStorePath, trustStorePass);
+    }
+    
+    public String getDatastreamFromTikaWithMetadata(
+            String pid,
+            String repositoryName,
+            String dsId,
+            String pluginName, 
+            String indexfieldnamePrefix, 
+            String selectedFieldnames,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass) {
+        if (logger.isInfoEnabled())
+            logger.info("getDatastreamFromTika"
+            		+" pid="+pid
+            		+" repositoryName="+repositoryName
+            		+" dsId="+dsId
+            		+" pluginName="+pluginName
+            		+" indexfieldnamePrefix="+indexfieldnamePrefix
+            		+" selectedFieldnames="+selectedFieldnames
+            		+" fedoraSoap="+fedoraSoap
+            		+" fedoraUser="+fedoraUser
+            		+" fedoraPass="+fedoraPass
+            		+" trustStorePath="+trustStorePath
+            		+" trustStorePass="+trustStorePass);
+        StringBuffer dsBuffer = new StringBuffer();
+        String mimetype = "";
+        ds = null;
+        if (dsId != null) {
+            try {
+                FedoraAPIA apia = getAPIA(
+                		repositoryName, 
+                		fedoraSoap, 
+                		fedoraUser,
+                		fedoraPass,
+                		trustStorePath,
+                		trustStorePass );
+                MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
+                        dsId, null);
+                if (mts==null) return "";
+                ds = mts.getStream();
+                mimetype = mts.getMIMEType().split(";")[0]; // MIMETypedStream can include encoding, eg "text/xml;charset=utf-8" - split this off
+            } catch (Exception e) {
+            	return emptyIndexField("getDatastreamFromTika mimetype", pid, dsId, mimetype, e);
+            }
+            if (logger.isDebugEnabled())
+                logger.debug("getDatastreamFromTika" +
+                        " pid="+pid+
+                        " dsId="+dsId+
+                        " mimetype="+mimetype);
+        	TransformerToText transformerToText = null;
+            if (ds != null) {
+            	try {
+					transformerToText = new TransformerToText();
+				} catch (Exception e) {
+	            	return emptyIndexField("getDatastreamFromTika TransformerToText", pid, dsId, mimetype, e);
+				}
+	            if (logger.isDebugEnabled())
+	                logger.debug("getDatastreamFromTika" +
+	                        " pid="+pid+
+	                        " dsId="+dsId+
+	                        " TransformerToText="+transformerToText);
+                try {
+					dsBuffer = transformerToText.getFromTika(ds, pluginName, indexfieldnamePrefix, selectedFieldnames);
+				} catch (Exception e) {
+		            if (logger.isDebugEnabled())
+		                logger.debug("getDatastreamFromTika" +
+		                        " pid="+pid+
+		                        " dsId="+dsId+
+		                        " TransformerToText="+transformerToText+
+		                        " Exception="+e);
+	            	return emptyIndexField("getDatastreamFromTika getText", pid, dsId, mimetype, e);
+				} finally {
+		            if (logger.isDebugEnabled())
+		                logger.debug("getDatastreamFromTika finally " +
+		                        " pid="+pid+
+		                        " dsId="+dsId);
+				}
+            }
+        }
+        if (logger.isDebugEnabled())
+            logger.debug("getDatastreamFromTika" +
+                    " pid="+pid+
+                    " dsId="+dsId+
+                    " mimetype="+mimetype+
+                    " dsBuffer="+getDebugString(dsBuffer.toString()));
+        return dsBuffer.toString();
+    }
+    
     private String emptyIndexField(
     			String methodName, 
     			String pid,
