@@ -52,6 +52,13 @@
 		</copy>
 		<copy file="${templateConfigPath}/log4j.xml" todir="${templateConfigPath}/${configDisplayName}" preservelastmodified="true" />
 
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSENABLED" value="${fgsconfigObjects.enabled}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSBASE" value="${fedoraBase}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSAPPNAME" value="${fedoraAppName}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSUSER" value="${fedoraUser}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSPASS" value="${fedoraPass}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSPATH" value="${finalConfigPath}"/>
+
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHBASE" value="${gsearchBase}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="${gsearchAppName}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHUSER" value="${gsearchUser}"/>

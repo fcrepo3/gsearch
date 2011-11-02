@@ -79,6 +79,13 @@
 		</copy>
 
 		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
+
+		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSENABLED" value="true"/>
+		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSBASE" value="http://localhost:8080"/>
+		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSAPPNAME" value="fedora"/>
+		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSUSER" value="fgsAdmin"/>
+		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSPASS" value="fgsAdminPassword"/>
+		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSPATH" value="${local.FEDORA_HOME}/${tomcat.basename}/webapps/fedoragsearch/WEB-INF/classes/${configName}"/>
 		
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHBASE" value="http://localhost:8080"/>
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="fedoragsearch"/>
