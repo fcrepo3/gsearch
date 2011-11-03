@@ -52,7 +52,6 @@
 		</copy>
 		<copy file="${templateConfigPath}/log4j.xml" todir="${templateConfigPath}/${configDisplayName}" preservelastmodified="true" />
 
-		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSENABLED" value="${fgsconfigObjects.enabled}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSBASE" value="${fedoraBase}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSAPPNAME" value="${fedoraAppName}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSUSER" value="${fedoraUser}"/>
