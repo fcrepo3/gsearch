@@ -43,6 +43,7 @@ public class TestSearchResultFiltering
 
     @Test
     public void testSetConfigDemoSearchResultFiltering() throws Exception {
+        System.setProperty("fedoragsearch.clientType", "REST");
   	    StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&restXslt=copyXml");
   	    assertXpathNotExists("/resultPage/error", result.toString());
     }
@@ -56,9 +57,9 @@ public class TestSearchResultFiltering
     @Test
     public void testUpdateIndexFromFoxmlFiles() throws Exception {
   	    StringBuffer result = doOp("?operation=updateIndex&action=fromFoxmlFiles&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("25", "/resultPage/updateIndex/@docCount", result.toString());
+    	assertXpathExists("/resultPage/updateIndex/@docCount", result.toString());
     }
-
+    
     @Test
     public void testSetPresearch() throws Exception {
         StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringType&propertyValue=presearch&restXslt=copyXml");
@@ -66,11 +67,17 @@ public class TestSearchResultFiltering
     }
 
     @Test
+    public void testSetSrfModule() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringModule&propertyValue=dk.defxws.fedoragsearch.server.SearchResultFilteringDemoImpl&restXslt=copyXml");
+  	    assertXpathNotExists("/resultPage/error", result.toString());
+    }
+
+    @Test
     public void testPresearchFedoraAdmin() throws Exception {
         System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdminPassword");
   	    StringBuffer result = doOp("?operation=gfindObjects&query=image+OR+smiley&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("20", "/resultPage/gfindObjects/@hitTotal", result.toString());
+  	    assertXpathEvaluatesTo("15", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test
@@ -91,6 +98,8 @@ public class TestSearchResultFiltering
 
     @Test
     public void testSetInsearch() throws Exception {
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
         StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringType&propertyValue=insearch&restXslt=copyXml");
   	    assertXpathNotExists("/resultPage/error", result.toString());
     }
@@ -98,9 +107,9 @@ public class TestSearchResultFiltering
     @Test
     public void testInsearchFedoraAdmin() throws Exception {
         System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdminPassword");
   	    StringBuffer result = doOp("?operation=gfindObjects&query=image+OR+smiley&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("20", "/resultPage/gfindObjects/@hitTotal", result.toString());
+  	    assertXpathEvaluatesTo("15", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test
@@ -117,18 +126,24 @@ public class TestSearchResultFiltering
         System.setProperty("fedoragsearch.fgsPassword", "smileyUser1");
   	    StringBuffer result = doOp("?operation=gfindObjects&query=image+OR+smiley&restXslt=copyXml");
   	    assertXpathEvaluatesTo("12", "/resultPage/gfindObjects/@hitTotal", result.toString());
-    }
+    }    
+
+// For postsearch policies to work, modify value in fedora.fcfg: 
+//    module role="org.fcrepo.server.security.Authorization"
+//    param name="ENFORCE-MODE" value="enforce-policies"
 
     @Test
     public void testSetPostsearch() throws Exception {
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
         StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringType&propertyValue=postsearch&restXslt=copyXml");
   	    assertXpathNotExists("/resultPage/error", result.toString());
     }
 
     @Test
     public void testPostsearchFedoraAdmin() throws Exception {
-        System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsUserName", "fgsAdmin2");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsAdmin2");
   	    StringBuffer result = doOp("?operation=gfindObjects&query=image+OR+smiley&indexName=AllObjectsIndex&hitPageSize=100&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitsDenied", result.toString());
     }
@@ -138,7 +153,7 @@ public class TestSearchResultFiltering
         System.setProperty("fedoragsearch.fgsUserName", "smileyAdmin1");
         System.setProperty("fedoragsearch.fgsPassword", "smileyAdmin1");
   	    StringBuffer result = doOp("?operation=gfindObjects&query=image+OR+smiley&indexName=AllObjectsIndex&hitPageSize=100&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("7", "/resultPage/gfindObjects/@hitsDenied", result.toString());
+  	    assertXpathEvaluatesTo("2", "/resultPage/gfindObjects/@hitsDenied", result.toString());
     }
 
     @Test
@@ -146,7 +161,7 @@ public class TestSearchResultFiltering
         System.setProperty("fedoragsearch.fgsUserName", "smileyUser1");
         System.setProperty("fedoragsearch.fgsPassword", "smileyUser1");
   	    StringBuffer result = doOp("?operation=gfindObjects&query=image+OR+smiley&indexName=AllObjectsIndex&hitPageSize=100&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("8", "/resultPage/gfindObjects/@hitsDenied", result.toString());
+  	    assertXpathEvaluatesTo("3", "/resultPage/gfindObjects/@hitsDenied", result.toString());
     }
 
     @Test
@@ -165,8 +180,8 @@ public class TestSearchResultFiltering
 
     @Test
     public void testSetUnknownType() throws Exception {
-        System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
         StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringType&propertyValue=unknowntype&restXslt=copyXml");
 		assertTrue(result.indexOf("may be stated, not 'unknowntype'")>-1);
     }
@@ -184,8 +199,14 @@ public class TestSearchResultFiltering
     }
 
     @Test
-    public void testSetUnknownModule() throws Exception {
+    public void testSetUnknownSrfModule() throws Exception {
         StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringModule&propertyValue=unknown.Module&restXslt=copyXml");
 		assertTrue(result.indexOf("class not found")>-1);
+    }
+
+    @Test
+    public void testSetNoSrfModule() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configDemoSearchResultFiltering&propertyName=fedoragsearch.searchResultFilteringModule&propertyValue=&restXslt=copyXml");
+  	    assertXpathNotExists("/resultPage/error", result.toString());
     }
 }

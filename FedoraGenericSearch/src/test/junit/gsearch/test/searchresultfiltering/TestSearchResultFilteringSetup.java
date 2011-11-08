@@ -16,8 +16,8 @@ public class TestSearchResultFilteringSetup
 
     @Override
     public void setUp() throws Exception {
-        System.setProperty("fedoragsearch.fgsUserName", "fedoraAdmin");
-        System.setProperty("fedoragsearch.fgsPassword", "fedoraAdmin");
+        System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
+        System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
         System.setProperty("fedoragsearch.clientType", "REST");
         System.out.println("setUp configDemoSearchResultFiltering");
     }

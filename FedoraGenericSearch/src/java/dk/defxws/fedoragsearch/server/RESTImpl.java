@@ -12,7 +12,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -84,14 +86,25 @@ public class RESTImpl extends HttpServlet {
         String operation = request.getParameter(PARAM_OPERATION);
         String remoteUser = request.getRemoteUser();
         if (remoteUser==null) remoteUser = "";
+        StringBuffer uasb = new StringBuffer("\nFEDORA_AUX_SUBJECT_ATTRIBUTES=");
+        Map<String, Set<String>> userAttributes = (Map<String, Set<String>>) request.getAttribute("FEDORA_AUX_SUBJECT_ATTRIBUTES");
+        if (null != userAttributes) {
+            for (Map.Entry<String, Set<String>> e : userAttributes.entrySet()) {
+                uasb.append(e.getKey() + ":");
+                for (String s : e.getValue()) {
+                    uasb.append(s + ",");
+                }
+                uasb.append(";");
+            }
+        }
+        if (logger.isInfoEnabled())
+            logger.info("request="+request.getQueryString()+" remoteUser="+remoteUser+uasb.toString());
         config = Config.getCurrentConfig();
         if (configName!=null && !"configure".equals(operation)) {
         	// mainly for test purposes
         	config = Config.getConfig(configName);
         }
         StringBuffer resultXml = new StringBuffer("<resultPage/>");
-        if (logger.isInfoEnabled())
-            logger.info("request="+request.getQueryString()+" remoteUser="+remoteUser);
         repositoryName = request.getParameter(PARAM_REPOSITORYNAME);
         if (repositoryName==null) repositoryName="";
         indexName = request.getParameter(PARAM_INDEXNAME);

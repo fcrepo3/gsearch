@@ -16,7 +16,7 @@
 	<xsl:variable name="PAGELASTNO" select="/resultPage/browseIndex/terms/term[position()=last()]/@no"/>
 	<xsl:variable name="PAGELASTTERM" select="/resultPage/browseIndex/terms/term[position()=last()]/text()"/>
 
-	<xsl:include href="CONFIGPATH/rest/srfCommon.xslt"/>
+	<xsl:include href="adminCommonToHtml.xslt"/>
 
 	<xsl:variable name="EQCHAR">
 		<xsl:choose>
@@ -62,32 +62,34 @@
 						<td>
 							<xsl:text> </xsl:text>Index name: 
 								<select name="indexName">
-									<xsl:choose>
-										<xsl:when test="$INDEXNAME='AllObjectsIndex'">
-											<option value="AllObjectsIndex" selected="true">AllObjectsIndex</option>
-											<option value="SmileyAdminIndex">SmileyAdminIndex</option>
-											<option value="SmileyUserIndex">SmileyUserIndex</option>
-										</xsl:when>
-										<xsl:when test="$INDEXNAME='SmileyAdminIndex'">
-											<option value="AllObjectsIndex">AllObjectsIndex</option>
-											<option value="SmileyAdminIndex" selected="true">SmileyAdminIndex</option>
-											<option value="SmileyUserIndex">SmileyUserIndex</option>
-										</xsl:when>
-										<xsl:when test="$INDEXNAME='SmileyUserIndex'">
-											<option value="AllObjectsIndex">AllObjectsIndex</option>
-											<option value="SmileyAdminIndex">SmileyAdminIndex</option>
-											<option value="SmileyUserIndex" selected="true">SmileyUserIndex</option>
-										</xsl:when>
-										<xsl:otherwise>
-											<option value="AllObjectsIndex">AllObjectsIndex</option>
-											<option value="SmileyAdminIndex">SmileyAdminIndex</option>
-											<option value="SmileyUserIndex">SmileyUserIndex</option>
-										</xsl:otherwise>
-									</xsl:choose>
+								<xsl:choose>
+								  <xsl:when test="$INDEXNAME = 'AllObjectsIndex'">
+									<option value="AllObjectsIndex" selected="true">AllObjectsIndex</option>
+								  </xsl:when>
+								  <xsl:otherwise>
+									<option value="AllObjectsIndex">AllObjectsIndex</option>
+								  </xsl:otherwise>
+								</xsl:choose>
+								<xsl:choose>
+								  <xsl:when test="$INDEXNAME = 'SmileyAdminIndex'">
+									<option value="SmileyAdminIndex" selected="true">SmileyAdminIndex</option>
+								  </xsl:when>
+								  <xsl:otherwise>
+									<option value="SmileyAdminIndex">SmileyAdminIndex</option>
+								  </xsl:otherwise>
+								</xsl:choose>
+								<xsl:choose>
+								  <xsl:when test="$INDEXNAME = 'SmileyUserIndex'">
+									<option value="SmileyUserIndex" selected="true">SmileyUserIndex</option>
+								  </xsl:when>
+								  <xsl:otherwise>
+									<option value="SmileyUserIndex">SmileyUserIndex</option>
+								  </xsl:otherwise>
+								</xsl:choose>
 								</select>
 							<xsl:text> </xsl:text>restXslt: 
 								<select name="restXslt">
-									<option value="srfBrowseIndexToHtml">srfBrowseIndexToHtml</option>
+									<option value="adminBrowseIndexToHtml">adminBrowseIndexToHtml</option>
 									<option value="copyXml">no transformation</option>
 								</select>
 							<xsl:text> </xsl:text>resultPageXslt: 

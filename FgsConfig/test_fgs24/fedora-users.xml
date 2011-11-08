@@ -1,6 +1,21 @@
 <?xml version='1.0' ?>
   <users>
-    <user name="fedoraAdmin" password="fedoraAdmin">
+    <user name="fedoraAdmin" password="fedoraAdminPassword">
+      <attribute name="fedoraRole">
+        <value>administrator</value>
+      </attribute>
+    </user>
+    <user name="fgsAdmin" password="fgsAdminPassword">
+      <attribute name="fedoraRole">
+        <value>administrator</value>
+      </attribute>
+    </user>
+    <user name="fgsAdmin2" password="fgsAdmin2">
+      <attribute name="fedoraRole">
+        <value>administrator</value>
+      </attribute>
+    </user>
+    <user name="fgsTester" password="fgsTesterPassword">
       <attribute name="fedoraRole">
         <value>administrator</value>
       </attribute>
@@ -9,11 +24,6 @@
       <attribute name="fedoraRole">
         <value>fedoraInternalCall-1</value>
         <value>fedoraInternalCall-2</value>
-      </attribute>
-    </user>
-    <user name="dualResImageAdmin" password="dualResImageAdmin">
-      <attribute name="fedoraRole">
-        <value>DualResImageAdministrator</value>
       </attribute>
     </user>
     <user name="smileyAdmin1" password="smileyAdmin1">

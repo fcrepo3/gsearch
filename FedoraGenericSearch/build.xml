@@ -183,16 +183,6 @@
 		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
 	    <jar jarfile="${localdist.dir}/${war.name}" basedir="${build.dir}"/>
         <copy file="${localdist.dir}/${war.name}" todir="${local.FEDORA_HOME}/${tomcat.basename}/webapps" preservelastmodified="true"/>
-		<!--
-		<delete dir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
-		<mkdir dir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
-		<copy todir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies">
-			<fileset dir="${build.dir}/WEB-INF/classes/configDemoSearchResultFiltering/fgs-policies"/>
-		</copy>
-		<exec executable="sh" dir="${local.FEDORA_HOME}/server/bin/">
-            <arg line=" fedora-reload-policies.sh http fedoraAdmin fedoraAdmin"/>
-		</exec>
-		-->
 	</target>
 	
     <target name="includeengines" depends="">

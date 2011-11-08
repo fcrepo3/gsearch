@@ -129,7 +129,7 @@ public class TestConfigFgs23
 
     @Test
     public void testManagedXmlDatastreamIngest() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdminPassword");
     	FedoraAPIM apim = fedoraClient.getAPIM();
     	File testfile = new File("../FgsConfig/test_fgs23/test_fgs23.xml");
     	FileInputStream fis = new FileInputStream(testfile);
@@ -143,7 +143,7 @@ public class TestConfigFgs23
 
     @Test
     public void testManagedXmlDatastreamAfter() throws Exception {
-    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
+    	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fedoraAdmin", "fedoraAdminPassword");
     	FedoraAPIM apim = fedoraClient.getAPIM();
     	apim.purgeObject("test:fgs23", "test purge", false);
  	    delay(5000);
