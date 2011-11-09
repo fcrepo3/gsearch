@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,32 +45,54 @@ public class SearchResultFilteringDemoImpl implements SearchResultFiltering {
 
     private static final Map fedoraClients = new HashMap();
     
-    public String selectIndexNameForPresearch(String fgsUserName, String indexNameParam) throws java.rmi.RemoteException {
+    public String selectIndexNameForPresearch(
+    		String fgsUserName, 
+    		String indexNameParam,
+    		Map<String, Set<String>> fgsUserAttributes,
+    		Config config) 
+    throws java.rmi.RemoteException {
     	String indexName = indexNameParam;
-    	String userRole = getUserRole(fgsUserName);
-    	if ("SmileyAdmin".equals(userRole))
-    		indexName = "SmileyAdminIndex";
-    	else if ("SmileyUser".equals(userRole))
-			indexName = "SmileyUserIndex";
-    	else if ("administrator".equals(userRole))
-			indexName = "AllObjectsIndex";
+        if (null != fgsUserAttributes) {
+        	Set<String> roles = fgsUserAttributes.get("smileyRole");
+        	if (null != roles && 0 < roles.size()) {
+        		if (roles.contains("SmileyAdministrator")) {
+            		indexName = "SmileyAdminIndex";
+                } else if (roles.contains("SmileyUser")) {
+            		indexName = "SmileyUserIndex";
+                } else if (roles.contains("administrator")) {
+            		indexName = "AllObjectsIndex";
+                }
+        	}
+        }
     	return indexName;
     }
 
-    public String rewriteQueryForInsearch(String fgsUserName, String indexName, String query) throws java.rmi.RemoteException {
+    public String rewriteQueryForInsearch(
+    		String fgsUserName, 
+    		String indexName, 
+    		String query,
+    		Map<String, Set<String>> fgsUserAttributes,
+    		Config config) 
+    throws java.rmi.RemoteException {
     	// query rewriting shall correspond to the additional index field(s) in the xslt indexing stylesheet.
     	String rewrittenQuery = query;
-    	String userRole = getUserRole(fgsUserName);
-    	if ("SmileyAdmin".equals(userRole))
-    		rewrittenQuery = "( " + query + " ) AND smiley AND PID:demo*";
-    	else if ("SmileyUser".equals(userRole))
-    		rewrittenQuery = "( " + query + " ) AND smiley AND PID:demo* NOT PID:\"demo:SmileyStuff\"";
+        if (null != fgsUserAttributes) {
+        	Set<String> roles = fgsUserAttributes.get("smileyRole");
+        	if (null != roles && 0 < roles.size()) {
+        		if (roles.contains("SmileyAdministrator")) {
+            		rewrittenQuery = "( " + query + " ) AND smiley AND PID:demo*";
+                } else if (roles.contains("SmileyUser")) {
+            		rewrittenQuery = "( " + query + " ) AND smiley AND PID:demo* NOT PID:\"demo:SmileyStuff\"";
+                }
+        	}
+        }
     	return rewrittenQuery;
     }
     
     public StringBuffer filterResultsetForPostsearch(
     		String fgsUserName, 
     		StringBuffer resultSetXml,
+    		Map<String, Set<String>> fgsUserAttributes,
     		Config config) 
     throws java.rmi.RemoteException {
     	StringBuffer result = resultSetXml;
@@ -153,19 +176,6 @@ public class SearchResultFilteringDemoImpl implements SearchResultFiltering {
         		new DOMSource(document),
         		new String[0]);
     	return result;
-    }
-    
-    private String getUserRole(String fgsUserName) {
-    	//fetch user role from ldap or ... shortcut for this demo:
-    	//assuming that the user name implies the role
-    	String userRole = "";
-    	if (fgsUserName.startsWith("smileyAdmin"))
-    		userRole = "SmileyAdmin";
-    	else if (fgsUserName.startsWith("smileyUser"))
-    		userRole = "SmileyUser";
-    	else if (fgsUserName.equals("fedoraAdmin"))
-    		userRole = "administrator";
-    	return userRole;
     }
 
     private static FedoraClient getFedoraClient(

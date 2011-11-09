@@ -73,7 +73,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
         String usingIndexName = config.getIndexName(indexName);
         if (srf != null && config.isSearchResultFilteringActive("presearch")) {
-        	usingIndexName = srf.selectIndexNameForPresearch(fgsUserName, usingIndexName);
+        	usingIndexName = srf.selectIndexNameForPresearch(fgsUserName, usingIndexName, fgsUserAttributes, config);
             if (logger.isDebugEnabled())
                 logger.debug("gfindObjects presearch" +
                         " fgsUserName="+fgsUserName+
@@ -81,7 +81,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         }
         String usingQuery = query;
         if (srf != null && config.isSearchResultFilteringActive("insearch")) {
-        	usingQuery = srf.rewriteQueryForInsearch(fgsUserName, usingIndexName, query);
+        	usingQuery = srf.rewriteQueryForInsearch(fgsUserName, usingIndexName, query, fgsUserAttributes, config);
             if (logger.isDebugEnabled())
                 logger.debug("gfindObjects insearch" +
                         " fgsUserName="+fgsUserName+
@@ -108,7 +108,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         		resultSet.getResultXml(),
                 params);
         if (srf != null && config.isSearchResultFilteringActive("postsearch")) {
-        	resultXml = srf.filterResultsetForPostsearch(fgsUserName, resultXml, config);
+        	resultXml = srf.filterResultsetForPostsearch(fgsUserName, resultXml, fgsUserAttributes, config);
             if (logger.isDebugEnabled())
                 logger.debug("gfindObjects postsearch" +
                         " fgsUserName="+fgsUserName+

@@ -18,7 +18,9 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.transform.Transformer;
@@ -1153,6 +1155,11 @@ public class Config {
     
     public GenericOperationsImpl getOperationsImpl(String fgsUserNameParam, String indexNameParam)
     throws ConfigException {
+        return getOperationsImpl(null, indexNameParam, null);
+    }
+    
+    public GenericOperationsImpl getOperationsImpl(String fgsUserNameParam, String indexNameParam, Map<String, Set<String>> fgsUserAttributes)
+    throws ConfigException {
         GenericOperationsImpl ops = null;
         String indexName = getIndexName(indexNameParam);
         Properties indexProps = getIndexProps(indexName);
@@ -1191,7 +1198,7 @@ public class Config {
             throw new ConfigException(operationsImpl
                     + ": instantiation error.\n", e);
         }
-        ops.init(fgsUserNameParam, indexName, this);
+        ops.init(fgsUserNameParam, indexName, this, fgsUserAttributes);
         return ops;
     }
     

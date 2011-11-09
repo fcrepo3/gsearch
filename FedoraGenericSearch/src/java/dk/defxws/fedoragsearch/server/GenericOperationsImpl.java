@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.transform.stream.StreamSource;
@@ -49,6 +50,8 @@ public class GenericOperationsImpl implements Operations {
     int debuglength = 500;
 
     private static final Map fedoraClients = new HashMap();
+    
+    protected Map<String, Set<String>> fgsUserAttributes;
 
     protected String fgsUserName;
     protected String indexName;
@@ -152,8 +155,13 @@ public class GenericOperationsImpl implements Operations {
     }
     
     public void init(String fgsUserName, String indexName, Config currentConfig) {
+    	init(null, indexName, currentConfig, null);
+    }
+    
+    public void init(String fgsUserName, String indexName, Config currentConfig, Map<String, Set<String>> fgsUserAttributes) {
     	this.fgsUserName = fgsUserName;
     	this.indexName = indexName;
+    	this.fgsUserAttributes = fgsUserAttributes;
         config = currentConfig;
         if (null==this.fgsUserName || this.fgsUserName.length()==0) {
         	try {

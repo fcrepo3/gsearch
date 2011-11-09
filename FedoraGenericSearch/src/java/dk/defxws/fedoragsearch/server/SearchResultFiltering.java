@@ -7,6 +7,9 @@
  */
 package dk.defxws.fedoragsearch.server;
 
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * 
@@ -14,10 +17,25 @@ package dk.defxws.fedoragsearch.server;
  * @version
  */public interface SearchResultFiltering {
 	    
-	    public String selectIndexNameForPresearch(String fgsUserName, String indexName) throws java.rmi.RemoteException;
+	    public String selectIndexNameForPresearch(
+	    		String fgsUserName, 
+	    		String indexName, 
+	    		Map<String, Set<String>> fgsUserAttributes,
+	    		Config config) 
+	    throws java.rmi.RemoteException;
 	    
-	    public String rewriteQueryForInsearch(String fgsUserName, String indexName, String query) throws java.rmi.RemoteException;
+	    public String rewriteQueryForInsearch(
+	    		String fgsUserName, 
+	    		String indexName, 
+	    		String query, 
+	    		Map<String, Set<String>> fgsUserAttributes,
+	    		Config config) 
+	    throws java.rmi.RemoteException;
 	    
-	    public StringBuffer filterResultsetForPostsearch(String fgsUserName, StringBuffer resultSetXml, Config config) throws java.rmi.RemoteException;
+	    public StringBuffer filterResultsetForPostsearch(
+	    		String fgsUserName, 
+	    		StringBuffer resultSetXml, 
+	    		Map<String, Set<String>> fgsUserAttributes,
+	    		Config config) throws java.rmi.RemoteException;
 
 }

@@ -49,6 +49,8 @@ public class RESTImpl extends HttpServlet {
     private String resultPageXslt;
     private String restXslt;
     
+    private Map<String, Set<String>> fgsUserAttributes;
+    
     private static final String CONTENTTYPEHTML = "Html";
     
     private static final String OP_GFINDOBJECTS = "gfindObjects";
@@ -87,9 +89,9 @@ public class RESTImpl extends HttpServlet {
         String remoteUser = request.getRemoteUser();
         if (remoteUser==null) remoteUser = "";
         StringBuffer uasb = new StringBuffer("\nFEDORA_AUX_SUBJECT_ATTRIBUTES=");
-        Map<String, Set<String>> userAttributes = (Map<String, Set<String>>) request.getAttribute("FEDORA_AUX_SUBJECT_ATTRIBUTES");
-        if (null != userAttributes) {
-            for (Map.Entry<String, Set<String>> e : userAttributes.entrySet()) {
+        fgsUserAttributes = (Map<String, Set<String>>) request.getAttribute("FEDORA_AUX_SUBJECT_ATTRIBUTES");
+        if (null != fgsUserAttributes) {
+            for (Map.Entry<String, Set<String>> e : fgsUserAttributes.entrySet()) {
                 uasb.append(e.getKey() + ":");
                 for (String s : e.getValue()) {
                     uasb.append(s + ",");
@@ -223,7 +225,8 @@ public class RESTImpl extends HttpServlet {
         if (sortFields==null) {
         	sortFields = "";
         }
-        Operations ops = config.getOperationsImpl(request.getRemoteUser(), indexName);
+//        Operations ops = config.getOperationsImpl(request.getRemoteUser(), indexName);
+        Operations ops = config.getOperationsImpl(request.getRemoteUser(), indexName, fgsUserAttributes);
         String result = ops.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields,resultPageXslt);
         return result;
     }
