@@ -26,13 +26,13 @@ import dk.defxws.fedoragsearch.server.errors.ConfigException;
 
 import org.apache.log4j.Logger;
 
-import fedora.client.messaging.JmsMessagingClient;
-import fedora.client.messaging.MessagingClient;
-import fedora.client.messaging.MessagingListener;
+import org.fcrepo.client.messaging.JmsMessagingClient;
+import org.fcrepo.client.messaging.MessagingClient;
+import org.fcrepo.client.messaging.MessagingListener;
 
-import fedora.server.errors.MessagingException;
-import fedora.server.messaging.APIMMessage;
-import fedora.server.messaging.AtomAPIMMessage;
+import org.fcrepo.server.errors.MessagingException;
+import org.fcrepo.server.messaging.APIMMessage;
+import org.fcrepo.server.messaging.AtomAPIMMessage;
 
 /**
  * Starts up the Fedora message listener which 

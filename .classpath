@@ -18,9 +18,6 @@
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fedora-client-3.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fedora-messaging-client-3.1r7812.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fedora-server.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fontbox-1.6.0.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/jaxrpc-api-1.1.jar"/>
@@ -49,5 +46,16 @@
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/xmlunit-1.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-admin-3.5-fedora.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-admin-3.5.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-messaging-3.5.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-common-3.5.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-server-3.5.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/jcl-over-slf4j-1.5.10.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/jul-to-slf4j-1.5.10.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/log4j-over-slf4j-1.5.10.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/logback-classic-0.9.18.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/logback-core-0.9.18.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/slf4j-api-1.5.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

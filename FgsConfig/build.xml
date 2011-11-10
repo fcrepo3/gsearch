@@ -31,11 +31,11 @@
 			<property name="configName" value="configDemoOnSolr"/>
 			<property name="indexEngine" value="Solr"/>
 			<property name="indexBase" value="http://localhost:8983/solr"/>
-			<property name="indexDir" value="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0/example/solr/data/index"/>
+			<property name="indexDir" value="${local.SOLR_HOME}/example/solr/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
 
         </ant>
-		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.4.0-for-fgs-2.3.xml" tofile="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0/example/solr/conf/schema.xml" preservelastmodified="true" overwrite="true" />
+		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.4.0-for-fgs-2.3.xml" tofile="${local.SOLR_HOME}/example/solr/conf/schema.xml" preservelastmodified="true" overwrite="true" />
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnZebra"/>
 			<property name="indexEngine" value="Zebra"/>

@@ -28,14 +28,14 @@ import org.apache.axis.AxisFault;
 
 import org.apache.log4j.Logger;
 
-import fedora.client.FedoraClient;
+import org.fcrepo.client.FedoraClient;
 
-import fedora.common.Constants;
+import org.fcrepo.common.Constants;
 
-import fedora.server.access.FedoraAPIA;
-import fedora.server.management.FedoraAPIM;
-import fedora.server.types.gen.Datastream;
-import fedora.server.types.gen.MIMETypedStream;
+import org.fcrepo.server.access.FedoraAPIA;
+import org.fcrepo.server.management.FedoraAPIM;
+import org.fcrepo.server.types.gen.Datastream;
+import org.fcrepo.server.types.gen.MIMETypedStream;
 
 /**
  * performs the generic parts of the operations
@@ -580,11 +580,11 @@ public class GenericOperationsImpl implements Operations {
             		+" trustStorePath="+trustStorePath
             		+" trustStorePass="+trustStorePass);
         StringTokenizer st = new StringTokenizer(parameters);
-        fedora.server.types.gen.Property[] params = new fedora.server.types.gen.Property[st.countTokens()];
+        org.fcrepo.server.types.gen.Property[] params = new org.fcrepo.server.types.gen.Property[st.countTokens()];
         for (int i=0; i<st.countTokens(); i++) {
             String param = st.nextToken();
             String[] nameAndValue = param.split("=");
-            params[i] = new fedora.server.types.gen.Property(nameAndValue[0], nameAndValue[1]);
+            params[i] = new org.fcrepo.server.types.gen.Property(nameAndValue[0], nameAndValue[1]);
         }
         if (logger.isDebugEnabled())
             logger.debug("getDisseminationText" +
