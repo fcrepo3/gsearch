@@ -5,9 +5,6 @@
 	<classpathentry kind="src" path="FgsLucene/src/java"/>
 	<classpathentry kind="src" path="FgsSolr2/src/java"/>
 	<classpathentry kind="src" path="FgsZebra/src/java"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/abdera-core-0.4.0-incubating.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/abdera-i18n-0.4.0-incubating.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/abdera-parser-0.4.0-incubating.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/activemq-all-5.1.0.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/axiom-api-1.2.5.jar"/>
@@ -57,5 +54,9 @@
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/logback-classic-0.9.18.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/logback-core-0.9.18.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/slf4j-api-1.5.10.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/abdera-core-1.1.2.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/abdera-extensions-main-1.1.2.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/abdera-i18n-1.1.2.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/abdera-parser-1.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
