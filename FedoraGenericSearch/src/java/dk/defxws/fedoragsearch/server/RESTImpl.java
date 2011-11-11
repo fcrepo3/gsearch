@@ -141,7 +141,7 @@ public class RESTImpl extends HttpServlet {
             } else if ("configure".equals(operation)) {
                 if (restXslt==null || restXslt.equals("")) 
                     restXslt = config.getDefaultGfindObjectsRestXslt();
-                if (!("fedoraAdmin".equals(remoteUser) || "fgsAdmin".equals(remoteUser) || "fgsTester".equals(remoteUser))) {
+                if (!("fedoraAdmin".equals(remoteUser) || remoteUser.startsWith("fgsAdmin") || "fgsTester".equals(remoteUser))) {
                     throw new GenericSearchException("You are not authorized to perform configure actions!");
             	}
                 resultXml = new StringBuffer(configure(request, response));
@@ -293,12 +293,16 @@ public class RESTImpl extends HttpServlet {
     private String configure(HttpServletRequest request, HttpServletResponse response)
     throws java.rmi.RemoteException {
         String configName = request.getParameter(PARAM_CONFIGNAME);
+        String configureAction = request.getParameter("configureAction");
         String propertyName = request.getParameter("propertyName");
         String propertyValue = "";
         if (!(propertyName==null || propertyName.equals(""))) {
             propertyValue = request.getParameter("propertyValue");
             // used to set or change a property value, mainly for test purposes
             Config.configure(configName, propertyName, propertyValue);
+        } else if (!(configureAction==null || configureAction.equals(""))) {
+            // used to set or get GSearch configure objects in a Fedora repository
+            Config.configureObjects(configureAction);
         } else {
         	// used to create a new currentConfig, mainly for test purposes
             Config.configure(configName);
