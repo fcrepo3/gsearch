@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  $Id$ -->
+<!-- FgsConfig/build.xml -->
+<!-- called from FedoraGenericSearch/build.xml -->
 <project name="FgsConfig" default="configForWebServer" basedir=".">
 	<description>Fedora Generic Search Service configuration</description>
 
-	<property name="local.SOLR_HOME" 			location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0" />
 	<property name="build.dir" location="../FgsBuild/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 
@@ -30,8 +30,8 @@
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnSolr"/>
 			<property name="indexEngine" value="Solr"/>
-			<property name="indexBase" value="http://localhost:8983/solr"/>
-			<property name="indexDir" value="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0/example/solr/data/index"/>
+			<property name="indexBase" value="${local.SOLR_SERVER}"/>
+			<property name="indexDir" value="${local.SOLR_HOME}/example/solr/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
 
         </ant>
@@ -39,8 +39,8 @@
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnZebra"/>
 			<property name="indexEngine" value="Zebra"/>
-			<property name="indexBase" value="http://localhost:9999"/>
-			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/FgsIndex"/>
+			<property name="indexBase" value="${local.ZEBRA_SERVER}"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
 			<property name="indexingDocXslt" value="foxmlToZebra"/>
         </ant>
         <ant target="configLocal">
@@ -61,6 +61,21 @@
         <ant target="configDemoSearchResultFiltering">
 			<property name="configName" value="configDemoSearchResultFiltering"/>
         </ant>
+        <ant target="configLocal">
+			<property name="configName" value="configTestOnLuceneFgs24_1010"/>
+			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+			<property name="indexingDocXslt" value="foxmlToLucene"/>
+        </ant>
+		<copy file="FgsConfigIndexTemplate/LuceneTest/foxmlToLucene_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnLuceneFgs24_1010/index/${indexName}/foxmlToLucene.xslt" preservelastmodified="true" />
+    	<ant target="configLocal">
+			<property name="configName" value="configTestOnSolrFgs24_1010"/>
+			<property name="indexEngine" value="Solr"/>
+			<property name="indexBase" value="${local.SOLR_SERVER}"/>
+			<property name="indexDir" value="${local.SOLR_HOME}/example/solr/data/index"/>
+			<property name="indexingDocXslt" value="foxmlToSolr"/>
+   		</ant>
+		<copy file="FgsConfigIndexTemplate/SolrTest/foxmlToSolr_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnSolrFgs24_1010/index/${indexName}/foxmlToSolr.xslt" preservelastmodified="true" />
 	</target>
 
 	<target name="configLocal"

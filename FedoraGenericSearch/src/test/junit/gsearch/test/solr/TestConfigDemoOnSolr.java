@@ -17,6 +17,7 @@ import gsearch.test.FgsTestCase;
  * 
  * the test suite will
  * - set configDemoOnSolr as current config.
+ * - test sorting, managed xml datatstreams, updateIndex
  */
 public class TestConfigDemoOnSolr
         extends FgsTestCase {

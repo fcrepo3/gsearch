@@ -10,12 +10,12 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </foxml:objectProperties>
 <foxml:datastream ID="testMtextXml" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
 <foxml:datastreamVersion ID="testMtextXml.0" LABEL="Test datastream managed text/xml" MIMETYPE="text/xml">
-<foxml:contentLocation TYPE="URL" REF="file:///Users/gertschmeltzpedersen/dev/workspaces/fgs23GitWorkspace/gsearch/FgsConfig/test_fgs23/testMtextXml.xml"/>
+<foxml:contentLocation TYPE="URL" REF="http://localhost:8080/fedoragsearch/FgsConfig/test_fgs23/testMtextXml.xml"/>
 </foxml:datastreamVersion>
 </foxml:datastream>
 <foxml:datastream ID="testMapplXml" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
 <foxml:datastreamVersion ID="testMapplXml.0" LABEL="Test datastream managed application/xml" MIMETYPE="application/xml">
-<foxml:contentLocation TYPE="URL" REF="file:///Users/gertschmeltzpedersen/dev/workspaces/fgs23GitWorkspace/gsearch/FgsConfig/test_fgs23/testMapplXml.xml"/>
+<foxml:contentLocation TYPE="URL" REF="http://localhost:8080/fedoragsearch/FgsConfig/test_fgs23/testMapplXml.xml"/>
 </foxml:datastreamVersion>
 </foxml:datastream>
 </foxml:digitalObject>

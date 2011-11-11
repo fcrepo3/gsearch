@@ -9,7 +9,10 @@ import org.junit.runners.Suite;
 	gsearch.test.lucene.AllTests.class,
 	gsearch.test.solr.AllTests.class,
 	gsearch.test.zebra.AllTests.class,
-	gsearch.test.testsonlucene.AllTests.class
+	gsearch.test.testsonlucene.AllTests.class,
+	gsearch.test.fgs23.AllTests.class,
+	gsearch.test.lucene.fgs24_1010.AllTests.class,
+	gsearch.test.solr.fgs24_1010.AllTests.class
 	})
 public class AllTests {
 
@@ -24,6 +27,9 @@ public class AllTests {
         suite.addTest(gsearch.test.solr.AllTests.suite());
         suite.addTest(gsearch.test.zebra.AllTests.suite());
         suite.addTest(gsearch.test.testsonlucene.AllTests.suite());
+        suite.addTest(gsearch.test.fgs23.AllTests.suite());
+        suite.addTest(gsearch.test.lucene.fgs24_1010.AllTests.suite());
+        suite.addTest(gsearch.test.solr.fgs24_1010.AllTests.suite());
 //        suite.addTest(gsearch.test.searchresultfiltering.AllTests.suite());
 
         return suite;

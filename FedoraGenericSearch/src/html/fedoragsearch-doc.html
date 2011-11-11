@@ -401,12 +401,12 @@
   cd FedoraGenericSearch
   ant buildfordownload
 </pre>
-			<p>To build fedoragsearch.war in FedoraGenericSearch/dist/local for local testing:</p>
+			<p>To build fedoragsearch.war in FedoraGenericSearch/localdist for local testing:</p>
 <pre>
   cd FedoraGenericSearch
-  ant buildforlocaltest
+  ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... buildforlocaltest
 </pre>
-			<p>To run tests, copy dist/local/fedoragsearch.war into tomcat webapps
+			<p>To run tests, copy localdist/fedoragsearch.war into tomcat webapps
 				on a Fedora repository with demo objects with MessagingModule enabled.
 			</p>
 			<p>Create a test user in fedora-users.xml<pre>
@@ -417,21 +417,20 @@
     &lt;/user&gt;
 			</pre>
 			</p>
-			<p>Edit the two file paths in FedoraConfig/test_fgs23/test_fgs23.xml to fit your local file system.
-			</p>
 			<p>Test operations on the lucene plugin:
 			</p>
 <pre>
     ant junit-lucene  
-    ant junit-fgs23  
     ant junit-testsonlucene
+    ant junit-fgs23  
+    ant junit-lucene-fgs24_1010  
 </pre>
 			<p>Test operations on the solr plugin:
 			</p>
 <pre>
-    cd $local.SOLR_HOME 
-    java -jar start.jar
+    after startup of the solr server:
     ant junit-solr
+    ant junit-solr-fgs24_1010  
 </pre>
 			<p>Test operations on the zebra plugin, install, configure and startup the zebra server:</br>
 			</p>

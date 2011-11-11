@@ -18,6 +18,7 @@ import gsearch.test.FgsTestCase;
  * 
  * the test suite will
  * - set configTestOnLuceneFgs23 as current config. 
+ * - test uriResolver, wildcard, xsltProcessor, managed xml datastreams
  */
 public class TestConfigFgs23
         extends FgsTestCase {
