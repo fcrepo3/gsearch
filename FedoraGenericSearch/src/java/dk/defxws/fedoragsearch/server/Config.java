@@ -1124,7 +1124,7 @@ public class Config {
     
     public GenericOperationsImpl getOperationsImpl(String fgsUserNameParam, String indexNameParam)
     throws ConfigException {
-        return getOperationsImpl(null, indexNameParam, null);
+        return getOperationsImpl(fgsUserNameParam, indexNameParam, null);
     }
     
     public GenericOperationsImpl getOperationsImpl(String fgsUserNameParam, String indexNameParam, Map<String, Set<String>> fgsUserAttributes)
