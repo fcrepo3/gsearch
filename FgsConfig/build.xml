@@ -40,7 +40,7 @@
 			<property name="configName" value="configDemoOnZebra"/>
 			<property name="indexEngine" value="Zebra"/>
 			<property name="indexBase" value="${local.ZEBRA_SERVER}"/>
-			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/FgsIndex"/>
 			<property name="indexingDocXslt" value="foxmlToZebra"/>
         </ant>
         <ant target="configLocal">
@@ -64,10 +64,10 @@
         <ant target="configLocal">
 			<property name="configName" value="configTestOnLuceneFgs24_1010"/>
 			<property name="indexEngine" value="Lucene"/>
-			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/${indexName}"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/FgsIndex"/>
 			<property name="indexingDocXslt" value="foxmlToLucene"/>
         </ant>
-		<copy file="FgsConfigIndexTemplate/LuceneTest/foxmlToLucene_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnLuceneFgs24_1010/index/${indexName}/foxmlToLucene.xslt" preservelastmodified="true" />
+		<copy file="FgsConfigIndexTemplate/LuceneTest/foxmlToLucene_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnLuceneFgs24_1010/index/FgsIndex/foxmlToLucene.xslt" preservelastmodified="true" />
     	<ant target="configLocal">
 			<property name="configName" value="configTestOnSolrFgs24_1010"/>
 			<property name="indexEngine" value="Solr"/>
@@ -75,7 +75,7 @@
 			<property name="indexDir" value="${local.SOLR_HOME}/example/solr/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolr"/>
    		</ant>
-		<copy file="FgsConfigIndexTemplate/SolrTest/foxmlToSolr_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnSolrFgs24_1010/index/${indexName}/foxmlToSolr.xslt" preservelastmodified="true" />
+		<copy file="FgsConfigIndexTemplate/SolrTest/foxmlToSolr_fgs24_1010.xslt" tofile="${plugin.dir}/configTestOnSolrFgs24_1010/index/FgsIndex/foxmlToSolr.xslt" preservelastmodified="true" />
 	</target>
 
 	<target name="configLocal"

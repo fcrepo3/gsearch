@@ -98,7 +98,7 @@
 				</IndexField>
 			</xsl:for-each>
 
-			<!-- testing of Tika extraction.
+			<!-- testing of Tika extraction. 
 				The three parameters specific to getDatastreamFromTikaWithMetadata are
 				- pluginName			either "Lucene" or "Solr"
 				- indexfieldnamePrefix	optional or empty, prefixed to the metadata indexfield names
