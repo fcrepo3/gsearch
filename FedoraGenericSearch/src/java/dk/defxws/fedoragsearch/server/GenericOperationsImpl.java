@@ -343,10 +343,11 @@ public class GenericOperationsImpl implements Operations {
         if(fedoraVersion != null && fedoraVersion.startsWith("2.")) {
             format = Constants.FOXML1_0_LEGACY;
         }
+        String realPID = getRealPID(pid);
         try {
-        	foxmlRecord = apim.export(pid, format, "public");
+        	foxmlRecord = apim.export(realPID, format, "public");
         } catch (RemoteException e) {
-        	throw new FedoraObjectNotFoundException("Fedora Object "+pid+" not found at "+repositoryName, e);
+        	throw new FedoraObjectNotFoundException("Fedora Object "+realPID+" not found at "+repositoryName, e);
         }
     }
     
@@ -394,7 +395,7 @@ public class GenericOperationsImpl implements Operations {
                 		fedoraPass,
                 		trustStorePath,
                 		trustStorePass );
-                MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
+                MIMETypedStream mts = apia.getDatastreamDissemination(getRealPID(pid), 
                         dsId, null);
                 if (mts==null) return "";
                 ds = mts.getStream();
@@ -489,7 +490,7 @@ public class GenericOperationsImpl implements Operations {
             		fedoraPass,
             		trustStorePath,
             		trustStorePass );
-            dsds = apim.getDatastreams(pid, null, "A");
+            dsds = apim.getDatastreams(getRealPID(pid), null, "A");
         } catch (Exception e) {
         	return new StringBuffer(emptyIndexField("getFirstDatastreamText", pid, "", mimetype, e));
         }
@@ -518,7 +519,7 @@ public class GenericOperationsImpl implements Operations {
                 		fedoraPass,
                 		trustStorePath,
                 		trustStorePass );
-                MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
+                MIMETypedStream mts = apia.getDatastreamDissemination(getRealPID(pid), 
                         dsID, null);
                 ds = mts.getStream();
                 mimetype = mts.getMIMEType().split(";")[0]; // MIMETypedStream can include encoding, eg "text/xml;charset=utf-8" - split this off
@@ -601,7 +602,7 @@ public class GenericOperationsImpl implements Operations {
                 		fedoraPass,
                 		trustStorePath,
                 		trustStorePass );
-                MIMETypedStream mts = apia.getDissemination(pid, bDefPid, 
+                MIMETypedStream mts = apia.getDissemination(getRealPID(pid), bDefPid, 
                         methodName, params, asOfDateTime);
                 if (mts==null) {
                     throw new GenericSearchException("getDissemination returned null");
@@ -676,7 +677,7 @@ public class GenericOperationsImpl implements Operations {
                 		fedoraPass,
                 		trustStorePath,
                 		trustStorePass );
-                MIMETypedStream mts = apia.getDatastreamDissemination(pid, 
+                MIMETypedStream mts = apia.getDatastreamDissemination(getRealPID(pid), 
                         dsId, null);
                 if (mts==null) return "";
                 ds = mts.getStream();
@@ -751,6 +752,13 @@ public class GenericOperationsImpl implements Operations {
     		result = result.substring(0,debuglength)+"...\n...";
     	}
     	return result;
+    }
+
+    
+    private String getRealPID(String pid) {
+    	int j = pid.indexOf("$");
+    	if (j==-1) j = pid.length();
+    	return pid.substring(0, j);
     }
     
 }

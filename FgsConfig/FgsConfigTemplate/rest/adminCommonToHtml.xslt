@@ -31,7 +31,8 @@
 						<h1>Admin Client for Fedora Generic Search Service</h1>
 					</div>
 					<div align="right">
-						<h4>You are logged in as <xsl:value-of select="$FGSUSERNAME"/> using FGSCONFIGNAME</h4>
+						<h4>You are logged in as <xsl:value-of select="$FGSUSERNAME"/> 
+						using <a href="FgsConfig/FGSCONFIGNAME" title="to see config files set tomcat/conf/web.xml listings to true">FGSCONFIGNAME</a></h4>
 					</div>
 				</div>
 				<table cellspacing="10" cellpadding="10">

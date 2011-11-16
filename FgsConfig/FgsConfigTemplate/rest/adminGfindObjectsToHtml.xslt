@@ -118,6 +118,24 @@
 	</xsl:template>
 
 	<xsl:template match="object">
+		<xsl:variable name="PIDVALUE">
+			<xsl:choose>
+				<xsl:when test="@PID">
+					<xsl:value-of select="@PID"/>
+				</xsl:when>
+				<xsl:otherwise><xsl:value-of select="normalize-space(field[@name='PID'])"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="REALPIDVALUE">
+			<xsl:choose>
+				<xsl:when test="substring-before($PIDVALUE,'$')">
+					<xsl:value-of select="normalize-space(substring-before($PIDVALUE,'$'))"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$PIDVALUE"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		<tr><td>
 			<table border="0" cellpadding="5" cellspacing="0" bgcolor="silver" width="784">
 				<tr>
@@ -127,17 +145,7 @@
 							<xsl:value-of select="'. '"/>
 						</span>
 						<a>
-							<xsl:variable name="PIDVALUE">
-								<xsl:choose>
-									<xsl:when test="@PID">
-								 		<xsl:value-of select="@PID"/>
-									</xsl:when>
-									<xsl:otherwise>
-								 		<xsl:value-of select="normalize-space(field[@name='PID'])"/>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:variable>
-							<xsl:attribute name="href"><xsl:value-of select="normalize-space(field[@name='REPOSBASEURL'])"/>/objects/<xsl:value-of select="$PIDVALUE"/>
+							<xsl:attribute name="href"><xsl:value-of select="normalize-space(field[@name='REPOSBASEURL'])"/>/objects/<xsl:value-of select="normalize-space($REALPIDVALUE)"/>
 							</xsl:attribute>
 							<xsl:value-of select="$PIDVALUE"/>
 						</a>
@@ -146,15 +154,7 @@
 							(<xsl:value-of select="@score"/>)
 						</span>
 						<a>
-							<xsl:variable name="PIDVALUE">
-								<xsl:choose>
-									<xsl:when test="@PID">
-								 		<xsl:value-of select="@PID"/>
-									</xsl:when>
-									<xsl:otherwise><xsl:value-of select="normalize-space(field[@name='PID'])"/></xsl:otherwise>
-								</xsl:choose>
-							</xsl:variable>
-							<xsl:attribute name="href">?operation=gfindObjects&amp;query=PID:%22<xsl:value-of select="$PIDVALUE"/>%22&amp;restXslt=adminGetIndexDocumentToHtml&amp;fieldMaxLength=0&amp;snippetsMax=0</xsl:attribute>
+							<xsl:attribute name="href">?operation=gfindObjects&amp;query=PID:%22<xsl:value-of select="normalize-space($PIDVALUE)"/>%22&amp;restXslt=adminGetIndexDocumentToHtml&amp;fieldMaxLength=0&amp;snippetsMax=0</xsl:attribute>
 							<xsl:value-of select="'getIndexDocument'"/>
 						</a>
 					</td>
