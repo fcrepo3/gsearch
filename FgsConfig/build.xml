@@ -4,6 +4,7 @@
 <project name="FgsConfig" default="configForWebServer" basedir=".">
 	<description>Fedora Generic Search Service configuration</description>
 
+	<property name="local.SOLR_HOME" 			location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0" />
 	<property name="build.dir" location="../FgsBuild/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 

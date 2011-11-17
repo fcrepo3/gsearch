@@ -52,12 +52,12 @@ import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 
-import fedora.client.FedoraClient;
-import fedora.client.Uploader;
-import fedora.server.access.FedoraAPIA;
-import fedora.server.management.FedoraAPIM;
-import fedora.server.types.gen.DatastreamDef;
-import fedora.server.types.gen.MIMETypedStream;
+import org.fcrepo.client.FedoraClient;
+import org.fcrepo.client.Uploader;
+import org.fcrepo.server.access.FedoraAPIA;
+import org.fcrepo.server.management.FedoraAPIM;
+import org.fcrepo.server.types.gen.DatastreamDef;
+import org.fcrepo.server.types.gen.MIMETypedStream;
 
 /**
  * Reads and checks the configuration files,
@@ -1420,7 +1420,7 @@ public class Config {
 	    	port = Integer.parseInt(baseUrl.substring(j+1, baseUrl.indexOf("/", j+1)));
 	    }
 	    String host = baseUrl.substring(i+3, j);
-//	    String context = baseUrl.substring(baseUrl.indexOf("/", j));
+	    String context = baseUrl.substring(baseUrl.indexOf("/", j));
 		String user = fcoProps.getProperty("fgsconfigObjects.fedoraUser");
 		String pwd = fcoProps.getProperty("fgsconfigObjects.fedoraPass");
 		String dsid;
@@ -1441,8 +1441,7 @@ public class Config {
 	        logger.debug("setConfigFileAsDatastream pid="+configRootObjectPid+" dsid="+dsid+" protocol="+protocol+" host="+host+" port="+port+" user="+user+" pwd="+pwd);
         String dsLocation = "";
 		try {
-//			Uploader uploader = new Uploader(protocol, host, port, context, user, pwd);
-			Uploader uploader = new Uploader(protocol, host, port, user, pwd);
+			Uploader uploader = new Uploader(protocol, host, port, context, user, pwd);
 			dsLocation = uploader.upload(fileContent);
 		} catch (Exception e) {
             throw new ConfigException("setConfigFileAsDatastream upload exception="+e.toString());

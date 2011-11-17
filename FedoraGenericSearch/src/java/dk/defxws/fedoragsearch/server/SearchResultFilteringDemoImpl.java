@@ -26,10 +26,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-import fedora.client.FedoraClient;
-import fedora.common.Constants;
-import fedora.server.access.FedoraAPIA;
-import fedora.server.management.FedoraAPIM;
+import org.fcrepo.client.FedoraClient;
+import org.fcrepo.common.Constants;
+import org.fcrepo.server.access.FedoraAPIA;
+import org.fcrepo.server.management.FedoraAPIM;
 
 /**
  * This demo implementation of SearchResultFiltering shall reflect the XACML policies

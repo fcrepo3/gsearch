@@ -128,7 +128,7 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
 		<copy file="src/WEB-INF/web-withAuthN.xml" todir="${build.dir}/WEB-INF" preservelastmodified="true" />
 		<copy file="src/WEB-INF/server-config.wsdd" todir="${build.dir}/WEB-INF" preservelastmodified="true" />
 		<copy todir="${build.dir}/WEB-INF/lib" preservelastmodified="true">
-			<fileset dir="lib" excludes="servlet-api.jar"/>
+			<fileset dir="lib" excludes="servlet-api-2.4.jar"/>
 		</copy>
 		<copy todir="${plugin.dir}" preservelastmodified="true">
 			<fileset dir="bin"/>

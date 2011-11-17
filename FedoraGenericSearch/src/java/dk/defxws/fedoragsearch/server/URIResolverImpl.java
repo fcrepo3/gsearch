@@ -19,7 +19,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.log4j.Logger;
 
-import fedora.common.http.WebClient;
+import org.fcrepo.common.http.WebClient;
 
 /**
  * custom URIResolver for ssl access

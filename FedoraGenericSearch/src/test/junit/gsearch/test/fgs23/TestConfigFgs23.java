@@ -9,8 +9,8 @@ import junit.framework.TestSuite;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fedora.client.FedoraClient;
-import fedora.server.management.FedoraAPIM;
+import org.fcrepo.client.FedoraClient;
+import org.fcrepo.server.management.FedoraAPIM;
 import gsearch.test.FgsTestCase;
 
 /**

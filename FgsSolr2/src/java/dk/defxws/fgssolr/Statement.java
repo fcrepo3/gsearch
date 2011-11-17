@@ -49,7 +49,7 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-import fedora.server.utilities.StreamUtility;
+import org.fcrepo.server.utilities.StreamUtility;
 
 /**
  * queries the Solr index 
