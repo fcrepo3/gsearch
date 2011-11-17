@@ -80,20 +80,44 @@ public class TransformerToText {
 	        }
 	        for (int i=0; i<names.length; i++) {
 	        	String metadataName = names[i].trim();
-	        	StringBuffer metadataValue = new StringBuffer(metadata.get(metadataName));
-	        	String[] metadataValues = metadata.getValues(metadataName);
-	        	if (metadataValues.length>1) {
-	        		for (int j=1; j<metadataValues.length; j++) {
-	        			metadataValue.append(" "+metadataValues[j]);
-	        		}
-	        	}
-	        	if (metadataValue.length()>0) {
-		        	if ("Lucene".equals(pluginName)) {
-			        	docText.append("</IndexField>\n<IndexField IFname=\""+indexfieldnamePrefix+metadataName+"\" index=\"UN_TOKENIZED\" store=\"YES\" termVector=\"NO\">");
-		        	} else if ("Solr".equals(pluginName)) {
-			        	docText.append("</field>\n<field name=\""+indexfieldnamePrefix+metadataName+"\">");
+	        	if (metadataName.length() > 0) {
+		        	String[] metadataNameWithParams = metadataName.split("/");
+		        	metadataName = metadataNameWithParams[0].trim();
+		        	String index = "TOKENIZED";
+		        	String store = "YES";
+		        	String termVector = "YES";
+		        	String boost = "1.0";
+		        	if (metadataNameWithParams.length > 1) {
+		        		if (metadataNameWithParams[1].length() > 0)
+		        			index = metadataNameWithParams[1];
+			        	if (metadataNameWithParams.length > 2) {
+			        		if (metadataNameWithParams[2].length() > 0)
+			        			store = metadataNameWithParams[2];
+				        	if (metadataNameWithParams.length > 3) {
+				        		if (metadataNameWithParams[3].length() > 0)
+				        			termVector = metadataNameWithParams[3];
+					        	if (metadataNameWithParams.length > 4) {
+					        		if (metadataNameWithParams[4].length() > 0)
+					        			boost = metadataNameWithParams[4];
+					        	}
+				        	}
+			        	}
 		        	}
-		        	docText.append(metadataValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
+		        	StringBuffer metadataValue = new StringBuffer(metadata.get(metadataName));
+		        	String[] metadataValues = metadata.getValues(metadataName);
+		        	if (metadataValues.length>1) {
+		        		for (int j=1; j<metadataValues.length; j++) {
+		        			metadataValue.append(" "+metadataValues[j]);
+		        		}
+		        	}
+		        	if (metadataValue.length()>0) {
+			        	if ("Lucene".equals(pluginName)) {
+				        	docText.append("</IndexField>\n<IndexField IFname=\""+indexfieldnamePrefix+metadataName+"\" index=\""+index+"\" store=\""+store+"\" termVector=\""+termVector+"\" boost=\""+boost+"\">");
+			        	} else if ("Solr".equals(pluginName)) {
+				        	docText.append("</field>\n<field name=\""+indexfieldnamePrefix+metadataName+"\">");
+			        	}
+			        	docText.append(metadataValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
+		        	}
 	        	}
 	        }
 		}

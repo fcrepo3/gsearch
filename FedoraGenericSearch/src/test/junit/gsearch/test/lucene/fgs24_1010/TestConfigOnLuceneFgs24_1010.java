@@ -42,13 +42,25 @@ public class TestConfigOnLuceneFgs24_1010
 
     @Test
     public void testTikaExtractionLuceneBefore2() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.Word-Count:22&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:22&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test
     public void testTikaExtractionLuceneBefore3() throws Exception {
   	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.testMpdf:tika&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneBefore4() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsAllMd.Content-Type:\"application/pdf\"&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneBefore5() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsUntok.Content-Type:\"application/pdf\"&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
@@ -68,13 +80,25 @@ public class TestConfigOnLuceneFgs24_1010
 
     @Test
     public void testTikaExtractionLuceneIngest2() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.Word-Count:22&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:22&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test
     public void testTikaExtractionLuceneIngest3() throws Exception {
   	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.testMpdf:tika&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest4() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsAllMd.Content-Type:\"application/pdf\"&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest5() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsUntok.Content-Type:\"application/pdf\"&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
@@ -90,13 +114,25 @@ public class TestConfigOnLuceneFgs24_1010
 
     @Test
     public void testTikaExtractionLuceneAfter2() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.Word-Count:22&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:22&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test
     public void testTikaExtractionLuceneAfter3() throws Exception {
   	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.testMpdf:tika&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneAfter4() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsAllMd.Content-Type:\"application/pdf\"&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneAfter5() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsUntok.Content-Type:\"application/pdf\"&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 }
