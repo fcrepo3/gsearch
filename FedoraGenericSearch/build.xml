@@ -279,6 +279,13 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
 		<property name="test" value="gsearch.test.solr.fgs24_1010.AllTests"/>
 	</target>
 	
+	<target name="junit-lucene-fgs24_1019" depends="junit-set-lucene-fgs24_1019, junit">
+	</target>
+	
+	<target name="junit-set-lucene-fgs24_1019">
+		<property name="test" value="gsearch.test.lucene.fgs24_1019.AllTests"/>
+	</target>
+	
 	<target name="junit" depends="compile-junit">
 		<property name="fedoragsearch.protocol" value="http"/>
 		<property name="fedoragsearch.hostport" value="localhost:8080"/>
