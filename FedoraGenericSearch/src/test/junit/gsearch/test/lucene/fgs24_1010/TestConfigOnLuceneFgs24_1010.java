@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 
 import junit.framework.TestSuite;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.fcrepo.client.FedoraClient;

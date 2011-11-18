@@ -1,16 +1,10 @@
 //$Id:  $
 package gsearch.test.lucene.fgs24_1019;
 
-import java.io.File;
-import java.io.FileInputStream;
-
 import junit.framework.TestSuite;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.fcrepo.client.FedoraClient;
-import org.fcrepo.server.management.FedoraAPIM;
 import gsearch.test.FgsTestCase;
 
 /**

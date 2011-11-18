@@ -24,8 +24,6 @@ import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
-import org.apache.axis.AxisFault;
-
 import org.apache.log4j.Logger;
 
 import org.fcrepo.client.FedoraClient;
@@ -49,7 +47,7 @@ public class GenericOperationsImpl implements Operations {
         Logger.getLogger(GenericOperationsImpl.class);
     int debuglength = 500;
 
-    private static final Map fedoraClients = new HashMap();
+    private static final Map<String, FedoraClient> fedoraClients = new HashMap<String, FedoraClient>();
     
     protected Map<String, Set<String>> fgsUserAttributes;
 
@@ -81,7 +79,7 @@ public class GenericOperationsImpl implements Operations {
             String clientId = user + "@" + baseURL;
             synchronized (fedoraClients) {
                 if (fedoraClients.containsKey(clientId)) {
-                    return (FedoraClient) fedoraClients.get(clientId);
+                    return fedoraClients.get(clientId);
                 } else {
                     FedoraClient client = new FedoraClient(baseURL,
                             user, fedoraPass);

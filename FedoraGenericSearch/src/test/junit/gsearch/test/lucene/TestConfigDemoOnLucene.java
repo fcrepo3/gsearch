@@ -3,7 +3,6 @@ package gsearch.test.lucene;
 
 import junit.framework.TestSuite;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import gsearch.test.FgsTestCase;

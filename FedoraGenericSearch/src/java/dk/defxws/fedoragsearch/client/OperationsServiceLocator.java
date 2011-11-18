@@ -7,6 +7,8 @@
 
 package dk.defxws.fedoragsearch.client;
 
+import javax.xml.namespace.QName;
+
 public class OperationsServiceLocator extends org.apache.axis.client.Service implements dk.defxws.fedoragsearch.client.OperationsService {
 
 	private static final long serialVersionUID = 1L;
@@ -110,11 +112,11 @@ public class OperationsServiceLocator extends org.apache.axis.client.Service imp
         return new javax.xml.namespace.QName("http://server.fedoragsearch.defxws.dk", "OperationsService");
     }
 
-    private java.util.HashSet ports = null;
+    private java.util.HashSet<QName> ports = null;
 
-    public java.util.Iterator getPorts() {
+    public java.util.Iterator<QName> getPorts() {
         if (ports == null) {
-            ports = new java.util.HashSet();
+            ports = new java.util.HashSet<QName>();
             ports.add(new javax.xml.namespace.QName("http://server.fedoragsearch.defxws.dk", "FgsOperations"));
         }
         return ports.iterator();

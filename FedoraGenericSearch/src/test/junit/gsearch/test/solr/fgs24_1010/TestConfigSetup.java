@@ -1,7 +1,6 @@
 //$Id:  $
 package gsearch.test.solr.fgs24_1010;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 
 public class TestConfigSetup

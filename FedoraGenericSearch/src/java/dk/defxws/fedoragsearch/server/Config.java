@@ -12,15 +12,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -86,7 +83,7 @@ public class Config {
     
     private static Config currentConfig = null;
     
-    private static Hashtable configs = new Hashtable();
+    private static Hashtable<String, Config> configs = new Hashtable<String, Config>();
     
     private static boolean wsddDeployed = false;
     
@@ -100,17 +97,17 @@ public class Config {
     
     private Properties fgsProps = null;
     
-    private Hashtable repositoryNameToProps = null;
+    private Hashtable<String, Properties> repositoryNameToProps = null;
     
     private String defaultRepositoryName = null;
     
-    private Hashtable indexNameToProps = null;
+    private Hashtable<String, Properties> indexNameToProps = null;
     
-    private Hashtable indexNameToUriResolvers = null;
+    private Hashtable<String, URIResolverImpl> indexNameToUriResolvers = null;
     
     private String defaultIndexName = null;
     
-    private Hashtable updaterNameToProps = null;
+    private Hashtable<String, Properties> updaterNameToProps = null;
     
     private int maxPageSize = 50;
     
@@ -177,7 +174,7 @@ public class Config {
      * - and sets that property, if it does not give error.
      */
     public static void configure(String configName, String propertyName, String propertyValue) throws ConfigException {
-    	Config config = (Config)configs.get(configName);
+    	Config config = configs.get(configName);
     	if (config==null) {
     		config = new Config(configName);
             configs.put(configName, config);
@@ -200,7 +197,7 @@ public class Config {
     }
     
     public static Config getConfig(String configName) throws ConfigException {
-    	Config config = (Config)configs.get(configName);
+    	Config config = configs.get(configName);
         if (config == null) {
         	config = new Config(configName);
             configs.put(configName, config);
@@ -225,7 +222,7 @@ public class Config {
     	if(updaterProperty == null) {
     		updaterNameToProps = null; // No updaters will be created
     	} else {           
-    		updaterNameToProps = new Hashtable();
+    		updaterNameToProps = new Hashtable<String, Properties>();
     		StringTokenizer updaterNames = new StringTokenizer(updaterProperty);
     		while (updaterNames.hasMoreTokens()) {
     			String updaterName = updaterNames.nextToken();
@@ -238,7 +235,7 @@ public class Config {
     	}
     	
 //      Get repository properties
-        repositoryNameToProps = new Hashtable();
+        repositoryNameToProps = new Hashtable<String, Properties>();
         defaultRepositoryName = null;
         StringTokenizer repositoryNames = new StringTokenizer(fgsProps.getProperty("fedoragsearch.repositoryNames"));
         while (repositoryNames.hasMoreTokens()) {
@@ -253,8 +250,8 @@ public class Config {
         }
         
 //      Get index properties
-        indexNameToProps = new Hashtable();
-        indexNameToUriResolvers = new Hashtable();
+        indexNameToProps = new Hashtable<String, Properties>();
+        indexNameToUriResolvers = new Hashtable<String, URIResolverImpl>();
         defaultIndexName = null;
         StringTokenizer indexNames = new StringTokenizer(fgsProps.getProperty("fedoragsearch.indexNames"));
         while (indexNames.hasMoreTokens()) {
@@ -347,10 +344,10 @@ public class Config {
     	}
 
 //		Check updater properties
-    	Enumeration updaterNames = updaterNameToProps.keys();
+    	Enumeration<String> updaterNames = updaterNameToProps.keys();
     	while (updaterNames.hasMoreElements()) {
-    		String updaterName = (String)updaterNames.nextElement();
-    		Properties props = (Properties)updaterNameToProps.get(updaterName);  
+    		String updaterName = updaterNames.nextElement();
+    		Properties props = updaterNameToProps.get(updaterName);  
 			String updaterFilePath = configName+"/updater/"+updaterName+"/updater.properties";
 			if(props.getProperty("java.naming.factory.initial") == null) {
 				errors.append("\n*** java.naming.factory.initial not provided in "+updaterFilePath);
@@ -398,10 +395,10 @@ public class Config {
     	}
 
 //  	Check repository properties
-    	Enumeration repositoryNames = repositoryNameToProps.keys();
+    	Enumeration<String> repositoryNames = repositoryNameToProps.keys();
     	while (repositoryNames.hasMoreElements()) {
-    		String repositoryName = (String)repositoryNames.nextElement();
-    		Properties props = (Properties)repositoryNameToProps.get(repositoryName);    		
+    		String repositoryName = repositoryNames.nextElement();
+    		Properties props = repositoryNameToProps.get(repositoryName);    		
 //  		Check for unknown properties, indicating typos or wrong property names
     		String[] reposPropNames = {
     				"fgsrepository.repositoryName",
@@ -437,10 +434,10 @@ public class Config {
     	}
 
 //  	Check index properties
-    	Enumeration indexNames = indexNameToProps.keys();
+    	Enumeration<String> indexNames = indexNameToProps.keys();
     	while (indexNames.hasMoreElements()) {
-    		String indexName = (String)indexNames.nextElement();
-    		Properties props = (Properties)indexNameToProps.get(indexName);
+    		String indexName = indexNames.nextElement();
+    		Properties props = indexNameToProps.get(indexName);
 //  		Check for unknown properties, indicating typos or wrong property names
     		String[] indexPropNames = {
     				"fgsindex.indexName",
@@ -864,9 +861,9 @@ public class Config {
     	if (url.getPort()>-1)
     		hostPort += ":"+url.getPort();
         if (!(hostPort==null || hostPort.equals(""))) {
-        	Enumeration propss = repositoryNameToProps.elements();
+        	Enumeration<Properties> propss = repositoryNameToProps.elements();
         	while (propss.hasMoreElements()) {
-        		Properties props = (Properties)propss.nextElement();
+        		Properties props = propss.nextElement();
         		String fedoraSoap = props.getProperty("fgsrepository.fedoraSoap");
         		if (fedoraSoap != null && fedoraSoap.indexOf(hostPort) > -1) {
         			return props.getProperty("fgsrepository.repositoryName", defaultRepositoryName);
@@ -877,7 +874,7 @@ public class Config {
     }
     
     private Properties getRepositoryProps(String repositoryName) {
-        return (Properties) (repositoryNameToProps.get(repositoryName));
+        return (repositoryNameToProps.get(repositoryName));
     }
     
     public String getFedoraSoap(String repositoryName) {
@@ -921,7 +918,7 @@ public class Config {
         return (getRepositoryProps(repositoryName)).getProperty("fgsrepository.trustStorePass");
     }
 
-    public Hashtable getUpdaterProps() {
+    public Hashtable<String, Properties> getUpdaterProps() {
         return updaterNameToProps;
     }    
     
@@ -938,7 +935,7 @@ public class Config {
     }
     
     public Properties getIndexProps(String indexName) {
-        return (Properties) (indexNameToProps.get(getIndexName(indexName)));
+        return (indexNameToProps.get(getIndexName(indexName)));
     }
     
     public String getUpdateIndexDocXslt(String indexName, String indexDocXslt) {
@@ -1003,7 +1000,7 @@ public class Config {
     }
     
     public URIResolver getURIResolver(String indexName) {
-        return (URIResolver)indexNameToUriResolvers.get(getIndexName(indexName));
+        return indexNameToUriResolvers.get(getIndexName(indexName));
     }
     
     public String getUntokenizedFields(String indexName) {
@@ -1209,10 +1206,10 @@ public class Config {
                 if (logger.isDebugEnabled())
                     logger.debug("propsName=" + propsName + " propName=" + propName);
             	if (indexNameToProps.containsKey(propsName)) {
-            		props = (Properties)indexNameToProps.get(propsName);
+            		props = indexNameToProps.get(propsName);
             	}
             	else if (repositoryNameToProps.containsKey(propsName)) {
-            		props = (Properties)repositoryNameToProps.get(propsName);
+            		props = repositoryNameToProps.get(propsName);
             	}
             } else {
             	props = fgsProps;
@@ -1241,10 +1238,10 @@ public class Config {
                 if (logger.isDebugEnabled())
                     logger.debug("propsName=" + propsName + " propName=" + propName);
             	if (indexNameToProps.containsKey(propsName)) {
-            		props = (Properties)indexNameToProps.get(propsName);
+            		props = indexNameToProps.get(propsName);
             	}
             	else if (repositoryNameToProps.containsKey(propsName)) {
-            		props = (Properties)repositoryNameToProps.get(propsName);
+            		props = repositoryNameToProps.get(propsName);
             	}
             } else {
             	props = fgsProps;

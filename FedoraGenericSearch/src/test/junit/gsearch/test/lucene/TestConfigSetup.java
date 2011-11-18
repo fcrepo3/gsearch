@@ -1,7 +1,6 @@
 //$Id:  $
 package gsearch.test.lucene;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 
 /**

@@ -1,7 +1,6 @@
 //$Id:  $
 package gsearch.test.fgs23;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 
 /**

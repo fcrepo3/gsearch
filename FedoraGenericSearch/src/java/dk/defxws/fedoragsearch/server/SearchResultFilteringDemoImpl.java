@@ -43,7 +43,7 @@ public class SearchResultFilteringDemoImpl implements SearchResultFiltering {
     private static final Logger logger =
         Logger.getLogger(SearchResultFilteringDemoImpl.class);
 
-    private static final Map fedoraClients = new HashMap();
+    private static final Map<String, FedoraClient> fedoraClients = new HashMap<String, FedoraClient>();
     
     public String selectIndexNameForPresearch(
     		String fgsUserName, 
@@ -190,7 +190,7 @@ public class SearchResultFilteringDemoImpl implements SearchResultFiltering {
             String clientId = user + "@" + baseURL;
             synchronized (fedoraClients) {
                 if (fedoraClients.containsKey(clientId)) {
-                    return (FedoraClient) fedoraClients.get(clientId);
+                    return fedoraClients.get(clientId);
                 } else {
                     FedoraClient client = new FedoraClient(baseURL,
                             user, fedoraPass);
