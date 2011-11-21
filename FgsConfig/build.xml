@@ -78,7 +78,7 @@
 			<property name="indexingDocXslt" value="foxmlToLucene"/>
         </ant>
 		<copy file="FgsConfigIndexTemplate/LuceneTest/foxmlToLucene_fgs24_1010.xslt" 
-			tofile="${plugin.dir}/configTestOnLuceneFgs24_1010/index/FgsIndex/foxmlToLucene.xslt" preservelastmodified="true" />
+			tofile="${plugin.dir}/configTestOnLuceneFgs24_1010/index/FgsIndex/foxmlToLucene.xslt" preservelastmodified="true" overwrite="true" />
 		
     	<ant target="configLocal">
 			<property name="configName" value="configTestOnSolrFgs24_1010"/>
@@ -88,7 +88,7 @@
 			<property name="indexingDocXslt" value="foxmlToSolr"/>
    		</ant>
 		<copy file="FgsConfigIndexTemplate/SolrTest/foxmlToSolr_fgs24_1010.xslt" 
-			tofile="${plugin.dir}/configTestOnSolrFgs24_1010/index/FgsIndex/foxmlToSolr.xslt" preservelastmodified="true" />
+			tofile="${plugin.dir}/configTestOnSolrFgs24_1010/index/FgsIndex/foxmlToSolr.xslt" preservelastmodified="true" overwrite="true" />
 		
         <ant target="configDemoIndexPerDS_fgs24_1019">
 			<property name="configName" value="configDemoIndexPerDS_fgs24_1019"/>
@@ -112,7 +112,7 @@
         <ant target="configLocalIndex">
         </ant>
 
-		<copy todir="${build.dir}/FgsConfig/${configName}" preservelastmodified="true">
+		<copy todir="${build.dir}/FgsConfig/${configName}" preservelastmodified="true" overwrite="true">
 			<fileset dir="${plugin.dir}/${configName}"/>
 		</copy>
 		
@@ -155,13 +155,13 @@
 		<copy file="test_fgs24/foxmlToLuceneForSmileyUser.xslt" 
 			tofile="${plugin.dir}/${configName}/index/SmileyUserIndex/foxmlToLucene.xslt" preservelastmodified="true" overwrite="true"/>
 
-		<copy todir="${build.dir}/FgsConfig/${configName}" preservelastmodified="true">
+		<copy todir="${build.dir}/FgsConfig/${configName}" preservelastmodified="true" overwrite="true">
 			<fileset dir="${plugin.dir}/${configName}"/>
 		</copy>
 		
 		<delete dir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
 		<mkdir dir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
-		<copy todir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" preservelastmodified="true">
+		<copy todir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" preservelastmodified="true" overwrite="true">
 			<fileset dir="test_fgs24/fgs-policies"/>
 		</copy>
 		<!-- The environment variables FEDORA_HOME and CATALINA_HOME must be set in the configuration -->
@@ -227,11 +227,11 @@
 		
 		<delete dir="${plugin.dir}/${configName}" />
 		<mkdir dir="${plugin.dir}/${configName}" />
-		<copy todir="${plugin.dir}/${configName}" preservelastmodified="true">
+		<copy todir="${plugin.dir}/${configName}" preservelastmodified="true" overwrite="true">
 			<fileset dir="FgsConfigTemplate"/>
 		</copy>
 
-		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" />
+		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" overwrite="true" />
 
 		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSBASE" value="http://localhost:8080"/>
 		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSAPPNAME" value="fedora"/>
@@ -257,7 +257,7 @@
 	<target name="configLocalRepos"
         	description="build a repos of a local config">
 
-		<copy todir="${plugin.dir}/${configName}/repository/${reposName}" preservelastmodified="true">
+		<copy todir="${plugin.dir}/${configName}/repository/${reposName}" preservelastmodified="true" overwrite="true">
 			<fileset dir="FgsConfigReposTemplate"/>
 		</copy>
 	
@@ -273,7 +273,7 @@
 
 	<target name="configLocalIndex"
         	description="build an index of a local config">
-		<copy todir="${plugin.dir}/${configName}/index/${indexName}" preservelastmodified="true">
+		<copy todir="${plugin.dir}/${configName}/index/${indexName}" preservelastmodified="true" overwrite="true">
 			<fileset dir="FgsConfigIndexTemplate/${indexEngine}"/>
 		</copy>
 
@@ -336,7 +336,7 @@
 				style="indexingXsltGenerator/fieldsUniqueToXsltForLucene.xslt">
 					<param name="date" expression="07-01-2000"/>
 			</xslt>
-	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToLuceneGenerated.xslt" todir="FgsConfigIndexTemplate/Lucene/" preservelastmodified="true"/>
+	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToLuceneGenerated.xslt" todir="FgsConfigIndexTemplate/Lucene/" preservelastmodified="true" overwrite="true"/>
 
 			<xslt 
 				in="indexingXsltGenerator/generatedFiles/fieldsUnique.xml"
@@ -345,7 +345,7 @@
 				style="indexingXsltGenerator/fieldsUniqueToXsltForSolr.xslt">
 					<param name="date" expression="07-01-2000"/>
 			</xslt>
-	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToSolrGenerated.xslt" todir="FgsConfigIndexTemplate/Solr/" preservelastmodified="true"/>
+	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToSolrGenerated.xslt" todir="FgsConfigIndexTemplate/Solr/" preservelastmodified="true" overwrite="true"/>
 
 	</target>
 
