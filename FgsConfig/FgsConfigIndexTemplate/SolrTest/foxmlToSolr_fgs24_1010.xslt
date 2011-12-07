@@ -100,16 +100,6 @@
 				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', 'ds.testMpdfSomeMd', 'dsUntok.',  'IFCreated=created,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
 				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', null,                'dsUntok.',  'IFCreated=created,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-
-				<field name="ds.testMwordX">
-					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, 'testMwordX', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-				</field>
-				<field name="ds.testMword">
-					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTikaWithMetadata($PID, $REPOSITORYNAME, 'testMword', 'Solr', 'ds.', 'title,Author,Word-Count', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-				</field>
-				<field name="ds.testMpdf">
-					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTikaWithMetadata($PID, $REPOSITORYNAME, 'testMpdf', 'Solr', 'ds.', '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-				</field>
 			
 			<!-- 
 			creating an index field with all text from the foxml record and its datastreams
