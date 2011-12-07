@@ -77,14 +77,23 @@
 			</xsl:for-each>
 
 			<!-- a datastream is fetched, if its mimetype 
-			     can be handled, the text becomes the value of the field. -->
+			     can be handled, the text becomes the value of the field.
+			     This is the version using PDFBox,
+			     below is the new version using Apache Tika. -->
+			<!-- 
 			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
 				<field>
 					<xsl:attribute name="name">
-						<xsl:value-of select="concat('dsm.', @ID)"/>
+						<xsl:value-of select="concat('ds.', @ID)"/>
 					</xsl:attribute>
 					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</field>
+			</xsl:for-each>
+			 -->
+
+			<!-- Text and metadata extraction using Apache Tika. -->
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, 'field', concat('ds.', @ID), concat('dsmd.', @ID, '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 			</xsl:for-each>
 			
 			<!-- 

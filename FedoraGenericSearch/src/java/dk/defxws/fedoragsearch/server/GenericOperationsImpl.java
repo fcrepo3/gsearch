@@ -216,6 +216,7 @@ public class GenericOperationsImpl implements Operations {
         params[15] = fgsUserName;
         params[16] = "SRFTYPE";
         params[17] = config.getSearchResultFilteringType();
+        usingQuery = query;
         return "";
     }
     

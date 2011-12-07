@@ -93,13 +93,13 @@
 			-->
 				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamTextFromTika(		$PID, $REPOSITORYNAME, 'testMwordX', 'field', 'ds.testMwordX',                                                    $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamMetadataFromTika(	$PID, $REPOSITORYNAME, 'testMword',  'field',                      'dsSomeMd.', 'TITLE=title,Author,WordCount=Word-Count',  $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamMetadataFromTika(	$PID, $REPOSITORYNAME, 'testMword',  'field',                      'dsSomeMd.', 'title=TITLE,Author,Word-Count=WordCount',  $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
 				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', 'ds.testMpdf',       'dsAllMd.',  '',                               $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', 'ds.testMpdfSomeMd', 'dsUntok.',  'IFCreated=created,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', 'ds.testMpdfSomeMd', 'dsUntok.',  'created=IFCreated,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', null,                'dsUntok.',  'IFCreated=created,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', null,                'dsUntok.',  'created=IFCreated,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 			
 			<!-- 
 			creating an index field with all text from the foxml record and its datastreams

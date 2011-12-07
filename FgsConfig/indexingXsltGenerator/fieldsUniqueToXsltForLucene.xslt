@@ -106,8 +106,11 @@
 				</xsl:if>
 			</xsl:for-each>
 
-			<xsl:comment>a datastream is fetched, if its mimetype 
-			     can be handled, the text becomes the value of the field.</xsl:comment>
+			<xsl:comment> a datastream is fetched, if its mimetype 
+			     can be handled, the text becomes the value of the field. 
+			     This is the version using PDFBox,
+			     below is the new version using Apache Tika. </xsl:comment>
+			<xsl:comment> 
 			<xslt:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
 				<IndexField index="TOKENIZED" store="YES" termVector="NO">
 					<xslt:attribute name="IFname">
@@ -115,6 +118,12 @@
 					</xslt:attribute>
 					<xslt:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</IndexField>
+			</xslt:for-each>
+			 </xsl:comment>
+
+			<xsl:comment> Text and metadata extraction using Apache Tika. </xsl:comment>
+			<xslt:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
+				<xslt:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, 'IndexField', concat('ds.', @ID), concat('dsmd.', @ID, '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 			</xslt:for-each>
 			
 			<xsl:comment>creating an index field with all text from the foxml record and its datastreams</xsl:comment>

@@ -68,43 +68,63 @@ public class TransformerToText {
 	            throw new GenericSearchException(e.toString());
 			}
 		}
+        if (logger.isDebugEnabled()) {
+            logger.debug("getFromTika"
+            		+" names="+metadata.names()
+            		+" indexFieldTagName="+indexFieldTagName
+            		+" textIndexField="+textIndexField
+            		+" indexFieldNamePrefix="+indexFieldNamePrefix
+            		+" selectedFields="+selectedFields);
+            for (int i=0; i<metadata.names().length; i++) {
+            	String name = metadata.names()[i];
+            	StringBuffer metadataValue = new StringBuffer(metadata.get(name));
+            	String[] metadataValues = metadata.getValues(name);
+            	if (metadataValues.length>1) {
+            		for (int j=1; j<metadataValues.length; j++) {
+            			metadataValue.append(" "+metadataValues[j]);
+            		}
+            	}
+                logger.debug("getFromTika"
+                		+" metadata name="+name
+                		+"    value="+metadataValue);
+            }
+        }
 		if ("IndexField".equals(indexFieldTagName) || "field".equals(indexFieldTagName)) {
 	        String[] names = new String[0];
-	        String[] namesOrg = new String[0];
-	        if (selectedFields != null){
-		        names = metadata.names();
-		        namesOrg = metadata.names();
-		        for (int i=0; i<names.length; i++) {
-		        	names[i] = names[i].replaceAll(" ", "_").replaceAll(":", "..").replaceAll("/", ".").replaceAll("=", "__");
-		        }
-	        }
 	        if (selectedFields != null && selectedFields.length()>0){
 	        	names = selectedFields.split(",");
-	        	namesOrg = selectedFields.split(",");
+	        } else {
+		        if (selectedFields != null){
+			        names = metadata.names();
+			        for (int i=0; i<names.length; i++) {
+			        	names[i] = names[i]+"="
+			       				   +names[i].replace(' ', '_')
+			        					    .replace(':', '_')
+			        					    .replace('/', '_')
+			        					    .replace('=', '_')
+			        					    .replace('(', '_')
+			        					    .replace(')', '_');
+			        }
+		        }
 	        }
 	        if (textIndexField != null && textIndexField.length() > 0) {
 	        	names = Arrays.copyOf(names, names.length+1);
 	        	names[names.length-1] = textIndexField;
-	        	namesOrg = Arrays.copyOf(namesOrg, namesOrg.length+1);
-	        	namesOrg[namesOrg.length-1] = textIndexField;
 	        }
 	        for (int i=0; i<names.length; i++) {
 	            if (logger.isDebugEnabled())
 	                logger.debug("getFromTika"
-	                		+" names["+i+"]="+names[i]
-	                		+" indexFieldTagName="+indexFieldTagName
-	                		+" textIndexField="+textIndexField
-	                		+" indexFieldNamePrefix="+indexFieldNamePrefix
-	                		+" selectedFields="+selectedFields
-	                		+"\nindexFields="+indexFields);
-	        	String fieldName = names[i].trim();
-	        	if (fieldName.length() > 0) {
-		        	String[] fieldNameWithParams = fieldName.split("/");
-		        	fieldName = fieldNameWithParams[0].trim();
-		        	String fieldNameOrg = fieldNameWithParams[0].trim();
-		        	if (fieldName.indexOf("=") > 0) {
-		        		fieldNameOrg = fieldName.substring(fieldName.indexOf("=")+1);
-		        		fieldName = fieldName.substring(0, fieldName.indexOf("="));
+	                		+" names["+i+"]="+names[i]);
+	        	String fieldSpec = names[i].trim();
+	        	if (fieldSpec.length() > 0) {
+		        	String[] fieldNameWithParams = fieldSpec.split("/");
+		        	String fieldName = fieldNameWithParams[0].trim();
+		        	String fieldNameOrg = fieldName;
+		        	if (fieldSpec.indexOf("=") > 0) {
+		        		fieldNameOrg = fieldSpec.substring(0, fieldSpec.indexOf("="));
+		        		fieldSpec = fieldSpec.substring(fieldSpec.indexOf("=")+1);
+			        	fieldNameWithParams = fieldSpec.split("/");
+			        	fieldName = fieldNameWithParams[0].trim();
 		        	}
 		        	String index = "TOKENIZED";
 		        	String store = "YES";
@@ -148,15 +168,12 @@ public class TransformerToText {
 			        	}
 			        	indexFields.append(indexFieldValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
 			        	indexFields.append("</"+indexFieldTagName+">");
+			        	indexFields.append("<!--"+names[i]+"-->");
 		        	}
 		            if (logger.isDebugEnabled())
 		                logger.debug("getFromTika"
 		                		+" fieldNameOrg="+fieldNameOrg
-		                		+" indexFields="+indexFields
-		                		+" indexFieldTagName="+indexFieldTagName
-		                		+" textIndexField="+textIndexField
-		                		+" indexFieldNamePrefix="+indexFieldNamePrefix
-		                		+" selectedFields="+selectedFields);
+		                		+"\nindexFields="+indexFields);
 	        	}
 	        }
 		}

@@ -74,13 +74,13 @@
 			-->
 				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamTextFromTika(		$PID, $REPOSITORYNAME, 'testMwordX', 'IndexField', 'ds.testMwordX',                                                                                              $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamMetadataFromTika(	$PID, $REPOSITORYNAME, 'testMword',  'IndexField',                      'dsSomeMd.', 'TITLE=title,Author,Word-Count',                                            $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamMetadataFromTika(	$PID, $REPOSITORYNAME, 'testMword',  'IndexField',                      'dsSomeMd.', 'title=TITLE,Author,Word-Count',                                            $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
 				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'IndexField', 'ds.testMpdf//NO',   'dsAllMd.',  '',                                                                         $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'IndexField', 'ds.testMpdfSomeMd', 'dsUntok.',  'IFCreated=created/UN_TOKENIZED//NO,Content-Type/UN_TOKENIZED/YES/YES/2.5', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'IndexField', 'ds.testMpdfSomeMd', 'dsUntok.',  'created=IFCreated/UN_TOKENIZED//NO,Content-Type/UN_TOKENIZED/YES/YES/2.5', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'IndexField', null,                'dsUntok.',  'IFCreated=created/UN_TOKENIZED//NO,Content-Type/UN_TOKENIZED/YES/YES/2.5', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'IndexField', null,                'dsUntok.',  'created=IFCreated/UN_TOKENIZED//NO,Content-Type/UN_TOKENIZED/YES/YES/2.5', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
 
 	</xsl:template>

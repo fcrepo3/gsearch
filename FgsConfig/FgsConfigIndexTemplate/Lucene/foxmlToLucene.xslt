@@ -99,14 +99,23 @@
 			</xsl:for-each>
 
 			<!-- a datastream is fetched, if its mimetype 
-			     can be handled, the text becomes the value of the field. -->
+			     can be handled, the text becomes the value of the field. 
+			     This is the version using PDFBox,
+			     below is the new version using Apache Tika. -->
+			<!-- 
 			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
 				<IndexField index="TOKENIZED" store="YES" termVector="NO">
 					<xsl:attribute name="IFname">
 						<xsl:value-of select="concat('ds.', @ID)"/>
 					</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamTextFromTika($PID, $REPOSITORYNAME, 'testMwordX', 'IndexField', @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+					<xsl:value-of select="exts:getDatastreamText($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</IndexField>
+			</xsl:for-each>
+			 -->
+
+			<!-- Text and metadata extraction using Apache Tika. -->
+			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, 'IndexField', concat('ds.', @ID), concat('dsmd.', @ID, '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 			</xsl:for-each>
 
 			<!-- example of a dissemination identified in bDefPid, methodName, parameters, asOfDateTime is fetched,  
