@@ -7,9 +7,15 @@
  */
 package dk.defxws.fedoragsearch.server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 
 import java.util.Date;
@@ -60,7 +66,8 @@ public class GenericOperationsImpl implements Operations {
     protected int deleteTotal = 0;
     protected int docCount = 0;
     protected int warnCount = 0;
-    
+
+    protected String usingQuery;
     protected byte[] foxmlRecord;
     protected String dsID;
     protected byte[] ds;
@@ -71,8 +78,16 @@ public class GenericOperationsImpl implements Operations {
     		String repositoryName,
     		String fedoraSoap,
     		String fedoraUser,
-    		String fedoraPass)
-            throws GenericSearchException {
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass)
+    throws GenericSearchException {
+        if (logger.isDebugEnabled())
+            logger.debug("getFedoraClient repositoryName="+repositoryName+" fedoraSoap="+fedoraSoap+" fedoraUser="+fedoraUser+" fedoraPass="+fedoraPass);
+    	if (trustStorePath!=null)
+    		System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+    	if (trustStorePass!=null)
+    		System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
         try {
             String baseURL = getBaseURL(fedoraSoap);
             String user = fedoraUser; 
@@ -114,11 +129,7 @@ public class GenericOperationsImpl implements Operations {
     		String trustStorePath,
     		String trustStorePass)
     throws GenericSearchException {
-    	if (trustStorePath!=null)
-    		System.setProperty("javax.net.ssl.trustStore", trustStorePath);
-    	if (trustStorePass!=null)
-    		System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
-    	FedoraClient client = getFedoraClient(repositoryName, fedoraSoap, fedoraUser, fedoraPass);
+    	FedoraClient client = getFedoraClient(repositoryName, fedoraSoap, fedoraUser, fedoraPass, trustStorePath, trustStorePass);
     	try {
     		return client.getAPIA();
     	} catch (Exception e) {
@@ -135,11 +146,7 @@ public class GenericOperationsImpl implements Operations {
     		String trustStorePath,
     		String trustStorePass)
     throws GenericSearchException {
-    	if (trustStorePath!=null)
-    		System.setProperty("javax.net.ssl.trustStore", trustStorePath);
-    	if (trustStorePass!=null)
-    		System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
-    	FedoraClient client = getFedoraClient(repositoryName, fedoraSoap, fedoraUser, fedoraPass);
+    	FedoraClient client = getFedoraClient(repositoryName, fedoraSoap, fedoraUser, fedoraPass, trustStorePath, trustStorePass);
     	try {
     		return client.getAPIM();
     	} catch (Exception e) {
@@ -626,25 +633,43 @@ public class GenericOperationsImpl implements Operations {
         return dsBuffer;
     }
     
-    public String getDatastreamFromTika(
+    public String getDatastreamTextFromTika(
             String pid,
             String repositoryName,
             String dsId,
+            String indexFieldTagName, 
+            String textIndexField,
     		String fedoraSoap,
     		String fedoraUser,
     		String fedoraPass,
     		String trustStorePath,
     		String trustStorePass) {
-    	return getDatastreamFromTikaWithMetadata(pid, repositoryName, dsId, null, null, null, fedoraSoap, fedoraUser, fedoraPass, trustStorePath, trustStorePass);
+    	return getDatastreamFromTika(pid, repositoryName, dsId, indexFieldTagName, textIndexField, null, null, fedoraSoap, fedoraUser, fedoraPass, trustStorePath, trustStorePass);
     }
     
-    public String getDatastreamFromTikaWithMetadata(
+    public String getDatastreamMetadataFromTika(
             String pid,
             String repositoryName,
             String dsId,
-            String pluginName, 
-            String indexfieldnamePrefix, 
-            String selectedFieldnames,
+            String indexFieldTagName, 
+            String indexFieldNamePrefix, 
+            String selectedFields,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass) {
+    	return getDatastreamFromTika(pid, repositoryName, dsId, indexFieldTagName, null, indexFieldNamePrefix, selectedFields, fedoraSoap, fedoraUser, fedoraPass, trustStorePath, trustStorePass);
+    }
+    
+    public String getDatastreamFromTika(
+            String pid,
+            String repositoryName,
+            String dsId,
+            String indexFieldTagName, 
+            String textIndexField,
+            String indexFieldNamePrefix, 
+            String selectedFields,
     		String fedoraSoap,
     		String fedoraUser,
     		String fedoraPass,
@@ -655,9 +680,10 @@ public class GenericOperationsImpl implements Operations {
             		+" pid="+pid
             		+" repositoryName="+repositoryName
             		+" dsId="+dsId
-            		+" pluginName="+pluginName
-            		+" indexfieldnamePrefix="+indexfieldnamePrefix
-            		+" selectedFieldnames="+selectedFieldnames
+            		+" indexFieldTagName="+indexFieldTagName
+            		+" textIndexField="+textIndexField
+            		+" indexFieldNamePrefix="+indexFieldNamePrefix
+            		+" selectedFields="+selectedFields
             		+" fedoraSoap="+fedoraSoap
             		+" fedoraUser="+fedoraUser
             		+" fedoraPass="+fedoraPass
@@ -701,7 +727,7 @@ public class GenericOperationsImpl implements Operations {
 	                        " dsId="+dsId+
 	                        " TransformerToText="+transformerToText);
                 try {
-					dsBuffer = transformerToText.getFromTika(ds, pluginName, indexfieldnamePrefix, selectedFieldnames);
+					dsBuffer = transformerToText.getFromTika(ds, indexFieldTagName, textIndexField, indexFieldNamePrefix, selectedFields);
 				} catch (Exception e) {
 		            if (logger.isDebugEnabled())
 		                logger.debug("getDatastreamFromTika" +

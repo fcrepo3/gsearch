@@ -76,13 +76,31 @@
 				</field>
 			</xsl:for-each>
 
-
-			<!-- testing of Tika extraction.
-				The three parameters specific to getDatastreamFromTikaWithMetadata are
-				- pluginName			either "Lucene" or "Solr"
-				- indexfieldnamePrefix	optional or empty, prefixed to the metadata indexfield names
-				- selectedFieldnames	comma-separated list of metadata field names, if empty then all fields are included
+			<!-- testing of Tika extraction. 
+				Parameters for getDatastreamFromTika, getDatastreamTextFromTika, and getDatastreamMetadataFromTika:
+				- indexFieldTagName		: either "IndexField" (with the Lucene plugin) or "field" (with the Solr plugin)
+				- textIndexField		: fieldSpec for the text index field, null or empty if not to be generated								 (not used with getDatastreamMetadataFromTika)
+				- indexfieldnamePrefix	: optional or empty, prefixed to the metadata indexfield names											 (not used with getDatastreamTextFromTika)
+				- selectedFields		: comma-separated list of metadata fieldSpecs, if empty then all fields are included with default params (not used with getDatastreamTextFromTika)
+				- fieldSpec				: [indexFieldName '='] metadataFieldName ['/' [index] ['/' [store] ['/' [termVector] ['/' [boost]]]]]
+						metadataFieldName can be seen as the generated index field names, when this list is empty
+						indexFieldName is optional, used as the generated index field name instead of metadataFieldName
+						the following parameters are used with Lucene (with Solr these values are specified in schema.xml)
+						index			: ['TOKENIZED'|'UN_TOKENIZED']	# first alternative is default
+						store			: ['YES'|'NO']					# first alternative is default
+						termVector		: ['YES'|'NO']					# first alternative is default
+						boost			: <decimal number>				# '1.0' is default
 			-->
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamTextFromTika(		$PID, $REPOSITORYNAME, 'testMwordX', 'field', 'ds.testMwordX',                                                    $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamMetadataFromTika(	$PID, $REPOSITORYNAME, 'testMword',  'field',                      'dsSomeMd.', 'TITLE=title,Author,WordCount=Word-Count',  $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', 'ds.testMpdf',       'dsAllMd.',  '',                               $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', 'ds.testMpdfSomeMd', 'dsUntok.',  'IFCreated=created,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika(			$PID, $REPOSITORYNAME, 'testMpdf',   'field', null,                'dsUntok.',  'IFCreated=created,Content-Type', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+
 				<field name="ds.testMwordX">
 					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, 'testMwordX', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</field>

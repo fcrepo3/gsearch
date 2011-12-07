@@ -11,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
@@ -44,9 +46,9 @@ public class TransformerToText {
     public TransformerToText() {
     }
     
-    public StringBuffer getFromTika(byte[] doc, String pluginName, String indexfieldnamePrefix, String selectedFieldnames) 
+    public StringBuffer getFromTika(byte[] doc, String indexFieldTagName, String textIndexField, String indexFieldNamePrefix, String selectedFields) 
     throws GenericSearchException {
-        StringBuffer docText = new StringBuffer();
+        StringBuffer indexFields = new StringBuffer();
         InputStream isr = new ByteArrayInputStream(doc);
         BodyContentHandler textHandler = new BodyContentHandler();
         Metadata metadata = new Metadata();
@@ -66,56 +68,99 @@ public class TransformerToText {
 	            throw new GenericSearchException(e.toString());
 			}
 		}
-		docText.append(textHandler.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
-		if ("Lucene".equals(pluginName) || "Solr".equals(pluginName)) {
-	        String[] names = metadata.names();
-	        if (selectedFieldnames != null && selectedFieldnames.length()>0){
-	        	names = selectedFieldnames.split(",");
+		if ("IndexField".equals(indexFieldTagName) || "field".equals(indexFieldTagName)) {
+	        String[] names = new String[0];
+	        String[] namesOrg = new String[0];
+	        if (selectedFields != null){
+		        names = metadata.names();
+		        namesOrg = metadata.names();
+		        for (int i=0; i<names.length; i++) {
+		        	names[i] = names[i].replaceAll(" ", "_").replaceAll(":", "..").replaceAll("/", ".").replaceAll("=", "__");
+		        }
+	        }
+	        if (selectedFields != null && selectedFields.length()>0){
+	        	names = selectedFields.split(",");
+	        	namesOrg = selectedFields.split(",");
+	        }
+	        if (textIndexField != null && textIndexField.length() > 0) {
+	        	names = Arrays.copyOf(names, names.length+1);
+	        	names[names.length-1] = textIndexField;
+	        	namesOrg = Arrays.copyOf(namesOrg, namesOrg.length+1);
+	        	namesOrg[namesOrg.length-1] = textIndexField;
 	        }
 	        for (int i=0; i<names.length; i++) {
-	        	String metadataName = names[i].trim();
-	        	if (metadataName.length() > 0) {
-		        	String[] metadataNameWithParams = metadataName.split("/");
-		        	metadataName = metadataNameWithParams[0].trim();
+	            if (logger.isDebugEnabled())
+	                logger.debug("getFromTika"
+	                		+" names["+i+"]="+names[i]
+	                		+" indexFieldTagName="+indexFieldTagName
+	                		+" textIndexField="+textIndexField
+	                		+" indexFieldNamePrefix="+indexFieldNamePrefix
+	                		+" selectedFields="+selectedFields
+	                		+"\nindexFields="+indexFields);
+	        	String fieldName = names[i].trim();
+	        	if (fieldName.length() > 0) {
+		        	String[] fieldNameWithParams = fieldName.split("/");
+		        	fieldName = fieldNameWithParams[0].trim();
+		        	String fieldNameOrg = fieldNameWithParams[0].trim();
+		        	if (fieldName.indexOf("=") > 0) {
+		        		fieldNameOrg = fieldName.substring(fieldName.indexOf("=")+1);
+		        		fieldName = fieldName.substring(0, fieldName.indexOf("="));
+		        	}
 		        	String index = "TOKENIZED";
 		        	String store = "YES";
 		        	String termVector = "YES";
 		        	String boost = "1.0";
-		        	if (metadataNameWithParams.length > 1) {
-		        		if (metadataNameWithParams[1].length() > 0)
-		        			index = metadataNameWithParams[1];
-			        	if (metadataNameWithParams.length > 2) {
-			        		if (metadataNameWithParams[2].length() > 0)
-			        			store = metadataNameWithParams[2];
-				        	if (metadataNameWithParams.length > 3) {
-				        		if (metadataNameWithParams[3].length() > 0)
-				        			termVector = metadataNameWithParams[3];
-					        	if (metadataNameWithParams.length > 4) {
-					        		if (metadataNameWithParams[4].length() > 0)
-					        			boost = metadataNameWithParams[4];
+		        	if (fieldNameWithParams.length > 1) {
+		        		if (fieldNameWithParams[1].length() > 0)
+		        			index = fieldNameWithParams[1];
+			        	if (fieldNameWithParams.length > 2) {
+			        		if (fieldNameWithParams[2].length() > 0)
+			        			store = fieldNameWithParams[2];
+				        	if (fieldNameWithParams.length > 3) {
+				        		if (fieldNameWithParams[3].length() > 0)
+				        			termVector = fieldNameWithParams[3];
+					        	if (fieldNameWithParams.length > 4) {
+					        		if (fieldNameWithParams[4].length() > 0)
+					        			boost = fieldNameWithParams[4];
 					        	}
 				        	}
 			        	}
 		        	}
-		        	StringBuffer metadataValue = new StringBuffer(metadata.get(metadataName));
-		        	String[] metadataValues = metadata.getValues(metadataName);
-		        	if (metadataValues.length>1) {
-		        		for (int j=1; j<metadataValues.length; j++) {
-		        			metadataValue.append(" "+metadataValues[j]);
-		        		}
-		        	}
-		        	if (metadataValue.length()>0) {
-			        	if ("Lucene".equals(pluginName)) {
-				        	docText.append("</IndexField>\n<IndexField IFname=\""+indexfieldnamePrefix+metadataName+"\" index=\""+index+"\" store=\""+store+"\" termVector=\""+termVector+"\" boost=\""+boost+"\">");
-			        	} else if ("Solr".equals(pluginName)) {
-				        	docText.append("</field>\n<field name=\""+indexfieldnamePrefix+metadataName+"\">");
+		        	StringBuffer indexFieldValue = new StringBuffer();
+		        	String indexFieldName = fieldName;
+		        	if (textIndexField != null && textIndexField.length() > 0 && i == names.length-1) {
+		        		indexFieldValue.append(textHandler.toString());
+		        	} else {
+		        		indexFieldName = indexFieldNamePrefix+fieldName;
+			        	indexFieldValue.append(metadata.get(fieldNameOrg));
+			        	String[] indexFieldValues = metadata.getValues(fieldNameOrg);
+			        	if (indexFieldValues.length>1) {
+			        		for (int j=1; j<indexFieldValues.length; j++) {
+			        			indexFieldValue.append(" "+indexFieldValues[j]);
+			        		}
 			        	}
-			        	docText.append(metadataValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
 		        	}
+		        	if (indexFieldValue.length()>0) {
+			        	if ("IndexField".equals(indexFieldTagName)) {
+				        	indexFields.append("\n<IndexField IFname=\""+indexFieldName+"\" index=\""+index+"\" store=\""+store+"\" termVector=\""+termVector+"\" boost=\""+boost+"\">");
+			        	} else if ("field".equals(indexFieldTagName)) {
+				        	indexFields.append("\n<field name=\""+indexFieldName+"\">");
+			        	}
+			        	indexFields.append(indexFieldValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
+			        	indexFields.append("</"+indexFieldTagName+">");
+		        	}
+		            if (logger.isDebugEnabled())
+		                logger.debug("getFromTika"
+		                		+" fieldNameOrg="+fieldNameOrg
+		                		+" indexFields="+indexFields
+		                		+" indexFieldTagName="+indexFieldTagName
+		                		+" textIndexField="+textIndexField
+		                		+" indexFieldNamePrefix="+indexFieldNamePrefix
+		                		+" selectedFields="+selectedFields);
 	        	}
 	        }
 		}
-        return docText;
+        return indexFields;
     }
     
     public StringBuffer getText(byte[] doc, String mimetype) 

@@ -105,7 +105,7 @@
 					<xsl:attribute name="IFname">
 						<xsl:value-of select="concat('ds.', @ID)"/>
 					</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamTextFromTika($PID, $REPOSITORYNAME, 'testMwordX', 'IndexField', @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 				</IndexField>
 			</xsl:for-each>
 
