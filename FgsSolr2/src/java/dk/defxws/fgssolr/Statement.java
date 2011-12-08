@@ -87,14 +87,14 @@ public class Statement {
     	Query query = null;
     	if (defaultFields.length == 1) {
     		try {
-    			query = (new QueryParser(Version.LUCENE_33, defaultFields[0], analyzer)).parse(queryString);
+    			query = (new QueryParser(Version.LUCENE_35, defaultFields[0], analyzer)).parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}
     	}
     	else {
     		try {
-    			query = (new MultiFieldQueryParser(Version.LUCENE_33, defaultFields, analyzer)).parse(queryString);
+    			query = (new MultiFieldQueryParser(Version.LUCENE_35, defaultFields, analyzer)).parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}
@@ -105,25 +105,23 @@ public class Statement {
     		ir = IndexReader.open(dir, true);
     		query.rewrite(ir);
     	} catch (CorruptIndexException e) {
-    		throw new GenericSearchException(e.toString());
-    	} catch (IOException e) {
-    		throw new GenericSearchException(e.toString());
-    	} finally {
     		if (ir!=null) {
         		try {
     				ir.close();
-    			} catch (IOException e) {
+    			} catch (IOException e1) {
     			}
     		}
-    	}
-    	try {
-			Directory dir = new SimpleFSDirectory(new File(indexPath));
-    		searcher = new IndexSearcher(dir, true);
-    	} catch (CorruptIndexException e) {
     		throw new GenericSearchException(e.toString());
     	} catch (IOException e) {
+    		if (ir!=null) {
+        		try {
+    				ir.close();
+    			} catch (IOException e2) {
+    			}
+    		}
     		throw new GenericSearchException(e.toString());
     	}
+    	searcher = new IndexSearcher(ir);
     	int start = Integer.parseInt(Integer.toString(startRecord));
     	TopDocs hits = getHits(query, start+maxResults-1, sortFields);
     	ScoreDoc[] docs = hits.scoreDocs;
@@ -204,6 +202,12 @@ public class Statement {
     		} catch (IOException e) {
     		}
     	}
+		if (ir!=null) {
+    		try {
+				ir.close();
+			} catch (IOException e) {
+			}
+		}
     	return rs;
     }
 

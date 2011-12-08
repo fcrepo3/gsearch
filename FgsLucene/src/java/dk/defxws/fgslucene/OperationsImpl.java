@@ -14,8 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -77,9 +79,8 @@ public class OperationsImpl extends GenericOperationsImpl {
                         " fgsUserName="+fgsUserName+
                         " usingIndexName="+usingIndexName);
         }
-        String usingQuery = query;
         if (srf != null && config.isSearchResultFilteringActive("insearch")) {
-        	usingQuery = srf.rewriteQueryForInsearch(fgsUserName, usingIndexName, query, fgsUserAttributes, config);
+        	usingQuery = srf.rewriteQueryForInsearch(fgsUserName, usingIndexName, usingQuery, fgsUserAttributes, config);
             if (logger.isDebugEnabled())
                 logger.debug("gfindObjects insearch" +
                         " fgsUserName="+fgsUserName+
@@ -338,7 +339,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		StringBuffer resultXml)
     throws java.rmi.RemoteException {
     	try {
-            iw.optimize();
+            iw.forceMergeDeletes();
 		} catch (CorruptIndexException e) {
             throw new GenericSearchException("updateIndex optimize error indexName="+indexName+"\n", e);
         } catch (IOException e) {
@@ -510,7 +511,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             logger.debug("analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
         Analyzer analyzer = null;
 		try {
-			Version version = Version.LUCENE_33;
+			Version version = Version.LUCENE_35;
 			Class analyzerClass = Class.forName(analyzerClassName);
             if (logger.isDebugEnabled())
                 logger.debug("analyzerClass=" + analyzerClass.toString());
@@ -533,11 +534,12 @@ public class OperationsImpl extends GenericOperationsImpl {
     public Analyzer getQueryAnalyzer(String indexName)
     throws GenericSearchException {
         Analyzer analyzer = getAnalyzer(indexName);
-        PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer);
+        Map<String,Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
     	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
     	while (untokenizedFields.hasMoreElements()) {
-    		pfanalyzer.addAnalyzer(untokenizedFields.nextToken(), new KeywordAnalyzer());
+    		fieldAnalyzers.put(untokenizedFields.nextToken(), new KeywordAnalyzer());
     	}
+        PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer, fieldAnalyzers);
         if (logger.isDebugEnabled())
             logger.debug("getQueryAnalyzer indexName=" + indexName+ " untokenizedFields="+untokenizedFields);
         return pfanalyzer;
@@ -553,13 +555,13 @@ public class OperationsImpl extends GenericOperationsImpl {
 		IndexReader irreopened = null;
 		if (ir != null && readonly) {
 	    	try {
-				irreopened = ir.reopen();
+				irreopened = IndexReader.openIfChanged(ir, readonly);
 			} catch (CorruptIndexException e) {
 				throw new GenericSearchException("IndexReader reopen error indexName=" + indexName+ " :\n", e);
 			} catch (IOException e) {
 				throw new GenericSearchException("IndexReader reopen error indexName=" + indexName+ " :\n", e);
 			}
-			if (ir != irreopened){
+			if (null != irreopened){
 				try {
 					ir.close();
 				} catch (IOException e) {
@@ -609,7 +611,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		} catch (IOException e) {
                 throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
     		}
-    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_33, getAnalyzer(indexName));
+    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_35, getAnalyzer(indexName));
     		int maxBufferedDocs = config.getMaxBufferedDocs(indexName);
     		if (maxBufferedDocs > 0) {
     			iwconfig.setMaxBufferedDocs(maxBufferedDocs);
