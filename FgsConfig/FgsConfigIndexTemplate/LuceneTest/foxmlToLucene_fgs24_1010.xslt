@@ -63,9 +63,12 @@
 				- textIndexField		: fieldSpec for the text index field, null or empty if not to be generated								 (not used with getDatastreamMetadataFromTika)
 				- indexfieldnamePrefix	: optional or empty, prefixed to the metadata indexfield names											 (not used with getDatastreamTextFromTika)
 				- selectedFields		: comma-separated list of metadata fieldSpecs, if empty then all fields are included with default params (not used with getDatastreamTextFromTika)
-				- fieldSpec				: [indexFieldName '='] metadataFieldName ['/' [index] ['/' [store] ['/' [termVector] ['/' [boost]]]]]
-						metadataFieldName can be seen as the generated index field names, when this list is empty
-						indexFieldName is optional, used as the generated index field name instead of metadataFieldName
+				- fieldSpec				: metadataFieldName ['=' indexFieldName] ['/' [index] ['/' [store] ['/' [termVector] ['/' [boost]]]]]
+						metadataFieldName must be exactly as extracted by Tika from the document. 
+										  You may see the available names if you log in debug mode, 
+										  look for "METADATA name=" under "fullDsId=" in the log, when "getFromTika" was called during updateIndex
+						indexFieldName is used as the generated index field name,
+										  if not given, GSearch uses metadataFieldName after replacement of the characters ' ', ':', '/', '=', '(', ')' with '_'
 						the following parameters are used with Lucene (with Solr these values are specified in schema.xml)
 						index			: ['TOKENIZED'|'UN_TOKENIZED']	# first alternative is default
 						store			: ['YES'|'NO']					# first alternative is default

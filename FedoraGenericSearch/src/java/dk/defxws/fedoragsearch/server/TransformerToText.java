@@ -46,7 +46,7 @@ public class TransformerToText {
     public TransformerToText() {
     }
     
-    public StringBuffer getFromTika(byte[] doc, String indexFieldTagName, String textIndexField, String indexFieldNamePrefix, String selectedFields) 
+    public StringBuffer getFromTika(String fullDsId, byte[] doc, String indexFieldTagName, String textIndexField, String indexFieldNamePrefix, String selectedFields) 
     throws GenericSearchException {
         StringBuffer indexFields = new StringBuffer();
         InputStream isr = new ByteArrayInputStream(doc);
@@ -70,7 +70,7 @@ public class TransformerToText {
 		}
         if (logger.isDebugEnabled()) {
             logger.debug("getFromTika"
-            		+" names="+metadata.names()
+            		+" fullDsId="+fullDsId
             		+" indexFieldTagName="+indexFieldTagName
             		+" textIndexField="+textIndexField
             		+" indexFieldNamePrefix="+indexFieldNamePrefix
@@ -84,9 +84,7 @@ public class TransformerToText {
             			metadataValue.append(" "+metadataValues[j]);
             		}
             	}
-                logger.debug("getFromTika"
-                		+" metadata name="+name
-                		+"    value="+metadataValue);
+                logger.debug(" METADATA name="+name+"    value="+metadataValue);
             }
         }
 		if ("IndexField".equals(indexFieldTagName) || "field".equals(indexFieldTagName)) {
@@ -114,7 +112,7 @@ public class TransformerToText {
 	        for (int i=0; i<names.length; i++) {
 	            if (logger.isDebugEnabled())
 	                logger.debug("getFromTika"
-	                		+" names["+i+"]="+names[i]);
+	                		+" metadata names["+i+"]="+names[i]);
 	        	String fieldSpec = names[i].trim();
 	        	if (fieldSpec.length() > 0) {
 		        	String[] fieldNameWithParams = fieldSpec.split("/");
@@ -160,20 +158,23 @@ public class TransformerToText {
 			        		}
 			        	}
 		        	}
+		        	StringBuffer indexField = new StringBuffer();
 		        	if (indexFieldValue.length()>0) {
 			        	if ("IndexField".equals(indexFieldTagName)) {
-				        	indexFields.append("\n<IndexField IFname=\""+indexFieldName+"\" index=\""+index+"\" store=\""+store+"\" termVector=\""+termVector+"\" boost=\""+boost+"\">");
+				        	indexField.append("\n<IndexField IFname=\""+indexFieldName+"\" index=\""+index+"\" store=\""+store+"\" termVector=\""+termVector+"\" boost=\""+boost+"\">");
 			        	} else if ("field".equals(indexFieldTagName)) {
-				        	indexFields.append("\n<field name=\""+indexFieldName+"\">");
+				        	indexField.append("\n<field name=\""+indexFieldName+"\">");
 			        	}
-			        	indexFields.append(indexFieldValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
-			        	indexFields.append("</"+indexFieldTagName+">");
-			        	indexFields.append("<!--"+names[i]+"-->");
+			        	indexField.append(indexFieldValue.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("&", "&amp;").replaceAll("\"", "&quot;"));
+			        	indexField.append("</"+indexFieldTagName+">");
+			        	indexField.append("<!--"+names[i]+"-->");
+			        	indexFields.append(indexField);
+			        	
 		        	}
 		            if (logger.isDebugEnabled())
 		                logger.debug("getFromTika"
-		                		+" fieldNameOrg="+fieldNameOrg
-		                		+"\nindexFields="+indexFields);
+		                		+" metadataFieldName="+fieldNameOrg
+		                		+" indexField="+indexField);
 	        	}
 	        }
 		}

@@ -728,7 +728,7 @@ public class GenericOperationsImpl implements Operations {
 	                        " dsId="+dsId+
 	                        " TransformerToText="+transformerToText);
                 try {
-					dsBuffer = transformerToText.getFromTika(ds, indexFieldTagName, textIndexField, indexFieldNamePrefix, selectedFields);
+					dsBuffer = transformerToText.getFromTika(repositoryName+"/"+pid+"/"+dsId, ds, indexFieldTagName, textIndexField, indexFieldNamePrefix, selectedFields);
 				} catch (Exception e) {
 		            if (logger.isDebugEnabled())
 		                logger.debug("getDatastreamFromTika" +

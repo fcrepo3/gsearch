@@ -91,9 +91,26 @@
 			</xsl:for-each>
 			 -->
 
-			<!-- Text and metadata extraction using Apache Tika. -->
+			<!-- Text and metadata extraction using Apache Tika. 
+				Parameters for getDatastreamFromTika, getDatastreamTextFromTika, and getDatastreamMetadataFromTika:
+				- indexFieldTagName		: either "IndexField" (with the Lucene plugin) or "field" (with the Solr plugin)
+				- textIndexField		: fieldSpec for the text index field, null or empty if not to be generated								 (not used with getDatastreamMetadataFromTika)
+				- indexfieldnamePrefix	: optional or empty, prefixed to the metadata indexfield names											 (not used with getDatastreamTextFromTika)
+				- selectedFields		: comma-separated list of metadata fieldSpecs, if empty then all fields are included with default params (not used with getDatastreamTextFromTika)
+				- fieldSpec				: metadataFieldName ['=' indexFieldName] ['/' [index] ['/' [store] ['/' [termVector] ['/' [boost]]]]]
+						metadataFieldName must be exactly as extracted by Tika from the document. 
+										  You may see the available names if you log in debug mode, 
+										  look for "METADATA name=" under "fullDsId=" in the log, when "getFromTika" was called during updateIndex
+						indexFieldName is used as the generated index field name,
+										  if not given, GSearch uses metadataFieldName after replacement of the characters ' ', ':', '/', '=', '(', ')' with '_'
+						the following parameters are used with Lucene (with Solr these values are specified in schema.xml)
+						index			: ['TOKENIZED'|'UN_TOKENIZED']	# first alternative is default
+						store			: ['YES'|'NO']					# first alternative is default
+						termVector		: ['YES'|'NO']					# first alternative is default
+						boost			: <decimal number>				# '1.0' is default
+			-->
 			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, 'field', concat('ds.', @ID), concat('dsmd.', @ID, '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, 'field', concat('ds.', @ID), concat('dsmd_', @ID, '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 			</xsl:for-each>
 			
 			<!-- 
