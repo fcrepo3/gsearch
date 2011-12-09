@@ -3,11 +3,22 @@
 			<title>Fedora Generic Search Service</title>
 			<link rel="stylesheet" type="text/css" href="css/docstyle.css"/>
 			<style type="text/css">
-				ol {
+				.toc {
+				background: #CCCCCC;
+				}
+				.toc p {
+				margin-left: 20px;
+				line-height: 30px;
+				}
+				.toc dt {
+				margin-left: 20px;
+				line-height: 30px;
+				}
+				ul {
 				list-style: square outside none;
     			padding-top: 6px;
 				}
-				ol ol {
+				ul ul {
 				list-style: disc outside none;
     			padding-top: 6px;
 				margin-bottom: 10px;
@@ -36,7 +47,14 @@
 				abbreviated fedoragsearch or GSearch.
 				</p>
 				<p>You, the reader, are presumably responsible for or involved in making your digital contents in Fedora
-				searchable for your end-users. GSearch makes this task easy.
+				searchable for your end-users. GSearch makes this task relatively easy.
+				</p>
+				<p>GSearch comes with three plugins for top-class open-source search engines, Apache Lucene, Apache Solr, and Zebra.
+				</p>
+				<p>Your choice of search engine plugin depends on circumstances. 
+				If you are one developer or a small team, you may prefer to take the easiest way, that is the Lucene plugin.
+				If you want all options open, you choose the Solr plugin, where you need to know and do much more.
+				The Zebra plugin is the choice that nobody has taken, because it is in a culture different from Fedora, and new developments have stopped.
 				</p>
 		</div>
 		<p></p>
@@ -79,7 +97,7 @@
 			<p>The demo uses a Fedora 3.5 repository, where the set of Fedora demo objects has been ingested
 			and indexed by GSearch. You can view it through the GSearch administrator interface, 
 			which has 5 pages. Step through it in this sequence (login as gsearchGuest:gsearchGuestPass):</p>
-			<ol>
+			<ul>
 				<li>
 					<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=getRepositoryInfo" target="DTUdemo">The Repository Info page</a>.
 				</li>
@@ -95,7 +113,7 @@
 				<li>
 					<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=gfindObjects" target="DTUdemo">The Search page</a>.
 				</li>
-			</ol> 
+			</ul> 
 			<p>You may press buttons and enter queries, but you will notice that you are not authorized to do the updateIndex actions.
 			</p>
 		</div>
@@ -105,7 +123,7 @@
 			<a name="owndemo"><h2>See a demo at your own site, almost out-of-the-box</h2></a>
 			
 			<p>Perform these steps:</p>
-			<ol>
+			<ul>
 				<li>Create a Fedora 3.5 installation by quick install. The only piece of custom configuration needed is setting
 					the value of the param enabled to true for the Messaging module in fedora.fcfg:
 <pre>&lt;module role="org.fcrepo.server.messaging.Messaging" class="org.fcrepo.server.messaging.MessagingModule"&gt;
@@ -145,7 +163,7 @@
 					and the admin pages are visible here:
 				</li>
 				<li>
-					<ol>
+					<ul>
 						<li>
 							<a href="rest?operation=updateIndex" target="owndemorest">The Update Index page</a>.
 						</li>
@@ -161,12 +179,12 @@
 						<li>
 							<a href="rest?operation=getIndexInfo" target="owndemorest">The Index Info page</a>.
 						</li>
-					</ol> 
+					</ul> 
 				</li>
 				<li>Ingest the Fedora 3.5 demo objects, there are 41, 20 of them are data objects and will be indexed.
 					View the admin pages.
 				</li>
-			</ol> 
+			</ul> 
 		</div>
 			
 		<div>
@@ -310,7 +328,7 @@
 			<a name="realapp"><h2>Install and configure for your application</h2></a>
 			
 			<p>Perform these steps:</p>
-			<ol>
+			<ul>
 				<li>Download fedoragsearch.war as above and copy it to a tomcat or similar web server. 
 					It does not need to be the web server running Fedora itself.
 					You may rename the .war file, before you copy it
@@ -443,7 +461,7 @@
 						Inspect the Lucene index with <a href="http://www.getopt.org/luke/">Luke</a>.
 						Notice, Luke cannot open an empty Lucene index.
 				</li>
-			</ol>
+			</ul>
 		</div>
 
 		<div>
@@ -549,22 +567,22 @@
 			
 		<div>
 			<a name="extraction"><h2>Full-text and metadata extraction from datastreams using Apache Tika</h2></a>
-			<table border="1" cellpadding="2">
+			<table border="1" cellpadding="8">
 				<tr><th align="left" colspan="2">Parameters for getDatastreamFromTika, getDatastreamTextFromTika, and getDatastreamMetadataFromTika</th></tr>
 				<tr><td>indexFieldTagName</td><td>either "IndexField" (with the Lucene plugin) or "field" (with the Solr plugin)</td></tr>
 				<tr><td>textIndexField<br/> (not used with getDatastreamMetadataFromTika)</td><td>fieldSpec for the text index field, null or empty if not to be generated</td></tr>
 				<tr><td>indexfieldnamePrefix<br/> (not used with getDatastreamTextFromTika)</td><td>optional or empty, prefixed to the metadata indexfield names</td></tr>
 				<tr><td>selectedFields<br/> (not used with getDatastreamTextFromTika)</td><td>comma-separated list of metadata fieldSpecs, if empty then all fields are included with default params</td></tr>
-				<tr><td>fieldSpec</td><td>metadataFieldName ['=' indexFieldName] ['/' [index] ['/' [store] ['/' [termVector] ['/' [boost]]]]]</td></tr>
+				<tr><td>fieldSpec</td><td>metadataFieldName [ '=' indexFieldName] [ '/' [index] [ '/' [store] [ '/' [termVector] [ '/' [boost]]]]]</td></tr>
 				<tr><td>- metadataFieldName</td><td>must be exactly as extracted by Tika from the document. 
 										  You may see the available names, if you log in debug mode
 										  and look for "METADATA name=" under "fullDsId=" in the log, when "getFromTika" was called during updateIndex</td></tr>
 				<tr><td>- indexFieldName</td><td>is used as the generated index field name,
 										  if not given, GSearch uses metadataFieldName after replacement of the characters ' ', ':', '/', '=', '(', ')' with '_'</td></tr>
 				<tr><td>- the following parameters are used with Lucene (with Solr these values are specified in schema.xml)</td></tr>
-				<tr><td>- index</td><td>['TOKENIZED'|'UN_TOKENIZED']<br/> # first alternative is default</td></tr>
-				<tr><td>- store</td><td>['YES'|'NO']<br/> # first alternative is default</td></tr>
-				<tr><td>- termVector</td><td>['YES'|'NO']<br/> # first alternative is default</td></tr>
+				<tr><td>- index</td><td>[ 'TOKENIZED' | 'UN_TOKENIZED' ]<br/> # first alternative is default</td></tr>
+				<tr><td>- store</td><td>[ 'YES' | 'NO' ]<br/> # first alternative is default</td></tr>
+				<tr><td>- termVector</td><td>[ 'YES' | 'NO' ]<br/> # first alternative is default</td></tr>
 				<tr><td>- boost</td><td>&lt;decimal number><br/> # '1.0' is default</td></tr>
 			</table>
 		</div>
