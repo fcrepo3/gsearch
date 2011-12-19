@@ -10,11 +10,7 @@
 
 	<xsl:namespace-alias result-prefix="xsl"
                        stylesheet-prefix="xslt"/>
-                       
-<!--
-	 This xslt stylesheet generates an indexing stylesheet from a set of foxml records to the Solr plugin doc
--->
-
+       
 	<xsl:template match="/">
 
 <xsl:text>	

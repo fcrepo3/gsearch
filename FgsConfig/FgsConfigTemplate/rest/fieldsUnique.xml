@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:foxml="info:fedora/fedora-system:def/foxml#">
+<element>
+<XPath></XPath>
+<IFname>foxml.all.text</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">foxml.all.text</DisplayName>
+</element>
+<element>
+<XPath>//audit:action</XPath>
+<IFname>audit.action</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">audit.action</DisplayName>
+</element>
+<element>
+<XPath>//audit:componentID</XPath>
+<IFname>audit.componentID</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">audit.componentID</DisplayName>
+</element>
+<element>
+<XPath>//audit:date</XPath>
+<IFname>audit.date</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">audit.date</DisplayName>
+</element>
+<element>
+<XPath>//audit:justification</XPath>
+<IFname>audit.justification</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">audit.justification</DisplayName>
+</element>
+<element>
+<XPath>//audit:process</XPath>
+<IFname>audit.process</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">audit.process</DisplayName>
+</element>
+<attribute>
+<XPath>//audit:process/@type</XPath>
+<IFname>audit.process_type</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">audit.process_type</DisplayName>
+</attribute>
+<attribute>
+<XPath>//audit:record/@ID</XPath>
+<IFname>audit.record_ID</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">audit.record_ID</DisplayName>
+</attribute>
+<element>
+<XPath>//audit:responsibility</XPath>
+<IFname>audit.responsibility</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">audit.responsibility</DisplayName>
+</element>
+<element>
+<XPath>//dc:creator</XPath>
+<IFname>dc.creator</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.creator</DisplayName>
+</element>
+<element>
+<XPath>//dc:date</XPath>
+<IFname>dc.date</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.date</DisplayName>
+</element>
+<element>
+<XPath>//dc:description</XPath>
+<IFname>dc.description</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.description</DisplayName>
+</element>
+<element>
+<XPath>//dc:format</XPath>
+<IFname>dc.format</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.format</DisplayName>
+</element>
+<element>
+<XPath>//dc:identifier</XPath>
+<IFname>dc.identifier</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.identifier</DisplayName>
+</element>
+<element>
+<XPath>//dc:publisher</XPath>
+<IFname>dc.publisher</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.publisher</DisplayName>
+</element>
+<element>
+<XPath>//dc:relation</XPath>
+<IFname>dc.relation</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.relation</DisplayName>
+</element>
+<element>
+<XPath>//dc:rights</XPath>
+<IFname>dc.rights</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.rights</DisplayName>
+</element>
+<element>
+<XPath>//dc:subject</XPath>
+<IFname>dc.subject</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.subject</DisplayName>
+</element>
+<element>
+<XPath>//dc:title</XPath>
+<IFname>dc.title</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.title</DisplayName>
+</element>
+<element>
+<XPath>//foxml:contentLocation</XPath>
+<IFname>foxml.contentLocation</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">foxml.contentLocation</DisplayName>
+</element>
+<attribute>
+<XPath>//foxml:contentLocation/@REF</XPath>
+<IFname>foxml.contentLocation_REF</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.contentLocation_REF</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:contentLocation/@TYPE</XPath>
+<IFname>foxml.contentLocation_TYPE</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.contentLocation_TYPE</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastream/@CONTROL_GROUP</XPath>
+<IFname>foxml.datastream_CONTROL_GROUP</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastream_CONTROL_GROUP</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastream/@ID</XPath>
+<IFname>foxml.datastream_ID</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastream_ID</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastream/@STATE</XPath>
+<IFname>foxml.datastream_STATE</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastream_STATE</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastream/@VERSIONABLE</XPath>
+<IFname>foxml.datastream_VERSIONABLE</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastream_VERSIONABLE</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastreamVersion/@CREATED</XPath>
+<IFname>foxml.datastreamVersion_CREATED</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastreamVersion_CREATED</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastreamVersion/@FORMAT_URI</XPath>
+<IFname>foxml.datastreamVersion_FORMAT_URI</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastreamVersion_FORMAT_URI</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastreamVersion/@ID</XPath>
+<IFname>foxml.datastreamVersion_ID</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastreamVersion_ID</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastreamVersion/@LABEL</XPath>
+<IFname>foxml.datastreamVersion_LABEL</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastreamVersion_LABEL</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastreamVersion/@MIMETYPE</XPath>
+<IFname>foxml.datastreamVersion_MIMETYPE</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastreamVersion_MIMETYPE</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:datastreamVersion/@SIZE</XPath>
+<IFname>foxml.datastreamVersion_SIZE</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.datastreamVersion_SIZE</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:digitalObject/@PID</XPath>
+<IFname>foxml.digitalObject_PID</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.digitalObject_PID</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:digitalObject/@VERSION</XPath>
+<IFname>foxml.digitalObject_VERSION</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.digitalObject_VERSION</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:digitalObject/@xsi:schemaLocation</XPath>
+<IFname>foxml.digitalObject_xsi:schemaLocation</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.digitalObject_xsi:schemaLocation</DisplayName>
+</attribute>
+<element>
+<XPath>//foxml:property</XPath>
+<IFname>foxml.property</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">foxml.property</DisplayName>
+</element>
+<attribute>
+<XPath>//foxml:property/@NAME</XPath>
+<IFname>foxml.property_NAME</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.property_NAME</DisplayName>
+</attribute>
+<attribute>
+<XPath>//foxml:property/@VALUE</XPath>
+<IFname>foxml.property_VALUE</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">foxml.property_VALUE</DisplayName>
+</attribute>
+<element>
+<XPath>//meta:creator</XPath>
+<IFname>meta.creator</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">meta.creator</DisplayName>
+</element>
+<element>
+<XPath>//meta:description</XPath>
+<IFname>meta.description</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">meta.description</DisplayName>
+</element>
+<element>
+<XPath>//meta:publisher</XPath>
+<IFname>meta.publisher</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">meta.publisher</DisplayName>
+</element>
+<element>
+<XPath>//meta:subject</XPath>
+<IFname>meta.subject</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">meta.subject</DisplayName>
+</element>
+<element>
+<XPath>//meta:title</XPath>
+<IFname>meta.title</IFname>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">meta.title</DisplayName>
+</element>
+<attribute>
+<XPath>//oai_dc:dc/@xsi:schemaLocation</XPath>
+<IFname>oai_dc.dc_xsi:schemaLocation</IFname>
+<DisplayName uiUse="ORfacet" initValue="" browseFrom="!">oai_dc.dc_xsi:schemaLocation</DisplayName>
+</attribute>
+</root>

@@ -11,6 +11,13 @@
 	<target name="configForWebServer"
 			depends="prep"
         	description="build the config">
+		
+        <ant target="configDemoSearchResultFiltering">
+			<property name="configName" value="configDemoSearchResultFiltering"/>
+        </ant>
+        <ant target="configDemoIndexPerDS_fgs24_1019">
+			<property name="configName" value="configDemoIndexPerDS_fgs24_1019"/>
+        </ant>
 	</target>
 
 	<target name="configForLocalTest"
@@ -69,6 +76,13 @@
 		
         <ant target="configDemoSearchResultFiltering">
 			<property name="configName" value="configDemoSearchResultFiltering"/>
+        </ant>
+		
+        <ant target="configLocal">
+			<property name="configName" value="configTestOnLuceneFgs24_1009"/>
+			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" value="${local.FEDORA_HOME}/gsearch/FgsIndex"/>
+			<property name="indexingDocXslt" value="foxmlToLucene"/>
         </ant>
 		
         <ant target="configLocal">
@@ -312,21 +326,18 @@
 			out="indexingXsltGenerator/generatedFiles/fields.xml"
 			extension=".xml"
 			style="indexingXsltGenerator/foxmlToFields.xslt">
-				<param name="date" expression="07-01-2000"/>
 		</xslt>
 		<xslt 
 			in="indexingXsltGenerator/generatedFiles/fields.xml"
 			out="indexingXsltGenerator/generatedFiles/fieldsSorted.xml"
 			extension=".xml"
 			style="indexingXsltGenerator/fieldsToFieldsSorted.xslt">
-				<param name="date" expression="07-01-2000"/>
 		</xslt>
 		<xslt 
 			in="indexingXsltGenerator/generatedFiles/fieldsSorted.xml"
 			out="indexingXsltGenerator/generatedFiles/fieldsUnique.xml"
 			extension=".xml"
 			style="indexingXsltGenerator/fieldsSortedToFieldsUnique.xslt">
-				<param name="date" expression="07-01-2000"/>
 		</xslt>
 
 			<xslt 
@@ -334,7 +345,6 @@
 				out="indexingXsltGenerator/generatedFiles/foxmlToLuceneGenerated.xslt"
 				extension=".xslt"
 				style="indexingXsltGenerator/fieldsUniqueToXsltForLucene.xslt">
-					<param name="date" expression="07-01-2000"/>
 			</xslt>
 	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToLuceneGenerated.xslt" todir="FgsConfigIndexTemplate/Lucene/" preservelastmodified="true" overwrite="true"/>
 
@@ -343,7 +353,6 @@
 				out="indexingXsltGenerator/generatedFiles/foxmlToSolrGenerated.xslt"
 				extension=".xslt"
 				style="indexingXsltGenerator/fieldsUniqueToXsltForSolr.xslt">
-					<param name="date" expression="07-01-2000"/>
 			</xslt>
 	        <copy file="indexingXsltGenerator/generatedFiles/foxmlToSolrGenerated.xslt" todir="FgsConfigIndexTemplate/Solr/" preservelastmodified="true" overwrite="true"/>
 

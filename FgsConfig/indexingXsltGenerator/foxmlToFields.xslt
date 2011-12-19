@@ -16,6 +16,7 @@
 		<element>
 			<XPath>//<xsl:value-of select="name(.)"/></XPath>
 			<IFname><xsl:value-of select="translate(name(.),':','.')"/></IFname>
+			<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa"><xsl:value-of select="translate(name(.),':','.')"/></DisplayName>
 		</element>
 		<xsl:text>&#xA;</xsl:text>
 	</xsl:template>
@@ -24,6 +25,7 @@
 		<attribute>
 			<XPath>//<xsl:value-of select="name(..)"/>/@<xsl:value-of select="name(.)"/></XPath>
 			<IFname><xsl:value-of select="translate(name(..),':','.')"/>_<xsl:value-of select="name(.)"/></IFname>
+			<DisplayName uiUse="ORfacet" initValue="" browseFrom="!"><xsl:value-of select="translate(name(..),':','.')"/>_<xsl:value-of select="name(.)"/></DisplayName>
 		</attribute>
 		<xsl:text>&#xA;</xsl:text>
 	</xsl:template>

@@ -71,6 +71,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             String resultPageXslt)
     throws java.rmi.RemoteException {
         super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
+        if ("".equals(usingQuery)) {
+        	return embeddedResult.toString();
+        }
         String usingIndexName = config.getIndexName(indexName);
         if (srf != null && config.isSearchResultFilteringActive("presearch")) {
         	usingIndexName = srf.selectIndexNameForPresearch(fgsUserName, usingIndexName, fgsUserAttributes, config);
@@ -611,7 +614,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		} catch (IOException e) {
                 throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
     		}
-    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_35, getAnalyzer(indexName));
+    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_35, getQueryAnalyzer(indexName));
     		int maxBufferedDocs = config.getMaxBufferedDocs(indexName);
     		if (maxBufferedDocs > 0) {
     			iwconfig.setMaxBufferedDocs(maxBufferedDocs);

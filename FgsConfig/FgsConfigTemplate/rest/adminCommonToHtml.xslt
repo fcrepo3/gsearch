@@ -42,6 +42,7 @@
 					<th><a href="?operation=browseIndex">browseIndex</a></th>
 					<th><a href="?operation=getRepositoryInfo">getRepositoryInfo</a></th>
 					<th><a href="?operation=getIndexInfo">getIndexInfo</a></th>
+					<th><a href="?operation=gfindObjects&amp;restXslt=enduserSearchToHtml" target="fgseuSearch">enduserSearch</a></th>
 					<td>(<xsl:value-of select="$TIMEUSEDMS"/> milliseconds)</td>
 					</tr>
 				</table>

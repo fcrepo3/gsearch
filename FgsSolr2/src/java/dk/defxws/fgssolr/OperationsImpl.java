@@ -73,6 +73,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             String resultPageXslt)
     throws java.rmi.RemoteException {
         super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength, indexName, sortFields, resultPageXslt);
+        if ("".equals(usingQuery)) {
+        	return embeddedResult.toString();
+        }
         String usingIndexName = config.getIndexName(indexName);
         if (srf != null && config.isSearchResultFilteringActive("presearch")) {
         	usingIndexName = srf.selectIndexNameForPresearch(fgsUserName, usingIndexName, fgsUserAttributes, config);

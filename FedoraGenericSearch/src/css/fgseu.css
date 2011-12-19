@@ -1,0 +1,344 @@
+	
+	a {
+		color: #326F86;
+		background-color: transparent;
+		text-decoration: none;
+		margin: 0;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+	body { 
+    	background-color: #ffffff;
+    	margin: 20px;
+    	font-family: Arial, Helvetica, sans-serif;
+    	font-size: 14px;
+    	line-height: 20px;
+    	color: #000000;
+	}
+	img {
+		border: 0px;
+	}
+	tbody {
+		border-top: 0px;
+	}
+	select,input {
+		font-size: 9pt;
+	}
+	
+	/*** All ***/
+	#all {
+    	border: 1px solid;
+		border-color: #333333;
+		width: 1080px;
+		padding: 3px;
+		background-color: #eeeeee;
+	}
+	
+	/*** Header ***/
+	#header {
+    	border-bottom: 1px solid;
+    	clear: both;
+    	margin-bottom: 10px;
+    	min-height: 70px;
+		width: 100%;
+	}
+	#logo {
+    	background-image: url(http://www.fedora.info/download/2.1/userdocs/logo_44x60.gif);
+    	background-repeat: no-repeat;
+    	background-position: top left;
+    	float: left;
+    	height: 60px;
+    	width: 44px;
+    	visibility: visible;
+	}
+	#title {
+    	text-align: center; 
+	}
+	#currentUser {
+		/*float: right;*/
+		text-align: right;
+	}
+	
+	/*** Error Message Area ***/
+	p.error {
+		color: red;
+	}
+	p.tip {
+		color: green;
+	}
+	p.message {
+		color: blue;
+	}
+	
+	/*** Main Area ***/
+	#fgseuMainArea {
+		background-color: white;
+		width: 100%;
+	}
+	
+	/** Left Column Area **/
+	#fgseuLeftColumnArea {
+		width: 70%;
+		float: left;
+	}
+	/* Form Header Area */
+	#fgseuFormHeaderArea {
+		border-color: #ffffff;
+		border-width: 0px 1px 0px 1px;
+		background-color: #ffffff;
+		float: left;
+		width: 100%;
+	}
+	/* Search Area / Input Control Area */
+	#fgseuFormDiv {
+		float: left;
+		width: 100%;
+	}
+	#fgseuFormArea {
+		border: solid #ccddff 1px;
+		background-color: #E5FAFF;
+	}
+	#fgseuInputControlArea {
+		padding: 2px;
+		margin: 2px;
+		width: 100%;
+	}
+	#fgseuInputFields {
+		width: 100%;
+	}
+	#fgseuSearchArea {
+		padding:0 0 0 20px
+	}
+	.fieldRow{
+		width: 100%;
+	}
+	.fieldRowLabel {
+		width: 30%;
+		text-align: right;
+	}
+	.fieldRowInputCell {
+		width: 70%;
+	}
+	.fieldRowInputField {
+		font-family:Arial;
+		font-size:11px;
+		width:300px;
+	}
+	/* Result Set Area */
+	#fgseuResultSetArea {
+		background-color: white;
+		clear: both;
+	}
+	#fgseuHideSearchUrl {
+		padding:5px;
+	}
+	#fgseuResultSetTable {
+		background-color: #F5FAFF;
+		border: solid #ccddff 1px;
+		padding: 5px;
+		margin: 0px;
+		float: left;
+		width: 100%;
+	}
+	#fgseuInnerResultSetTable {
+		border: 0;
+		background: silver;
+		width: 100%;
+		border-spacing: 0px; /* cellspacing */
+	}
+	#fgseuInnerResultSetTable td {
+		padding: 5px; /* cellpadding */
+	}
+	#fgseuInnerResultSetTable td.firstColumn {
+		width: 100px;
+	}
+	#fgseuInnerResultSetTable td.firstColumn.indexIdicator{
+		vertical-align: text-top;
+	}
+	.fgseuResultSetRow {
+		vertical-align: top;
+		padding-top: 8px;
+	}
+	.fgseuResultSetCell {
+		text-align: center;
+		vertical-align: top;
+		padding: 8px;
+		width: 25px;
+	}
+	.fgseuResultSetCellLess {
+		vertical-align: top;
+		padding: 8px;
+	}
+	.fgseuResultSetCellMore {
+		vertical-align: top;
+		padding: 8px;
+	}
+	.fgseuResultSetCellApa {
+		vertical-align: top;
+		padding: 8px;
+	}
+	.fgseuResultSetCellTitle {
+		font-weight: bold;
+	}
+	.fgseuResultSetCellAuthors {
+		font-weight: normal;
+		font-style: normal;
+	}
+	.fgseuResultSetCellAffiliation {
+		font-weight: normal;
+		font-style: italic;
+	}
+	.fgseuResultSetCellMoreFieldName {
+		font-style: italic;
+	}
+	.fgseuResultSetCellMoreFieldText {
+		color: black;
+	}
+	.fgseuPageControl {
+		background-color: #5484CF;
+		color:white;
+		padding: 5px 0px 0px 0px;
+		margin: 0px;
+		clear: both;
+		width: 100%;
+	}
+	.fgseuPageControl td {
+		padding: 5px; /* cellpadding */
+	}
+	.fgseuPageControl td.pageNoLabel {
+		float:right;
+		vertical-align: middle; /* this may not be needed */
+	}
+	.fgseuPageControl td.pageControlField{
+		float: none; /* this may not be needed */
+		vertical-align: middle; /* this may not be needed */
+		text-align: center;
+	}
+	.fgseuHitno {
+		color: green;
+		display: none;
+	}
+	.fgseuHitscore {
+		color: green;
+	}
+	
+	/** Right Column Area**/
+	#fgseuRightColumnArea {
+		float: right;
+		width: 29%;
+	}
+	#fgseuRightColumnHeader {
+	}
+	.fgseuRightColumnSubHeader {
+		color: white;
+		font-weight: bold;
+		padding: 5px;
+		margin: 2px;
+		border: solid #ccddff 1px;
+		background-color:#5484CF;
+	}
+	.fgseuRightColumnBody {
+		background-color: #D5FAFF;
+		border: solid #ccddff 1px;
+	}
+	.fgseuRightColumnHelp {
+		color: brown;
+		font-size: 80%;
+		font-style: italic;
+		padding: 5px;
+	}
+	.indexElement{
+		padding-left: 15px;
+	}
+	.indexElementWithoutGroup {
+		padding-top: 5px;
+		padding-bottom: 5px;
+		padding-left: 15px;
+	}
+	.indexGroup{
+		background-color: #F5FAFF;
+    	border: 1px solid #CCDDFF;
+    	/*padding-bottom: 5px;*/
+    	color: white;
+    	font-weight: bold;
+    	margin: 2px;
+    	padding: 5px;
+	}
+	.browseBox{
+		background-color: #F5FAFF;
+    	border: 1px solid #CCDDFF;
+    	/*padding-bottom: 5px;*/
+    	margin: 2px;
+    	padding: 5px;
+	}
+	#fgseuBrowseTermsList {
+		padding: 3px;
+	}
+	#fgseuFacetTermsList {
+		padding: 3px;
+	}
+	#fgseuBrowseForm {
+		padding: 6px;
+	}
+	#fgseuNextBrowseForm {
+		padding: 3px;
+	}
+	#fgseuTermsFieldName {
+		color: #5484CF;
+		font-size: 110%;
+		font-style: italic;
+		font-weight: bold;
+		padding: 4px;
+	}
+	
+	/*** Footer ***/
+	#footer {
+		background-color: #cccccc;
+		padding: 10px;
+		clear: both;
+	}
+	
+	/**********************/
+	
+	/*** Other ***/
+	
+	.standardTableCell{
+		padding:5px 0;
+	}
+	.firstCellInColumn_1{
+		padding: 5px 0;
+		width: 80px;
+	}
+	
+	.firstCellInColumn_2{
+		padding: 5px 0;
+		width: 470px;
+	}
+	.standardTable{
+		width: 100%;
+		margin:5px 0;
+	}
+	/*** Used by fgseuSearchResultToHtml.xslt ***/
+	.highlight {
+		background-color: yellow;
+	}
+	
+	/*** NOT USED ***/
+	/*
+	.more {
+		text-align: right;
+		margin: 10px;
+	}
+	.more a {
+		color: #326F86;
+		font-size: 92%;
+		text-decoration: none;
+		margin: 0;
+		padding: 0.25ex 0.75ex;
+	}
+	.more a:hover {
+		color: rgb(117, 144, 174);
+		text-decoration: underline;
+	}
+	*/
