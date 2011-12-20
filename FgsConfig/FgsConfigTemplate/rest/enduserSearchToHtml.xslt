@@ -11,7 +11,7 @@
 	<xsl:param name="FGSUSERNAME" select="''"/>
 	<xsl:param name="TIMEUSEDMS" select="''"/>
 	
-	<xsl:param name="BASEROOT">http://localhost:8080/fedoragsearch/rest?operation=gfindObjects&amp;query=</xsl:param>
+	<xsl:param name="BASEROOT">http://localhost:8080/fedoragsearch</xsl:param>
 	
 	<xsl:variable name="indexfields" select="document('fieldsUnique.xml')" />
 

@@ -36,11 +36,11 @@
 
 				<xsl:apply-templates select="error" />
 				
-				<form method="get" action="javascript:fgseuBrowseForm(document.getElementById('fgseuBrowseForm'));" id="fgseuBrowseForm">
+				<form method="get" action="javascript:fgseuBrowseForm(this);" id="fgseuBrowseForm_{$FIELDNAME}">
 							<input type="hidden" name="fieldName" value="{$FIELDNAME}" />
 							<input type="hidden" name="fieldLabel" value="{$fieldLabel}"/>
 							&#160;<input type="submit" name="browsebutton" value="Show terms" 
-								onclick="javascript:fgseuBrowseForm(document.getElementById('fgseuBrowseForm'));return false;"/>
+								onclick="javascript:fgseuBrowseForm(this.form);return false;"/>
 							from&#160;<input type="text" name="startTerm" size="15" value="{$STARTTERM}"/>
  							<input type="hidden" name="termPageSize" size="2" value="{$TERMPAGESIZE}"/>
 				</form>
@@ -62,7 +62,7 @@
 							<input type="hidden" name="startTerm" value="{$PAGELASTTERM}!"/>
 							<input type="hidden" name="termPageSize" value="{$TERMPAGESIZE}"/>
 							<input type="button" value="Next terms"
-								onclick="javascript:fgseuBrowseForm(document.getElementById('fgseuNextBrowseForm'));"/>
+								onclick="javascript:fgseuBrowseForm(this.form);"/>
 						</form>
 	 				</xsl:if>
 	 			

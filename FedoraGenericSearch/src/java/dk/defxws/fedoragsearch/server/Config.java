@@ -40,6 +40,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.client.AdminClient;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
@@ -48,6 +49,7 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
+import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.client.Uploader;
@@ -452,7 +454,7 @@ public class Config {
     				"fgsindex.defaultGetIndexInfoResultXslt",
     				"fgsindex.indexDir",
     				"fgsindex.analyzer",
-    				"fgsindex.fieldAnalyzer",
+    				"fgsindex.fieldAnalyzers",
     				"fgsindex.stopwordsLocation",
     				"fgsindex.untokenizedFields",
     				"fgsindex.defaultQueryFields",
@@ -530,30 +532,26 @@ public class Config {
     					+ indexDir + " must exist as a directory");
     		}
 
-//  		Check analyzer class for lucene and solr
+//  		Check analyzer classes for lucene and solr
     		if (operationsImpl.indexOf("fgslucene")>-1 || operationsImpl.indexOf("fgssolr")>-1) {
     			String analyzerClassName = props.getProperty("fgsindex.analyzer"); 
     			if (analyzerClassName == null || analyzerClassName.equals("")) {
     				analyzerClassName = defaultAnalyzer;
     			}
-    			String stopwordsLocation = props.getProperty("fgsindex.stopwordsLocation"); 
-    			try {
-    				Version version = Version.LUCENE_35;
-    				Class analyzerClass = Class.forName(analyzerClassName);
-        			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
-    					analyzerClass.getConstructor(new Class[] { Version.class})
-    					.newInstance(new Object[] { version });
-        			} else {
-    					analyzerClass.getConstructor(new Class[] { Version.class, File.class})
-    					.newInstance(new Object[] { version, new File(stopwordsLocation) });
-        			}
-    			} catch (Exception e) {
-    				errors.append("\n*** "+configName+"/index/" + indexName
-    						+ ": fgsindex.analyzer="+analyzerClassName
-    						+ ": class not found:\n"+e.toString());
-				}
+    			checkAnalyzerClass(indexName, analyzerClassName);
+                StringTokenizer configFieldAnalyzers = new StringTokenizer(getFieldAnalyzers(indexName));
+            	while (configFieldAnalyzers.hasMoreElements()) {
+            		String fieldAnalyzer = configFieldAnalyzers.nextToken();
+            		int i = fieldAnalyzer.indexOf("::");
+            		if (i<0) {
+            			errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.fieldAnalyzer="+fieldAnalyzer+ " missing '::'");
+            		} else {
+            			analyzerClassName = fieldAnalyzer.substring(i+2).trim(); 
+            			checkAnalyzerClass(indexName, analyzerClassName);
+            		}
+            	}
     		}
-
+    		
 //  		Add untokenizedFields property for lucene
     		if (operationsImpl.indexOf("fgslucene")>-1) {
     			String defaultUntokenizedFields = props.getProperty("fgsindex.untokenizedFields");
@@ -997,7 +995,22 @@ public class Config {
     }
     
     public String getFieldAnalyzers(String indexName) {
-        return getIndexProps(indexName).getProperty("fgsindex.fieldAnalyzer");
+        return getIndexProps(indexName).getProperty("fgsindex.fieldAnalyzers");
+    }
+    
+    public void checkAnalyzerClass(String indexName, String analyzerClassName) {
+        if (logger.isDebugEnabled())
+            logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName);
+		try {
+			Version version = Version.LUCENE_35;
+			Class analyzerClass = Class.forName(analyzerClassName);
+	        if (logger.isDebugEnabled())
+	            logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName+ " ok");
+		} catch (Exception e) {
+			errors.append("\n*** "+configName+"/index/" + indexName
+					+ ": fgsindex.analyzer="+analyzerClassName
+					+ ": class not found:\n"+e.toString());
+		}
     }
     
     public String getStopwordsLocation(String indexName) {

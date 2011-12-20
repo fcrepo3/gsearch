@@ -243,7 +243,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		if ("deletePid".equals(action)) {
     			deletePid(value, indexName, resultXml);
     		}
-        	else {
+        	else if (action != null && action.length()>0) {
                 getIndexWriter(indexName);
         		initDocCount = docCount;
             	if ("createEmpty".equals(action)) 
@@ -509,46 +509,78 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     public Analyzer getAnalyzer(String indexName)
     throws GenericSearchException {
-    	String analyzerClassName= config.getAnalyzer(indexName);
+    	return getAnalyzer(indexName, "");
+    }
+    
+    public Analyzer getAnalyzer(String indexName, String className)
+    throws GenericSearchException {
+    	String analyzerClassName = className;
+    	if (analyzerClassName.length()==0) {
+        	analyzerClassName= config.getAnalyzer(indexName);
+    	}
 		String stopwordsLocation = config.getStopwordsLocation(indexName); 
         if (logger.isDebugEnabled())
-            logger.debug("analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
+            logger.debug("getAnalyzer analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
         Analyzer analyzer = null;
-		try {
-			Version version = Version.LUCENE_35;
-			Class analyzerClass = Class.forName(analyzerClassName);
-            if (logger.isDebugEnabled())
-                logger.debug("analyzerClass=" + analyzerClass.toString());
-			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
-				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class})
-				.newInstance(new Object[] { version });
-			} else {
-				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class, File.class})
-				.newInstance(new Object[] { version, new File(stopwordsLocation) });
-			}
-            if (logger.isDebugEnabled())
-                logger.debug("analyzer=" + analyzer.toString());
-        } catch (Exception e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
+        if ("org.apache.lucene.analysis.KeywordAnalyzer".equals(analyzerClassName)) {
+        	analyzer = new KeywordAnalyzer();
+        } else {
+    		try {
+    			Version version = Version.LUCENE_35;
+    			Class analyzerClass = Class.forName(analyzerClassName);
+                if (logger.isDebugEnabled())
+                    logger.debug("getAnalyzer analyzerClass=" + analyzerClass.toString());
+    			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
+    				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class})
+    				.newInstance(new Object[] { version });
+    			} else {
+    				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class, File.class})
+    				.newInstance(new Object[] { version, new File(stopwordsLocation) });
+    			}
+            } catch (Exception e) {
+                throw new GenericSearchException(analyzerClassName
+                        + ": instantiation error.\n", e);
+            }
         }
+        if (logger.isDebugEnabled())
+            logger.debug("getAnalyzer analyzer=" + analyzer.toString());
         return analyzer;
     }
     
     public Analyzer getQueryAnalyzer(String indexName)
     throws GenericSearchException {
+        if (logger.isDebugEnabled())
+            logger.debug("getQueryAnalyzer indexName=" + indexName);
         Analyzer analyzer = getAnalyzer(indexName);
         Map<String,Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
-        StringTokenizer configFieldAnalyzers = new StringTokenizer(config.getFieldAnalyzers(indexName));
-    	while (configFieldAnalyzers.hasMoreElements()) {
-    		String fieldAnalyzer = configFieldAnalyzers.nextToken();
+        String configFieldAnalyzers = "";
+        try {
+			configFieldAnalyzers = config.getFieldAnalyzers(indexName);
+		} catch (Exception e) {
+            throw new ConfigException("getQueryAnalyzer config.getFieldAnalyzers "+" :\n", e);
+		}
+        if (logger.isDebugEnabled())
+            logger.debug("getQueryAnalyzer configFieldAnalyzers=" + configFieldAnalyzers);
+        if (configFieldAnalyzers == null)
+        	configFieldAnalyzers = "";
+        StringTokenizer stConfigFieldAnalyzers = new StringTokenizer(configFieldAnalyzers);
+    	while (stConfigFieldAnalyzers.hasMoreElements()) {
+    		String fieldAnalyzer = stConfigFieldAnalyzers.nextToken();
+            if (logger.isDebugEnabled())
+                logger.debug("getQueryAnalyzer fieldAnalyzer=" + fieldAnalyzer);
     		int i = fieldAnalyzer.indexOf("::");
     		if (i<0) {
-                throw new ConfigException("fgsindex.fieldAnalyzer="+fieldAnalyzer+ "error");
+                throw new ConfigException("getQueryAnalyzer fgsindex.fieldAnalyzer="+fieldAnalyzer+ " missing '::'");
     		}
-    		String fieldName = fieldAnalyzer.substring(0, i);
-    		String analyzerClassName = fieldAnalyzer.substring(i+2);
-    		fieldAnalyzers.put(fieldName, getAnalyzer(analyzerClassName));
+			String fieldName = "-";
+			String analyzerClassName = "-";
+    		try {
+				fieldName = fieldAnalyzer.substring(0, i);
+				analyzerClassName = fieldAnalyzer.substring(i+2);
+				fieldAnalyzers.put(fieldName, getAnalyzer(indexName, analyzerClassName));
+			} catch (Exception e) {
+	            throw new ConfigException("getQueryAnalyzer getAnalyzer fieldName="+fieldName+" analyzerClassName="+analyzerClassName+" :\n", e);
+			}
     	}
     	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
     	while (untokenizedFields.hasMoreElements()) {
@@ -574,15 +606,13 @@ public class OperationsImpl extends GenericOperationsImpl {
 		if (ir != null && readonly) {
 	    	try {
 				irreopened = IndexReader.openIfChanged(ir, readonly);
-			} catch (CorruptIndexException e) {
-				throw new GenericSearchException("IndexReader reopen error indexName=" + indexName+ " :\n", e);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new GenericSearchException("IndexReader reopen error indexName=" + indexName+ " :\n", e);
 			}
 			if (null != irreopened){
 				try {
 					ir.close();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					ir = null;
 					throw new GenericSearchException("IndexReader close after reopen error indexName=" + indexName+ " :\n", e);
 				}
@@ -593,9 +623,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 	        	closeIndexReader(indexName);
 				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
 				ir = IndexReader.open(dir, readonly);
-			} catch (CorruptIndexException e) {
-				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			}
 		}
@@ -610,7 +638,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             docCount = ir.numDocs();
             try {
                 ir.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new GenericSearchException("IndexReader close error indexName=" + indexName+ " :\n", e);
             } finally {
             	ir = null;
@@ -626,7 +654,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		Directory dir;
     		try {
     			dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-    		} catch (IOException e) {
+    		} catch (Exception e) {
                 throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
     		}
     		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_35, getQueryAnalyzer(indexName));
@@ -646,7 +674,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		}
     	    try {
                 iw = new IndexWriter(dir, iwconfig);
-            } catch (IOException e) {
+            } catch (Exception e) {
 //             	iw = null;
 //                if (e.toString().indexOf("/segments")>-1) {
 //                    try {
@@ -662,7 +690,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     	}
         try {
 			docCount = iw.numDocs();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			closeIndexWriter(indexName);
             throw new GenericSearchException("IndexWriter numDocs error indexName=" + indexName+ " :\n", e);
 		}
@@ -676,7 +704,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             try {
     			docCount = iw.numDocs();
                 iw.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new GenericSearchException("IndexWriter close error indexName=" + indexName+ " :\n", e);
             } finally {
             	iw = null;

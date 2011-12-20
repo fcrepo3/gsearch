@@ -22,11 +22,13 @@ function fgseuQuery(sform, fgseuquery) {
 	
 	(document.getElementById('fullQueryConstructionArea')).value = fgseuquery;
     if ($('#fgseuResultSetArea')) $('#fgseuResultSetArea').html('<center>...</center>');
-	var url = 'http://localhost:8080/fedoragsearch/rest?operation=gfindObjects&restXslt=fgseuSearchResultToHtml';
+	var url = baseRoot+'/rest?operation=gfindObjects';
 	url += '&query='+sentQuery;
 	url += '&hitPageStart='+sform.hitPageStart.value;
 	url += '&hitPageSize='+sform.hitPageSize.value;
 	url += '&sortFields='+sform.sortFields.value;
+	(document.getElementById('urlTextArea')).value = baseRoot+url;
+	url += '&restXslt=fgseuSearchResultToHtml';
 	
 	fgseuResultSetElementId = 'fgseuResult';
 	$('#fgseuResultSetArea').load(
@@ -35,7 +37,6 @@ function fgseuQuery(sform, fgseuquery) {
 				if (status == 'error') {
 					alert('ajaxError: '+xhr.status+' '+xhr.statusText+' \nurl='+url); 
 				} else {
-					(document.getElementById('urlTextArea')).value = baseRoot+url;
 					refineSearch(latestFacetLabel, latestFacet);
 				}
 			}
@@ -117,7 +118,7 @@ function fgseuBrowseTerms(indexFieldLabel, indexFieldName, startTerm, termPageSi
     	start = start.substring(0, spacei);
     }
     
-	var url = 'http://localhost:8080/fedoragsearch/rest';
+	var url = baseRoot+'/rest';
 	url += '?operation=browseIndex&restXslt=fgseuBrowseTermsToHtml';
 	url += '&fieldName='+indexFieldName;
 	url += '&startTerm='+start;
@@ -168,7 +169,7 @@ function fgseuFacetTerms(indexFieldLabel, indexFieldName, termOffset, termPageSi
 	sentQuery = sentQuery.replace(/&/g, '%26');
 	sentQuery = sentQuery.replace(/\n/g, ' ');
 
-	var url = 'http://localhost:8080/fedoragsearch/rest?operation=gfindObjects&restXslt=fgseuFacetTermsToHtml';
+	var url = baseRoot+'/rest?operation=gfindObjects&restXslt=fgseuFacetTermsToHtml';
 	url += '&query=(::SOLR::';
 	url += 'facet=true';
 	url += '%26facet.field='+indexFieldName;
