@@ -43,6 +43,7 @@ import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
+import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 import org.fcrepo.server.utilities.StreamUtility;
@@ -538,9 +539,23 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws GenericSearchException {
         Analyzer analyzer = getAnalyzer(indexName);
         Map<String,Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
+        StringTokenizer configFieldAnalyzers = new StringTokenizer(config.getFieldAnalyzers(indexName));
+    	while (configFieldAnalyzers.hasMoreElements()) {
+    		String fieldAnalyzer = configFieldAnalyzers.nextToken();
+    		int i = fieldAnalyzer.indexOf("::");
+    		if (i<0) {
+                throw new ConfigException("fgsindex.fieldAnalyzer="+fieldAnalyzer+ "error");
+    		}
+    		String fieldName = fieldAnalyzer.substring(0, i);
+    		String analyzerClassName = fieldAnalyzer.substring(i+2);
+    		fieldAnalyzers.put(fieldName, getAnalyzer(analyzerClassName));
+    	}
     	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
     	while (untokenizedFields.hasMoreElements()) {
-    		fieldAnalyzers.put(untokenizedFields.nextToken(), new KeywordAnalyzer());
+    		String fieldName = untokenizedFields.nextToken();
+    		if (!fieldAnalyzers.containsKey(fieldName)) {
+        		fieldAnalyzers.put(fieldName, new KeywordAnalyzer());
+    		}
     	}
         PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer, fieldAnalyzers);
         if (logger.isDebugEnabled())

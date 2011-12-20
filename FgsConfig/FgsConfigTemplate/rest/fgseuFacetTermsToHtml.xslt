@@ -32,6 +32,10 @@
 			<p class="fgseuRightColumnHelp" style="display:none">Click to use/remove term in search</p>
 
 		<div id="fgseuFacetTermsList" class="collapsibleFacet_{$FIELDNAME}">
+		
+		<xsl:if test="not(lst[@name='facet_counts']/lst[@name='facet_fields']/lst/int[@name])">
+			<p>No facets found!</p>
+		</xsl:if>
 
 		<xsl:for-each select="lst[@name='facet_counts']/lst[@name='facet_fields']/lst/int[@name]">
 				<xsl:choose>

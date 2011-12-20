@@ -452,6 +452,7 @@ public class Config {
     				"fgsindex.defaultGetIndexInfoResultXslt",
     				"fgsindex.indexDir",
     				"fgsindex.analyzer",
+    				"fgsindex.fieldAnalyzer",
     				"fgsindex.stopwordsLocation",
     				"fgsindex.untokenizedFields",
     				"fgsindex.defaultQueryFields",
@@ -537,7 +538,7 @@ public class Config {
     			}
     			String stopwordsLocation = props.getProperty("fgsindex.stopwordsLocation"); 
     			try {
-    				Version version = Version.LUCENE_33;
+    				Version version = Version.LUCENE_35;
     				Class analyzerClass = Class.forName(analyzerClassName);
         			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
     					analyzerClass.getConstructor(new Class[] { Version.class})
@@ -993,6 +994,10 @@ public class Config {
     
     public String getAnalyzer(String indexName) {
         return getIndexProps(indexName).getProperty("fgsindex.analyzer");
+    }
+    
+    public String getFieldAnalyzers(String indexName) {
+        return getIndexProps(indexName).getProperty("fgsindex.fieldAnalyzer");
     }
     
     public String getStopwordsLocation(String indexName) {

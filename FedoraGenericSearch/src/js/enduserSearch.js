@@ -401,7 +401,6 @@ function fgseuShowRightColumnHeader(label) {
 							hideChildWith(indexFieldName);
 						} else {
 							refine(fieldLabel, indexFieldName);
-							refineResultSet(fieldLabel, indexFieldName);
 						}
 					}
 			
