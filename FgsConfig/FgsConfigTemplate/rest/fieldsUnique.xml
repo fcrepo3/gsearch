@@ -3,7 +3,7 @@
 <element>
 <XPath></XPath>
 <IFname>foxml.all.text</IFname>
-<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">foxml.all.text</DisplayName>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">ALL TEXT</DisplayName>
 </element>
 <element>
 <XPath>//audit:action</XPath>
@@ -48,7 +48,7 @@
 <element>
 <XPath>//dc:creator</XPath>
 <IFname>dc.creator</IFname>
-<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">dc.creator</DisplayName>
+<DisplayName uiUse="ANDfacet" initValue="" browseFrom="aa">AUTHOR</DisplayName>
 </element>
 <element>
 <XPath>//dc:date</XPath>

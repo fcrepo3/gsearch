@@ -97,7 +97,7 @@
 	}
 	#fgseuFormArea {
 		border: solid #ccddff 1px;
-		background-color: #E5FAFF;
+		background-color: #D5FAFF;
 	}
 	#fgseuInputControlArea {
 		padding: 2px;
@@ -127,14 +127,13 @@
 	}
 	/* Result Set Area */
 	#fgseuResultSetArea {
-		background-color: white;
 		clear: both;
 	}
 	#fgseuHideSearchUrl {
 		padding:5px;
 	}
 	#fgseuResultSetTable {
-		background-color: #F5FAFF;
+		background-color: #D5FAFF;
 		border: solid #ccddff 1px;
 		padding: 5px;
 		margin: 0px;
@@ -153,7 +152,7 @@
 	#fgseuInnerResultSetTable td.firstColumn {
 		width: 100px;
 	}
-	#fgseuInnerResultSetTable td.firstColumn.indexIdicator{
+	#fgseuInnerResultSetTable td.firstColumn.indexIndicator{
 		vertical-align: text-top;
 	}
 	.fgseuResultSetRow {
@@ -215,6 +214,9 @@
 		vertical-align: middle; /* this may not be needed */
 		text-align: center;
 	}
+	.fgseuHitPageForm {
+		margin: 0px;
+	}
 	.fgseuHitno {
 		color: green;
 		display: none;
@@ -237,6 +239,12 @@
 		margin: 2px;
 		border: solid #ccddff 1px;
 		background-color:#5484CF;
+	}
+	.fgseuRightColumnSubHeader a {
+		color: white;
+	}
+	.collapsibleIcon {
+		float: right;
 	}
 	.fgseuRightColumnBody {
 		background-color: #D5FAFF;

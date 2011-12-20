@@ -313,25 +313,6 @@ public class GenericOperationsImpl implements Operations {
     	}
         if (logger.isDebugEnabled())
             logger.debug("processEmbeddedQuery embeddedRepositoryName="+embeddedRepositoryName+" embeddedIndexName="+embeddedIndexName+" embeddedXsltName="+embeddedXsltName);
-//		String queryContents = "";
-//		i = secondPart.indexOf("q=");
-//		int j = -1;
-//		if (i > -1) {
-//			j = secondPart.indexOf("&", i+2);
-//			if (j == -1) {
-//				j = secondPart.length();
-//			}
-//			queryContents = secondPart.substring(i+2, j);
-//		}
-//		if (i == -1 || queryContents.length() == 0) {
-//            throw new GenericSearchException("processEmbeddedQuery: No query contents found?"+" finalQuery=\n"+secondPart);
-//		}
-//		try {
-//			queryContents = URLEncoder.encode(queryContents, "UTF-8");
-//		} catch (UnsupportedEncodingException e) {
-//            throw new GenericSearchException(e.toString());
-//		}
-//		String finalQueryEncoded = secondPart.substring(0, i+2) + queryContents + secondPart.substring(j);
 		String baseUrl = firstPart;
 		String userPassword = "";
 		if ("GSEARCH".equals(embedType)) {
@@ -348,7 +329,7 @@ public class GenericOperationsImpl implements Operations {
 			try {
 				baseUrl = config.getIndexBase(embeddedIndexName)+"/select";
 			} catch (Exception e) {
-	            throw new GenericSearchException("processEmbeddedQuery embeddedIndexName="+embeddedIndexName+" has no Solr server exception=\n"+e.toString());
+	            throw new GenericSearchException("processEmbeddedQuery embeddedIndexName="+embeddedIndexName+" hasnoSolrserver exception=\n"+e.toString());
 			}
 			userPassword = config.getSoapUser()+":"+config.getSoapPass();
 			String queryContents = "";

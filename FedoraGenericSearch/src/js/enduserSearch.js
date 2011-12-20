@@ -11,7 +11,7 @@ function fgseuSearch(sform) {
 function fgseuQuery(sform, fgseuquery) {
 	sentQuery = fgseuquery;
 	if (sentQuery.length == 0) {
-		sentQuery = 'COUNTTYPE:paper';
+		sentQuery = 'REPOSITORYNAME:FgsRepos';
 	}
 	// the first replace is necessary because of the way we pass params to fgseu
 	sentQuery = sentQuery.replace(/\//g, '%252F'); 
@@ -44,7 +44,7 @@ function fgseuQuery(sform, fgseuquery) {
 
 function refine(indexFieldLabel, indexFieldName) {
 	refineField(indexFieldLabel, indexFieldName);
-	refineResultSet(indexFieldLabel, indexFieldName);
+//	refineResultSet(indexFieldLabel, indexFieldName);
 };
 
 function refineSearch(indexFieldLabel, indexFieldName){	
@@ -56,11 +56,18 @@ function refineSearch(indexFieldLabel, indexFieldName){
 		var downArrowName = 'down_'+indexFieldName;
 		var rightArrowDiv = document.getElementById(rightArrowName);
 		var downArrowDiv = document.getElementById(downArrowName);
+		var termAreaDivName = 'fgseuRightColumnArea1'+indexFieldName;
+		var termAreaDiv = document.getElementById(termAreaDivName);
+		
 		if(!$(downArrowDiv).is(':visible')){
 			$(rightArrowDiv).hide();
 			$(downArrowDiv).show();
 		}
-		refine(indexFieldLabel, indexFieldName);
+		if($(termAreaDiv).is(':visible')){
+			refineResultSet(indexFieldLabel, indexFieldName);
+		} else {
+			refine(indexFieldLabel, indexFieldName);
+		}
 	}
 };
 
@@ -71,11 +78,11 @@ function refineField(indexFieldLabel, indexFieldName) {
 	if ( document.getElementById(indexFieldName+'browseFrom') != null ) {
 		browseFrom = document.getElementById(indexFieldName+'browseFrom').innerHTML;
 	}
-	fgseuBrowseTerms(indexFieldLabel, indexFieldName, browseFrom, 12);
+	fgseuBrowseTerms(indexFieldLabel, indexFieldName, browseFrom, 6, true);
 };
 
 function fgseuBrowseForm(bform) {
-	fgseuBrowseTerms(bform.fieldLabel.value, bform.fieldName.value, bform.startTerm.value, bform.termPageSize.value);
+	fgseuBrowseTerms(bform.fieldLabel.value, bform.fieldName.value, bform.startTerm.value, bform.termPageSize.value, false);
 };
 
 String.prototype.endsWith = function(str)
@@ -96,7 +103,7 @@ function hideChildWith(indexFieldName){
 	}
 };
 
-function fgseuBrowseTerms(indexFieldLabel, indexFieldName, startTerm, termPageSize) {
+function fgseuBrowseTerms(indexFieldLabel, indexFieldName, startTerm, termPageSize, refreshFacetTerms) {
 	var browseDivName = 'fgseuRightColumnArea1'+indexFieldName;
 	var browseDiv = document.getElementById(browseDivName);
     if (browseDiv) browseDiv.innerHTML='<center>...</center>';
@@ -127,6 +134,9 @@ function fgseuBrowseTerms(indexFieldLabel, indexFieldName, startTerm, termPageSi
 				latestFacetLabel = indexFieldLabel;
 				$(browseDiv).html(response);
 			}
+			if (refreshFacetTerms) {
+				refineResultSet(indexFieldLabel, indexFieldName);
+			}
 	});
 };
 
@@ -139,6 +149,9 @@ function fgseuFacetForm(bform) {
 };
 
 function fgseuFacetTerms(indexFieldLabel, indexFieldName, termOffset, termPageSize) {
+	if (!facetsAvailable) {
+		return;
+	}
 	if (sentQuery.length < 2) {
 //		alert('No search result set exists');
 		return;
@@ -148,7 +161,7 @@ function fgseuFacetTerms(indexFieldLabel, indexFieldName, termOffset, termPageSi
     if (facetDiv) facetDiv.innerHTML='<center>...</center>';
     facetDiv.style.display = '';
 	
-	// the first replace is necessary because of the way we pass params to fgseu
+	// the first replace is necessary because of the way we pass params
 	sentQuery = sentQuery.replace(/\//g, '%252F'); 
 	// the next replaces are necessary for the query string to fedoragsearch
 	sentQuery = sentQuery.replace(/\?/g, '%3F');
@@ -176,7 +189,12 @@ function fgseuFacetTerms(indexFieldLabel, indexFieldName, termOffset, termPageSi
 				if (status == 'error') {
 					alert('ajaxError: '+xhr.status+' '+xhr.statusText+' \nurl='+url); 
 				} else {
-					$(facetDiv).html(response); 
+					if (response.indexOf('hasnoSolrserver')>-1) {
+						facetsAvailable = false;
+						$(facetDiv).hide();
+					} else {
+						$(facetDiv).html(response); 
+					}
 				}
 		});
 	latestFacet = indexFieldName;
@@ -230,7 +248,6 @@ function fgseuShowRightColumnHeader(label) {
 						opWithinFields = ' OR ';
 					}
 				}
-//				clearFacetIfInit(fname);
 				var fvalue = ifield.value;								// form field value
 				if (fvalue == getInitValue(indexFieldName)) {
 					return '';
@@ -333,6 +350,24 @@ function fgseuShowRightColumnHeader(label) {
 			}
 
 /***************************************************************************************************/
+
+			function toggleMoreFacetTerms(indexFieldName){
+				var index = indexFieldName.replace(/(:|\.)/g,'\\.');
+				var moreFacetClass = '.moreFacet_'+index;
+				var moreButtonId = '#moreFacets_'+index;
+				var lessButtonId = '#lessFacets_'+index;
+				$(moreFacetClass).toggle();
+				$(moreButtonId).toggle();
+				$(lessButtonId).toggle();
+			};
+			
+			function toggleCollapsibleBox(indexFieldName,boxType){
+				var index = indexFieldName.replace(/(:|\.)/g,'\\.');
+				var colapsibleBox = '.collapsible'+boxType+'_'+index;
+				var icons = '.icon'+boxType+'_'+index;
+				$(colapsibleBox).toggle();
+				$(icons).toggle();
+			};
 			
 					function showFacet (fieldLabel, indexFieldName) {
 						var fieldRow = document.getElementById(indexFieldName+'row');
@@ -353,7 +388,7 @@ function fgseuShowRightColumnHeader(label) {
 						
 						var termAreaDivName = 'fgseuRightColumnArea1'+indexFieldName;
 						var termAreaDiv = document.getElementById(termAreaDivName);
-						var facetAreaDivName = 'fgseuRightColumnArea1'+indexFieldName;
+						var facetAreaDivName = 'fgseuRightColumnArea2'+indexFieldName;
 						var facetAreaDiv = document.getElementById(termAreaDivName);
 						var rightArrowName = 'right_'+indexFieldName;
 						var downArrowName = 'down_'+indexFieldName;
@@ -366,6 +401,7 @@ function fgseuShowRightColumnHeader(label) {
 							hideChildWith(indexFieldName);
 						} else {
 							refine(fieldLabel, indexFieldName);
+							refineResultSet(fieldLabel, indexFieldName);
 						}
 					}
 			

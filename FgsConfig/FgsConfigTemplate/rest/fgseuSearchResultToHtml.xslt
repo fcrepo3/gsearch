@@ -8,15 +8,9 @@
 
 	<xsl:param name="TIMEUSEDMS" select="''" />
 	
-	<xsl:param name="FEDORABASEURL">http://localhost:8080//fedora/get/</xsl:param>
 	<xsl:param name="GSEARCHBASEURL">http://localhost:8080/fedoragsearch/rest</xsl:param>
-	<xsl:param name="sortFields">en</xsl:param>
+	<xsl:param name="sortFields">PID,SCORE</xsl:param>
 	<xsl:param name="format">short</xsl:param>
-	<xsl:param name="defaultIndexField">ALL</xsl:param>
-	<xsl:param name="moduleUri">fgseu/</xsl:param>
-	<xsl:param name="indexing-xslt-uri">/data/fedora/gsearch/config/index/ProceedingsIndex/foxmlToLucene.xslt</xsl:param>
-
-	<xsl:variable name="indexfields" select="document($indexing-xslt-uri)" />
 	
 		<xsl:variable name="INDEXNAME" select="/resultPage/@indexName" />
 		<xsl:variable name="QUERY" select="/resultPage/gfindObjects/@query" />
@@ -90,28 +84,28 @@
 												<td class="pageControlField">
 												  <xsl:choose>
 													<xsl:when test="$HITPAGENO > 1">
-														<form id="ffgsfpform">
+														<form id="fgseufpform" class="fgseuHitPageForm">
 															<input type="hidden" name="hitPageStart" value="1" />
 															<input type="hidden" name="hitPageSize" value="{$HITPAGESIZE}" />
 															<input type="hidden" name="sortFields" value="{$sortFields}" />
 															<input type="hidden" name="format" value="{$format}" />
 															<input type="button" name="firstpagebutton" value="1" 
-																onclick="javascript:ffgsSearch(document.getElementById('ffgsfpform'));"/>
+																onclick="javascript:fgseuSearch(document.getElementById('fgseufpform'));"/>
 														</form>
 													</xsl:when>
 													<xsl:otherwise></xsl:otherwise>
 												  </xsl:choose>
 												</td>
-												<td class="pageControlField"><!-- align="center" valign="middle" -->
+												<td class="pageControlField">
 												  <xsl:choose>
 													<xsl:when test="$HITPAGENO > 2">
-														<form id="ffgsppform">
+														<form id="fgseuppform" class="fgseuHitPageForm">
 															<input type="hidden" name="hitPageStart" value="{$HITPAGESTART - $HITPAGESIZE}" />
 															<input type="hidden" name="hitPageSize" value="{$HITPAGESIZE}" />
 															<input type="hidden" name="sortFields" value="{$sortFields}" />
 															<input type="hidden" name="format" value="{$format}" />
 															<input type="button" name="previouspagebutton" value="{$HITPAGENO - 1}" 
-																onclick="javascript:ffgsSearch(document.getElementById('ffgsppform'));"/>
+																onclick="javascript:fgseuSearch(document.getElementById('fgseuppform'));"/>
 														</form>
 													</xsl:when>
 													<xsl:otherwise></xsl:otherwise>
@@ -123,7 +117,7 @@
 												<td class="pageControlField">
 												  <xsl:choose>
 													<xsl:when test="$HITPAGENOLAST > $HITPAGENO + 1">
-														<form id="fgseunpform">
+														<form id="fgseunpform" class="fgseuHitPageForm">
 															<input type="hidden" name="hitPageStart" value="{$HITPAGESTART + $HITPAGESIZE}" />
 															<input type="hidden" name="hitPageSize" value="{$HITPAGESIZE}" />
 															<input type="hidden" name="sortFields" value="{$sortFields}" />
@@ -138,7 +132,7 @@
 												<td class="pageControlField">
 												  <xsl:choose>
 													<xsl:when test="$HITPAGENOLAST > $HITPAGENO">
-														<form id="fgseulpform">
+														<form id="fgseulpform" class="fgseuHitPageForm">
 															<input type="hidden" name="hitPageStart" value="{$HITPAGESIZE * ($HITPAGENOLAST - 1) + 1}" />
 															<input type="hidden" name="hitPageSize" value="{$HITPAGESIZE}" />
 															<input type="hidden" name="sortFields" value="{$sortFields}" />
@@ -183,18 +177,6 @@
 						<span class="hitscore">
 							(<xsl:value-of select="@score"/>)
 						</span>
-						<a>
-							<xsl:variable name="PIDVALUE">
-								<xsl:choose>
-									<xsl:when test="@PID">
-								 		<xsl:value-of select="@PID"/>
-									</xsl:when>
-									<xsl:otherwise><xsl:value-of select="normalize-space(field[@name='PID'])"/></xsl:otherwise>
-								</xsl:choose>
-							</xsl:variable>
-							<xsl:attribute name="href">?operation=gfindObjects&amp;query=PID:%22<xsl:value-of select="$PIDVALUE"/>%22&amp;restXslt=adminGetIndexDocumentToHtml&amp;fieldMaxLength=0&amp;snippetsMax=0</xsl:attribute>
-							<xsl:value-of select="'getIndexDocument'"/>
-						</a>
 					</td>
 					<td>
 						<span class="hittitle">
@@ -205,7 +187,7 @@
 				<xsl:for-each select="field[@snippet='yes']">
 				  <xsl:if test="@name!='dc.title'">
 					<tr>
-						<td class="firstColumn indexIdicator">
+						<td class="firstColumn indexIndicator">
 							<span class="hitfield">
 								<xsl:value-of select="@name"/>
 							</span>
@@ -220,217 +202,6 @@
 				</xsl:for-each>
 			</table>
 		</td></tr>
-	</xsl:template>
-
-	<xsl:template name="aMoreField">
-		<xsl:param name="fieldLabel">noLabel</xsl:param>
-		<xsl:param name="fieldValue"></xsl:param>
-		<xsl:if test="$fieldValue">
-			<br />
-			<span class="ffgsResultSetCellMoreFieldName"><xsl:value-of select="$fieldLabel" /></span>
-			: <span class="ffgsResultSetCellMoreFieldText"><xsl:copy-of select="$fieldValue" /></span>
-		</xsl:if>
-	</xsl:template>
-
-	<xsl:template name="aMultipleField">
-		<xsl:param name="fieldLabel">noLabel</xsl:param>
-		<xsl:param name="fieldName"></xsl:param>
-		<xsl:if test="field[@name=$fieldName]">
-			<br />
-			<span class="ffgsResultSetCellMoreFieldName"><xsl:value-of select="$fieldLabel" /></span> :
-			<xsl:for-each select="field[@name=$fieldName]">
-				<span class="ffgsResultSetCellMoreFieldText"><xsl:value-of select="' '" /><xsl:value-of select="." /></span>
-				<xsl:if test="position()!=last()"><xsl:value-of select="' ;'" /></xsl:if>
-			</xsl:for-each>
-		</xsl:if>
-	</xsl:template>
-
-	<xsl:template name="aMoreFieldSubstitute">
-		<xsl:param name="fieldLabel">noLabel</xsl:param>
-		<xsl:param name="fieldName"></xsl:param>
-		<xsl:param name="fieldValue"></xsl:param>
-		<xsl:variable name="fieldValueText">
-			<xsl:choose>
-				<xsl:when test="$fieldValue/span">
-					<xsl:value-of select="$fieldValue/span" />
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$fieldValue" />
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
- 		<xsl:variable name="fieldSubstituteValue">
-			<xsl:copy-of select="$indexfields//FacetSubstitutes[@IFname=$fieldName]//FacetSubstitute[@indexValue=$fieldValueText]"/>
-		</xsl:variable>
-		<xsl:if test="$fieldSubstituteValue">
-			<br />
-			<span class="ffgsResultSetCellMoreFieldName"><xsl:value-of select="$fieldLabel" /></span>
-			: <span class="ffgsResultSetCellMoreFieldText"><xsl:copy-of select="$fieldSubstituteValue" /></span>
-		</xsl:if>
-	</xsl:template>
-
-	<xsl:template name="getUrls">
-		<xsl:param name="variant"></xsl:param>
-		<xsl:param name="pidValue"></xsl:param>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF'" />
-			</xsl:call-template>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-not-indexed'" />
-			</xsl:call-template>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-poster'" />
-			</xsl:call-template>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-report-poster'" />
-			</xsl:call-template>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-presentation'" />
-			</xsl:call-template>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-udvidet-abstract'" />
-			</xsl:call-template>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PPT-poster'" />
-				<xsl:with-param name="icon" select="'ppt'" />
-			</xsl:call-template>
-			<xsl:call-template name="getUrl">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PPS-presentation'" />
-				<xsl:with-param name="icon" select="'pps'" />
-			</xsl:call-template>
-	</xsl:template>
-
-	<xsl:template name="getUrl">
-		<xsl:param name="variant"></xsl:param>
-		<xsl:param name="pidValue"></xsl:param>
-		<xsl:param name="docType"></xsl:param>
-		<xsl:param name="icon">pdf</xsl:param>
-			<xsl:variable name="fieldName">FULLTEXT-<xsl:value-of select="$docType" /></xsl:variable>
-							<xsl:if test="field[@name = $fieldName]/text()">
-							  <xsl:choose>
-							  	<xsl:when test="$variant = 'a'">
-								<a class="ffgsLink" title="{$docType} link" target="_blank">
-									<xsl:attribute name="href"><xsl:value-of select="$FEDORABASEURL"/>/objects/<xsl:value-of select="$pidValue" />/datastreams/<xsl:value-of select="$docType" />/content </xsl:attribute>
-									<img src="{$moduleUri}images/{$icon}.png" alt="{$docType}" title="{$docType} download" />
-								</a>
-								<br />
-							  	</xsl:when>
-							  	<xsl:when test="$variant = 'b'"> Retrieved from: <xsl:value-of select="$FEDORABASEURL"/>/objects/<xsl:value-of select="$pidValue" />/datastreams/<xsl:value-of select="$docType" />/content </xsl:when>
-							  </xsl:choose>
-							</xsl:if>
-	</xsl:template>
-
-	<xsl:template name="getDois">
-		<xsl:param name="variant"></xsl:param>
-		<xsl:param name="pidValue"></xsl:param>
-			<xsl:if test="field[@name = 'DOI-METADATA']/text() and $variant = 'citation'"> DOI (Metadata): <xsl:value-of select="field[@name = 'DOI-METADATA']"/> .</xsl:if>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF'" />
-				<xsl:with-param name="docKind" select="'Full text'" />
-			</xsl:call-template>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-not-indexed'" />
-				<xsl:with-param name="docKind" select="'Full text'" />
-			</xsl:call-template>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-poster'" />
-				<xsl:with-param name="docKind" select="'Poster'" />
-			</xsl:call-template>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-report-poster'" />
-				<xsl:with-param name="docKind" select="'Poster'" />
-			</xsl:call-template>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-presentation'" />
-				<xsl:with-param name="docKind" select="'Presentation'" />
-			</xsl:call-template>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PDF-udvidet-abstract'" />
-				<xsl:with-param name="docKind" select="'Extended abstract'" />
-			</xsl:call-template>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PPT-poster'" />
-				<xsl:with-param name="docKind" select="'Poster'" />
-				<xsl:with-param name="icon" select="'ppt'" />
-			</xsl:call-template>
-			<xsl:call-template name="getDoi">
-				<xsl:with-param name="variant" select="$variant" />
-				<xsl:with-param name="pidValue" select="$pidValue" />
-				<xsl:with-param name="docType" select="'PPS-presentation'" />
-				<xsl:with-param name="docKind" select="'Presentation'" />
-				<xsl:with-param name="icon" select="'pps'" />
-			</xsl:call-template>
-	</xsl:template>
-
-	<xsl:template name="getDoi">
-		<xsl:param name="variant"></xsl:param>
-		<xsl:param name="pidValue"></xsl:param>
-		<xsl:param name="docType"></xsl:param>
-		<xsl:param name="docKind"></xsl:param>
-		<xsl:param name="icon">pdf</xsl:param>
-			<xsl:variable name="fieldName">FULLTEXT-<xsl:value-of select="$docType" /></xsl:variable>
-				<xsl:if test="field[@name = $fieldName]/text()">
-					<xsl:variable name="doiFieldName">DOI-<xsl:value-of select="$docType" /></xsl:variable>
-					<xsl:choose>
-						<xsl:when test="field[@name = $doiFieldName]/text()">
-							<xsl:variable name="DOI"><xsl:value-of select="field[@name = $doiFieldName]/text()" /></xsl:variable>
-							<xsl:choose>
-								<xsl:when test="$variant = 'displayline'">
-									<br />
-									<span class="ffgsResultSetCellMoreFieldName">DOI</span> :
-									<a class="ffgsLink" title="Find via DOI resolver" target="_blank">
-										<xsl:attribute name="href">http://dx.doi.org/<xsl:value-of select="$DOI"/></xsl:attribute>
-										<xsl:value-of select="$docKind"/> at <xsl:value-of select="$DOI"/>
-									</a>
-								</xsl:when>
-								<xsl:when test="$variant = 'citation'"> DOI (<xsl:value-of select="$docKind"/>): <xsl:value-of select="$DOI"/> . </xsl:when>
-							</xsl:choose>
-						</xsl:when>
-						<xsl:otherwise> 
-							<xsl:choose>
-								<xsl:when test="$variant = 'displayline'">
-									<br />
-									<a class="ffgsLink" title="{$docType} download" target="_blank">
-										<xsl:attribute name="href"><xsl:value-of select="$FEDORABASEURL"/>/objects/<xsl:value-of select="$pidValue" />/datastreams/<xsl:value-of select="$docType" />/content </xsl:attribute>
-										<img src="{$moduleUri}images/{$icon}.png" alt="{$docType}" title="{$docType} download" />
-										<xsl:value-of select="' '"/><xsl:value-of select="$docKind"/>
-									</a>
-								</xsl:when>
-								<xsl:when test="$variant = 'citation'"> Retrieved from: <xsl:value-of select="$FEDORABASEURL"/>/objects/<xsl:value-of select="$pidValue" />/datastreams/<xsl:value-of select="$docType" />/content </xsl:when>
-							</xsl:choose>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:if>
 	</xsl:template>
 
 	<xsl:template name="error">

@@ -85,6 +85,7 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#multilingual">Multilingual configuration</a></dt>
 				<dt><a href="#FURTHERUSAGE">IV. FURTHER USAGE</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#extraction">Full-text and metadata extraction from datastreams using Apache Tika</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#endusersearch">Customizable end-user search client</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#searchresfilt">Search result filtering</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#configman">Management of GSearch configurations in Fedora objects</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#objectsnnindex">Many-to-many relationship between Fedora objects and index documents</a></dt>
@@ -197,6 +198,10 @@
 							<a href="rest?operation=getIndexInfo" target="owndemorest">The Index Info page</a>.
 						</li>
 					</ul> 
+				<li>There is a 
+					<a href="rest?operation=gfindObjects&restXslt=enduserSearchToHtml" target="owndemorest">customizable end-user search client page</a>.
+					See the section on <a href="#endusersearch">Customizable end-user search client</a>.
+				</li>
 				</li>
 				<li>Ingest the Fedora 3.5 demo objects, there are 41, 20 of them are data objects and will be indexed.
 					View the admin pages.
@@ -613,6 +618,28 @@
 				<tr><td>- boost</td><td>&lt;decimal number><br/> # '1.0' is default</td></tr>
 			</table>
 		</div>
+		
+		<div>
+			<a name="endusersearch"><h2>Customizable end-user search client</h2></a>
+			
+				<p>The download contains the following files in webapps/fedoragsearch/ that you may customize:</p>
+				<ul>
+					<li>css/fgseu.css</li>
+					<li>js/enduserSearch.js</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/enduserSearchToHtml.xslt</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuBrowseTermsToHtml.xslt</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuFacetTermsToHtml.xslt</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuSearchResultToHtml.xslt</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fieldsUnique.xml</li>
+				<p>The file fieldsUnique.xml is found in FgsConfig/indexingXsltGenerator/generatedFiles.
+				It has one element per index field generated from your example foxml files.
+				You may add, modify, and delete index field elements 
+				to suit the needs of your end-user search client.</p>
+				<p>From the admin pages, <a href="rest?operation=gfindObjects&restXslt=enduserSearchToHtml">this is the end-user search client page</a>.
+				</p>
+				</ul>
+		</div>
+		
 		<div>
 			<a name="searchresfilt"><h2>Search result filtering</h2></a>
 			
@@ -750,6 +777,9 @@
 				<ul>
 					<li>Compatibility with Lucene 3.5 and Solr 3.5 (<a href="https://jira.duraspace.org/browse/FCREPO-1005">FCREPO-1005</a>)</li>
 					<li>Useful end-user search page generation from indexing stylesheet (<a href="https://jira.duraspace.org/browse/FCREPO-1006">FCREPO-1006</a>)
+						<ul>
+							<li>See the section on <a href="#endusersearch">Customizable end-user search client</a>.</li>
+						</ul>
 					</li>
 					<li>Performance measurements and possibly improvements (<a href="https://jira.duraspace.org/browse/FCREPO-1007">FCREPO-1007</a>).
 					Download <a href="https://github.com/fcrepo/gsearch/blob/master/FedoraGenericSearch/src/performance/PerformanceMeasurementsforFedoraGSearch2.3.pdf">the report from github</a>.

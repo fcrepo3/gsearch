@@ -70,6 +70,12 @@
 			<field name="REPOSBASEURL">
 				<xslt:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
 			</field>
+			<field name="TITLE_UNTOK">
+				<xslt:value-of select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/oai_dc:dc/dc:title"/>
+			</field>
+			<field name="AUTHOR_UNTOK">
+				<xslt:value-of select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/oai_dc:dc/dc:creator"/>
+			</field>
 			
 			<xsl:comment>indexing foxml property fields</xsl:comment>			
 			<xslt:for-each select="foxml:objectProperties/foxml:property">

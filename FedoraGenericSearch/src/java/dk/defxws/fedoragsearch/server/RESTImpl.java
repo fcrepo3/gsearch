@@ -115,7 +115,7 @@ public class RESTImpl extends HttpServlet {
         if (resultPageXslt==null) resultPageXslt="";
         restXslt = request.getParameter(PARAM_RESTXSLT);
         if (restXslt==null) restXslt="";
-        String[] params = new String[8];
+        String[] params = new String[10];
         params[0] = "ERRORMESSAGE";
         params[1] = "";
         params[2] = "TIMEUSEDMS";
@@ -171,6 +171,8 @@ public class RESTImpl extends HttpServlet {
         params[5] = remoteUser;
         params[6] = "SRFTYPE";
         params[7] = config.getSearchResultFilteringType();
+        params[8] = "sortFields";
+        params[9] = request.getParameter(PARAM_SORTFIELDS);
         resultXml = (new GTransformer()).transform(
         				config.getConfigName()+"/rest/"+restXslt, 
         				resultXml, params,

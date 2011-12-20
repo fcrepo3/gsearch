@@ -97,6 +97,15 @@
 					<xsl:value-of select="text()"/>
 				</IndexField>
 			</xsl:for-each>
+			
+			<!-- indexing dc fields for sorting (must be UN_TOKENIZED) -->
+			
+			<IndexField IFname="TITLE_UNTOK" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
+				<xsl:value-of select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/oai_dc:dc/dc:title"/>
+			</IndexField>
+			<IndexField IFname="AUTHOR_UNTOK" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
+				<xsl:value-of select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/oai_dc:dc/dc:creator"/>
+			</IndexField>
 
 			<!-- a datastream is fetched, if its mimetype 
 			     can be handled, the text becomes the value of the field. 

@@ -50,7 +50,7 @@
 	<xsl:template name="mainArea">
 
 		<div id="fgseuMainArea">
-			<script>baseRoot='<xsl:value-of select="$BASEROOT"/>';query=' ';sentQuery=' ';latestFacet='foxml.all.text';latestFacetLabel='Search Terms anywhere';termsShownField='';</script>
+			<script>baseRoot='<xsl:value-of select="$BASEROOT"/>';query=' ';sentQuery=' ';facetsAvailable=true;latestFacet='foxml.all.text';latestFacetLabel='';termsShownField='';</script>
 			<div id="fgseuLeftColumnArea">
 			
 				<div id="fgseuFormHeaderArea">
@@ -107,14 +107,15 @@
 													<option value="PID,SCORE">
 														relevance
 													</option>
-													<option value="dc.title">
+													<option value="TITLE_UNTOK,STRING">
 														title
 													</option>
-													<option value="dc.creator;dc.title">
+													<option value="AUTHOR_UNTOK,STRING;TITLE_UNTOK,STRING">
 														author
 													</option>
 												</select>
 												<xsl:text>&#160;&#160;&#160;</xsl:text>
+												<!-- The format choice is not currently in use
 										format:
 												<select name="format">
 													<option value="short">
@@ -125,6 +126,7 @@
 													</option>
 												</select>
 												<xsl:text>&#160;&#160;&#160;</xsl:text>
+												 -->
 										hits per page:
 												<input type="text"
 													name="hitPageSize" size="2" value="10" />
@@ -186,10 +188,10 @@
 									<xsl:with-param name="fieldName" select="$currentIFName" />
 									<xsl:with-param name="fieldLabel" select="$currentDisplayName" />
 								</xsl:call-template>
-									<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;">
+									<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;">
 										<span>&#160;</span>
 									</div>
-									<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;">
+									<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;">
 										<span>&#160;</span>
 									</div>
 								</div>
@@ -204,10 +206,10 @@
 												<xsl:with-param name="fieldName" select="$currentIFName" />
 												<xsl:with-param name="fieldLabel" select="$currentDisplayName" />
 											</xsl:call-template>
-											<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;">
+											<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;">
 												<span>&#160;</span>
 											</div>
-											<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;">
+											<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;">
 												<span>&#160;</span>
 											</div>
 										</div>
@@ -221,10 +223,10 @@
 												<xsl:with-param name="fieldName" select="$currentIFName" />
 												<xsl:with-param name="fieldLabel" select="$currentDisplayName" />
 											</xsl:call-template>
-											<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;" >
+											<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;" >
 												<span>&#160;</span>
 											</div>
-											<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;">
+											<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;">
 												<span>&#160;</span>
 											</div>
 										</div>
@@ -241,10 +243,10 @@
 										<xsl:with-param name="fieldName" select="$currentIFName" />
 										<xsl:with-param name="fieldLabel" select="$currentDisplayName" />
 									</xsl:call-template>
-									<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;">
+									<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;">
 										<span>&#160;</span>
 									</div>
-									<div id="fgseuRightColumnArea2{$currentIFName}" class="browseBox" style="display:none;">
+									<div id="fgseuRightColumnArea1{$currentIFName}" class="browseBox" style="display:none;">
 										<span>&#160;</span>
 									</div>
 								</div>

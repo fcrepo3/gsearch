@@ -67,6 +67,12 @@
 			<IndexField IFname="REPOSBASEURL" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
 				<xslt:value-of select="substring($FEDORASOAP, 1, string-length($FEDORASOAP)-9)"/>
 			</IndexField>
+			<IndexField IFname="TITLE_UNTOK" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
+				<xslt:value-of select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/oai_dc:dc/dc:title"/>
+			</IndexField>
+			<IndexField IFname="AUTHOR_UNTOK" index="UN_TOKENIZED" store="YES" termVector="NO" boost="1.0">
+				<xslt:value-of select="foxml:datastream/foxml:datastreamVersion[last()]/foxml:xmlContent/oai_dc:dc/dc:creator"/>
+			</IndexField>
 			
 			<xsl:comment>indexing foxml property fields</xsl:comment>			
 			<xslt:for-each select="foxml:objectProperties/foxml:property">
