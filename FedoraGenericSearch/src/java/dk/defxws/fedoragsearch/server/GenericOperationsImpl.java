@@ -256,7 +256,7 @@ public class GenericOperationsImpl implements Operations {
     		}
     		String decodedEmbeddedQuery = "";
     		try {
-				decodedEmbeddedQuery = URLDecoder.decode(embeddedQuery, "UTF-8");
+				decodedEmbeddedQuery = URLDecoder.decode(newQueryPart, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 	            throw new GenericSearchException("handleEmbeddedQueries decode exception="+e.toString());
 			}
@@ -287,7 +287,7 @@ public class GenericOperationsImpl implements Operations {
 //        	secondPart = "?" + secondPart;
         } else {
         	firstPart = embeddedQuery.substring(0, i);
-        	secondPart = embeddedQuery.substring(i);
+        	secondPart = embeddedQuery.substring(i+1);
         }
     	String embeddedRepositoryName = config.getRepositoryName(null);
     	String embeddedIndexName = config.getIndexName(null);
@@ -318,39 +318,31 @@ public class GenericOperationsImpl implements Operations {
 		if ("GSEARCH".equals(embedType)) {
 			try {
 				baseUrl = getBaseURL(config.getSoapBase())+"/rest";
-				userPassword = config.getSoapUser()+":"+config.getSoapPass();
 			} catch (Exception e) {
-	            throw new GenericSearchException("processEmbeddedQuery getBaseURL exception=\n"+e.toString());
-			}
-		} else if ("RISEARCH".equals(embedType)) {
-			baseUrl = config.getFedoraSoap(embeddedRepositoryName);
-			userPassword = config.getFedoraUser(embeddedRepositoryName)+":"+config.getFedoraPass(embeddedRepositoryName);
-		} else if ("SOLR".equals(embedType)) {
-			try {
-				baseUrl = config.getIndexBase(embeddedIndexName)+"/select";
-			} catch (Exception e) {
-	            throw new GenericSearchException("processEmbeddedQuery embeddedIndexName="+embeddedIndexName+" hasnoSolrserver exception=\n"+e.toString());
+	            throw new GenericSearchException("processEmbeddedQuery GSEARCH getBaseURL exception=\n"+e.toString());
 			}
 			userPassword = config.getSoapUser()+":"+config.getSoapPass();
-			String queryContents = "";
-			i = secondPart.indexOf("q=");
-			j = -1;
-			if (i > -1) {
-				j = secondPart.indexOf("&", i+2);
-				if (j == -1) {
-					j = secondPart.length();
-				}
-				queryContents = secondPart.substring(i+2, j);
-			}
-			if (i == -1 || queryContents.length() == 0) {
-	            throw new GenericSearchException("processEmbeddedQuery: No query contents found?"+" finalQuery=\n"+secondPart);
-			}
+//			secondPart = encodeQuery(secondPart, "query");
+		} else if ("RISEARCH".equals(embedType)) {
 			try {
-				queryContents = URLEncoder.encode(queryContents, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-	            throw new GenericSearchException(e.toString());
+				baseUrl = getBaseURL(config.getFedoraSoap(embeddedRepositoryName))+"/risearch";
+			} catch (Exception e) {
+	            throw new GenericSearchException("processEmbeddedQuery RISEARCH getBaseURL exception=\n"+e.toString());
 			}
-			secondPart = secondPart.substring(0, i+2) + queryContents + secondPart.substring(j);
+			userPassword = config.getFedoraUser(embeddedRepositoryName)+":"+config.getFedoraPass(embeddedRepositoryName);
+			secondPart = encodeQuery(secondPart, "query");
+		} else if ("SOLR".equals(embedType)) {
+			try {
+				baseUrl = config.getIndexBase(embeddedIndexName);
+			} catch (Exception e) {
+	            throw new GenericSearchException("processEmbeddedQuery SOLR embeddedIndexName="+embeddedIndexName+" hasnoSolrserver exception=\n"+e.toString());
+			}
+			if (baseUrl == null) {
+	            throw new GenericSearchException("processEmbeddedQuery SOLR embeddedIndexName="+embeddedIndexName+" hasnoSolrserver baseUrl=null");
+			}
+			baseUrl += "/select";
+			userPassword = config.getSoapUser()+":"+config.getSoapPass();
+			secondPart = encodeQuery(secondPart, "q");
 		}
         String urlString = baseUrl+"?"+secondPart;
         if (logger.isDebugEnabled())
@@ -401,19 +393,13 @@ public class GenericOperationsImpl implements Operations {
         		new StreamSource(content),
     			config.getURIResolver(embeddedIndexName),
                 params);
-//        i = resultXml.indexOf("<?xml");
-//        if (i>-1) {
-//            j = resultXml.indexOf("?>", i);
-//            if (j > -1) {
-//            	resultXml.delete(0, j+2);
-//            }
-//        }
         String newQueryPart = resultXml.toString();
-        i = resultXml.indexOf("newQueryPart>");
+        String findString = "result:newQueryPart xmlns:result=\"http://www.w3.org/2001/sw/DataAccess/rf1/result\">";
+        i = resultXml.indexOf(findString);
         if (i>-1) {
-            j = resultXml.indexOf("</newQueryPart", i);
+            j = resultXml.indexOf("</result:newQueryPart", i);
             if (j > -1) {
-                newQueryPart = resultXml.substring(i, j);
+                newQueryPart = resultXml.substring(i+findString.length(), j);
             }
         }
         if (logger.isDebugEnabled())
@@ -421,6 +407,36 @@ public class GenericOperationsImpl implements Operations {
     	return newQueryPart;
     }
     
+    public String encodeQuery(String secondPart, String queryName)
+    throws GenericSearchException {
+        if (logger.isDebugEnabled())
+            logger.debug("encodeQuery" + " queryName="+queryName + " secondPart="+secondPart);
+    	String queryContents = "";
+    	int i = secondPart.indexOf(queryName+"=");
+    	int j = -1;
+    	if (i > -1) {
+    		j = secondPart.indexOf("&", i+queryName.length());
+    		if (j == -1) {
+    			j = secondPart.length();
+    		}
+    		queryContents = secondPart.substring(i+1+queryName.length(), j);
+    	}
+    	if (i == -1 || queryContents.length() == 0) {
+            throw new GenericSearchException("processEmbeddedQuery: No query contents found?"+" finalQuery=\n"+secondPart);
+    	}
+        if (logger.isDebugEnabled())
+            logger.debug("encodeQuery" + " queryContents="+queryContents);
+    	try {
+    		queryContents = URLEncoder.encode(queryContents, "UTF-8");
+    	} catch (UnsupportedEncodingException e) {
+            throw new GenericSearchException(e.toString());
+    	}
+    	String result = secondPart.substring(0, i+1+queryName.length()) + queryContents + secondPart.substring(j);
+        if (logger.isDebugEnabled())
+            logger.debug("encodeQuery" + " secondPart="+result);
+    	return result;
+    }
+
     public String browseIndex(
             String startTerm,
             int termPageSize,

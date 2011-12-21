@@ -90,6 +90,7 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#configman">Management of GSearch configurations in Fedora objects</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#objectsnnindex">Many-to-many relationship between Fedora objects and index documents</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#reposnnindex">Many-to-many relationship between repositories and indexes</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#embeddedqueries">Embedded queries</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#source">Building from source</a></dt>
 				<dt><a href="#HISTORY">V. HISTORY</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new24">New features in version 2.4</a></dt>
@@ -624,13 +625,13 @@
 			
 				<p>The download contains the following files in webapps/fedoragsearch/ that you may customize:</p>
 				<ul>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/enduserSearchToHtml.xslt (basic page generator)</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuBrowseTermsToHtml.xslt (browseIndex by ajax call)</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuFacetTermsToHtml.xslt (Solr facet search by ajax call)</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuSearchResultToHtml.xslt (gfindObjects search by ajax call)</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fieldsUnique.xml (see below)</li>
 					<li>css/fgseu.css</li>
 					<li>js/enduserSearch.js</li>
-					<li>WEB-INF/classes/&lt;configName&gt;/rest/enduserSearchToHtml.xslt</li>
-					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuBrowseTermsToHtml.xslt</li>
-					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuFacetTermsToHtml.xslt</li>
-					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuSearchResultToHtml.xslt</li>
-					<li>WEB-INF/classes/&lt;configName&gt;/rest/fieldsUnique.xml</li>
 				<p>The file fieldsUnique.xml is found in FgsConfig/indexingXsltGenerator/generatedFiles.
 				It has one element per index field generated from your example foxml files.
 				You may add, modify, and delete index field elements 
@@ -716,6 +717,42 @@
 		</div>
 			
 		<div>
+			<a name="embeddedqueries"><h2>Embedded queries</h2></a>
+			<p>This is a mechanism that allows you to embed risearch queries in Lucene or Solr queries, and vice versa.</p>
+			<p>This provides interaction with the Resource Index, both when you index and when you search.</p>
+			<p>It compensates for the lack of joins in bibliographic query languages like in Lucene and Solr,</p>
+			<p>and it compensates for the lack of text search functionality in logic languages like the risearch query languages.</p>
+			<p>The full potential of this mechanism still has to be explored and realized.</p>
+			<p>These preliminary examples show some of the potential:
+						<ul>
+							<li>RISEARCH: 
+							<a href="rest?operation=gfindObjects&restXslt=copyXml&query=(::RISEARCH::type=tuples%26lang=itql%26format=Sparql%26query=select+$obj1+from+%3C%23ri%3E+where+$obj1+%3Cinfo:fedora/fedora-system:def/relations-external%23isMemberOf%3E+%3Cinfo:fedora/demo:SmileyStuff%3E::RISEARCH::)">an itql search</a>
+							</li>
+						</ul>
+						<ul>
+							<li>GSEARCH: 
+							<a href="rest?operation=gfindObjects&restXslt=copyXml&query=(::GSEARCH::operation=gfindObjects%26restXslt=copyXml%26query=dc.creator:apache::GSEARCH::)">a GSearch search</a>
+							</li>
+						</ul>
+						<ul>
+							<li>GSEARCH with RISEARCH: 
+							<a href="rest?operation=gfindObjects&restXslt=copyXml&query=smiley+and+(::RISEARCH::xsltName/risearchToGsearch?type=tuples%26lang=itql%26format=Sparql%26query=select+$obj1+from+%3C%23ri%3E+where+$obj1+%3Cinfo:fedora/fedora-system:def/relations-external%23isMemberOf%3E+%3Cinfo:fedora/demo:SmileyStuff%3E::RISEARCH::)">a GSearch search with embedded itql</a>
+							</li>
+						</ul>
+						<ul>
+							<li>RISEARCH with GSEARCH: 
+							<a href="rest?operation=gfindObjects&restXslt=copyXml&query=(::RISEARCH::type=tuples%26lang=itql%26format=Sparql%26query=select+$obj1+from+%3C%23ri%3E+where+$obj1+%3Cinfo:fedora/fedora-system:def/relations-external%23isMemberOf%3E+%3Cinfo:fedora/demo:SmileyStuff%3E+and+(::GSEARCH::xsltName/gsearchToRisearch?operation=gfindObjects%26restXslt=copyXml%26query=dc.creator:apache::GSEARCH::)::RISEARCH::)">an itql search with embedded GSearch</a>
+							</li>
+						</ul>
+						<ul>
+							<li>SOLR: 
+							<a href="rest?operation=gfindObjects&restXslt=copyXml&query=(::SOLR::facet=true%26facet.field=dc.creator%26fl=dc.creator%26q=dc.creator:apache::SOLR::)">a Solr facet search</a>
+							</li>
+						</ul>
+			</p>
+		</div>
+			
+		<div>
 			<a name="source"><h2>Building from source</h2></a>
 			<p>Get the source from github:</p>
 <pre>
@@ -782,6 +819,7 @@
 						</ul>
 					</li>
 					<li>Performance measurements and possibly improvements (<a href="https://jira.duraspace.org/browse/FCREPO-1007">FCREPO-1007</a>).
+					Measurements taken using Apache JMeter, on a production quality platform, giving some insight into the performance implications of various choices.
 					Download <a href="https://github.com/fcrepo/gsearch/blob/master/FedoraGenericSearch/src/performance/PerformanceMeasurementsforFedoraGSearch2.3.pdf">the report from github</a>.
 					Morten S&#248;rensen, DTU Library, is co-developer and co-author on this.
 					</li>
@@ -795,6 +833,9 @@
 						</ul>
 					</li>
 					<li>Interaction with the Resource Index (<a href="https://jira.duraspace.org/browse/FCREPO-1009">FCREPO-1009</a>)
+						<ul>
+							<li>See the section on <a href="#embeddedqueries">Embedded queries</a>.</li>
+						</ul>
 					</li>
 					<li>Use of Apache Tika for full-text and metadata extraction (<a href="https://jira.duraspace.org/browse/FCREPO-1010">FCREPO-1010</a>)
 						<ul>

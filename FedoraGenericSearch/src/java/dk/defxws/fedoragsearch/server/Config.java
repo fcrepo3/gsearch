@@ -539,17 +539,20 @@ public class Config {
     				analyzerClassName = defaultAnalyzer;
     			}
     			checkAnalyzerClass(indexName, analyzerClassName);
-                StringTokenizer configFieldAnalyzers = new StringTokenizer(getFieldAnalyzers(indexName));
-            	while (configFieldAnalyzers.hasMoreElements()) {
-            		String fieldAnalyzer = configFieldAnalyzers.nextToken();
-            		int i = fieldAnalyzer.indexOf("::");
-            		if (i<0) {
-            			errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.fieldAnalyzer="+fieldAnalyzer+ " missing '::'");
-            		} else {
-            			analyzerClassName = fieldAnalyzer.substring(i+2).trim(); 
-            			checkAnalyzerClass(indexName, analyzerClassName);
-            		}
-            	}
+                String configFieldAnalyzers = getFieldAnalyzers(indexName);
+                if (configFieldAnalyzers != null && configFieldAnalyzers.length()>0) {
+                    StringTokenizer stFieldAnalyzers = new StringTokenizer(configFieldAnalyzers);
+                	while (stFieldAnalyzers.hasMoreElements()) {
+                		String fieldAnalyzer = stFieldAnalyzers.nextToken();
+                		int i = fieldAnalyzer.indexOf("::");
+                		if (i<0) {
+                			errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.fieldAnalyzer="+fieldAnalyzer+ " missing '::'");
+                		} else {
+                			analyzerClassName = fieldAnalyzer.substring(i+2).trim(); 
+                			checkAnalyzerClass(indexName, analyzerClassName);
+                		}
+                	}
+                }
     		}
     		
 //  		Add untokenizedFields property for lucene
@@ -1188,12 +1191,14 @@ public class Config {
     
     private String insertSystemProperties(String propertyValue) {
     	String result = propertyValue;
-    	while (result.indexOf("${") > -1) {
+        if (logger.isDebugEnabled())
+            logger.debug("insertSystemProperties propertyValue="+result);
+    	while (result != null && result.indexOf("${") > -1) {
             if (logger.isDebugEnabled())
-                logger.debug("propertyValue="+result);
+                logger.debug("insertSystemProperties propertyValue="+result);
     		result = insertSystemProperty(result);
             if (logger.isDebugEnabled())
-                logger.debug("propertyValue="+result);
+                logger.debug("insertSystemProperties propertyValue="+result);
     	}
     	return result;
     }

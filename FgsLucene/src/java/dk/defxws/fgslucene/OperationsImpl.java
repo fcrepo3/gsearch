@@ -561,27 +561,27 @@ public class OperationsImpl extends GenericOperationsImpl {
 		}
         if (logger.isDebugEnabled())
             logger.debug("getQueryAnalyzer configFieldAnalyzers=" + configFieldAnalyzers);
-        if (configFieldAnalyzers == null)
-        	configFieldAnalyzers = "";
-        StringTokenizer stConfigFieldAnalyzers = new StringTokenizer(configFieldAnalyzers);
-    	while (stConfigFieldAnalyzers.hasMoreElements()) {
-    		String fieldAnalyzer = stConfigFieldAnalyzers.nextToken();
-            if (logger.isDebugEnabled())
-                logger.debug("getQueryAnalyzer fieldAnalyzer=" + fieldAnalyzer);
-    		int i = fieldAnalyzer.indexOf("::");
-    		if (i<0) {
-                throw new ConfigException("getQueryAnalyzer fgsindex.fieldAnalyzer="+fieldAnalyzer+ " missing '::'");
-    		}
-			String fieldName = "-";
-			String analyzerClassName = "-";
-    		try {
-				fieldName = fieldAnalyzer.substring(0, i);
-				analyzerClassName = fieldAnalyzer.substring(i+2);
-				fieldAnalyzers.put(fieldName, getAnalyzer(indexName, analyzerClassName));
-			} catch (Exception e) {
-	            throw new ConfigException("getQueryAnalyzer getAnalyzer fieldName="+fieldName+" analyzerClassName="+analyzerClassName+" :\n", e);
-			}
-    	}
+        if (configFieldAnalyzers != null && configFieldAnalyzers.length()>0) {
+            StringTokenizer stConfigFieldAnalyzers = new StringTokenizer(configFieldAnalyzers);
+        	while (stConfigFieldAnalyzers.hasMoreElements()) {
+        		String fieldAnalyzer = stConfigFieldAnalyzers.nextToken();
+                if (logger.isDebugEnabled())
+                    logger.debug("getQueryAnalyzer fieldAnalyzer=" + fieldAnalyzer);
+        		int i = fieldAnalyzer.indexOf("::");
+        		if (i<0) {
+                    throw new ConfigException("getQueryAnalyzer fgsindex.fieldAnalyzer="+fieldAnalyzer+ " missing '::'");
+        		}
+    			String fieldName = "-";
+    			String analyzerClassName = "-";
+        		try {
+    				fieldName = fieldAnalyzer.substring(0, i);
+    				analyzerClassName = fieldAnalyzer.substring(i+2);
+    				fieldAnalyzers.put(fieldName, getAnalyzer(indexName, analyzerClassName));
+    			} catch (Exception e) {
+    	            throw new ConfigException("getQueryAnalyzer getAnalyzer fieldName="+fieldName+" analyzerClassName="+analyzerClassName+" :\n", e);
+    			}
+        	}
+        }
     	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
     	while (untokenizedFields.hasMoreElements()) {
     		String fieldName = untokenizedFields.nextToken();
