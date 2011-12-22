@@ -217,6 +217,8 @@ public class GenericOperationsImpl implements Operations {
         params[9] = indexName;
         params[10] = "SORTFIELDS";
         params[11] = sortFields;
+        params[12] = "RESULTPAGEXSLT";
+        params[13] = resultPageXslt;
         params[14] = "FGSUSERNAME";
         params[15] = fgsUserName;
         params[16] = "SRFTYPE";
@@ -374,7 +376,7 @@ public class GenericOperationsImpl implements Operations {
 		}
         if (logger.isDebugEnabled())
             logger.debug("processEmbeddedQuery after get content");
-        params = new String[12];
+        String[] params = new String[12];
         params[0] = "OPERATION";
         params[1] = "gfindObjects";
         params[2] = "ACTION";
@@ -393,7 +395,7 @@ public class GenericOperationsImpl implements Operations {
         		new StreamSource(content),
     			config.getURIResolver(embeddedIndexName),
                 params);
-        String newQueryPart = resultXml.toString();
+        String newQueryPart = resultXml.toString().replaceAll("&lt;", "<").replaceAll("&gt;", ">");
         String findString = "result:newQueryPart xmlns:result=\"http://www.w3.org/2001/sw/DataAccess/rf1/result\">";
         i = resultXml.indexOf(findString);
         if (i>-1) {

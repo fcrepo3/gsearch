@@ -46,6 +46,7 @@ import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
+import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 import org.fcrepo.server.utilities.StreamUtility;
@@ -104,8 +105,6 @@ public class OperationsImpl extends GenericOperationsImpl {
                 config.getSnippetBegin(usingIndexName),
                 config.getSnippetEnd(usingIndexName),
                 config.getSortFields(usingIndexName, sortFields));
-        params[12] = "RESULTPAGEXSLT";
-        params[13] = resultPageXslt;
         String xsltPath = config.getConfigName()+"/index/"+usingIndexName+"/"+config.getGfindObjectsResultXslt(usingIndexName, resultPageXslt);
         StringBuffer resultXml = (new GTransformer()).transform(
         		xsltPath,
@@ -459,39 +458,85 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     public Analyzer getAnalyzer(String indexName)
     throws GenericSearchException {
-    	String analyzerClassName= config.getAnalyzer(indexName);
+    	return getAnalyzer(indexName, "");
+    }
+    
+    public Analyzer getAnalyzer(String indexName, String className)
+    throws GenericSearchException {
+    	String analyzerClassName = className;
+    	if (analyzerClassName.length()==0) {
+        	analyzerClassName= config.getAnalyzer(indexName);
+    	}
 		String stopwordsLocation = config.getStopwordsLocation(indexName); 
         if (logger.isDebugEnabled())
-            logger.debug("analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
+            logger.debug("getAnalyzer analyzerClassName=" + analyzerClassName+ " stopwordsLocation="+stopwordsLocation);
         Analyzer analyzer = null;
-		try {
-			Version version = Version.LUCENE_35;
-			Class analyzerClass = Class.forName(analyzerClassName);
-            if (logger.isDebugEnabled())
-                logger.debug("analyzerClass=" + analyzerClass.toString());
-			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
-				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class})
-				.newInstance(new Object[] { version });
-			} else {
-				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class, File.class})
-				.newInstance(new Object[] { version, new File(stopwordsLocation) });
-			}
-            if (logger.isDebugEnabled())
-                logger.debug("analyzer=" + analyzer.toString());
-        } catch (Exception e) {
-            throw new GenericSearchException(analyzerClassName
-                    + ": instantiation error.\n", e);
+        if ("org.apache.lucene.analysis.KeywordAnalyzer".equals(analyzerClassName)) {
+        	analyzer = new KeywordAnalyzer();
+        } else {
+    		try {
+    			Version version = Version.LUCENE_35;
+    			Class analyzerClass = Class.forName(analyzerClassName);
+                if (logger.isDebugEnabled())
+                    logger.debug("getAnalyzer analyzerClass=" + analyzerClass.toString());
+    			if (stopwordsLocation == null || stopwordsLocation.equals("")) {
+    				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class})
+    				.newInstance(new Object[] { version });
+    			} else {
+    				analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] { Version.class, File.class})
+    				.newInstance(new Object[] { version, new File(stopwordsLocation) });
+    			}
+            } catch (Exception e) {
+                throw new GenericSearchException(analyzerClassName
+                        + ": instantiation error.\n", e);
+            }
         }
+        if (logger.isDebugEnabled())
+            logger.debug("getAnalyzer analyzer=" + analyzer.toString());
         return analyzer;
     }
     
     public Analyzer getQueryAnalyzer(String indexName)
     throws GenericSearchException {
+        if (logger.isDebugEnabled())
+            logger.debug("getQueryAnalyzer indexName=" + indexName);
         Analyzer analyzer = getAnalyzer(indexName);
         Map<String,Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
+        String configFieldAnalyzers = "";
+        try {
+			configFieldAnalyzers = config.getFieldAnalyzers(indexName);
+		} catch (Exception e) {
+            throw new ConfigException("getQueryAnalyzer config.getFieldAnalyzers "+" :\n", e);
+		}
+        if (logger.isDebugEnabled())
+            logger.debug("getQueryAnalyzer configFieldAnalyzers=" + configFieldAnalyzers);
+        if (configFieldAnalyzers != null && configFieldAnalyzers.length()>0) {
+            StringTokenizer stConfigFieldAnalyzers = new StringTokenizer(configFieldAnalyzers);
+        	while (stConfigFieldAnalyzers.hasMoreElements()) {
+        		String fieldAnalyzer = stConfigFieldAnalyzers.nextToken();
+                if (logger.isDebugEnabled())
+                    logger.debug("getQueryAnalyzer fieldAnalyzer=" + fieldAnalyzer);
+        		int i = fieldAnalyzer.indexOf("::");
+        		if (i<0) {
+                    throw new ConfigException("getQueryAnalyzer fgsindex.fieldAnalyzer="+fieldAnalyzer+ " missing '::'");
+        		}
+    			String fieldName = "-";
+    			String analyzerClassName = "-";
+        		try {
+    				fieldName = fieldAnalyzer.substring(0, i);
+    				analyzerClassName = fieldAnalyzer.substring(i+2);
+    				fieldAnalyzers.put(fieldName, getAnalyzer(indexName, analyzerClassName));
+    			} catch (Exception e) {
+    	            throw new ConfigException("getQueryAnalyzer getAnalyzer fieldName="+fieldName+" analyzerClassName="+analyzerClassName+" :\n", e);
+    			}
+        	}
+        }
     	StringTokenizer untokenizedFields = new StringTokenizer(config.getUntokenizedFields(indexName));
     	while (untokenizedFields.hasMoreElements()) {
-    		fieldAnalyzers.put(untokenizedFields.nextToken(), new KeywordAnalyzer());
+    		String fieldName = untokenizedFields.nextToken();
+    		if (!fieldAnalyzers.containsKey(fieldName)) {
+        		fieldAnalyzers.put(fieldName, new KeywordAnalyzer());
+    		}
     	}
         PerFieldAnalyzerWrapper pfanalyzer = new PerFieldAnalyzerWrapper(analyzer, fieldAnalyzers);
         if (logger.isDebugEnabled())

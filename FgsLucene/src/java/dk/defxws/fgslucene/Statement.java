@@ -145,6 +145,8 @@ public class Statement {
     	TopDocs hits = getHits(query, start+maxResults-1, sortFields);
     	ScoreDoc[] docs = hits.scoreDocs;
     	int end = Math.min(hits.totalHits, start + maxResults - 1);
+        if (logger.isDebugEnabled())
+        	logger.debug("executeQuery hits.totalHits="+hits.totalHits);
     	StringBuffer resultXml = new StringBuffer();
     	resultXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     	String queryStringEncoded = null;
@@ -214,19 +216,34 @@ public class Statement {
     		resultXml.append("</hit>");
     	}
     	resultXml.append("</lucenesearch>");
+        if (logger.isDebugEnabled()) {
+        	int size = 500;
+        	if (resultXml.length()<size)
+        		size = resultXml.length();
+        	String debugString = resultXml.substring(0, size);
+        	if (resultXml.length()>size)
+        		debugString += "...";
+        	logger.debug("executeQuery resultXml="+debugString);
+        }
     	rs = new ResultSet(resultXml);
     	if (searcher!=null) {
     		try {
     			searcher.close();
+    			searcher = null;
     		} catch (IOException e) {
     		}
     	}
+        if (logger.isDebugEnabled()) 
+        	logger.debug("executeQuery searcher="+searcher);
 		if (ir!=null) {
     		try {
 				ir.close();
+				ir = null;
 			} catch (IOException e) {
 			}
 		}
+        if (logger.isDebugEnabled()) 
+        	logger.debug("executeQuery ir="+ir);
     	return rs;
     }
 

@@ -90,27 +90,44 @@ public class OperationsImpl extends GenericOperationsImpl {
                         " fgsUserName="+fgsUserName+
                         " usingQuery="+usingQuery);
         }
-        ResultSet resultSet = (new Connection()).createStatement().executeQuery(
-        		usingQuery,
-                hitPageStart,
-                hitPageSize,
-                snippetsMax,
-                fieldMaxLength,
-                getQueryAnalyzer(usingIndexName),
-                config.getDefaultQueryFields(usingIndexName),
-                config.getAllowLeadingWildcard(usingIndexName),
-                config.getIndexDir(usingIndexName),
-                usingIndexName,
-                config.getSnippetBegin(usingIndexName),
-                config.getSnippetEnd(usingIndexName),
-                config.getSortFields(usingIndexName, sortFields));
+        ResultSet resultSet = null;
+		try {
+			resultSet = (new Connection()).createStatement().executeQuery(
+					usingQuery,
+			        hitPageStart,
+			        hitPageSize,
+			        snippetsMax,
+			        fieldMaxLength,
+			        getQueryAnalyzer(usingIndexName),
+			        config.getDefaultQueryFields(usingIndexName),
+			        config.getAllowLeadingWildcard(usingIndexName),
+			        config.getIndexDir(usingIndexName),
+			        usingIndexName,
+			        config.getSnippetBegin(usingIndexName),
+			        config.getSnippetEnd(usingIndexName),
+			        config.getSortFields(usingIndexName, sortFields));
+		} catch (Exception e) {
+            throw new GenericSearchException("gfindObjects executeQuery error:\n" + e.toString());
+		}
         params[12] = "RESULTPAGEXSLT";
         params[13] = resultPageXslt;
-        String xsltPath = config.getConfigName()+"/index/"+usingIndexName+"/"+config.getGfindObjectsResultXslt(usingIndexName, resultPageXslt);
-        StringBuffer resultXml = (new GTransformer()).transform(
-        		xsltPath,
-        		resultSet.getResultXml(),
-                params);
+        String xsltPath = null;
+		try {
+			xsltPath = config.getConfigName()+"/index/"+usingIndexName+"/"+config.getGfindObjectsResultXslt(usingIndexName, resultPageXslt);
+		} catch (Exception e) {
+            throw new GenericSearchException("gfindObjects xsltPath error:\n" + e.toString());
+		}
+        if (logger.isDebugEnabled())
+            logger.debug("gfindObjects xsltPath=\n"+xsltPath+" resultSet="+resultSet);
+        StringBuffer resultXml = null;
+		try {
+			resultXml = (new GTransformer()).transform(
+					xsltPath,
+					resultSet.getResultXml(),
+			        params);
+		} catch (Exception e) {
+            throw new GenericSearchException("gfindObjects transform error:\n" + e.toString());
+		}
         if (srf != null && config.isSearchResultFilteringActive("postsearch")) {
         	resultXml = srf.filterResultsetForPostsearch(fgsUserName, resultXml, fgsUserAttributes, config);
             if (logger.isDebugEnabled())
@@ -675,16 +692,6 @@ public class OperationsImpl extends GenericOperationsImpl {
     	    try {
                 iw = new IndexWriter(dir, iwconfig);
             } catch (Exception e) {
-//             	iw = null;
-//                if (e.toString().indexOf("/segments")>-1) {
-//                    try {
-//        				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-//                        iw = new IndexWriter(dir, getAnalyzer(indexName), true, IndexWriter.MaxFieldLength.LIMITED);
-//                    } catch (IOException e2) {
-//                        throw new GenericSearchException("IndexWriter new error, creating index indexName=" + indexName+ " :\n", e2);
-//                    }
-//                }
-//                else
                     throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
             }
     	}

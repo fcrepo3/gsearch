@@ -10,8 +10,8 @@
 			<xsl:text>(</xsl:text>
 			<xsl:for-each select="//object"> 
 				<xsl:if test="position()>1"> or </xsl:if>
-				<xsl:text>$obj1 &lt;mulgara:is&gt;</xsl:text> 
-				<xsl:text>&lt;info:fedora/</xsl:text><xsl:value-of select="field[@name='PID']"/><xsl:text>&gt;</xsl:text>
+				<xsl:text>$obj1 %3Cmulgara:is%3E </xsl:text> 
+				<xsl:text>%3Cinfo:fedora/</xsl:text><xsl:value-of select="field[@name='PID']"/><xsl:text>%3E</xsl:text>
 			</xsl:for-each>
 			<xsl:text>)</xsl:text>
 		</result:newQueryPart>

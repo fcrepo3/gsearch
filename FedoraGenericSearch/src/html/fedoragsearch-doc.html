@@ -741,7 +741,7 @@
 						</ul>
 						<ul>
 							<li>RISEARCH with GSEARCH: 
-							<a href="rest?operation=gfindObjects&restXslt=copyXml&query=(::RISEARCH::type=tuples%26lang=itql%26format=Sparql%26query=select+$obj1+from+%3C%23ri%3E+where+$obj1+%3Cinfo:fedora/fedora-system:def/relations-external%23isMemberOf%3E+%3Cinfo:fedora/demo:SmileyStuff%3E+and+(::GSEARCH::xsltName/gsearchToRisearch?operation=gfindObjects%26restXslt=copyXml%26query=dc.creator:apache::GSEARCH::)::RISEARCH::)">an itql search with embedded GSearch</a>
+							<a href="rest?operation=gfindObjects&restXslt=copyXml&query=(::RISEARCH::type=tuples%26lang=itql%26format=Sparql%26query=select+$obj1+from+%3C%23ri%3E+where+$obj1+%3Cinfo:fedora/fedora-system:def/relations-external%23isMemberOf%3E+%3Cinfo:fedora/demo:SmileyStuff%3E+or+(::GSEARCH::xsltName/gsearchToRisearch?operation=gfindObjects%26restXslt=copyXml%26query=dc.creator:apache::GSEARCH::)::RISEARCH::)">an itql search with embedded GSearch</a>
 							</li>
 						</ul>
 						<ul>
@@ -786,7 +786,6 @@
     ant junit-lucene  
     ant junit-testsonlucene
     ant junit-fgs23  
-    ant junit-lucene-fgs24_1009 
     ant junit-lucene-fgs24_1010 
     ant junit-lucene-fgs24_1019  
 </pre>

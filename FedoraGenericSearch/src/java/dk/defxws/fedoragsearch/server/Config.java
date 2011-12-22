@@ -962,8 +962,13 @@ public class Config {
     }
 
 	public String getSortFields(String indexName, String sortFields) {
-        if (sortFields==null || sortFields.equals("")) 
-            return (getIndexProps(indexName)).getProperty("fgsindex.defaultSortFields");
+        if (sortFields==null || sortFields.equals("")) {
+            String sf = (getIndexProps(indexName)).getProperty("fgsindex.defaultSortFields");
+            if (sf==null) {
+            	return "";
+            }
+            return sf;
+        }
         else 
             return sortFields;
     }
