@@ -41,20 +41,20 @@ public class TestConfigOnLuceneFgs24_1019
 
     @Test
     public void testFindPDFs() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsmd.Content-Type:\"application/pdf\"&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
-    }
-
-    @Test
-    public void testFindXML_SOURCEs() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsmd.Content-Type:\"application/xml\"&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsmd_DS2.Content-Type:\"application/pdf\"&restXslt=copyXml");
   	    assertXpathEvaluatesTo("2", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test
+    public void testFindXML_SOURCEs() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsmd_XML_SOURCE.Content-Type:\"application/xml\"&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("4", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
     public void testFindXSLTs() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsmd.Content-Type:\"application/xslt\"&restXslt=copyXml");
-  	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsmd_XSLT.Content-Type:\"application/xslt\"&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("2", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
     @Test

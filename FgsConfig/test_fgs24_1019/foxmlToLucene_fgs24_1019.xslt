@@ -95,15 +95,10 @@
 				</xsl:for-each>
 			</xsl:for-each>
 			
-			<!-- indexing other datastreams -->
+			<!-- Text and metadata extraction using Apache Tika. -->
 			
 			<xsl:for-each select="foxml:datastream[@CONTROL_GROUP='M' or @CONTROL_GROUP='E' or @CONTROL_GROUP='R']">
-				<IndexField index="TOKENIZED" store="YES" termVector="NO">
-					<xsl:attribute name="IFname">
-						<xsl:value-of select="concat('ds.', @ID)"/>
-					</xsl:attribute>
-					<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-				</IndexField>
+				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, @ID, 'IndexField', concat('ds.', @ID), concat('dsmd_', @ID, '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 			</xsl:for-each>
 
 	</xsl:template>

@@ -56,12 +56,10 @@
 				</IndexField>
 			</xsl:for-each>
 			
-			<!-- indexing XML_SOURCE datastreams -->
-
-			<IndexField IFname="ds.XML_SOURCE" index="TOKENIZED" store="YES" termVector="NO">
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTikaWithMetadata($PID, $REPOSITORYNAME, 'XML_SOURCE', 'Lucene', 'dsmd.', '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-			</IndexField>
-
+			<!-- indexing XML_SOURCE datastreams, text and metadata extraction using Apache Tika. -->
+			
+			<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, 'XML_SOURCE', 'IndexField', concat('ds.', 'XML_SOURCE'), concat('dsmd_', 'XML_SOURCE', '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+			
 	</xsl:template>
 	
 </xsl:stylesheet>	

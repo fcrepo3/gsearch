@@ -155,9 +155,7 @@ public class RESTImpl extends HttpServlet {
                     throw new GenericSearchException("ERROR: operation "+operation+" is unknown!");
                 }
             }
-        } catch (java.rmi.RemoteException e) {
-//            throw new ServletException("ERROR: \n", e);
-//            params[1] = e.toString();
+        } catch (Exception e) {
             resultXml = new StringBuffer("<resultPage>");
             resultXml.append("<error><message><![CDATA["+e.getMessage()+"]]></message></error>");
             resultXml.append("</resultPage>");
@@ -173,10 +171,23 @@ public class RESTImpl extends HttpServlet {
         params[7] = config.getSearchResultFilteringType();
         params[8] = "sortFields";
         params[9] = request.getParameter(PARAM_SORTFIELDS);
-        resultXml = (new GTransformer()).transform(
-        				config.getConfigName()+"/rest/"+restXslt, 
-        				resultXml, params,
-        				getServletContext().getRealPath("/WEB-INF/classes"));
+        try {
+			resultXml = (new GTransformer()).transform(
+							config.getConfigName()+"/rest/"+restXslt, 
+							resultXml, params,
+							getServletContext().getRealPath("/WEB-INF/classes"));
+		} catch (Exception e) {
+            resultXml = new StringBuffer("<resultPage>");
+            resultXml.append("<error><message><![CDATA["+e.getMessage()+"]]></message></error>");
+            resultXml.append("</resultPage>");
+            params[1] = e.getMessage();
+            logger.error(e);
+            e.printStackTrace();
+			resultXml = (new GTransformer()).transform(
+					config.getConfigName()+"/rest/"+restXslt, 
+					resultXml, params,
+					getServletContext().getRealPath("/WEB-INF/classes"));
+		}
 //        if (logger.isDebugEnabled())
 //            logger.debug("after "+restXslt+" result=\n"+resultXml);
         

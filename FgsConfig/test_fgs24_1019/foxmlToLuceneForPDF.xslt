@@ -57,11 +57,9 @@
 				</IndexField>
 			</xsl:for-each>
 			
-			<!-- indexing pdf datastreams -->
-
-			<IndexField IFname="ds.PDF" index="TOKENIZED" store="YES" termVector="NO">
-				<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTikaWithMetadata($PID, $REPOSITORYNAME, $DSID, 'Lucene', 'dsmd.', '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
-			</IndexField>
+			<!-- indexing pdf datastreams, text and metadata extraction using Apache Tika. -->
+			
+			<xsl:value-of disable-output-escaping="yes" select="exts:getDatastreamFromTika($PID, $REPOSITORYNAME, $DSID, 'IndexField', concat('ds.', $DSID), concat('dsmd_', $DSID, '.'), '', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
 
 	</xsl:template>
 	
