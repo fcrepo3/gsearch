@@ -41,7 +41,7 @@ public class TestConfigOnLuceneFgs24_1010
 
     @Test
     public void testTikaExtractionLuceneBefore2() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:22&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:20&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
@@ -79,7 +79,7 @@ public class TestConfigOnLuceneFgs24_1010
 
     @Test
     public void testTikaExtractionLuceneIngest2() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:22&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:20&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
@@ -101,6 +101,49 @@ public class TestConfigOnLuceneFgs24_1010
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
+    // writeLimit is a word in the document beyond the first 100 characters
+    @Test
+    public void testTikaExtractionLuceneIngest6() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.testMpdf:writeLimit&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest7() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configTestOnLuceneFgs24_1010&propertyName=fedoragsearch.writeLimit&propertyValue=100&restXslt=copyXml");
+  	    assertXpathNotExists("/resultPage/error", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest8() throws Exception {
+  	    StringBuffer result = doOp("?operation=updateIndex&action=fromPid&value=test:fgs24_1010&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/updateIndex/@updateTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest9() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.testMpdf:writeLimit&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest10() throws Exception {
+        StringBuffer result = doOp("?operation=configure&configName=configTestOnLuceneFgs24_1010&propertyName=fedoragsearch.writeLimit&propertyValue=-1&restXslt=copyXml");
+  	    assertXpathNotExists("/resultPage/error", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest11() throws Exception {
+  	    StringBuffer result = doOp("?operation=updateIndex&action=fromPid&value=test:fgs24_1010&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/updateIndex/@updateTotal", result.toString());
+    }
+
+    @Test
+    public void testTikaExtractionLuceneIngest12() throws Exception {
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=ds.testMpdf:writeLimit&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
+    }
+
     @Test
     public void testTikaExtractionLuceneAfter() throws Exception {
     	FedoraClient fedoraClient = new FedoraClient("http://localhost:8080/fedora", "fgsTester", "fgsTesterPassword");
@@ -113,7 +156,7 @@ public class TestConfigOnLuceneFgs24_1010
 
     @Test
     public void testTikaExtractionLuceneAfter2() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:22&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.Word-Count:20&restXslt=copyXml");
   	    assertXpathEvaluatesTo("0", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 

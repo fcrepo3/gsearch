@@ -297,7 +297,8 @@ public class Config {
     			"fedoragsearch.updaterNames",
     			"fedoragsearch.searchResultFilteringModule",
     			"fedoragsearch.searchResultFilteringType",
-    			"fedoragsearch.xsltProcessor"
+    			"fedoragsearch.xsltProcessor",
+				"fedoragsearch.writeLimit"
     	};
     	checkPropNames("fedoragsearch.properties", fgsProps, propNames);
 
@@ -825,6 +826,15 @@ public class Config {
         } catch (NumberFormatException e) {
         }
         return defaultBrowseIndexTermPageSize;
+    }
+    
+    public int getWriteLimit() {
+    	int writeLimit = 100000; // the Tika default value
+		try {
+			writeLimit = Integer.parseInt(fgsProps.getProperty("fedoragsearch.writeLimit"));
+		} catch (NumberFormatException e) {
+		}
+    	return writeLimit;
     }
     
     public String getDefaultGetRepositoryInfoRestXslt() {

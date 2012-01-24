@@ -941,13 +941,21 @@ public class GenericOperationsImpl implements Operations {
 				} catch (Exception e) {
 	            	return emptyIndexField("getDatastreamFromTika TransformerToText", pid, dsId, mimetype, e);
 				}
+				int writeLimit = 100000;
+		        try {
+					config = Config.getCurrentConfig();
+					if (config != null) writeLimit = config.getWriteLimit();
+				} catch (Exception e) {
+	                logger.debug("getDatastreamFromTika Config.getCurrentConfig() exception=" + e);
+				}
 	            if (logger.isDebugEnabled())
 	                logger.debug("getDatastreamFromTika" +
 	                        " pid="+pid+
 	                        " dsId="+dsId+
+	                        " writeLimit="+writeLimit+
 	                        " TransformerToText="+transformerToText);
                 try {
-					dsBuffer = transformerToText.getFromTika(repositoryName+"/"+pid+"/"+dsId, ds, indexFieldTagName, textIndexField, indexFieldNamePrefix, selectedFields);
+					dsBuffer = transformerToText.getFromTika(repositoryName+"/"+pid+"/"+dsId, ds, indexFieldTagName, textIndexField, indexFieldNamePrefix, selectedFields, writeLimit);
 				} catch (Exception e) {
 		            if (logger.isDebugEnabled())
 		                logger.debug("getDatastreamFromTika" +

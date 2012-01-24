@@ -38,7 +38,7 @@
 		<div id="header">
 				<a href="" id="logo"></a>
 				<div id="title">
-				<h1>Fedora Generic Search Service Version 2.4</h1>
+				<h1>Fedora Generic Search Service Version 2.4.1</h1>
 				<h2>compatible with Fedora Version 3.5</h2>
 				</div>
 		</div>
@@ -93,6 +93,7 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#embeddedqueries">Embedded queries</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#source">Building from source</a></dt>
 				<dt><a href="#HISTORY">V. HISTORY</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new241">New features in version 2.4.1</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new24">New features in version 2.4</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new23">New features in version 2.3</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new22">New features in version 2.2</a></dt>
@@ -600,6 +601,16 @@
 			
 		<div>
 			<a name="extraction"><h2>Full-text and metadata extraction from datastreams using Apache Tika</h2></a>
+						<ul>
+							<li>Tika has a default maximum length of 100000 characters when extracting text from documents.
+								This can be configured in GSearch in the property fedoragsearch.writeLimit in fedoragsearch.properties.
+								Setting it to -1 will remove the length restriction.
+								However, very long documents may take too much time during indexing,
+								so the default length or other fixed length may be sensible.
+								Characters in the document beyond the writeLimit will be ignored for indexing,
+								and a log warning is given.
+							</li>
+						</ul>
 			<table border="1" cellpadding="8">
 				<tr><th align="left" colspan="2">Parameters for getDatastreamFromTika, getDatastreamTextFromTika, and getDatastreamMetadataFromTika</th></tr>
 				<tr><td>indexFieldTagName</td><td>either "IndexField" (with the Lucene plugin) or "field" (with the Solr plugin)</td></tr>
@@ -809,6 +820,22 @@
 		</div>
 			
 		<div>
+			<a name="new241"><h2>New features in version 2.4.1</h2></a>
+				<ul>
+					<li>Improvement of the control over the length of datastreams in Apache Tika (<a href="https://jira.duraspace.org/browse/FCREPO-1049">FCREPO-1049</a>)
+						<ul>
+							<li>Tika has a default maximum length of 100000 characters when extracting text from documents.
+								This can now be configured in GSearch in the property fedoragsearch.writeLimit in fedoragsearch.properties.
+								Setting it to -1 will remove the length restriction.
+								However, very long documents may take too much time during indexing,
+								so the default length or other fixed length may be sensible.
+								Characters in the document beyond the writeLimit will be ignored in indexing,
+								and a log warning is given.
+							</li>
+						</ul>
+					</li>
+				</ul>
+				
 			<a name="new24"><h2>New features in version 2.4</h2></a>
 				<ul>
 					<li>Compatibility with Lucene 3.5 and Solr 3.5 (<a href="https://jira.duraspace.org/browse/FCREPO-1005">FCREPO-1005</a>)</li>

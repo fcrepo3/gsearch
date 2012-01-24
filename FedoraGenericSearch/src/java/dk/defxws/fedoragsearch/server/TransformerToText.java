@@ -26,6 +26,7 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.apache.tika.sax.WriteOutContentHandler;
 import org.xml.sax.SAXException;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
@@ -46,25 +47,27 @@ public class TransformerToText {
     public TransformerToText() {
     }
     
-    public StringBuffer getFromTika(String fullDsId, byte[] doc, String indexFieldTagName, String textIndexField, String indexFieldNamePrefix, String selectedFields) 
+    public StringBuffer getFromTika(String fullDsId, byte[] doc, String indexFieldTagName, String textIndexField, String indexFieldNamePrefix, String selectedFields, int writeLimit) 
     throws GenericSearchException {
         StringBuffer indexFields = new StringBuffer();
         InputStream isr = new ByteArrayInputStream(doc);
-        BodyContentHandler textHandler = new BodyContentHandler();
+        WriteOutContentHandler textHandler = new WriteOutContentHandler(writeLimit);
         Metadata metadata = new Metadata();
         AutoDetectParser parser = new AutoDetectParser();
         try {
 			parser.parse(isr, textHandler, metadata);
-		} catch (IOException e) {
-            throw new GenericSearchException(e.toString());
-		} catch (SAXException e) {
-            throw new GenericSearchException(e.toString());
-		} catch (TikaException e) {
-            throw new GenericSearchException(e.toString());
+		} catch (Exception e) {
+			if (!textHandler.isWriteLimitReached(e)) {
+	            throw new GenericSearchException(e.toString());
+			} else {
+                logger.warn("getFromTika"
+                		+" fullDsId="+fullDsId
+                		+" writeLimit reached="+e);
+			}
 		} finally {
 			try {
 				isr.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 	            throw new GenericSearchException(e.toString());
 			}
 		}
