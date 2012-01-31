@@ -2,18 +2,28 @@
 <!-- FedoraGenericSearch/build.xml -->
 <!-- calls FgsConfig/build.xml -->
 <!-- 
-run 
-ant buildfordownload 
-or
-ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dlocal.ZEBRA_SERVER=... buildforlocaltest
+# For reviewing or testing at your ${local.PROTOCOL}://${local.HOSTPORT}, 
+# including test configurations and installation at tomcat, run
+> ant -Dlocal.PROTOCOL=<protocol> -Dlocal.HOSTPORT=<hostport> -Dlocal.FEDORA_HOME=<location> -Dlocal.SOLR_HOME=<location> -Dlocal.SOLR_SERVER=<url> -Dlocal.ZEBRA_SERVER=<url> buildforlocaltest
+
+# For building from source, 
+# followed by installation and configuration as in documentation page, run
+> ant buildfromsource
+> ... # move FgsBuild/fromsource/fedoragsearch.war to tomcat webapps and configure
+
+# for release, to be moved to sourceforge, run 
+> ant release
+> ... # move FgsBuild/release/* to sourceforge
 -->
-<project name="FedoraGenericSearch" default="buildfordownload" basedir=".">
+<project name="FedoraGenericSearch" default="see-top-of-build.xml" basedir=".">
 	<description>Fedora Generic Search Service</description>
 
     <property environment="env"/>
-	
-	<property name="local.FEDORA_HOME" 			location="/Users/gertschmeltzpedersen/f35" />
-	<property name="local.SOLR_HOME" 			location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.4.0" />
+
+	<property name="local.PROTOCOL" 		   value="http" />
+	<property name="local.HOSTPORT" 		   value="localhost:8080" />
+	<property name="local.FEDORA_HOME" 		   location="/Users/gertschmeltzpedersen/f35" />
+	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.5.0" />
 	<property name="local.SOLR_SERVER" 		   value="http://localhost:8983/solr" />
 	<property name="local.ZEBRA_SERVER" 	   value="http://localhost:9999" />
 	
@@ -24,7 +34,8 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
     <property name="javac.source"              value="1.5"/>
     <property name="javac.target"              value="1.5"/>
 
-    <property name="fedoragsearch.version" value="2.4"/>
+    <property name="fedoragsearch.version" value="2.4.1"/>
+    <property name="fedora.version" value="3.5"/>
 
     <property name="source.dir" location="src/java"/>
     <property name="lib.dir" location="lib"/>
@@ -33,8 +44,8 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
 	<property name="build.dir" location="${build.basedir}/webapp" />
 	<property name="plugin.dir" location="${build.dir}/WEB-INF/classes" />
 	<property name="tomcat.basename" value="tomcat" />
-	<property name="dist.dir" location="${build.basedir}/dist" />
-	<property name="localdist.dir" location="${build.basedir}/localdist" />
+	<property name="fromsource.dir" location="${build.basedir}/fromsource" />
+	<property name="localtest.dir" location="${build.basedir}/localtest" />
 	<property name="app.name" value="fedoragsearch" />
 	<property name="war.name" value="${app.name}.war" />
 
@@ -82,6 +93,10 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
         </sequential>
     </macrodef>
 	
+    <target name="see-top-of-build.xml"
+            description="see-top-of-build.xml">
+    </target>
+	
     <target name="clean"
             description="removes build-generated artifacts">
 		<delete dir="../FgsLucene/bin"/>
@@ -104,8 +119,8 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
 	<target name="prep"
             depends="clean, compile"
             description="prepare">
-		<mkdir dir="${dist.dir}" />
-		<mkdir dir="${localdist.dir}" />
+		<mkdir dir="${fromsource.dir}" />
+		<mkdir dir="${localtest.dir}" />
 		<copy file="src/html/fedoragsearch-doc.html" tofile="${build.dir}/index.html" preservelastmodified="true" />
 		<copy todir="${build.dir}/FgsConfig" preservelastmodified="true">
 			<fileset dir="../FgsConfig"/>
@@ -138,38 +153,40 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
 		</copy>
 	</target>
 
-    <target name="binrelease" depends="buildfordownload">
-      <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}" preservelastmodified="true"
-            file="${dist.dir}/${war.name}"/>
-      <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}/doc" preservelastmodified="true">
+    <target name="binrelease" depends="buildfromsource">
+      <delete dir="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}"/>
+      <delete dir="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}.zip"/>
+      <delete dir="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}.zip.md5"/>
+      <copy todir="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}" preservelastmodified="true"
+            file="${fromsource.dir}/${war.name}"/>
+      <copy todir="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}/doc" preservelastmodified="true">
         <fileset dir="${build.dir}">
           <include name="index.html"/>
-          <include name="css/**"/>
-          <include name="images/**"/>
+          <include name="css/docstyle.css"/>
+          <include name="images/fgs*.png"/>
         </fileset>
       </copy>
-      <zip zipfile="${build.basedir}/release/genericsearch-${fedoragsearch.version}.zip"
-           basedir="${build.basedir}/release" includes="genericsearch-${fedoragsearch.version}/**"/>
-      <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}"/>
+      <zip zipfile="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}.zip"
+           basedir="${build.basedir}/release" includes="fedoragsearch-${fedoragsearch.version}/**"/>
     </target>
   
     <target name="srcrelease" depends="">
-      <delete file="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src.zip" />
-      <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src"/>
-      <copy todir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src" preservelastmodified="true">
+      <delete dir="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}-src"/>
+      <delete file="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}-src.zip" />
+      <delete file="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}-src.zip.md5" />
+      <copy todir="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}-src" preservelastmodified="true">
         <fileset dir="..">
             <exclude name=".*/**"/>
             <exclude name="*/.*/**"/>
             <exclude name="FgsBuild/**"/>
             <exclude name="bin/**"/>
             <exclude name="*/bin/**"/>
-            <exclude name="*/dist/**"/>
+            <exclude name="*/fromsource/**"/>
             <exclude name="*/lib/**"/>
         </fileset>
       </copy>
-      <zip zipfile="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src.zip" 
-           basedir="${build.basedir}/release" includes="genericsearch-${fedoragsearch.version}-src/**"/>
-      <delete dir="${build.basedir}/release/genericsearch-${fedoragsearch.version}-src"/>
+      <zip zipfile="${build.basedir}/release/fedoragsearch-${fedoragsearch.version}-src.zip" 
+           basedir="${build.basedir}/release" includes="fedoragsearch-${fedoragsearch.version}-src/**"/>
     </target>
 
     <target name="release" depends="binrelease,srcrelease" description="Build the binary and source distributions">
@@ -180,13 +197,13 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
       </checksum>
     </target>
 
-	<target name="buildfordownload"
+	<target name="buildfromsource"
 			depends="prep, includeengines"
-	        description="build the download">
-        <ant dir="../FgsConfig" target="configForWebServer"/>
+	        description="build from source">
+        <ant dir="../FgsConfig" target="configForWebApp"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
 		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
-	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
+	    <jar jarfile="${fromsource.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
 
 	<target name="buildforlocaltest"
@@ -195,8 +212,8 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
         <ant dir="../FgsConfig" target="configForLocalTest"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
 		<copy file="src/WEB-INF/web-withAuthN.xml" tofile="${build.dir}/WEB-INF/web.xml" preservelastmodified="true" />
-	    <jar jarfile="${localdist.dir}/${war.name}" basedir="${build.dir}"/>
-        <copy file="${localdist.dir}/${war.name}" todir="${local.FEDORA_HOME}/${tomcat.basename}/webapps" preservelastmodified="true"/>
+	    <jar jarfile="${localtest.dir}/${war.name}" basedir="${build.dir}"/>
+        <copy file="${localtest.dir}/${war.name}" todir="${local.FEDORA_HOME}/${tomcat.basename}/webapps" preservelastmodified="true"/>
 	</target>
 	
     <target name="includeengines" depends="">
@@ -297,8 +314,8 @@ ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... -Dloca
 	</target>
 	
 	<target name="junit" depends="compile-junit">
-		<property name="fedoragsearch.protocol" value="http"/>
-		<property name="fedoragsearch.hostport" value="localhost:8080"/>
+		<property name="fedoragsearch.protocol" value="${local.PROTOCOL}"/>
+		<property name="fedoragsearch.hostport" value="${local.HOSTPORT}"/>
 		<property name="fedoragsearch.path" value="fedoragsearch/rest"/>
 		<property name="fedoragsearch.user" value="fedoraAdmin"/>
 		<property name="fedoragsearch.pass" value="fedoraAdmin"/>

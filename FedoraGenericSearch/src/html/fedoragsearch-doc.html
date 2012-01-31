@@ -408,7 +408,6 @@
 					  			and <pre>FgsConfig/FgsConfigIndexTemplate/Solr/foxmlToSolrGenerated.xslt</pre>
 					  			You may use them as they are or copy-to-another-name and edit them, 
 					  			probably there are many index fields that you do not want.
-					  			There are foxmlToLucene.xslt and foxmlToSolr.xslt files, useful for the Fedora demo objects.
 					  			You will put the name into the basic property file
 					  			in order to use that indexing stylesheet at indexing time.
 					  		</li>
@@ -769,20 +768,19 @@
 <pre>
   git clone https://github.com/fcrepo/gsearch.git
 </pre>
-			<p>To build fedoragsearch.war in FedoraGenericSearch/dist:</p>
+			<p>To build fedoragsearch.war in FgsBuild/fromsource:</p>
 <pre>
   cd FedoraGenericSearch
-  ant buildfordownload
+  ant buildfromsource
 </pre>
-			<p>To build fedoragsearch.war in FedoraGenericSearch/localdist for local testing:</p>
+			<p>To build fedoragsearch.war in FgsBuild/localtest for local testing:</p>
 <pre>
   cd FedoraGenericSearch
-  ant -Dlocal.FEDORA_HOME=... -Dlocal.SOLR_HOME=... -Dlocal.SOLR_SERVER=... buildforlocaltest
+  ant -Dlocal.PROTOCOL=&lt;protocol&gt; -Dlocal.HOSTPORT=&lt;hostport&gt; -Dlocal.FEDORA_HOME=&lt;location&gt; -Dlocal.SOLR_HOME=&lt;location&gt; -Dlocal.SOLR_SERVER=&lt;url&gt; buildforlocaltest
 </pre>
-			<p>To run tests, copy localdist/fedoragsearch.war into tomcat webapps
-				on a Fedora repository with demo objects with MessagingModule enabled.
-			</p>
-			<p>Create a test user in fedora-users.xml
+			<p>To run tests in tomcat at &lt;protocol&gt;://&lt;hostport&gt;/fedoragsearch
+			install a Fedora repository with demo objects with MessagingModule enabled,
+			and create a test user in fedora-users.xml :
 			</p>
 <pre>
     &lt;user name="fgsTester" password="fgsTesterPassword"&gt;

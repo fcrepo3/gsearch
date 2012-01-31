@@ -73,7 +73,7 @@ public class TestConfigOnSolrFgs24_1010
 
     @Test
     public void testTikaExtractionSolrIngest2() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.WordCount:22&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=dsSomeMd.WordCount:20&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 
