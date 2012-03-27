@@ -137,7 +137,7 @@ public class TestConfigFgs23
     	fis.read(testobject);
     	apim.ingest(testobject, "info:fedora/fedora-system:FOXML-1.1", "test ingest");
   	    delay(5000);
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch&restXslt=copyXml");
+  	    StringBuffer result = doOp("?operation=gfindObjects&query=testMapplXml.meta.title:gsearch+and+testMapplXmlexts.meta.title:gsearch&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/gfindObjects/@hitTotal", result.toString());
     }
 

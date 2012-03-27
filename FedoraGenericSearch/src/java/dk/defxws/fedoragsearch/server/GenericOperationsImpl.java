@@ -7,10 +7,9 @@
  */
 package dk.defxws.fedoragsearch.server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 import java.net.MalformedURLException;
@@ -26,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.stream.StreamSource;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
@@ -42,6 +43,9 @@ import org.fcrepo.server.access.FedoraAPIA;
 import org.fcrepo.server.management.FedoraAPIM;
 import org.fcrepo.server.types.gen.Datastream;
 import org.fcrepo.server.types.gen.MIMETypedStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 import sun.misc.BASE64Encoder;
 
@@ -1011,6 +1015,69 @@ public class GenericOperationsImpl implements Operations {
     	int j = pid.indexOf("$");
     	if (j==-1) j = pid.length();
     	return pid.substring(0, j);
+    }
+    
+    public Node getDatastreamXML(
+            String pid,
+            String repositoryName,
+            String dsId,
+    		String fedoraSoap,
+    		String fedoraUser,
+    		String fedoraPass,
+    		String trustStorePath,
+    		String trustStorePass) {
+        if (logger.isInfoEnabled())
+            logger.info("getDatastreamXML"
+            		+" pid="+pid
+            		+" repositoryName="+repositoryName
+            		+" dsId="+dsId
+            		+" fedoraSoap="+fedoraSoap
+            		+" fedoraUser="+fedoraUser
+            		+" fedoraPass="+fedoraPass
+            		+" trustStorePath="+trustStorePath
+            		+" trustStorePass="+trustStorePass);
+        Node datastreamXml = null;
+        try {
+            FedoraAPIA apia = getAPIA(
+            		repositoryName, 
+            		fedoraSoap, 
+            		fedoraUser,
+            		fedoraPass,
+            		trustStorePath,
+            		trustStorePass );
+            MIMETypedStream mts = apia.getDatastreamDissemination(getRealPID(pid), dsId, null);
+            if (mts==null)
+            	return getExceptionNode("No MIMETypedStream for pid="+getRealPID(pid)+" dsid="+dsId);
+        	datastreamXml = getDocumentNode(new String(mts.getStream()));
+		} catch (Exception e) {
+            return getExceptionNode(e.toString());
+		}
+        return datastreamXml;
+    }
+
+    private Node getDocumentNode(String xmlString) {
+        if (logger.isDebugEnabled())
+            logger.debug("getDocumentNode" + " xmlString="+xmlString);
+    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    	factory.setNamespaceAware(true);
+        DocumentBuilder builder;
+        Document doc;
+        try {
+        	builder = factory.newDocumentBuilder();
+			doc = builder.parse(new InputSource(new StringReader(xmlString)));
+		} catch (Exception e) {
+            return getExceptionNode(e.toString());
+		}
+        if (logger.isDebugEnabled())
+            logger.debug("getDocumentNode" + " doc root="+doc.getDocumentElement());
+        return doc;
+    }
+
+    private Node getExceptionNode(String exceptionMessage)  {
+        logger.error("getExceptionNode" + " exceptionMessage="+exceptionMessage);
+        String xmlString = "<exception><message>"+exceptionMessage+"</message></exception>";
+        Node doc = getDocumentNode(xmlString);
+		return doc;
     }
     
 }

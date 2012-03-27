@@ -157,6 +157,16 @@
 			<xsl:value-of select="$testMapplXml//meta:title"/>
 		</IndexField> 
 		
+		<!-- testing exts:getDatastreamXML -->
+			
+		<xsl:variable name="testMapplXmlexts" select="exts:getDatastreamXML('test:fgs23', 'FgsRepos', 'testMapplXml', $FEDORASOAP, $FEDORAUSER, $FEDORAPASS, $TRUSTSTOREPATH, $TRUSTSTOREPASS)"/>
+		
+		<IndexField IFname="testMapplXmlexts.meta.title"> 
+			<xsl:value-of select="$testMapplXmlexts//meta:title"/>
+			<xsl:value-of select="$testMapplXmlexts/exception/message"/>
+		</IndexField> 
+		
+		
 	</xsl:template>
 	
 </xsl:stylesheet>	
