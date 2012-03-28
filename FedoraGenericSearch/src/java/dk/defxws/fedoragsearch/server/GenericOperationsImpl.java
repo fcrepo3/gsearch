@@ -1075,7 +1075,7 @@ public class GenericOperationsImpl implements Operations {
 
     private Node getExceptionNode(String exceptionMessage)  {
         logger.error("getExceptionNode" + " exceptionMessage="+exceptionMessage);
-        String xmlString = "<exception><message>"+exceptionMessage+"</message></exception>";
+        String xmlString = "<exception><message>"+exceptionMessage.replaceAll("<", "&lt;")+"</message></exception>";
         Node doc = getDocumentNode(xmlString);
 		return doc;
     }
