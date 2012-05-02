@@ -101,6 +101,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 			        getQueryAnalyzer(usingIndexName),
 			        config.getDefaultQueryFields(usingIndexName),
 			        config.getAllowLeadingWildcard(usingIndexName),
+			        config.getLowercaseExpandedTerms(usingIndexName),
 			        config.getIndexDir(usingIndexName),
 			        usingIndexName,
 			        config.getSnippetBegin(usingIndexName),

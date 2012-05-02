@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
@@ -101,6 +103,14 @@ public class RESTImpl extends HttpServlet {
         }
         if (logger.isInfoEnabled())
             logger.info("request="+request.getQueryString()+" remoteUser="+remoteUser+uasb.toString());
+      if (logger.isDebugEnabled()) {
+          logger.debug("logger name="+logger.getName());
+    	  Enumeration <Appender> appenders = logger.getAllAppenders();
+    	  while (appenders.hasMoreElements()) {
+    		  Appender appender = appenders.nextElement(); 
+              logger.debug("logger appender name="+appender.getName());
+    	  }
+      }
         config = Config.getCurrentConfig();
         if (configName!=null && !"configure".equals(operation)) {
         	// mainly for test purposes

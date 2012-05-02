@@ -460,6 +460,7 @@ public class Config {
     				"fgsindex.untokenizedFields",
     				"fgsindex.defaultQueryFields",
     				"fgsindex.allowLeadingWildcard",
+    				"fgsindex.lowercaseExpandedTerms",
     				"fgsindex.snippetBegin",
     				"fgsindex.snippetEnd",
     				"fgsindex.maxBufferedDocs",
@@ -594,6 +595,14 @@ public class Config {
             	String allowLeadingWildcard = getIndexProps(indexName).getProperty("fgsindex.allowLeadingWildcard");
                 if (!(allowLeadingWildcard==null || allowLeadingWildcard.equals("") || allowLeadingWildcard.equals("false") || allowLeadingWildcard.equals("true"))) {
                     errors.append("\n*** fedoragsearch.allowLeadingWildcard value="+allowLeadingWildcard+", must be false or true");
+                  }
+    		}
+
+//      	Check lowercaseExpandedTerms
+    		if (operationsImpl.indexOf("fgslucene")>-1) {
+            	String lowercaseExpandedTerms = getIndexProps(indexName).getProperty("fgsindex.lowercaseExpandedTerms");
+                if (!(lowercaseExpandedTerms==null || lowercaseExpandedTerms.equals("") || lowercaseExpandedTerms.equals("false") || lowercaseExpandedTerms.equals("true"))) {
+                    errors.append("\n*** fgsindex.lowercaseExpandedTerms value="+lowercaseExpandedTerms+", must be false or true");
                   }
     		}
     		
@@ -1060,6 +1069,14 @@ public class Config {
         	allowLeadingWildcard = "false";
           }
         return new Boolean( allowLeadingWildcard );
+    }
+    
+    public boolean getLowercaseExpandedTerms(String indexName) {
+    	String lowercaseExpandedTerms = getIndexProps(indexName).getProperty("fgsindex.lowercaseExpandedTerms");
+        if (lowercaseExpandedTerms==null || lowercaseExpandedTerms.equals("")) {
+        	lowercaseExpandedTerms = "true";
+          }
+        return new Boolean( lowercaseExpandedTerms );
     }
     
     public String getSnippetBegin(String indexName) {

@@ -313,6 +313,13 @@
 		<property name="test" value="gsearch.test.lucene.fgs24_1009.AllTests"/>
 	</target>
 	
+	<target name="junit-fgs242" depends="junit-set-fgs242, junit">
+	</target>
+	
+	<target name="junit-set-fgs242">
+		<property name="test" value="gsearch.test.fgs242.AllTests"/>
+	</target>
+	
 	<target name="junit" depends="compile-junit">
 		<property name="fedoragsearch.protocol" value="${local.PROTOCOL}"/>
 		<property name="fedoragsearch.hostport" value="${local.HOSTPORT}"/>

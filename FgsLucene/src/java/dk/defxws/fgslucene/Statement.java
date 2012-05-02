@@ -69,6 +69,7 @@ public class Statement {
             Analyzer analyzer, 
             String defaultQueryFields, 
             boolean allowLeadingWildcard, 
+            boolean lowercaseExpandedTerms,
             String indexPath, 
             String indexName, 
             String snippetBegin,
@@ -85,7 +86,8 @@ public class Statement {
                     " indexName="+indexName+
                     " sortFields="+sortFields+
                     " defaultQueryFields="+defaultQueryFields+
-                    " allowLeadingWildcard="+allowLeadingWildcard);
+                    " allowLeadingWildcard="+allowLeadingWildcard+
+                    " lowercaseExpandedTerms="+lowercaseExpandedTerms);
     	ResultSet rs = null;
     	StringTokenizer defaultFieldNames = new StringTokenizer(defaultQueryFields);
     	int countFields = defaultFieldNames.countTokens();
@@ -97,9 +99,11 @@ public class Statement {
     	if (defaultFields.length == 1) {
     		QueryParser queryParser = new QueryParser(Version.LUCENE_35, defaultFields[0], analyzer);
     		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
+    		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
             if (logger.isDebugEnabled())
                 logger.debug("executeQuery queryParser" +
-                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard());
+                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard() +
+                        " lowercaseExpandedTerms="+queryParser.getLowercaseExpandedTerms());
     		try {
     			query = queryParser.parse(queryString);
     		} catch (ParseException e) {
@@ -109,15 +113,19 @@ public class Statement {
     	else {
     		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_35, defaultFields, analyzer);
     		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
+    		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
             if (logger.isDebugEnabled())
                 logger.debug("executeQuery mfqueryParser" +
-                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard());
+                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard() +
+                        " lowercaseExpandedTerms="+queryParser.getLowercaseExpandedTerms());
     		try {
     			query = queryParser.parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}
     	}
+        if (logger.isDebugEnabled())
+        	logger.debug("executeQuery after parse query="+query);
     	IndexReader ir = null;
     	try {
 			Directory dir = new SimpleFSDirectory(new File(indexPath));
@@ -140,6 +148,8 @@ public class Statement {
     		}
     		throw new GenericSearchException(e.toString());
     	}
+        if (logger.isDebugEnabled())
+        	logger.debug("executeQuery after rewrite query="+query);
     	searcher = new IndexSearcher(ir);
     	int start = Integer.parseInt(Integer.toString(startRecord));
     	TopDocs hits = getHits(query, start+maxResults-1, sortFields);
