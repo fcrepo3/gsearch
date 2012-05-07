@@ -7,6 +7,8 @@
  */
 package dk.defxws.fedoragsearch.server;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,45 +24,62 @@ import org.apache.log4j.Logger;
 import org.fcrepo.common.http.WebClient;
 
 /**
- * custom URIResolver for ssl access
+ * custom URIResolver to access ssl URLs, URLs requiring basic auth,
+ * and file:// protocol URLs.
  * 
  * @author  gsp@dtv.dk
  * @version 
  */
 public class URIResolverImpl implements URIResolver {
 	
-	private Config config;
+    private Config config;
     
     private final Logger logger = Logger.getLogger(URIResolverImpl.class);
     
     public void setConfig(Config config) {
-		this.config = config;
+        this.config = config;
     }
 
-	public Source resolve(String href, String base) throws TransformerException {
-		Source source = null;
-		URL url;
-		try {
-			url = new URL(href);
-		} catch (MalformedURLException e) {
-			throw new TransformerException("resolve new URL href="+href+" base="+base, e);
-		}
-		String reposName = config.getRepositoryNameFromUrl(url);
+    public Source resolve(String href, String base) throws TransformerException {
+        Source source = null;
+        URL url;
+        try {
+            url = new URL(href);
+        } catch (MalformedURLException e) {
+            throw new TransformerException("resolve new URL href="+href+" base="+base, e);
+        }
+        String reposName = config.getRepositoryNameFromUrl(url);
         if (logger.isDebugEnabled())
             logger.debug("resolve get href="+href+" base="+base+" url="+url.toString()+" reposName="+reposName);
-//		System.setProperty("http.user", config.getFedoraUser(reposName));
-//		System.setProperty("http.password", config.getFedoraPass(reposName));
-		System.setProperty("javax.net.ssl.trustStore", config.getTrustStorePath(reposName));
-		System.setProperty("javax.net.ssl.trustStorePassword", config.getTrustStorePass(reposName));
-		WebClient client = new WebClient();
-		try {
-	        if (logger.isDebugEnabled())
-	            logger.debug("resolve get source=\n"+client.getResponseAsString(href, false, new UsernamePasswordCredentials(config.getFedoraUser(reposName), config.getFedoraPass(reposName))));
-			source = new StreamSource(client.get(href, false, config.getFedoraUser(reposName), config.getFedoraPass(reposName)));
-		} catch (IOException e) {
-			throw new TransformerException("resolve get href="+href+" base="+base, e);
-		}
-		return source;
-	}
-
+        if (url.getProtocol().equals("file")) {
+            try {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("resolve getting file '" + url.getPath() + "'");
+                }
+                source = new StreamSource(new FileInputStream(url.getPath()));
+            } catch (FileNotFoundException e) {
+                throw new TransformerException("resolve get file path=" + url.getPath(), e);
+            }
+        } else {
+            WebClient client = new WebClient();
+            try {
+                if (reposName == null || reposName.trim().length() == 0) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("resolve get source=\n" + client.getResponseAsString(href, false));
+                    source = new StreamSource(client.get(href, false));
+                } else {
+//                    System.setProperty("http.user", config.getFedoraUser(reposName));
+//                    System.setProperty("http.password", config.getFedoraPass(reposName));
+                    System.setProperty("javax.net.ssl.trustStore", config.getTrustStorePath(reposName));
+                    System.setProperty("javax.net.ssl.trustStorePassword", config.getTrustStorePass(reposName));
+                    if (logger.isDebugEnabled())
+                        logger.debug("resolve get source=\n" + client.getResponseAsString(href, false, new UsernamePasswordCredentials(config.getFedoraUser(reposName), config.getFedoraPass(reposName))));
+                    source = new StreamSource(client.get(href, false, config.getFedoraUser(reposName), config.getFedoraPass(reposName)));
+                }
+            } catch (IOException e) {
+                throw new TransformerException("resolve get href="+href+" base="+base, e);
+            }
+        }
+        return source;
+    }
 }
