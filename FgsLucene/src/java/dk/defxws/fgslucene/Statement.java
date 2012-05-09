@@ -43,6 +43,7 @@ import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
@@ -97,7 +98,7 @@ public class Statement {
     	}
     	Query query = null;
     	if (defaultFields.length == 1) {
-    		QueryParser queryParser = new QueryParser(Version.LUCENE_35, defaultFields[0], analyzer);
+    		QueryParser queryParser = new QueryParser(Version.LUCENE_36, defaultFields[0], analyzer);
     		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
     		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
             if (logger.isDebugEnabled())
@@ -111,7 +112,7 @@ public class Statement {
     		}
     	}
     	else {
-    		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_35, defaultFields, analyzer);
+    		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_36, defaultFields, analyzer);
     		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
     		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
             if (logger.isDebugEnabled())
@@ -129,7 +130,8 @@ public class Statement {
     	IndexReader ir = null;
     	try {
 			Directory dir = new SimpleFSDirectory(new File(indexPath));
-    		ir = IndexReader.open(dir, true);
+//    		ir = IndexReader.open(dir, true); lucene 3.5 to 3.6
+    		ir = IndexReader.open(dir);
     		query.rewrite(ir);
     	} catch (CorruptIndexException e) {
     		if (ir!=null) {
@@ -282,7 +284,9 @@ public class Statement {
                     " sortFields="+sortFields);
     	TopDocs hits = null;
     	IndexReader ireader = searcher.getIndexReader();
-    	Collection fieldNames = ireader.getFieldNames(IndexReader.FieldOption.ALL);
+//    	Collection fieldNames = ireader.getFieldNames(IndexReader.FieldOption.ALL); lucene 3.5 to 3.6
+    	Collection<String> fieldNames = ReaderUtil.getIndexedFields(ireader);
+//    	FieldInfos fieldInfos = ReaderUtil.getMergedFieldInfos(ireader);
     	String sortFieldsString = sortFields;
     	if (sortFields == null) sortFieldsString = "";
     	StringTokenizer st = new StringTokenizer(sortFieldsString, ";");
@@ -301,6 +305,8 @@ public class Statement {
     		if (sortFieldName.length()==0)
     			errorExit("getHits sortFields='"+sortFields+"' : empty sortFieldName string in '" + sortFieldString + "'");
     		if (!fieldNames.contains(sortFieldName))
+//    		FieldInfo fieldInfo = fieldInfos.fieldInfo(sortFieldName);
+//    		if (fieldInfo == null || !fieldInfo.isIndexed)
     			errorExit("getHits sortFields='"+sortFields+"' : sortFieldName '" + sortFieldName + "' not found as index field name");
     		if (!stf.hasMoreTokens()) {
     			sortType = SortField.SCORE;

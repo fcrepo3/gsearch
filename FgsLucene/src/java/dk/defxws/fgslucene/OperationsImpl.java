@@ -29,6 +29,7 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -39,6 +40,7 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
@@ -157,7 +159,13 @@ public class OperationsImpl extends GenericOperationsImpl {
         int termNo = 0;
         try {
             getIndexReader(indexName);
-            Iterator fieldNames = (new TreeSet(ir.getFieldNames(IndexReader.FieldOption.INDEXED))).iterator();
+//          Iterator fieldNames = (new TreeSet(ir.getFieldNames(IndexReader.FieldOption.INDEXED))).iterator(); lucene 3.5 to 3.6
+            Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
+//          Iterator<FieldInfo> fieldInfos = (ReaderUtil.getMergedFieldInfos(ir)).iterator();
+//          Iterator<FieldInfo> fieldInfos = (ReaderUtil.getMergedFieldInfos(ir)).iterator();
+//            while (fieldInfos.hasNext()) {
+//                resultXml.append("<field>"+fieldInfos.next().name+"</field>");
+//            }
             while (fieldNames.hasNext()) {
                 resultXml.append("<field>"+fieldNames.next()+"</field>");
             }
@@ -339,9 +347,12 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
-    	getIndexReader(indexName, false);
+//    	getIndexReader(indexName, false);
+    	getIndexWriter(indexName);
         try {
-        	deleteTotal += ir.deleteDocuments(new Term("PID", pid));
+//        	deleteTotal += ir.deleteDocuments(new Term("PID", pid));
+        	iw.deleteDocuments(new Term("PID", pid));
+        	deleteTotal++;
 		} catch (StaleReaderException e) {
             throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
 		} catch (CorruptIndexException e) {
@@ -351,7 +362,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         } catch (IOException e) {
             throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
         } finally {
-        	closeIndexReader(indexName);
+//        	closeIndexReader(indexName);
+        	closeIndexWriter(indexName);
         }
         resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
     }
@@ -516,7 +528,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		}
     		else {
     			logger.warn("IndexDocument "+pid+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
-                closeIndexWriter(indexName);
+//                closeIndexWriter(indexName);
     			deletePid(pid, indexName, resultXml);
                 getIndexWriter(indexName);
     		}
@@ -544,7 +556,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         	analyzer = new KeywordAnalyzer();
         } else {
     		try {
-    			Version version = Version.LUCENE_35;
+    			Version version = Version.LUCENE_36;
     			Class analyzerClass = Class.forName(analyzerClassName);
                 if (logger.isDebugEnabled())
                     logger.debug("getAnalyzer analyzerClass=" + analyzerClass.toString());
@@ -615,15 +627,10 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private void getIndexReader(String indexName)
     throws GenericSearchException {
-    	getIndexReader(indexName, true);
-    }
-    
-    private void getIndexReader(String indexName, boolean readonly)
-    throws GenericSearchException {
 		IndexReader irreopened = null;
-		if (ir != null && readonly) {
+		if (ir != null) {
 	    	try {
-				irreopened = IndexReader.openIfChanged(ir, readonly);
+				irreopened = IndexReader.openIfChanged(ir);
 			} catch (Exception e) {
 				throw new GenericSearchException("IndexReader reopen error indexName=" + indexName+ " :\n", e);
 			}
@@ -632,6 +639,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 					ir.close();
 				} catch (Exception e) {
 					ir = null;
+					try {
+						irreopened.close();
+					} catch (Exception e1) {
+					}
 					throw new GenericSearchException("IndexReader close after reopen error indexName=" + indexName+ " :\n", e);
 				}
 				ir = irreopened;
@@ -640,7 +651,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 	        try {
 	        	closeIndexReader(indexName);
 				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-				ir = IndexReader.open(dir, readonly);
+				ir = IndexReader.open(dir);
 			} catch (Exception e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			}
@@ -675,7 +686,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		} catch (Exception e) {
                 throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
     		}
-    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_35, getQueryAnalyzer(indexName));
+    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_36, getQueryAnalyzer(indexName));
     		int maxBufferedDocs = config.getMaxBufferedDocs(indexName);
     		if (maxBufferedDocs > 0) {
     			iwconfig.setMaxBufferedDocs(maxBufferedDocs);

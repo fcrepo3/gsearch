@@ -40,7 +40,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.client.AdminClient;
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
@@ -49,7 +48,6 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
-import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.client.Uploader;
@@ -567,7 +565,7 @@ public class Config {
     				IndexReader ir = null;
     				try {
     					Directory dir = new SimpleFSDirectory(indexDirFile);
-    					ir = IndexReader.open(dir, true);
+    					ir = IndexReader.open(dir);
     					int max = ir.numDocs();
     					if (max > 10) max = 10;
     					for (int i=0; i<max; i++) {
@@ -1029,7 +1027,7 @@ public class Config {
         if (logger.isDebugEnabled())
             logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName);
 		try {
-			Version version = Version.LUCENE_35;
+			Version version = Version.LUCENE_36;
 			Class analyzerClass = Class.forName(analyzerClassName);
 	        if (logger.isDebugEnabled())
 	            logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName+ " ok");

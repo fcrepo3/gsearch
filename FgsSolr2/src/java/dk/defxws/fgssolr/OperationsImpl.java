@@ -42,6 +42,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
@@ -133,7 +134,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         int termNo = 0;
         try {
             getIndexReader(indexName);
-            Iterator fieldNames = (new TreeSet(ir.getFieldNames(IndexReader.FieldOption.INDEXED))).iterator();
+//          Iterator fieldNames = (new TreeSet(ir.getFieldNames(IndexReader.FieldOption.INDEXED))).iterator(); lucene 3.5 to 3.6
+            Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
             while (fieldNames.hasNext()) {
                 resultXml.append("<field>"+fieldNames.next()+"</field>");
             }
@@ -475,7 +477,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         	analyzer = new KeywordAnalyzer();
         } else {
     		try {
-    			Version version = Version.LUCENE_35;
+    			Version version = Version.LUCENE_36;
     			Class analyzerClass = Class.forName(analyzerClassName);
                 if (logger.isDebugEnabled())
                     logger.debug("getAnalyzer analyzerClass=" + analyzerClass.toString());
@@ -654,7 +656,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 		IndexReader irreopened = null;
 		if (ir != null) {
 	    	try {
-				irreopened = IndexReader.openIfChanged(ir, true);
+				irreopened = IndexReader.openIfChanged(ir);
 			} catch (CorruptIndexException e) {
 				throw new GenericSearchException("IndexReader reopen error indexName=" + indexName+ " :\n", e);
 			} catch (IOException e) {
@@ -665,6 +667,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 					ir.close();
 				} catch (IOException e) {
 					ir = null;
+					try {
+						irreopened.close();
+					} catch (Exception e1) {
+					}
 					throw new GenericSearchException("IndexReader close after reopen error indexName=" + indexName+ " :\n", e);
 				}
 				ir = irreopened;
@@ -672,7 +678,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 		} else {
 	        try {
 				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-				ir = IndexReader.open(dir, true);
+				ir = IndexReader.open(dir);
 			} catch (CorruptIndexException e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			} catch (IOException e) {
