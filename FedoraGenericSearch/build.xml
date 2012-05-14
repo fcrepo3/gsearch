@@ -313,11 +313,18 @@
 		<property name="test" value="gsearch.test.lucene.fgs24_1009.AllTests"/>
 	</target>
 	
-	<target name="junit-fgs242" depends="junit-set-fgs242, junit">
+	<target name="junit-fgs242_1076" depends="junit-set-fgs242_1076, junit">
 	</target>
 	
-	<target name="junit-set-fgs242">
-		<property name="test" value="gsearch.test.fgs242.AllTests"/>
+	<target name="junit-set-fgs242_1076">
+		<property name="test" value="gsearch.test.fgs242_1076.AllTests"/>
+	</target>
+			
+	<target name="junit-fgs242_1083" depends="junit-set-fgs242_1083, junit">
+	</target>
+			
+	<target name="junit-set-fgs242_1083">
+		<property name="test" value="gsearch.test.fgs242_1083.AllTests"/>
 	</target>
 	
 	<target name="junit" depends="compile-junit">

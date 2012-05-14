@@ -1,5 +1,5 @@
 //$Id:  $
-package gsearch.test.fgs242;
+package gsearch.test.fgs242_1083;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -17,7 +17,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {
-	gsearch.test.fgs242.TestFgs242.class
+	gsearch.test.fgs242_1083.TestFgs242_1083.class
 	} )
 public class AllTests {
 
@@ -25,7 +25,7 @@ public class AllTests {
     public static junit.framework.Test suite() throws Exception {
         junit.framework.TestSuite suite =
                 new junit.framework.TestSuite(AllTests.class.getName());
-        suite.addTest(gsearch.test.fgs242.TestFgs242.suite());
+        suite.addTest(gsearch.test.fgs242_1083.TestFgs242_1083.suite());
         return suite;
     }
 }

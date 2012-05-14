@@ -1,0 +1,9 @@
+<dtu_meta:meta xmlns:dtu_meta="http://www.dtu.dk/dtu_meta/" xmlns:meta="http://www.dtu.dk/dtu_meta/meta/">
+	<meta:title>Test Object for GSearch 2.3</meta:title>
+	<meta:creator>Gert Schmeltz Pedersen</meta:creator>
+	<meta:subject>GSearch</meta:subject>
+	<meta:description>
+		Test object for GSearch 2.3 with managed datastream of mimetype application/xml
+	</meta:description>
+	<meta:publisher>DTU</meta:publisher>
+</dtu_meta:meta>

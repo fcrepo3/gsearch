@@ -1,5 +1,5 @@
 //$Id:  $
-package gsearch.test.fgs242;
+package gsearch.test.fgs242_1083;
 
 import junit.framework.Test;
 
@@ -23,13 +23,13 @@ public class TestConfigSetup
 
     @Override
     public void setUp() throws Exception {
-        System.out.println("setUp TestFgs242");
+        System.out.println("setUp TestFgs242_1083");
         System.setProperty("fedoragsearch.fgsUserName", "fgsTester");
         System.setProperty("fedoragsearch.fgsPassword", "fgsTesterPassword");
     }
 
     @Override
     public void tearDown() throws Exception {
-        System.out.println("tearDown TestFgs242");
+        System.out.println("tearDown TestFgs242_1083");
     }
 }

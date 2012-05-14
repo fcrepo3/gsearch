@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="test:fgs242_1083"
+xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:objectProperties>
+<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Test Object for GSearch 2.4.2"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+</foxml:objectProperties>
+<foxml:datastream ID="testMtextXml" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="testMtextXml.0" LABEL="Test datastream managed text/xml" MIMETYPE="text/xml">
+<foxml:contentLocation TYPE="URL" REF="http://localhost:8080/fedoragsearch/FgsConfig/test_fgs242_1083/testMtextXml.xml"/>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="testMapplXml" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="testMapplXml.0" LABEL="Test datastream managed application/xml" MIMETYPE="application/xml">
+<foxml:contentLocation TYPE="URL" REF="http://localhost:8080/fedoragsearch/FgsConfig/test_fgs242_1083/testMapplXml.xml"/>
+</foxml:datastreamVersion>
+</foxml:datastream>
+</foxml:digitalObject>

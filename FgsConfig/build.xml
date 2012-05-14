@@ -112,6 +112,15 @@
         <ant target="configDemoIndexPerDS_fgs24_1019">
 			<property name="configName" value="configDemoIndexPerDS_fgs24_1019"/>
         </ant>
+
+        <ant target="configLocal">
+			<property name="configName" value="configTestOnLuceneFgs242_1083"/>
+			<property name="indexEngine" value="Lucene"/>
+			<property name="indexDir" location="${local.FEDORA_HOME}/gsearch/FgsIndex"/>
+			<property name="indexingDocXslt" value="foxmlToLucene"/>
+        </ant>
+		<copy file="test_fgs242_1083/foxmlToLucene_1083.xslt" 
+			tofile="${plugin.dir}/configTestOnLuceneFgs242_1083/index/FgsIndex/foxmlToLucene_1083.xslt" preservelastmodified="true" overwrite="true"/>
 		
 	</target>
 
