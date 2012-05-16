@@ -2,7 +2,7 @@
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fgslucene;
@@ -29,7 +29,6 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -159,13 +158,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         int termNo = 0;
         try {
             getIndexReader(indexName);
-//          Iterator fieldNames = (new TreeSet(ir.getFieldNames(IndexReader.FieldOption.INDEXED))).iterator(); lucene 3.5 to 3.6
             Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
-//          Iterator<FieldInfo> fieldInfos = (ReaderUtil.getMergedFieldInfos(ir)).iterator();
-//          Iterator<FieldInfo> fieldInfos = (ReaderUtil.getMergedFieldInfos(ir)).iterator();
-//            while (fieldInfos.hasNext()) {
-//                resultXml.append("<field>"+fieldInfos.next().name+"</field>");
-//            }
             while (fieldNames.hasNext()) {
                 resultXml.append("<field>"+fieldNames.next()+"</field>");
             }
@@ -347,10 +340,8 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
-//    	getIndexReader(indexName, false);
     	getIndexWriter(indexName);
         try {
-//        	deleteTotal += ir.deleteDocuments(new Term("PID", pid));
         	iw.deleteDocuments(new Term("PID", pid));
         	deleteTotal++;
 		} catch (StaleReaderException e) {
@@ -362,7 +353,6 @@ public class OperationsImpl extends GenericOperationsImpl {
         } catch (IOException e) {
             throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
         } finally {
-//        	closeIndexReader(indexName);
         	closeIndexWriter(indexName);
         }
         resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
@@ -528,7 +518,6 @@ public class OperationsImpl extends GenericOperationsImpl {
     		}
     		else {
     			logger.warn("IndexDocument "+pid+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
-//                closeIndexWriter(indexName);
     			deletePid(pid, indexName, resultXml);
                 getIndexWriter(indexName);
     		}

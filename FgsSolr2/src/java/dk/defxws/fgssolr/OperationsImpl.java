@@ -2,7 +2,7 @@
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fgssolr;
@@ -134,7 +134,6 @@ public class OperationsImpl extends GenericOperationsImpl {
         int termNo = 0;
         try {
             getIndexReader(indexName);
-//          Iterator fieldNames = (new TreeSet(ir.getFieldNames(IndexReader.FieldOption.INDEXED))).iterator(); lucene 3.5 to 3.6
             Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
             while (fieldNames.hasNext()) {
                 resultXml.append("<field>"+fieldNames.next()+"</field>");

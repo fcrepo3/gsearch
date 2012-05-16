@@ -2,7 +2,7 @@
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fgslucene;
@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
@@ -130,7 +130,6 @@ public class Statement {
     	IndexReader ir = null;
     	try {
 			Directory dir = new SimpleFSDirectory(new File(indexPath));
-//    		ir = IndexReader.open(dir, true); lucene 3.5 to 3.6
     		ir = IndexReader.open(dir);
     		query.rewrite(ir);
     	} catch (CorruptIndexException e) {
@@ -191,7 +190,7 @@ public class Statement {
     		}
     		resultXml.append("<hit no=\""+i+ "\" score=\""+hitsScore+"\">");
     		for (ListIterator li = doc.getFields().listIterator(); li.hasNext(); ) {
-    			Field f = (Field)li.next();
+    			Fieldable f = (Fieldable)li.next();
     			resultXml.append("<field name=\""+f.name()+"\"");
     			String snippets = null;
     			if (snippetsMax > 0) {
@@ -284,9 +283,7 @@ public class Statement {
                     " sortFields="+sortFields);
     	TopDocs hits = null;
     	IndexReader ireader = searcher.getIndexReader();
-//    	Collection fieldNames = ireader.getFieldNames(IndexReader.FieldOption.ALL); lucene 3.5 to 3.6
     	Collection<String> fieldNames = ReaderUtil.getIndexedFields(ireader);
-//    	FieldInfos fieldInfos = ReaderUtil.getMergedFieldInfos(ireader);
     	String sortFieldsString = sortFields;
     	if (sortFields == null) sortFieldsString = "";
     	StringTokenizer st = new StringTokenizer(sortFieldsString, ";");
@@ -305,8 +302,6 @@ public class Statement {
     		if (sortFieldName.length()==0)
     			errorExit("getHits sortFields='"+sortFields+"' : empty sortFieldName string in '" + sortFieldString + "'");
     		if (!fieldNames.contains(sortFieldName))
-//    		FieldInfo fieldInfo = fieldInfos.fieldInfo(sortFieldName);
-//    		if (fieldInfo == null || !fieldInfo.isIndexed)
     			errorExit("getHits sortFields='"+sortFields+"' : sortFieldName '" + sortFieldName + "' not found as index field name");
     		if (!stf.hasMoreTokens()) {
     			sortType = SortField.SCORE;

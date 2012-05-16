@@ -47,7 +47,7 @@
 			<property name="indexDir" location="${local.SOLR_HOME}/example/solr/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
         </ant>
-		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.5.0-for-fgs-2.4.xml" 
+		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.6.0-for-fgs-2.4.2.xml" 
 			tofile="${local.SOLR_HOME}/example/solr/conf/schema.xml" preservelastmodified="true" overwrite="true" />
 		
         <ant target="configLocal">
