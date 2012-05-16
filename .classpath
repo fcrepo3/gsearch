@@ -24,7 +24,6 @@
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/serializer.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/wsdl4j-1.5.1.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/xalan.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/tika-app-1.0.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-admin-3.5-fedora.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-admin-3.5.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-messaging-3.5.jar"/>
@@ -57,6 +56,7 @@
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-demo-3.6.0.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-highlighter-3.6.0.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-memory-3.6.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/tika-app-1.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
