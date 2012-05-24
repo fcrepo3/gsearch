@@ -34,7 +34,7 @@
     <property name="javac.source"              value="1.5"/>
     <property name="javac.target"              value="1.5"/>
 
-    <property name="fedoragsearch.version" value="2.4.1"/>
+    <property name="fedoragsearch.version" value="2.4.2"/>
     <property name="fedora.version" value="3.5"/>
 
     <property name="source.dir" location="src/java"/>

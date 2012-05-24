@@ -34,6 +34,18 @@ public class TestFgs242_1076
   	    StringBuffer result = doOp("?operation=configure&configName=configTestOnLucene&restXslt=copyXml");
   	    assertXpathNotExists("/resultPage/error", result.toString());
     }
+
+    @Test
+    public void testCreateEmpty() throws Exception {
+  	    StringBuffer result = doOp("?operation=updateIndex&action=createEmpty&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("0", "/resultPage/updateIndex/@docCount", result.toString());
+    }
+
+    @Test
+    public void testUpdateIndexFromFoxmlFiles() throws Exception {
+  	    StringBuffer result = doOp("?operation=updateIndex&action=fromFoxmlFiles&restXslt=copyXml");
+  	    assertXpathEvaluatesTo("20", "/resultPage/updateIndex/@docCount", result.toString());
+    }
     
     // assuming fgsindex.lowercaseExpandedTerms = true
 
