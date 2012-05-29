@@ -2,7 +2,7 @@
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fedoragsearch.server;
@@ -218,7 +218,7 @@ public class Config {
     	fgsProps = getFgsConfigProps("/"+configName+"/fedoragsearch.properties");
 
 //      Get updater properties
-    	String updaterProperty = fgsProps.getProperty("fedoragsearch.updaterNames");
+    	String updaterProperty = getProperty(fgsProps, "fedoragsearch.updaterNames");
     	if(updaterProperty == null) {
     		updaterNameToProps = null; // No updaters will be created
     	} else {           
@@ -237,7 +237,7 @@ public class Config {
 //      Get repository properties
         repositoryNameToProps = new Hashtable<String, Properties>();
         defaultRepositoryName = null;
-        StringTokenizer repositoryNames = new StringTokenizer(fgsProps.getProperty("fedoragsearch.repositoryNames"));
+        StringTokenizer repositoryNames = new StringTokenizer(getProperty(fgsProps, "fedoragsearch.repositoryNames"));
         while (repositoryNames.hasMoreTokens()) {
             String repositoryName = repositoryNames.nextToken();
             if (defaultRepositoryName == null)
@@ -253,7 +253,7 @@ public class Config {
         indexNameToProps = new Hashtable<String, Properties>();
         indexNameToUriResolvers = new Hashtable<String, URIResolverImpl>();
         defaultIndexName = null;
-        StringTokenizer indexNames = new StringTokenizer(fgsProps.getProperty("fedoragsearch.indexNames"));
+        StringTokenizer indexNames = new StringTokenizer(getProperty(fgsProps, "fedoragsearch.indexNames"));
         while (indexNames.hasMoreTokens()) {
             String indexName = indexNames.nextToken();
             if (defaultIndexName == null)
@@ -319,27 +319,27 @@ public class Config {
 
 //  	Check resultPage properties
     	try {
-    		maxPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.maxPageSize"));
+    		maxPageSize = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.maxPageSize"));
     	} catch (NumberFormatException e) {
     		errors.append("\n*** maxPageSize is not valid:\n" + e.toString());
     	}
     	try {
-    		defaultBrowseIndexTermPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultBrowseIndexTermPageSize"));
+    		defaultBrowseIndexTermPageSize = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultBrowseIndexTermPageSize"));
     	} catch (NumberFormatException e) {
     		errors.append("\n*** defaultBrowseIndexTermPageSize is not valid:\n" + e.toString());
     	}
     	try {
-    		defaultGfindObjectsHitPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsHitPageSize"));
+    		defaultGfindObjectsHitPageSize = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultGfindObjectsHitPageSize"));
     	} catch (NumberFormatException e) {
     		errors.append("\n*** defaultGfindObjectsHitPageSize is not valid:\n" + e.toString());
     	}
     	try {
-    		defaultGfindObjectsSnippetsMax = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsSnippetsMax"));
+    		defaultGfindObjectsSnippetsMax = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultGfindObjectsSnippetsMax"));
     	} catch (NumberFormatException e) {
     		errors.append("\n*** defaultGfindObjectsSnippetsMax is not valid:\n" + e.toString());
     	}
     	try {
-    		defaultGfindObjectsFieldMaxLength = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsFieldMaxLength"));
+    		defaultGfindObjectsFieldMaxLength = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultGfindObjectsFieldMaxLength"));
     	} catch (NumberFormatException e) {
     		errors.append("\n*** defaultGfindObjectsFieldMaxLength is not valid:\n" + e.toString());
     	}
@@ -350,29 +350,29 @@ public class Config {
     		String updaterName = updaterNames.nextElement();
     		Properties props = updaterNameToProps.get(updaterName);  
 			String updaterFilePath = configName+"/updater/"+updaterName+"/updater.properties";
-			if(props.getProperty("java.naming.factory.initial") == null) {
+			if(getProperty(props, "java.naming.factory.initial") == null) {
 				errors.append("\n*** java.naming.factory.initial not provided in "+updaterFilePath);
 			}
-			if(props.getProperty("java.naming.provider.url") == null) {
+			if(getProperty(props, "java.naming.provider.url") == null) {
 				errors.append("\n*** java.naming.provider.url not provided in "+updaterFilePath);
 			}
-			if(props.getProperty("connection.factory.name") == null) {
+			if(getProperty(props, "connection.factory.name") == null) {
 				errors.append("\n*** connection.factory.name not provided in "+updaterFilePath);
 			}
-			if(props.getProperty("client.id") == null) {
+			if(getProperty(props, "client.id") == null) {
 				errors.append("\n*** client.id not provided in "+updaterFilePath);
 			}  
     	}
     	
 //		Check searchResultFilteringModule property
-    	searchResultFilteringModuleProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringModule");
+    	searchResultFilteringModuleProperty = getProperty(fgsProps, "fedoragsearch.searchResultFilteringModule");
     	if(searchResultFilteringModuleProperty != null && searchResultFilteringModuleProperty.length()>0) {
     		try {
     			getSearchResultFiltering();
     		} catch (ConfigException e) {
     			errors.append(e.getMessage());
     		}
-    		String searchResultFilteringTypeProperty = fgsProps.getProperty("fedoragsearch.searchResultFilteringType");
+    		String searchResultFilteringTypeProperty = getProperty(fgsProps, "fedoragsearch.searchResultFilteringType");
     		StringTokenizer srft = new StringTokenizer("");
     		if (searchResultFilteringTypeProperty != null) {
     			srft = new StringTokenizer(searchResultFilteringTypeProperty);
@@ -415,14 +415,14 @@ public class Config {
     		checkPropNames(configName+"/repository/"+repositoryName+"/repository.properties", props, reposPropNames);
 
 //  		Check repositoryName
-    		String propsRepositoryName = props.getProperty("fgsrepository.repositoryName");
+    		String propsRepositoryName = getProperty(props, "fgsrepository.repositoryName");
     		if (!repositoryName.equals(propsRepositoryName)) {
     			errors.append("\n*** "+configName+"/repository/" + repositoryName +
     					": fgsrepository.repositoryName must be=" + repositoryName);
     		}
 
 //  		Check fedoraObjectDir
-    		String fedoraObjectDirName = insertSystemProperties(props.getProperty("fgsrepository.fedoraObjectDir"));
+    		String fedoraObjectDirName = insertSystemProperties(getProperty(props, "fgsrepository.fedoraObjectDir"));
     		File fedoraObjectDir = new File(fedoraObjectDirName);
     		if (fedoraObjectDir == null) {
     			errors.append("\n*** "+configName+"/repository/" + repositoryName
@@ -470,14 +470,14 @@ public class Config {
     		checkPropNames(configName+"/index/"+indexName+"/index.properties", props, indexPropNames);
     		
 //  		Check indexName
-    		String propsIndexName = props.getProperty("fgsindex.indexName");
+    		String propsIndexName = getProperty(props, "fgsindex.indexName");
     		if (!indexName.equals(propsIndexName)) {
     			errors.append("\n*** "+configName+"/index/" + indexName
     					+ ": fgsindex.indexName must be=" + indexName);
     		}
 
 //  		Check operationsImpl class
-    		String operationsImpl = props.getProperty("fgsindex.operationsImpl");
+    		String operationsImpl = getProperty(props, "fgsindex.operationsImpl");
     		if (operationsImpl == null || operationsImpl.equals("")) {
     			errors.append("\n*** "+configName+"/index/" + indexName
     					+ ": fgsindex.operationsImpl must be set in "+configName+"/index/ "
@@ -525,7 +525,7 @@ public class Config {
     		"fgsindex.defaultGetIndexInfoResultXslt");
 
 //  		Check indexDir
-    		String indexDir = insertSystemProperties(props.getProperty("fgsindex.indexDir")); 
+    		String indexDir = insertSystemProperties(getProperty(props, "fgsindex.indexDir")); 
     		File indexDirFile = new File(indexDir);
     		if (indexDirFile == null) {
     			errors.append("\n*** "+configName+"/index/"+indexName+" fgsindex.indexDir="
@@ -534,7 +534,7 @@ public class Config {
 
 //  		Check analyzer classes for lucene and solr
     		if (operationsImpl.indexOf("fgslucene")>-1 || operationsImpl.indexOf("fgssolr")>-1) {
-    			String analyzerClassName = props.getProperty("fgsindex.analyzer"); 
+    			String analyzerClassName = getProperty(props, "fgsindex.analyzer"); 
     			if (analyzerClassName == null || analyzerClassName.equals("")) {
     				analyzerClassName = defaultAnalyzer;
     			}
@@ -557,11 +557,11 @@ public class Config {
     		
 //  		Add untokenizedFields property for lucene
     		if (operationsImpl.indexOf("fgslucene")>-1) {
-    			String defaultUntokenizedFields = props.getProperty("fgsindex.untokenizedFields");
+    			String defaultUntokenizedFields = getProperty(props, "fgsindex.untokenizedFields");
     			if (defaultUntokenizedFields == null)
     				props.setProperty("fgsindex.untokenizedFields", "");
     			if (indexDirFile != null) {
-    				StringBuffer untokenizedFields = new StringBuffer(props.getProperty("fgsindex.untokenizedFields"));
+    				StringBuffer untokenizedFields = new StringBuffer(getProperty(props, "fgsindex.untokenizedFields"));
     				IndexReader ir = null;
     				try {
     					Directory dir = new SimpleFSDirectory(indexDirFile);
@@ -586,7 +586,7 @@ public class Config {
     		}
 
 //  		Check defaultQueryFields - how can we check this?
-    		String defaultQueryFields = props.getProperty("fgsindex.defaultQueryFields");
+    		String defaultQueryFields = getProperty(props, "fgsindex.defaultQueryFields");
 
 //      	Check allowLeadingWildcard
     		if (operationsImpl.indexOf("fgslucene")>-1) {
@@ -610,7 +610,7 @@ public class Config {
     			if (indexNameToUriResolvers != null)
     				indexNameToUriResolvers.remove(indexName);
     			Class uriResolverClass = null;
-    			String uriResolver = props.getProperty("fgsindex.uriResolver");
+    			String uriResolver = getProperty(props, "fgsindex.uriResolver");
     			if (!(uriResolver == null || uriResolver.equals(""))) {
     				try {
     					uriResolverClass = Class.forName(uriResolver);
@@ -676,13 +676,13 @@ public class Config {
     }
     
     private void checkRestStylesheet(String propName) {
-        String propValue = fgsProps.getProperty(propName);
+        String propValue = getProperty(fgsProps, propName);
         String configPath = "/"+configName+"/rest/"+propValue+".xslt";
         checkStylesheet(configPath);
     }
     
     private void checkResultStylesheet(String xsltPath, Properties props, String propName) {
-        String propValue = props.getProperty(propName);
+        String propValue = getProperty(props, propName);
         String configPath = "/"+configName+"/"+xsltPath+"/"+propValue+".xslt";
         checkStylesheet(configPath);
     }
@@ -727,7 +727,7 @@ public class Config {
     }
     
     private void checkMimeTypes(String repositoryName, Properties props, String propName) {
-        StringTokenizer mimeTypes = new StringTokenizer(props.getProperty(propName));
+        StringTokenizer mimeTypes = new StringTokenizer(getProperty(props, propName));
 //      String handledMimeTypes = "text/plain text/html application/pdf application/ps application/msword";
         String[] handledMimeTypes = TransformerToText.handledMimeTypes;
         while (mimeTypes.hasMoreTokens()) {
@@ -764,32 +764,32 @@ public class Config {
     }
     
     public String getSoapBase() {
-        return fgsProps.getProperty("fedoragsearch.soapBase");
+        return getProperty(fgsProps, "fedoragsearch.soapBase");
     }
     
     public String getSoapUser() {
-        return fgsProps.getProperty("fedoragsearch.soapUser");
+        return getProperty(fgsProps, "fedoragsearch.soapUser");
     }
     
     public String getSoapPass() {
-        return fgsProps.getProperty("fedoragsearch.soapPass");
+        return getProperty(fgsProps, "fedoragsearch.soapPass");
     }
     
     public String getDeployFile() {
-        return insertSystemProperties(fgsProps.getProperty("fedoragsearch.deployFile"));
+        return insertSystemProperties(getProperty(fgsProps, "fedoragsearch.deployFile"));
     }
     
     public String getDefaultNoXslt() {
-        return fgsProps.getProperty("fedoragsearch.defaultNoXslt");
+        return getProperty(fgsProps, "fedoragsearch.defaultNoXslt");
     }
     
     public String getDefaultGfindObjectsRestXslt() {
-        return fgsProps.getProperty("fedoragsearch.defaultGfindObjectsRestXslt");
+        return getProperty(fgsProps, "fedoragsearch.defaultGfindObjectsRestXslt");
     }
     
     public int getMaxPageSize() {
         try {
-        	maxPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.maxPageSize"));
+        	maxPageSize = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.maxPageSize"));
         } catch (NumberFormatException e) {
         }
         return maxPageSize;
@@ -801,7 +801,7 @@ public class Config {
     
     public int getDefaultGfindObjectsHitPageSize() {
         try {
-            defaultGfindObjectsHitPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsHitPageSize"));
+            defaultGfindObjectsHitPageSize = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultGfindObjectsHitPageSize"));
         } catch (NumberFormatException e) {
         }
         return defaultGfindObjectsHitPageSize;
@@ -809,7 +809,7 @@ public class Config {
     
     public int getDefaultGfindObjectsSnippetsMax() {
         try {
-        	defaultGfindObjectsSnippetsMax = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsSnippetsMax"));
+        	defaultGfindObjectsSnippetsMax = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultGfindObjectsSnippetsMax"));
         } catch (NumberFormatException e) {
         }
         return defaultGfindObjectsSnippetsMax;
@@ -817,19 +817,19 @@ public class Config {
     
     public int getDefaultGfindObjectsFieldMaxLength() {
         try {
-        	defaultGfindObjectsFieldMaxLength = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultGfindObjectsFieldMaxLength"));
+        	defaultGfindObjectsFieldMaxLength = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultGfindObjectsFieldMaxLength"));
         } catch (NumberFormatException e) {
         }
         return defaultGfindObjectsFieldMaxLength;
     }
     
     public String getDefaultBrowseIndexRestXslt() {
-        return fgsProps.getProperty("fedoragsearch.defaultBrowseIndexRestXslt");
+        return getProperty(fgsProps, "fedoragsearch.defaultBrowseIndexRestXslt");
     }
     
     public int getDefaultBrowseIndexTermPageSize() {
         try {
-        	defaultBrowseIndexTermPageSize = Integer.parseInt(fgsProps.getProperty("fedoragsearch.defaultBrowseIndexTermPageSize"));
+        	defaultBrowseIndexTermPageSize = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.defaultBrowseIndexTermPageSize"));
         } catch (NumberFormatException e) {
         }
         return defaultBrowseIndexTermPageSize;
@@ -838,31 +838,31 @@ public class Config {
     public int getWriteLimit() {
     	int writeLimit = 100000; // the Tika default value
 		try {
-			writeLimit = Integer.parseInt(fgsProps.getProperty("fedoragsearch.writeLimit"));
+			writeLimit = Integer.parseInt(getProperty(fgsProps, "fedoragsearch.writeLimit"));
 		} catch (NumberFormatException e) {
 		}
     	return writeLimit;
     }
     
     public String getDefaultGetRepositoryInfoRestXslt() {
-        return fgsProps.getProperty("fedoragsearch.defaultGetRepositoryInfoRestXslt");
+        return getProperty(fgsProps, "fedoragsearch.defaultGetRepositoryInfoRestXslt");
     }
     
     public String getDefaultGetIndexInfoRestXslt() {
-        return fgsProps.getProperty("fedoragsearch.defaultGetIndexInfoRestXslt");
+        return getProperty(fgsProps, "fedoragsearch.defaultGetIndexInfoRestXslt");
     }
     
     public String getDefaultUpdateIndexRestXslt() {
-        return fgsProps.getProperty("fedoragsearch.defaultUpdateIndexRestXslt");
+        return getProperty(fgsProps, "fedoragsearch.defaultUpdateIndexRestXslt");
     }
     
     public String getMimeTypes() {
-        return fgsProps.getProperty("fedoragsearch.mimeTypes");
+        return getProperty(fgsProps, "fedoragsearch.mimeTypes");
     }
     
     public String getIndexNames(String indexNames) {
         if (indexNames==null || indexNames.equals("")) 
-            return fgsProps.getProperty("fedoragsearch.indexNames");
+            return getProperty(fgsProps, "fedoragsearch.indexNames");
         else 
             return indexNames;
     }
@@ -883,9 +883,9 @@ public class Config {
         	Enumeration<Properties> propss = repositoryNameToProps.elements();
         	while (propss.hasMoreElements()) {
         		Properties props = propss.nextElement();
-        		String fedoraSoap = props.getProperty("fgsrepository.fedoraSoap");
+        		String fedoraSoap = getProperty(props, "fgsrepository.fedoraSoap");
         		if (fedoraSoap != null && fedoraSoap.indexOf(hostPort) > -1) {
-        			return props.getProperty("fgsrepository.repositoryName", defaultRepositoryName);
+        			return getProperty(props, "fgsrepository.repositoryName", defaultRepositoryName);
         		}
         	}
         }
@@ -1152,18 +1152,18 @@ public class Config {
     }
     
     public String getSearchResultFilteringType() {
-        return fgsProps.getProperty("fedoragsearch.searchResultFilteringType");
+        return getProperty(fgsProps, "fedoragsearch.searchResultFilteringType");
     }
     
     public boolean isSearchResultFilteringActive(String type) {
-        if (type.equals(fgsProps.getProperty("fedoragsearch.searchResultFilteringType")))
+        if (type.equals(getProperty(fgsProps, "fedoragsearch.searchResultFilteringType")))
         	return true;
     	else
     		return false;
     }
     
     public String getXsltProcessor() {
-        return fgsProps.getProperty("fedoragsearch.xsltProcessor");
+        return getProperty(fgsProps, "fedoragsearch.xsltProcessor");
     }
     
     public GenericOperationsImpl getOperationsImpl(String indexNameParam) throws ConfigException {
@@ -1183,7 +1183,7 @@ public class Config {
         if (indexProps == null)
             throw new ConfigException("The indexName " + indexName
                     + " is not configured.\n");
-        String operationsImpl = (String)indexProps.getProperty("fgsindex.operationsImpl");
+        String operationsImpl = (String)getProperty(indexProps, "fgsindex.operationsImpl");
         if (operationsImpl == null)
             throw new ConfigException("The indexName " + indexName
                     + " is not configured.\n");
@@ -1247,6 +1247,24 @@ public class Config {
     	return result;
     }
     
+    public String getProperty(Properties props, String propertyName) {
+    	return getProperty(props, propertyName, null);
+    }
+    
+    public String getProperty(Properties props, String propertyName, String defaultValue) {
+    	String propertyValue = null;
+        if (!(props==null || propertyName==null || propertyName.length()==0)) {
+    		propertyValue = props.getProperty(propertyName);
+    		if (propertyValue!=null) {
+        		propertyValue = propertyValue.trim();
+    		}
+        }
+        if (propertyValue==null){
+        	propertyValue = defaultValue;
+        }
+    	return propertyValue;
+    }
+    
     public String getProperty(String propertyName) throws ConfigException {
     	String propertyValue = null;
         if (!(propertyName==null || propertyName.equals(""))) {
@@ -1267,14 +1285,10 @@ public class Config {
             } else {
             	props = fgsProps;
             }
-        	if (props!=null && propName!=null && propName.length()>0) {
-        		propertyValue = props.getProperty(propName);
-        	} else {
-                throw new ConfigException("property " + propertyName + " not found");
-        	}
+    		propertyValue = getProperty(props, propName);
         }
-//        if (logger.isDebugEnabled())
-//            logger.debug("getProperty " + propertyName + "=" + propertyValue);
+        if (logger.isDebugEnabled())
+            logger.debug("getProperty " + propertyName + "=" + propertyValue);
     	return propertyValue;
     }
     
@@ -1366,17 +1380,17 @@ public class Config {
             logger.debug("getFgsConfigObjectsClient new");
 		try {
 			fgsconfigObjectsClient = new FedoraClient(
-					fcoProps.getProperty("fgsconfigObjects.fedoraSoap"),
-					fcoProps.getProperty("fgsconfigObjects.fedoraUser"),
-					fcoProps.getProperty("fgsconfigObjects.fedoraPass")
+					getProperty(fcoProps, "fgsconfigObjects.fedoraSoap"),
+					getProperty(fcoProps, "fgsconfigObjects.fedoraUser"),
+					getProperty(fcoProps, "fgsconfigObjects.fedoraPass")
 					);
 		} catch (Exception e) {
             throw new ConfigException("getFgsConfigObjectsClient exception="+e.toString());
 		}
         if (logger.isDebugEnabled())
-            logger.debug("getFgsConfigObjectsClient new="+fcoProps.getProperty("fgsconfigObjects.fedoraSoap"));
-    	String trustStorePath = fcoProps.getProperty("fgsconfigObjects.trustStorePath");
-    	String trustStorePass = fcoProps.getProperty("fgsconfigObjects.trustStorePass");
+            logger.debug("getFgsConfigObjectsClient new="+getProperty(fcoProps, "fgsconfigObjects.fedoraSoap"));
+    	String trustStorePath = getProperty(fcoProps, "fgsconfigObjects.trustStorePath");
+    	String trustStorePass = getProperty(fcoProps, "fgsconfigObjects.trustStorePass");
     	if (trustStorePath!=null && trustStorePath.length()>0)
     		System.setProperty("javax.net.ssl.trustStore", trustStorePath);
     	if (trustStorePass!=null && trustStorePass.length()>0)
@@ -1431,7 +1445,7 @@ public class Config {
         
     private void setFgsConfigObjects() throws ConfigException {
     	fcoProps = getFgsConfigProps("/"+finalConfigName+"/fgsconfigObjects.properties");
-    	String finalConfigPath = fcoProps.getProperty("fgsconfigObjects.finalConfigPath");
+    	String finalConfigPath = getProperty(fcoProps, "fgsconfigObjects.finalConfigPath");
     	File finalConfigRoot = new File(finalConfigPath);
     	if (!finalConfigRoot.isDirectory()) {
             throw new ConfigException("setFgsConfigObjects finalConfigPath='"+finalConfigPath+"' is not a directory.");
@@ -1459,7 +1473,7 @@ public class Config {
     }
     
     private void setConfigFileAsDatastream(File file) throws ConfigException {
-        String baseUrl = fcoProps.getProperty("fgsconfigObjects.fedoraSoap");
+        String baseUrl = getProperty(fcoProps, "fgsconfigObjects.fedoraSoap");
 	    int i = baseUrl.indexOf("://");
 	    String protocol = baseUrl.substring(0, i);
 	    int port = 80;
@@ -1471,8 +1485,8 @@ public class Config {
 	    }
 	    String host = baseUrl.substring(i+3, j);
 	    String context = baseUrl.substring(baseUrl.indexOf("/", j));
-		String user = fcoProps.getProperty("fgsconfigObjects.fedoraUser");
-		String pwd = fcoProps.getProperty("fgsconfigObjects.fedoraPass");
+		String user = getProperty(fcoProps, "fgsconfigObjects.fedoraUser");
+		String pwd = getProperty(fcoProps, "fgsconfigObjects.fedoraPass");
 		String dsid;
 		try {
 			dsid = file.getCanonicalPath();
@@ -1525,7 +1539,7 @@ public class Config {
     	if (!objectExists(configRootObjectPid)) {
             throw new ConfigException("getFgsConfigObjects: the object '"+configRootObjectPid+"' does not exist.");
     	}
-    	String finalConfigPath = fcoProps.getProperty("fgsconfigObjects.finalConfigPath");
+    	String finalConfigPath = getProperty(fcoProps, "fgsconfigObjects.finalConfigPath");
     	File finalConfigRoot = new File(finalConfigPath);
     	if (!finalConfigRoot.isDirectory()) {
             throw new ConfigException("setFgsConfigObjects finalConfigPath='"+finalConfigPath+"' is not a directory.");
