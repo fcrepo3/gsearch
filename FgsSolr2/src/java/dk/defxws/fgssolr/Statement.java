@@ -7,7 +7,6 @@
  */
 package dk.defxws.fgssolr;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -36,16 +35,11 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TopDocsCollector;
-import org.apache.lucene.search.TopFieldCollector;
-import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Fragmenter;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
@@ -65,6 +59,7 @@ public class Statement {
     private IndexSearcher searcher;
     
     public ResultSet executeQuery(
+    		IndexSearcher searcher,
             String queryString, 
             int startRecord, 
             int maxResults,
@@ -78,6 +73,21 @@ public class Statement {
             String snippetEnd, 
             String sortFields)
     throws GenericSearchException {
+    	boolean allowLeadingWildcard = true;
+    	boolean lowercaseExpandedTerms = true;
+        if (logger.isDebugEnabled())
+            logger.debug("executeQuery" +
+                    " query="+queryString+
+                    " startRecord="+startRecord+
+                    " maxResults="+maxResults+
+                    " snippetsMax="+snippetsMax+
+                    " fieldMaxLength="+fieldMaxLength+
+                    " indexName="+indexName+
+                    " sortFields="+sortFields+
+                    " defaultQueryFields="+defaultQueryFields+
+                    " allowLeadingWildcard="+allowLeadingWildcard+
+                    " lowercaseExpandedTerms="+lowercaseExpandedTerms);
+        this.searcher = searcher;
     	ResultSet rs = null;
     	StringTokenizer defaultFieldNames = new StringTokenizer(defaultQueryFields);
     	int countFields = defaultFieldNames.countTokens();
@@ -87,46 +97,48 @@ public class Statement {
     	}
     	Query query = null;
     	if (defaultFields.length == 1) {
+    		QueryParser queryParser = new QueryParser(Version.LUCENE_36, defaultFields[0], analyzer);
+    		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
+    		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
+            if (logger.isDebugEnabled())
+                logger.debug("executeQuery queryParser" +
+                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard() +
+                        " lowercaseExpandedTerms="+queryParser.getLowercaseExpandedTerms());
     		try {
-    			query = (new QueryParser(Version.LUCENE_36, defaultFields[0], analyzer)).parse(queryString);
+    			query = queryParser.parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}
     	}
     	else {
+    		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_36, defaultFields, analyzer);
+    		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
+    		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
+            if (logger.isDebugEnabled())
+                logger.debug("executeQuery mfqueryParser" +
+                        " allowLeadingWildcard="+queryParser.getAllowLeadingWildcard() +
+                        " lowercaseExpandedTerms="+queryParser.getLowercaseExpandedTerms());
     		try {
-    			query = (new MultiFieldQueryParser(Version.LUCENE_36, defaultFields, analyzer)).parse(queryString);
+    			query = queryParser.parse(queryString);
     		} catch (ParseException e) {
     			throw new GenericSearchException(e.toString());
     		}
     	}
-    	IndexReader ir = null;
+        if (logger.isDebugEnabled())
+        	logger.debug("executeQuery after parse query="+query);
     	try {
-			Directory dir = new SimpleFSDirectory(new File(indexPath));
-    		ir = IndexReader.open(dir);
-    		query.rewrite(ir);
-    	} catch (CorruptIndexException e) {
-    		if (ir!=null) {
-        		try {
-    				ir.close();
-    			} catch (IOException e1) {
-    			}
-    		}
-    		throw new GenericSearchException(e.toString());
-    	} catch (IOException e) {
-    		if (ir!=null) {
-        		try {
-    				ir.close();
-    			} catch (IOException e2) {
-    			}
-    		}
+    		query.rewrite(searcher.getIndexReader());
+    	} catch (Exception e) {
     		throw new GenericSearchException(e.toString());
     	}
-    	searcher = new IndexSearcher(ir);
+        if (logger.isDebugEnabled())
+        	logger.debug("executeQuery after rewrite query="+query);
     	int start = Integer.parseInt(Integer.toString(startRecord));
     	TopDocs hits = getHits(query, start+maxResults-1, sortFields);
     	ScoreDoc[] docs = hits.scoreDocs;
     	int end = Math.min(hits.totalHits, start + maxResults - 1);
+        if (logger.isDebugEnabled())
+        	logger.debug("executeQuery hits.totalHits="+hits.totalHits);
     	StringBuffer resultXml = new StringBuffer();
     	resultXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     	String queryStringEncoded = null;
@@ -196,19 +208,16 @@ public class Statement {
     		resultXml.append("</hit>");
     	}
     	resultXml.append("</solrsearch>");
+        if (logger.isDebugEnabled()) {
+        	int size = 500;
+        	if (resultXml.length()<size)
+        		size = resultXml.length();
+        	String debugString = resultXml.substring(0, size);
+        	if (resultXml.length()>size)
+        		debugString += "...";
+        	logger.debug("executeQuery resultXml="+debugString);
+        }
     	rs = new ResultSet(resultXml);
-    	if (searcher!=null) {
-    		try {
-    			searcher.close();
-    		} catch (IOException e) {
-    		}
-    	}
-		if (ir!=null) {
-    		try {
-				ir.close();
-			} catch (IOException e) {
-			}
-		}
     	return rs;
     }
 
@@ -225,11 +234,16 @@ public class Statement {
 //  sortFields      ::= [sortField[';'sortField]*]
 //  sortField       ::= sortFieldName[','(sortType | locale | comparatorClass)[','reverse]]]]
 //  sortFieldName   ::= #the name of an index field, which is UN_TOKENIZED and contains a single term per document
-//  sortType        ::= 'AUTO' ~ 'SCORE' (default) | 'DOC' | 'INT' | 'SHORT' | 'LONG' | 'FLOAT' | 'DOUBLE' | 'BYTE' | 'STRING' | 'STRING_VAL'
+//  sortType		::= 'BYTE' | 'DOC' | 'DOUBLE' | 'FLOAT' | 'INT' | 'LONG' | 'SCORE' | 'SHORT' | 'STRING' | 'STRING_VAL'
 //  locale          ::= language['-'country['-'variant]]
 //  comparatorClass ::= package-path'.'className['('param['-'param]*')']
-//  reverse         ::= 'ASC' ~ 'false' (~ascending (default)) | 'DESC' ~ 'true' ~ 'reverse' (~descending)
+//  reverse         ::= 'false' (default) | 'true' | 'reverse'
     private TopDocs getHits(Query query, int numHits, String sortFields) throws GenericSearchException {
+        if (logger.isDebugEnabled())
+            logger.debug("getHits" +
+                    " query="+query+
+                    " numHits="+numHits+
+                    " sortFields="+sortFields);
     	TopDocs hits = null;
     	IndexReader ireader = searcher.getIndexReader();
     	Collection<String> fieldNames = ReaderUtil.getIndexedFields(ireader);
@@ -320,8 +334,6 @@ public class Statement {
     					if ("true".equalsIgnoreCase(reverseString)) reverse = true;
     					else if ("reverse".equalsIgnoreCase(reverseString)) reverse = true;
     					else if ("false".equalsIgnoreCase(reverseString)) reverse = false;
-    					else if ("DESC".equalsIgnoreCase(reverseString)) reverse = true;
-    					else if ("ASC".equalsIgnoreCase(reverseString)) reverse = false;
     					else
     						errorExit("getHits sortFields='"+sortFields+"' : unknown reverse string '" + reverseString + "' in '" + sortFieldString + "'");
     					sortField = new SortField(sortFieldName, scs, reverse);
@@ -329,15 +341,17 @@ public class Statement {
     			} else {
     				String sortTypeOrLocaleString = sortTypeOrLocaleOrCompString;
     				Locale locale = null;
-    				if ("AUTO".equals(sortTypeOrLocaleString)) sortType = SortField.SCORE;
-    				else if ("SCORE".equals(sortTypeOrLocaleString)) sortType = SortField.SCORE;
+    				if ("BYTE".equals(sortTypeOrLocaleString)) sortType = SortField.BYTE;
     				else if ("DOC".equals(sortTypeOrLocaleString)) sortType = SortField.DOC;
-    				else if ("INT".equals(sortTypeOrLocaleString)) sortType = SortField.INT;
-    				else if ("SHORT".equals(sortTypeOrLocaleString)) sortType = SortField.SHORT;
-    				else if ("LONG".equals(sortTypeOrLocaleString)) sortType = SortField.LONG;
-    				else if ("FLOAT".equals(sortTypeOrLocaleString)) sortType = SortField.FLOAT;
     				else if ("DOUBLE".equals(sortTypeOrLocaleString)) sortType = SortField.DOUBLE;
-    				else if ("BYTE".equals(sortTypeOrLocaleString)) sortType = SortField.BYTE;
+    				else if ("FLOAT".equals(sortTypeOrLocaleString)) sortType = SortField.FLOAT;
+    				else if ("INT".equals(sortTypeOrLocaleString)) sortType = SortField.INT;
+    				else if ("LONG".equals(sortTypeOrLocaleString)) sortType = SortField.LONG;
+    				else if ("SCORE".equals(sortTypeOrLocaleString)) {
+    					sortType = SortField.SCORE;
+    					searcher.setDefaultFieldSortScoring(true, true);
+    				}
+    				else if ("SHORT".equals(sortTypeOrLocaleString)) sortType = SortField.SHORT;
     				else if ("STRING".equals(sortTypeOrLocaleString)) sortType = SortField.STRING;
     				else if ("STRING_VAL".equals(sortTypeOrLocaleString)) sortType = SortField.STRING_VAL;
     				else if (((sortTypeOrLocaleString.substring(0, 1)).compareTo("A") >= 0) && ((sortTypeOrLocaleString.substring(0, 1)).compareTo("Z") <= 0)) {
@@ -383,8 +397,6 @@ public class Statement {
     					if ("true".equalsIgnoreCase(reverseString)) reverse = true;
     					else if ("reverse".equalsIgnoreCase(reverseString)) reverse = true;
     					else if ("false".equalsIgnoreCase(reverseString)) reverse = false;
-    					else if ("DESC".equalsIgnoreCase(reverseString)) reverse = true;
-    					else if ("ASC".equalsIgnoreCase(reverseString)) reverse = false;
     					else
     						throw new GenericSearchException("getHits sortFields='"+sortFields+"' : unknown reverse string '" + reverseString + "' in '" + sortFieldString + "'");
     					if (sortType == SortField.SCORE) reverse = !reverse;
@@ -397,25 +409,20 @@ public class Statement {
     		}
     		sortFieldArray[i++] = sortField;
     	}
-    	TopDocsCollector collector = null;
     	if (sortFieldArray.length == 0) {
-    		collector = TopScoreDocCollector.create(numHits, true);
+        	try {
+        		hits = searcher.search(query, numHits);
+        	} catch (Exception e) {
+        		errorExit("getHits search : "+e.toString());
+        	}
     	} else {
     		try {
     	    	Sort sort = new Sort(sortFieldArray);
-    	    	collector = TopFieldCollector.create( sort, numHits, true, true, true, true);
+        		hits = searcher.search(query, numHits, sort);
     		} catch (Exception e) {
-    			errorExit("getHits TopFieldCollector sortFields='"+sortFields+"' : "+e.toString());
+    			errorExit("getHits search sortFields='"+sortFields+"' : "+e.toString());
     		} 
     	}
-    	try {
-    		searcher.search(query, collector);
-    	} catch (IOException e) {
-    		errorExit("getHits search sortFields='"+sortFields+"' : "+e.toString());
-    	} catch (RuntimeException e) {
-    		errorExit("getHits search RuntimeException sortFields='"+sortFields+"' : "+e.toString());
-    	}
-    	hits = collector.topDocs();
     	return hits;
     }
 

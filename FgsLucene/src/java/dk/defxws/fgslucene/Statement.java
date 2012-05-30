@@ -7,7 +7,6 @@
  */
 package dk.defxws.fgslucene;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -41,8 +40,6 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Fragmenter;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
@@ -62,6 +59,7 @@ public class Statement {
     private IndexSearcher searcher;
     
     public ResultSet executeQuery(
+    		IndexSearcher searcher,
             String queryString, 
             int startRecord, 
             int maxResults,
@@ -89,6 +87,7 @@ public class Statement {
                     " defaultQueryFields="+defaultQueryFields+
                     " allowLeadingWildcard="+allowLeadingWildcard+
                     " lowercaseExpandedTerms="+lowercaseExpandedTerms);
+        this.searcher = searcher;
     	ResultSet rs = null;
     	StringTokenizer defaultFieldNames = new StringTokenizer(defaultQueryFields);
     	int countFields = defaultFieldNames.countTokens();
@@ -127,31 +126,13 @@ public class Statement {
     	}
         if (logger.isDebugEnabled())
         	logger.debug("executeQuery after parse query="+query);
-    	IndexReader ir = null;
     	try {
-			Directory dir = new SimpleFSDirectory(new File(indexPath));
-    		ir = IndexReader.open(dir);
-    		query.rewrite(ir);
-    	} catch (CorruptIndexException e) {
-    		if (ir!=null) {
-        		try {
-    				ir.close();
-    			} catch (IOException e1) {
-    			}
-    		}
-    		throw new GenericSearchException(e.toString());
-    	} catch (IOException e) {
-    		if (ir!=null) {
-        		try {
-    				ir.close();
-    			} catch (IOException e2) {
-    			}
-    		}
+    		query.rewrite(searcher.getIndexReader());
+    	} catch (Exception e) {
     		throw new GenericSearchException(e.toString());
     	}
         if (logger.isDebugEnabled())
         	logger.debug("executeQuery after rewrite query="+query);
-    	searcher = new IndexSearcher(ir);
     	int start = Integer.parseInt(Integer.toString(startRecord));
     	TopDocs hits = getHits(query, start+maxResults-1, sortFields);
     	ScoreDoc[] docs = hits.scoreDocs;
@@ -237,24 +218,6 @@ public class Statement {
         	logger.debug("executeQuery resultXml="+debugString);
         }
     	rs = new ResultSet(resultXml);
-    	if (searcher!=null) {
-    		try {
-    			searcher.close();
-    			searcher = null;
-    		} catch (IOException e) {
-    		}
-    	}
-        if (logger.isDebugEnabled()) 
-        	logger.debug("executeQuery searcher="+searcher);
-		if (ir!=null) {
-    		try {
-				ir.close();
-				ir = null;
-			} catch (IOException e) {
-			}
-		}
-        if (logger.isDebugEnabled()) 
-        	logger.debug("executeQuery ir="+ir);
     	return rs;
     }
 

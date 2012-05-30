@@ -33,11 +33,10 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogDocMergePolicy;
-import org.apache.lucene.index.StaleReaderException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
@@ -58,9 +57,6 @@ import org.fcrepo.server.utilities.StreamUtility;
 public class OperationsImpl extends GenericOperationsImpl {
     
     private static final Logger logger = Logger.getLogger(OperationsImpl.class);
-    
-    private IndexWriter iw = null;
-    private IndexReader ir = null;
     
     public String gfindObjects(
             String query,
@@ -93,7 +89,9 @@ public class OperationsImpl extends GenericOperationsImpl {
         }
         ResultSet resultSet = null;
 		try {
+            getIndexReaderAndSearcher(indexName);
 			resultSet = (new Connection()).createStatement().executeQuery(
+					searcher,
 					usingQuery,
 			        hitPageStart,
 			        hitPageSize,
@@ -110,6 +108,8 @@ public class OperationsImpl extends GenericOperationsImpl {
 			        config.getSortFields(usingIndexName, sortFields));
 		} catch (Exception e) {
             throw new GenericSearchException("gfindObjects executeQuery error:\n" + e.toString());
+        } finally {
+            closeIndexReaderAndSearcher(indexName);
 		}
         params[12] = "RESULTPAGEXSLT";
         params[13] = resultPageXslt;
@@ -157,7 +157,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         }
         int termNo = 0;
         try {
-            getIndexReader(indexName);
+            getIndexReaderAndSearcher(indexName);
             Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
             while (fieldNames.hasNext()) {
                 resultXml.append("<field>"+fieldNames.next()+"</field>");
@@ -195,7 +195,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         } catch (IOException e) {
             throw new GenericSearchException("IndexReader open error:\n" + e.toString());
         } finally {
-            closeIndexReader(indexName);
+            closeIndexReaderAndSearcher(indexName);
         }
         resultXml.append("</terms>");
         resultXml.insert(0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -253,20 +253,23 @@ public class OperationsImpl extends GenericOperationsImpl {
         insertTotal = 0;
         updateTotal = 0;
         deleteTotal = 0;
+        emptyTotal = 0;
         int initDocCount = 0;
         StringBuffer resultXml = new StringBuffer(); 
         resultXml.append("<luceneUpdateIndex");
         resultXml.append(" indexName=\""+indexName+"\"");
         resultXml.append(">\n");
         try {
-    		if ("deletePid".equals(action)) {
-    			deletePid(value, indexName, resultXml);
-    		}
-        	else if (action != null && action.length()>0) {
-                getIndexWriter(indexName);
-        		initDocCount = docCount;
-            	if ("createEmpty".equals(action)) 
-            		createEmpty(indexName, resultXml);
+            getIndexWriter(indexName);
+    		getIndexReaderAndSearcher(indexName);
+    		initDocCount = docCount;
+        	if ("createEmpty".equals(action)) {
+        		createEmpty(indexName, resultXml);
+        		initDocCount = 0;
+        	}
+        	else {
+        		if ("deletePid".equals(action))
+        			deletePid(value, indexName, resultXml);
         		else {
         			if ("fromPid".equals(action)) 
 						fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
@@ -281,13 +284,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         	}
         } finally {
             closeIndexWriter(indexName);
-        	getIndexReader(indexName);
-        	closeIndexReader(indexName);
-        	if (updateTotal > 0) {
-        		int diff = docCount - initDocCount;
-        		insertTotal = diff;
-        		updateTotal -= diff;
-        	}
+        	closeIndexReaderAndSearcher(indexName);
+        	docCount = initDocCount + insertTotal - deleteTotal;
         }
         logger.info("updateIndex "+action+" indexName="+indexName
         		+" indexDirSpace="+indexDirSpace(new File(config.getIndexDir(indexName)))
@@ -296,10 +294,13 @@ public class OperationsImpl extends GenericOperationsImpl {
         resultXml.append(" insertTotal=\""+insertTotal+"\"");
         resultXml.append(" updateTotal=\""+updateTotal+"\"");
         resultXml.append(" deleteTotal=\""+deleteTotal+"\"");
+        resultXml.append(" emptyTotal=\""+emptyTotal+"\"");
         resultXml.append(" docCount=\""+docCount+"\"");
         resultXml.append(" warnCount=\""+warnCount+"\"");
         resultXml.append("/>\n");
         resultXml.append("</luceneUpdateIndex>\n");
+        if (logger.isDebugEnabled())
+            logger.debug("resultXml =\n"+resultXml.toString());
         params = new String[12];
         params[0] = "OPERATION";
         params[1] = "updateIndex";
@@ -340,22 +341,17 @@ public class OperationsImpl extends GenericOperationsImpl {
             String indexName,
             StringBuffer resultXml)
     throws java.rmi.RemoteException {
-    	getIndexWriter(indexName);
-        try {
-        	iw.deleteDocuments(new Term("PID", pid));
-        	deleteTotal++;
-		} catch (StaleReaderException e) {
-            throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
-		} catch (CorruptIndexException e) {
-            throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
-		} catch (LockObtainFailedException e) {
-            throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
-        } catch (IOException e) {
-            throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
-        } finally {
-        	closeIndexWriter(indexName);
+        if (logger.isDebugEnabled())
+            logger.debug("deletePid indexName="+indexName+" pid="+pid);
+        if (pid.length()>0 && indexDocExists(pid)) {
+            try {
+            	iw.deleteDocuments(new Term("PID", pid));
+    		} catch (Exception e) {
+                throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
+            }
+            deleteTotal++;
+            resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
         }
-        resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
     }
     
     private void optimize(
@@ -369,6 +365,8 @@ public class OperationsImpl extends GenericOperationsImpl {
         } catch (IOException e) {
             throw new GenericSearchException("updateIndex optimize error indexName="+indexName+"\n", e);
     	}
+        if (logger.isDebugEnabled())
+            logger.debug("optimize indexName="+indexName);
         resultXml.append("<optimize/>\n");
     }
     
@@ -386,9 +384,9 @@ public class OperationsImpl extends GenericOperationsImpl {
             objectDir = config.getFedoraObjectDir(repositoryName);
         else objectDir = new File(filePath);
         indexDocs(objectDir, repositoryName, indexName, resultXml, indexDocXslt);
-        docCount = docCount-warnCount;
-        resultXml.append("<warnCount>"+warnCount+"</warnCount>\n");
-        resultXml.append("<docCount>"+docCount+"</docCount>\n");
+//        docCount = docCount-warnCount;
+//        resultXml.append("<warnCount>"+warnCount+"</warnCount>\n");
+//        resultXml.append("<docCount>"+docCount+"</docCount>\n");
     }
     
     private void indexDocs(
@@ -414,7 +412,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         else
         {
             try {
-                indexDoc(file.getName(), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
+                indexDoc(getPidFromObjectFilename(file.getName()), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
             } catch (RemoteException e) {
                 resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
                 logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
@@ -438,7 +436,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     }
     
     private void indexDoc(
-    		String pidOrFilename,
+    		String pid,
     		String repositoryName,
     		String indexName,
     		InputStream foxmlStream,
@@ -493,37 +491,41 @@ public class OperationsImpl extends GenericOperationsImpl {
     			config.getURIResolver(indexName),
     			params);
     	if (logger.isDebugEnabled())
-    		logger.debug("IndexDocument=\n"+sb.toString());
+    		logger.debug("indexDoc=\n"+sb.toString());
     	hdlr = new IndexDocumentHandler(
     			this,
     			repositoryName,
-    			pidOrFilename,
+    			pid,
     			sb);
-		String pid = hdlr.getPid();
-    	try {
-    		ListIterator li = hdlr.getIndexDocument().getFields().listIterator();
-    		if (li.hasNext()) {
-                iw.updateDocument(new Term("PID", pid), hdlr.getIndexDocument());
-    				updateTotal++;
-        			resultXml.append("<updated>"+pid+"</updated>\n");
-    			StringBuffer untokenizedFields = new StringBuffer(config.getUntokenizedFields(indexName));
-    			while (li.hasNext()) {
-    				Field f = (Field)li.next();
-    				if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
-    					untokenizedFields.append(" "+f.name());
-    					config.setUntokenizedFields(indexName, untokenizedFields.toString());
-    				}
-    			}
-    			logger.info("IndexDocument="+pid);
-    		}
-    		else {
-    			logger.warn("IndexDocument "+pid+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
-    			deletePid(pid, indexName, resultXml);
-                getIndexWriter(indexName);
-    		}
-    	} catch (IOException e) {
-    		throw new GenericSearchException("Update error pidOrFilename="+pidOrFilename, e);
-    	}
+		ListIterator li = hdlr.getIndexDocument().getFields().listIterator();
+		if (li.hasNext()) {
+            if (indexDocExists(pid)) {
+                updateTotal++;
+        		resultXml.append("<updated>"+pid+"</updated>\n");
+            } else {
+                insertTotal++;
+        		resultXml.append("<inserted>"+pid+"</inserted>\n");
+            }
+            try {
+				iw.updateDocument(new Term("PID", pid), hdlr.getIndexDocument());
+        	} catch (Exception e) {
+        		throw new GenericSearchException("Update error pid="+pid, e);
+			}
+			StringBuffer untokenizedFields = new StringBuffer(config.getUntokenizedFields(indexName));
+			while (li.hasNext()) {
+				Field f = (Field)li.next();
+				if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
+					untokenizedFields.append(" "+f.name());
+					config.setUntokenizedFields(indexName, untokenizedFields.toString());
+				}
+			}
+			logger.info("IndexDocument="+pid);
+		}
+		else {
+			deletePid(pid, indexName, resultXml);
+			logger.warn("IndexDocument "+pid+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
+			emptyTotal++;
+		}
     }
     
     public Analyzer getAnalyzer(String indexName)
@@ -614,7 +616,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         return pfanalyzer;
     }
     
-    private void getIndexReader(String indexName)
+    private void getIndexReaderAndSearcher(String indexName)
     throws GenericSearchException {
 		IndexReader irreopened = null;
 		if (ir != null) {
@@ -638,20 +640,32 @@ public class OperationsImpl extends GenericOperationsImpl {
 			}
 		} else {
 	        try {
-	        	closeIndexReader(indexName);
+	        	closeIndexReaderAndSearcher(indexName);
 				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
 				ir = IndexReader.open(dir);
 			} catch (Exception e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			}
+			searcher = new IndexSearcher(ir);
 		}
         docCount = ir.numDocs();
     	if (logger.isDebugEnabled())
-    		logger.debug("getIndexReader indexName=" + indexName+ " docCount=" + docCount);
+    		logger.debug("getIndexReaderAndSearcher indexName=" + indexName+ " docCount=" + docCount);
     }
     
-    private void closeIndexReader(String indexName)
+    private void closeIndexReaderAndSearcher(String indexName)
     throws GenericSearchException {
+    	if (searcher!=null) {
+    		try {
+    			searcher.close();
+    		} catch (Exception e) {
+                throw new GenericSearchException("IndexSearcher close error indexName=" + indexName+ " :\n", e);
+            } finally {
+            	searcher = null;
+            	if (logger.isDebugEnabled())
+            		logger.debug("closeIndexSearcher indexName=" + indexName);
+            }
+    	}
 		if (ir != null) {
             docCount = ir.numDocs();
             try {
