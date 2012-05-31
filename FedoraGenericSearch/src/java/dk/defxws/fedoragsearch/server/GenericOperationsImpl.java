@@ -1097,38 +1097,42 @@ public class GenericOperationsImpl implements Operations {
 
     protected boolean indexDocExists(String pid) 
     throws GenericSearchException {
+    	// two alternatives implemented, both timed
+    	// the one chosen had time=0 ms, the other had time=0 or 1 ms
+    	// the not chosen is left commented out, for future potential use
     	boolean indexDocExists = true;
-    	Date startTime = new Date();
-    	String queryString = "PID:\""+pid+"\"";
-		QueryParser queryParser = new QueryParser(Version.LUCENE_36, null, new KeywordAnalyzer());
-    	Query query;
-		try {
-			query = queryParser.parse(queryString);
-		} catch (ParseException e) {
-            throw new GenericSearchException("indexDocExists parse "+queryString+" exception="+e);
-		}
-    	searcher = new IndexSearcher(ir);
-    	TopDocs hits = null;
-    	try {
-    		hits = searcher.search(query, 1);
-    	} catch (Exception e) {
-            throw new GenericSearchException("indexDocExists search "+queryString+" exception="+e);
-    	}
-    	int hitTotal = hits.totalHits;
-        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
-        if (hitTotal==0) indexDocExists = false;
-        if (logger.isDebugEnabled())
-            logger.debug("indexDocExists query="+queryString+" hitTotal="+hitTotal+" timeusedms="+timeusedms);
+//    	Date startTime = new Date();
+//    	String queryString = "PID:\""+pid+"\"";
+//		QueryParser queryParser = new QueryParser(Version.LUCENE_36, null, new KeywordAnalyzer());
+//    	Query query;
+//		try {
+//			query = queryParser.parse(queryString);
+//		} catch (ParseException e) {
+//            throw new GenericSearchException("indexDocExists parse "+queryString+" exception="+e);
+//		}
+//    	searcher = new IndexSearcher(ir);
+//    	TopDocs hits = null;
+//    	try {
+//    		hits = searcher.search(query, 1);
+//    	} catch (Exception e) {
+//            throw new GenericSearchException("indexDocExists search "+queryString+" exception="+e);
+//    	}
+//    	int hitTotal = hits.totalHits;
+//        String timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+//        if (hitTotal==0) indexDocExists = false;
+//        if (logger.isDebugEnabled())
+//            logger.debug("indexDocExists query="+queryString+" hitTotal="+hitTotal+" timeusedms="+timeusedms);
     	indexDocExists = false;
-    	startTime = new Date();
+//    	startTime = new Date();
         try {
 			if (ir.termDocs(new Term("PID", pid)).next()) indexDocExists = true;
 		} catch (IOException e) {
             throw new GenericSearchException("indexDocExists termDocs "+pid+" exception="+e);
 		}
-        timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
+//        timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isDebugEnabled())
-            logger.debug("indexDocExists termDocs="+pid+" indexDocExists="+indexDocExists+" timeusedms="+timeusedms);
+            logger.debug("indexDocExists termDocs="+pid+" indexDocExists="+indexDocExists);
+//        logger.debug("indexDocExists termDocs="+pid+" indexDocExists="+indexDocExists+" timeusedms="+timeusedms);
 		return indexDocExists;
     }
 

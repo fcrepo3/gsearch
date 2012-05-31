@@ -89,7 +89,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         }
         ResultSet resultSet = null;
 		try {
-            getIndexReaderAndSearcher(indexName);
+            getIndexReaderAndSearcher(usingIndexName);
 			resultSet = (new Connection()).createStatement().executeQuery(
 					searcher,
 					usingQuery,
@@ -109,7 +109,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 		} catch (Exception e) {
             throw new GenericSearchException("gfindObjects executeQuery error:\n" + e.toString());
         } finally {
-            closeIndexReaderAndSearcher(indexName);
+            closeIndexReaderAndSearcher(usingIndexName);
 		}
         params[12] = "RESULTPAGEXSLT";
         params[13] = resultPageXslt;
@@ -436,7 +436,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     }
     
     private void indexDoc(
-    		String pid,
+    		String pid_in,
     		String repositoryName,
     		String indexName,
     		InputStream foxmlStream,
@@ -495,9 +495,10 @@ public class OperationsImpl extends GenericOperationsImpl {
     	hdlr = new IndexDocumentHandler(
     			this,
     			repositoryName,
-    			pid,
+    			pid_in,
     			sb);
 		ListIterator li = hdlr.getIndexDocument().getFields().listIterator();
+		String pid = hdlr.getPid();
 		if (li.hasNext()) {
             if (indexDocExists(pid)) {
                 updateTotal++;
