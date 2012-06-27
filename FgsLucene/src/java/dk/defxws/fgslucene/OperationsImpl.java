@@ -350,6 +350,7 @@ public class OperationsImpl extends GenericOperationsImpl {
                 throw new GenericSearchException("updateIndex deletePid error indexName="+indexName+" pid="+pid+"\n", e);
             }
             deleteTotal++;
+            docCount--;
             resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
         }
     }
@@ -384,9 +385,6 @@ public class OperationsImpl extends GenericOperationsImpl {
             objectDir = config.getFedoraObjectDir(repositoryName);
         else objectDir = new File(filePath);
         indexDocs(objectDir, repositoryName, indexName, resultXml, indexDocXslt);
-//        docCount = docCount-warnCount;
-//        resultXml.append("<warnCount>"+warnCount+"</warnCount>\n");
-//        resultXml.append("<docCount>"+docCount+"</docCount>\n");
     }
     
     private void indexDocs(
@@ -505,6 +503,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         		resultXml.append("<updated>"+pid+"</updated>\n");
             } else {
                 insertTotal++;
+                docCount++;
         		resultXml.append("<inserted>"+pid+"</inserted>\n");
             }
             try {
@@ -520,7 +519,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 					config.setUntokenizedFields(indexName, untokenizedFields.toString());
 				}
 			}
-			logger.info("IndexDocument="+pid);
+			logger.info("IndexDocument="+pid+" insertTotal="+insertTotal+" updateTotal="+updateTotal+" deleteTotal="+deleteTotal+" emptyTotal="+emptyTotal+" warnCount="+warnCount+" docCount="+docCount);
 		}
 		else {
 			deletePid(pid, indexName, resultXml);

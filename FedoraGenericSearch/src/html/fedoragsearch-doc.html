@@ -58,6 +58,8 @@
 					</li>
 					<li>If you want all options open, you choose the Solr plugin, where you need to know and do much more.
 					</li>
+					<li>You may choose the Solr plugin by using Islandora. Configuration of GSearch for Islandora is now easier.
+					</li>
 					<li>The Zebra plugin is the choice that nobody has taken, because it is in a culture different from Fedora.
 					</li>
 				</ul>
@@ -80,6 +82,7 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#config">Create the configuration files</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#indexingstylesheet">Generate indexing stylesheet from example foxml files</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#basicproperties">Edit and use the basic property values</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#basicpropertiesislandora">Edit and use the basic property values for Islandora</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#gfauto">Configuring GSearch and Fedora for automatic updates</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#multilingual">Multilingual configuration</a></dt>
 				<dt><a href="#FURTHERUSAGE">IV. FURTHER USAGE</a></dt>
@@ -92,6 +95,7 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#embeddedqueries">Embedded queries</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#source">Building from source</a></dt>
 				<dt><a href="#HISTORY">V. HISTORY</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new242">New features in version 2.4.2</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new241">New features in version 2.4.1</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new24">New features in version 2.4</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new23">New features in version 2.3</a></dt>
@@ -102,37 +106,6 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#background">Background</a></dt>
 				</dl>
 		</div>
-			
-<!-- 
-		<div>
-			<a name="DTUdemo"><h2>See a demo at DTU</h2></a>
-			<p>This documentation page is also visible at 
-			<a href="http://miranth.cvt.dk/fedoragsearch" target="DTUdemo">the DTU demo site</a>.
-			</p>
-			<p>The demo uses a Fedora 3.5 repository, where the set of Fedora demo objects has been ingested
-			and indexed by GSearch. You can view it through the GSearch administrator interface, 
-			which has 5 pages. Step through it in this sequence (login as gsearchGuest:gsearchGuestPass):</p>
-			<ul>
-				<li>
-					<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=getRepositoryInfo" target="DTUdemo">The Repository Info page</a>.
-				</li>
-				<li>
-					<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=getIndexInfo" target="DTUdemo">The Index Info page</a>.
-				</li>
-				<li>
-					<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=updateIndex" target="DTUdemo">The Update Index page</a>.
-				</li>
-				<li>
-					<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=browseIndex" target="DTUdemo">The Browse Index page</a>.
-				</li>
-				<li>
-					<a href="http://miranth.cvt.dk/fedoragsearch/rest?operation=gfindObjects" target="DTUdemo">The Search page</a>.
-				</li>
-			</ul> 
-			<p>You may press buttons and enter queries, but you will notice that you are not authorized to do the updateIndex actions.
-			</p>
-		</div>
--->
 			 
 		<div>
 			<a name="DEMONSTRATION"><h1>I. DEMONSTRATION</h1></a>
@@ -150,8 +123,7 @@
     &lt;param name="enabled" value="true"/&gt;</pre>
 				</li>
 				<li>Download fedoragsearch.war 
-					from either <a href="http://www.cvt.dk/fedoragsearch">the DTU prerelease site</a>, 
-					or from <a href="https://wiki.duraspace.org/display/FCSVCS/Fedora+Framework+Services">the official Duraspace site</a>.
+					from <a href="https://wiki.duraspace.org/display/FCSVCS/Fedora+Framework+Services">the official Duraspace site</a>.
 					Alternatively, you may <a href="#source">build fedoragsearch.war from source</a>.
 				</li>
 				<li>Copy fedoragsearch.war into the tomcat webapps directory of your Fedora installation.
@@ -473,6 +445,14 @@
 								with your edited final config files.
 							</li>
 						</ul>
+					  </li>
+					  <li>
+					  <a name="basicpropertiesislandora"><h3>Edit and use the basic property values for Islandora</h3></a>
+						If you want to configure GSearch for Islandora,
+						then you <a href="#basicproperties">follow the directions above</a>, except
+						then you edit the basic property file called
+						FgsConfig/fgsconfig-basic-for-islandora.properties,
+						running the ant script as stated there. 
 					  </li>
 					</ul>
 					</li>

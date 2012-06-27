@@ -23,6 +23,7 @@
 	<property name="local.PROTOCOL" 		   value="http" />
 	<property name="local.HOSTPORT" 		   value="localhost:8080" />
 	<property name="local.FEDORA_HOME" 		   location="/Users/gertschmeltzpedersen/f35" />
+	<property name="local.FGSCONFIGOBJECTS_HOME" location="${local.FEDORA_HOME}" />
 	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.6.0" />
 	<property name="local.SOLR_SERVER" 		   value="http://localhost:8983/solr" />
 	<property name="local.ZEBRA_SERVER" 	   value="http://localhost:9999" />

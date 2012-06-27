@@ -42,7 +42,7 @@
 					<th><a href="?operation=browseIndex">browseIndex</a></th>
 					<th><a href="?operation=getRepositoryInfo">getRepositoryInfo</a></th>
 					<th><a href="?operation=getIndexInfo">getIndexInfo</a></th>
-					<th><a href="?operation=gfindObjects&amp;restXslt=enduserSearchToHtml" target="fgseuSearch">enduserSearch</a></th>
+					<th><a href="?operation=gfindObjects&amp;restXslt=fgseuSearchToHtml" target="fgseuSearch">enduserSearch</a></th>
 					<td>(<xsl:value-of select="$TIMEUSEDMS"/> milliseconds)</td>
 					</tr>
 				</table>
@@ -56,7 +56,7 @@
 				<xsl:call-template name="opSpecifics"/>
 				<div id="footer">
    					<div id="copyright">
-						Copyright &#xA9; 2010, 2011 Technical University of Denmark
+						Copyright &#xA9; 2010, 2011, 2012 Technical University of Denmark
 					</div>
 				</div>
 			</body>

@@ -335,6 +335,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             StringBuffer sb = new StringBuffer("<delete><id>"+pid+"</id></delete>");
             postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
             deleteTotal++;
+            docCount--;
             resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
         }
     }
@@ -364,9 +365,6 @@ public class OperationsImpl extends GenericOperationsImpl {
             objectDir = config.getFedoraObjectDir(repositoryName);
         else objectDir = new File(filePath);
         indexDocs(objectDir, repositoryName, indexName, resultXml, indexDocXslt);
-//        docCount = docCount-warnCount;
-//        resultXml.append("<warnCount>"+warnCount+"</warnCount>\n");
-//        resultXml.append("<docCount>"+docCount+"</docCount>\n");
     }
     
     private void indexDocs(
@@ -478,9 +476,10 @@ public class OperationsImpl extends GenericOperationsImpl {
         		resultXml.append("<updated>"+pid+"</updated>\n");
             } else {
                 insertTotal++;
+                docCount++;
         		resultXml.append("<inserted>"+pid+"</inserted>\n");
             }
-			logger.info("IndexDocument="+pid);
+			logger.info("IndexDocument="+pid+" insertTotal="+insertTotal+" updateTotal="+updateTotal+" deleteTotal="+deleteTotal+" emptyTotal="+emptyTotal+" warnCount="+warnCount+" docCount="+docCount);
 		}
 		else {
 			deletePid(pid, indexName, resultXml);
