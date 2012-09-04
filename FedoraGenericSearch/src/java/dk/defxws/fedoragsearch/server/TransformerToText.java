@@ -101,7 +101,8 @@ public class TransformerToText {
 			        					    .replace('/', '_')
 			        					    .replace('=', '_')
 			        					    .replace('(', '_')
-			        					    .replace(')', '_');
+			        					    .replace(')', '_')
+			        					    .replace('&', '_');
 			        }
 		        }
 	        }
