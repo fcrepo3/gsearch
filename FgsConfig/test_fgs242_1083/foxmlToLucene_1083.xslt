@@ -116,7 +116,7 @@
 		
 		<!-- testing file URI -->
 			
-		<xsl:variable name="indexInfoFile" select="document('file:///Users/gertschmeltzpedersen/f35/tomcat/webapps/fedoragsearch/WEB-INF/classes/configTestOnLuceneFgs242_1083/index/FgsIndex/indexInfo.xml')"/>
+		<xsl:variable name="indexInfoFile" select="document('file:///Users/gertschmeltzpedersen/f36/tomcat/webapps/fedoragsearch/WEB-INF/classes/configTestOnLuceneFgs242_1083/index/FgsIndex/indexInfo.xml')"/>
 		
 		<IndexField IFname="indexInfoFile.AdminInfo"> 
 			<xsl:value-of select="$indexInfoFile//AdminInfo"/>

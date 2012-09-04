@@ -22,7 +22,7 @@
 
 	<property name="local.PROTOCOL" 		   value="http" />
 	<property name="local.HOSTPORT" 		   value="localhost:8080" />
-	<property name="local.FEDORA_HOME" 		   location="/Users/gertschmeltzpedersen/f35" />
+	<property name="local.FEDORA_HOME" 		   location="/Users/gertschmeltzpedersen/f36" />
 	<property name="local.FGSCONFIGOBJECTS_HOME" location="${local.FEDORA_HOME}" />
 	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.6.0" />
 	<property name="local.SOLR_SERVER" 		   value="http://localhost:8983/solr" />
@@ -32,11 +32,11 @@
     <property name="javac.debug"               value="on"/>
     <property name="javac.deprecation"         value="on"/>
     <property name="javac.maxwarns"            value="100"/>
-    <property name="javac.source"              value="1.5"/>
-    <property name="javac.target"              value="1.5"/>
+    <property name="javac.source"              value="1.6"/>
+    <property name="javac.target"              value="1.6"/>
 
     <property name="fedoragsearch.version" value="2.4.2"/>
-    <property name="fedora.version" value="3.5"/>
+    <property name="fedora.version" value="3.6"/>
 
     <property name="source.dir" location="src/java"/>
     <property name="lib.dir" location="lib"/>
@@ -305,13 +305,6 @@
 	
 	<target name="junit-set-lucene-fgs24_1019">
 		<property name="test" value="gsearch.test.lucene.fgs24_1019.AllTests"/>
-	</target>
-	
-	<target name="junit-lucene-fgs24_1009" depends="junit-set-lucene-fgs24_1009, junit">
-	</target>
-	
-	<target name="junit-set-lucene-fgs24_1009">
-		<property name="test" value="gsearch.test.lucene.fgs24_1009.AllTests"/>
 	</target>
 	
 	<target name="junit-fgs242_1076" depends="junit-set-fgs242_1076, junit">
