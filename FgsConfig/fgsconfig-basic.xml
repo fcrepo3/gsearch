@@ -62,7 +62,7 @@
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHAPPNAME" value="${gsearchAppName}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHUSER" value="${gsearchUser}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="GSEARCHPASS" value="${gsearchPass}"/>
-		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="CONFIGPATH" value="${templateConfigPath}"/>
+		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="CONFIGPATH" value="${finalConfigPath}/${finalConfigName}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="REPOSNAMES" value="${namesOfRepositories}"/>
 		<replace file="${templateConfigPath}/${configDisplayName}/${finalConfigName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
 

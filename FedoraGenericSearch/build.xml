@@ -24,7 +24,7 @@
 	<property name="local.HOSTPORT" 		   value="localhost:8080" />
 	<property name="local.FEDORA_HOME" 		   location="/Users/gertschmeltzpedersen/f36" />
 	<property name="local.FGSCONFIGOBJECTS_HOME" location="${local.FEDORA_HOME}" />
-	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.6.0" />
+	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.6.1" />
 	<property name="local.SOLR_SERVER" 		   value="http://localhost:8983/solr" />
 	<property name="local.ZEBRA_SERVER" 	   value="http://localhost:9999" />
 	
@@ -35,8 +35,8 @@
     <property name="javac.source"              value="1.6"/>
     <property name="javac.target"              value="1.6"/>
 
-    <property name="fedoragsearch.version" value="2.4.2"/>
-    <property name="fedora.version" value="3.6"/>
+    <property name="fedoragsearch.version" value="2.5"/>
+    <property name="fedora.version" value="3.6.1"/>
 
     <property name="source.dir" location="src/java"/>
     <property name="lib.dir" location="lib"/>
@@ -199,7 +199,7 @@
     </target>
 
 	<target name="buildfromsource"
-			depends="prep, includeengines"
+			depends="prep, makedrupalmodule, includeengines"
 	        description="build from source">
         <ant dir="../FgsConfig" target="configForWebApp"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
@@ -208,7 +208,7 @@
 	</target>
 
 	<target name="buildforlocaltest"
-		    depends="prep, includeengines"
+		    depends="prep, makedrupalmodule, includeengines"
 	        description="build local">
         <ant dir="../FgsConfig" target="configForLocalTest"/>
 		<delete file="${build.dir}/WEB-INF/web.xml" />
@@ -221,6 +221,25 @@
         <ant dir="../FgsLucene" inheritAll="false"/>
         <ant dir="../FgsSolr2" inheritAll="false"/>
         <ant dir="../FgsZebra" inheritAll="false"/>
+    </target>
+	
+    <target name="makedrupalmodule" depends="">
+		<mkdir dir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch/FgsConfigTemplate" />
+		<mkdir dir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch/FgsConfigIndexTemplate" />
+		<mkdir dir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch/FgsConfigReposTemplate" />
+		<copy todir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch/FgsConfigTemplate" preservelastmodified="true">
+			<fileset dir="../FgsConfig/FgsConfigTemplate"/>
+		</copy>
+		<copy todir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch/FgsConfigIndexTemplate" preservelastmodified="true">
+			<fileset dir="../FgsConfig/FgsConfigIndexTemplate"/>
+		</copy>
+		<copy todir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch/FgsConfigReposTemplate" preservelastmodified="true">
+			<fileset dir="../FgsConfig/FgsConfigReposTemplate"/>
+		</copy>
+		<copy file="../FgsConfig/log4j.xml" todir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch" preservelastmodified="true"/>
+		<copy file="../FgsConfig/fgsconfig-basic-for-islandora.properties" todir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch" preservelastmodified="true"/>
+		<copy file="../FgsConfig/fgsconfig-basic.properties" todir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch" preservelastmodified="true"/>
+		<copy file="../FgsConfig/fgsconfig-basic.xml" todir="${build.dir}/FgsConfig/DrupalModuleForIslandora/islandora_gsearch" preservelastmodified="true"/>
     </target>
 	
 	<target name="compile-junit" depends="compile">

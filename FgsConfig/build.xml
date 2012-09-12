@@ -55,7 +55,7 @@
 			<property name="indexDir" location="${local.SOLR_HOME}/example/solr/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
         </ant>
-		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.6.0-for-fgs-2.4.2.xml" 
+		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.6.1-for-fgs-2.5.xml" 
 			tofile="${local.SOLR_HOME}/example/solr/conf/schema.xml" preservelastmodified="true" overwrite="true" />
 		
         <ant target="configLocal">
@@ -89,13 +89,6 @@
         </ant>
 		
         <ant target="configDemoSearchResultFilteringReloadPolicies">
-        </ant>
-		
-        <ant target="configLocal">
-			<property name="configName" value="configTestOnLuceneFgs24_1009"/>
-			<property name="indexEngine" value="Lucene"/>
-			<property name="indexDir" location="${local.FEDORA_HOME}/gsearch/FgsIndex"/>
-			<property name="indexingDocXslt" value="foxmlToLucene"/>
         </ant>
 		
         <ant target="configLocal">

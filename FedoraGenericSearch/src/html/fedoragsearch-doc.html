@@ -58,12 +58,16 @@
 					</li>
 					<li>If you want all options open, you choose the Solr plugin, where you need to know and do much more.
 					</li>
-					<li>You may choose the Solr plugin by using Islandora. Configuration of GSearch for Islandora is now easier.
+					<li>You will choose the Solr plugin by using Islandora. Configuration of GSearch for Islandora is now easier.
 					</li>
 					<li>The Zebra plugin is the choice that nobody has taken, because it is in a culture different from Fedora.
 					</li>
 				</ul>
 				<p>The choice is taken by configuration.
+				</p>
+				<p><a href="https://www.conftool.net/or2012/index.php?page=browseSessions&form_session=66">
+				The presentation at Open Repositories Conference 2012</a> about complex use cases also contains
+				some introductory material.
 				</p>
 		</div>
 		<p></p>
@@ -83,8 +87,11 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#indexingstylesheet">Generate indexing stylesheet from example foxml files</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#basicproperties">Edit and use the basic property values</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#basicpropertiesislandora">Edit and use the basic property values for Islandora</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#drupalmoduleforislandora">Experimental Drupal module for Islandora</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#gfauto">Configuring GSearch and Fedora for automatic updates</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#multilingual">Multilingual configuration</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#differentservers">GSearch and Fedora on different servers</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#debugstylesheet">Debugging the indexing stylesheet</a></dt>
 				<dt><a href="#FURTHERUSAGE">IV. FURTHER USAGE</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#extraction">Full-text and metadata extraction from datastreams using Apache Tika</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#endusersearch">Customizable end-user search client</a></dt>
@@ -107,7 +114,7 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#background">Background</a></dt>
 				</dl>
 		</div>
-			 
+		
 		<div>
 			<a name="DEMONSTRATION"><h1>I. DEMONSTRATION</h1></a>
 		</div>
@@ -117,14 +124,14 @@
 			
 			<p>Perform these steps:</p>
 			<ul>
-				<li>Create a Fedora 3.5 installation by quick install. The only piece of custom configuration needed is setting
+				<li>Create a Fedora installation by quick install. The only piece of custom configuration needed is setting
 					the value of the param enabled to true for the Messaging module in fedora.fcfg:
 <pre>&lt;module role="org.fcrepo.server.messaging.Messaging" class="org.fcrepo.server.messaging.MessagingModule"&gt;
     &lt;comment&gt;Fedora's Java Messaging Service (JMS) Module&lt;/comment&gt;
     &lt;param name="enabled" value="true"/&gt;</pre>
 				</li>
 				<li>Download fedoragsearch.war 
-					from <a href="https://wiki.duraspace.org/display/FCSVCS/Fedora+Framework+Services">the official Duraspace site</a>.
+					from <a href="https://wiki.duraspace.org/display/FCSVCS/Generic+Search+Service+2.5">the official Duraspace site</a>.
 					Alternatively, you may <a href="#source">build fedoragsearch.war from source</a>.
 				</li>
 				<li>Copy fedoragsearch.war into the tomcat webapps directory of your Fedora installation.
@@ -177,7 +184,7 @@
 					See the section on <a href="#endusersearch">Customizable end-user search client</a>.
 				</li>
 				</li>
-				<li>Ingest the Fedora 3.5 demo objects, there are 41, 20 of them are data objects and will be indexed.
+				<li>Ingest the Fedora demo objects, there are 41, 20 of them are data objects and will be indexed.
 					View the admin pages.
 				</li>
 			</ul> 
@@ -205,7 +212,6 @@
 				<p>You are encouraged to share problems and experience with the
 				Fedora community, send mail to
 				<a href="mailto:fedora-commons-users@lists.sourceforge.net">fedora-commons-users</a>, or to
-				<a href="mailto:cwilper@duraspace.org">Chris Wilper</a>, or to
 				<a href="mailto:gsp@dtic.dtu.dk">Gert Schmeltz Pedersen</a>.</p>
 				<p>The following figure serves to give a first
 				understanding for a developer, who will use GSearch in a Fedora application:</p>
@@ -368,7 +374,7 @@
 				<li><a name="config"><h3>Create the configuration files</h3></a>
 				<ul>
 					<li>
-						If you <b>migrate from GSearch 2.2 or 2.3 to 2.4.*</b>, 
+						If you <b>migrate from GSearch 2.2 or 2.3 or 2.4.* to 2.5</b>, 
 						you simply reuse the configuration files you have.
 						The only things you must do from 2.2 are 
 						rename the root directory of the configuration files 
@@ -380,7 +386,7 @@
 					  	you may want to move them outside, see below.
 					</li>
                     <li>
-						If you <b>start with GSearch 2.4.*</b>, creating the configuration files is much simpler than before. Here are the two basic parts:
+						If you <b>start with GSearch 2.5</b>, here are the two basic parts:
 					<ul>
 					  <li> 
 					  <a name="indexingstylesheet"><h3>Generate indexing stylesheet from example foxml files</h3></a>
@@ -417,7 +423,7 @@
 						These may be edited, if you want to select among more than the basic configuration options. 
 						Here are the basic steps in more detail:
 						<ul>
-							<li>Edit the file FgsConfig/fgsconfig-basic.properties
+							<li>Edit the file <i>FgsConfig/fgsconfig-basic.properties</i>
 							</li>
 							<li>Run with privilege to write to the final config location, 
 							that you stated in fgsconfig-basic.properties:<pre>
@@ -452,8 +458,16 @@
 						If you want to configure GSearch for Islandora,
 						then you <a href="#basicproperties">follow the directions above</a>, except
 						then you edit the basic property file called
-						FgsConfig/fgsconfig-basic-for-islandora.properties,
+						<i>FgsConfig/fgsconfig-basic-for-islandora.properties</i>,
 						running the ant script as stated there. 
+					  </li>
+					  <li>
+					  <a name="drupalmoduleforislandora"><h3>Experimental Drupal module for Islandora</h3></a>
+						The distribution contains a Drupal module at FgsConfig/DrupalModuleForIslandora/islandora_gsearch.
+						Install it in Islandora, then you may enter the basic property values there
+						and then generate the GSearch configuration for Islandora.
+						It is a first shot for Drupal 7, and feedback and improvements are welcome, 
+						including your modifications to run it with Drupal 6.
 					  </li>
 					</ul>
 					</li>
@@ -544,6 +558,39 @@
 				special characters like the Spanish &quot;&ntilde;&quot;,
 				&quot;&iacute;&quot; etc. (thanks to Luis Zorita).</p>
 		</div>
+			
+		<div>
+			<a name="differentservers"><h2>GSearch and Fedora on different servers</h2></a>
+				<p>
+				If GSearch and Fedora are running on different servers,
+				then recreating the index with the updateIndex fromFoxmlFiles operation is affected, because
+				the fgsrepository.fedoraObjectDir property has to point to a location on the GSearch server,
+				whereas the object directory is on the Fedora server.
+				Therefore, before recreating the index,
+				you have to copy the object directory from the Fedora server onto the GSearch server 
+				at the location given by the property.
+		    	</p>
+		    	<p>
+		    	Whether GSearch and Fedora are running on different servers or not,
+				the automatic update of the index is done by the updateIndex fromPid operation 
+				as triggered by Fedora's JMSprovider, which is configured in fedora.fcfg and in the GSearch updater.properties.
+				</p>
+		</div>
+			
+		<div>
+			<a name="debugstylesheet"><h2>Debugging the indexing xslt stylesheet</h2></a>
+				<p>When you customize the indexing xslt stylesheet, 
+				you might test it from command line with xalan or xsltproc or similar. 
+				There is a much larger overhead, if you test it through the GSearch REST API, 
+				and often there is no information from the xslt processor, 
+				when it simply does not find things that you specify with xpath. 
+				It is then better to experiment with the xslt and rerun it from command line, 
+				building up piecewise both on the foxml and the xslt in order to experiment.
+				</p>
+				<p><a href="https://groups.google.com/forum/?fromgroups=#!topic/islandora/m9oBK-2TzaE">
+				Here is the command line to run with xalan</a>, provided by Serhiy Polyakov.
+				</p>
+		</div>
 		
 		<div>
 			<a name="FURTHERUSAGE"><h1>IV. FURTHER USAGE</h1></a>
@@ -572,7 +619,7 @@
 										  You may see the available names, if you log in debug mode
 										  and look for "METADATA name=" under "fullDsId=" in the log, when "getFromTika" was called during updateIndex</td></tr>
 				<tr><td>- indexFieldName</td><td>is used as the generated index field name.
-										  If not given, GSearch uses metadataFieldName after replacement of the characters ' ', ':', '/', '=', '(', ')' with '_'</td></tr>
+										  If not given, GSearch uses metadataFieldName after replacement of the characters ' ', ':', '/', '=', '(', ')', '&amp;' with '_'</td></tr>
 				<tr><td>- the following parameters are used with Lucene (with Solr these values are specified in schema.xml)</td></tr>
 				<tr><td>- index</td><td>[ 'TOKENIZED' | 'UN_TOKENIZED' ]<br/> # first alternative is default</td></tr>
 				<tr><td>- store</td><td>[ 'YES' | 'NO' ]<br/> # first alternative is default</td></tr>
@@ -586,7 +633,7 @@
 			
 				<p>The download contains the following files in webapps/fedoragsearch/ that you may customize:</p>
 				<ul>
-					<li>WEB-INF/classes/&lt;configName&gt;/rest/enduserSearchToHtml.xslt (basic page generator)</li>
+					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuSearchToHtml.xslt (basic page generator)</li>
 					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuBrowseTermsToHtml.xslt (browseIndex by ajax call)</li>
 					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuFacetTermsToHtml.xslt (Solr facet search by ajax call)</li>
 					<li>WEB-INF/classes/&lt;configName&gt;/rest/fgseuSearchResultToHtml.xslt (gfindObjects search by ajax call)</li>
@@ -778,6 +825,11 @@
 				<ul>
 					<li>Compatibility with Lucene 3.6.1, Solr 3.6.1, PDFBox 1.7.1, and Tika 1.2 
 					    (<a href="https://jira.duraspace.org/browse/FCREPO-1137">FCREPO-1137</a>)
+					</li>
+					<li>Easier configuration of GSearch for Islandora,
+					see <a href="#basicpropertiesislandora">Edit and use the basic property values for Islandora</a>
+					and <a href="#drupalmoduleforislandora">Experimental Drupal module for Islandora</a>
+					    (<a href="https://jira.duraspace.org/browse/FCREPO-1105">FCREPO-1105</a>)
 					</li>
 				</ul>
 		</div>
@@ -1035,6 +1087,7 @@
 				Chris Wilper,
 				Christian Orthmann,
 				Christian T&#248;nsberg,
+				Dong Hua,
 				Eric Brown,
 				Eric James,
 				Jonathan Green,

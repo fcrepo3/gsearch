@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * @file
+ * Implementation of GSearch configuration for the Islandora Solr module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function islandora_gsearch_menu() {
+  $items['admin/islandora/search/islandora_gsearch'] = array(
+    'title' => 'GSearch Configuration for Islandora',
+    'description' => 'Generate GSearch configuration for Islandora.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_gsearch_admin_settings'),
+    'access arguments' => array('configure islandora gsearch'),
+    'file' => 'islandora_gsearch.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+
+/**
+ * Implements hook_admin_paths().
+ */
+function islandora_gsearch_admin_paths() {
+  $paths = array(
+    'admin/config/islandora_gsearch' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function islandora_gsearch_permission() {
+  return array(
+    'configure islandora gsearch' => array(
+      'title' => t('GSearch Configuration for Islandora'),
+      'description' => t('Configure GSearch for Islandora.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_help().
+ *
+ * @param type $path
+ * @param type $arg
+ * @return type
+ */
+function islandora_gsearch_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#islandora_gsearch':
+      return t(
+          '<p>
+         GSearch Configuration for Islandora.
+         </p>
+         <ul>
+           <li>Islandora GSearch requires a working Solr instance.</li>
+           <li>Once Solr is running and tested, configure <b>GSearch</b>. </li>
+         </ul>
+        ', array(
+        '!GSearch' => l('GSearch Documentation', 'https://wiki.duraspace.org/display/FCSVCS/Generic+Search+Service+2.4.2'),
+          )
+      );
+  }
+}

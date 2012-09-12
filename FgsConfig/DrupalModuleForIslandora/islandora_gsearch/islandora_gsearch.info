@@ -1,0 +1,7 @@
+name = Islandora GSearch
+description = GSearch Configuration for Islandora
+dependencies[] = islandora_solr
+package = Islandora Search
+configure = admin/islandora/search/islandora_gsearch
+version = 7.x-1.0
+core = 7.x

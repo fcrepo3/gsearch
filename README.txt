@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-FedoraGenericSearch (GSearch) Version 2.4.2 
+FedoraGenericSearch (GSearch) Version 2.5 
 -------------------------------------------------------------------
 
  * License and Copyright: FedoraGenericSearch is subject to the same open source 
