@@ -14,7 +14,7 @@ import org.apache.lucene.util.Version;
 public class StopwordsAnalyzer {
 	
     public StopwordsAnalyzer() throws IOException {
-    	new StandardAnalyzer(Version.LUCENE_33, new InputStreamReader(StopwordsAnalyzer.class
+    	new StandardAnalyzer(Version.LUCENE_42, new InputStreamReader(StopwordsAnalyzer.class
     			.getResourceAsStream("/stopwords.txt")));
     }
 }

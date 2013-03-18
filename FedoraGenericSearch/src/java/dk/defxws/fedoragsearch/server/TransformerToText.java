@@ -16,7 +16,9 @@ import java.util.Arrays;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.benchmark.byTask.feeds.demohtml.HTMLParser;
+import org.apache.lucene.benchmark.byTask.feeds.DemoHTMLParser;
+import org.apache.lucene.benchmark.byTask.feeds.DocData;
+import org.apache.lucene.benchmark.byTask.feeds.TrecContentSource;
 //import org.apache.lucene.demo.html.HTMLParser;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -25,6 +27,8 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.WriteOutContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
@@ -228,17 +232,28 @@ public class TransformerToText {
     private StringBuffer getTextFromHTML(byte[] doc) 
     throws GenericSearchException {
         StringBuffer docText = new StringBuffer();
-        HTMLParser htmlParser = new HTMLParser(new ByteArrayInputStream(doc));
+        DemoHTMLParser htmlParser = new DemoHTMLParser();
         try {
-            InputStreamReader isr = (InputStreamReader) htmlParser.getReader();
-            int c = isr.read();
-            while (c>-1) {
-                docText.append((char)c);
-                c=isr.read();
-            }
-        } catch (IOException e) {
-            throw new GenericSearchException(e.toString());
-        }
+			DocData docData = htmlParser.parse(new DocData(), null, null, new InputSource(new ByteArrayInputStream(doc)), new TrecContentSource());
+			docText = new StringBuffer(docData.getBody());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//        HTMLParser htmlParser = new HTMLParser(new ByteArrayInputStream(doc));
+//        try {
+//            InputStreamReader isr = (InputStreamReader) htmlParser.getReader();
+//            int c = isr.read();
+//            while (c>-1) {
+//                docText.append((char)c);
+//                c=isr.read();
+//            }
+//        } catch (IOException e) {
+//            throw new GenericSearchException(e.toString());
+//        }
         return docText;
     }
 

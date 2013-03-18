@@ -26,13 +26,19 @@ import dk.defxws.fedoragsearch.server.errors.ConfigException;
 
 import org.apache.log4j.Logger;
 
-import org.fcrepo.client.messaging.JmsMessagingClient;
-import org.fcrepo.client.messaging.MessagingClient;
-import org.fcrepo.client.messaging.MessagingListener;
+//import org.fcrepo.client.messaging.JmsMessagingClient;
+//import org.fcrepo.client.messaging.MessagingClient;
+//import org.fcrepo.client.messaging.MessagingListener;
 
-import org.fcrepo.server.errors.MessagingException;
-import org.fcrepo.server.messaging.APIMMessage;
-import org.fcrepo.server.messaging.AtomAPIMMessage;
+//import org.fcrepo.server.errors.MessagingException;
+//import org.fcrepo.server.messaging.APIMMessage;
+//import org.fcrepo.server.messaging.AtomAPIMMessage;
+
+import com.yourmediashelf.fedora.client.messaging.AtomApimMessage;
+import com.yourmediashelf.fedora.client.messaging.MessagingClient;
+import com.yourmediashelf.fedora.client.messaging.MessagingException;
+import com.yourmediashelf.fedora.client.messaging.MessagingListener;
+import com.yourmediashelf.fedora.client.messaging.ApimMessage;
 
 /**
  * Starts up the Fedora message listener which 
@@ -91,8 +97,10 @@ public class UpdateListener extends HttpServlet implements MessagingListener {
             }
             
             try {
-                JmsMessagingClient messagingClient =
-                        new JmsMessagingClient(clientId, this, properties, true);
+//                JmsMessagingClient messagingClient =
+//                    new JmsMessagingClient(clientId, this, properties, true);
+                MessagingClient messagingClient =
+                    new MessagingClient(clientId, this, properties, true);
                 messagingClient.start(false);
                 messagingClientList.add(messagingClient);
             } catch (MessagingException me) {
@@ -155,7 +163,7 @@ public class UpdateListener extends HttpServlet implements MessagingListener {
 
         logger.debug("Message Text: " + messageText);
 
-        APIMMessage apimMessage = new AtomAPIMMessage(messageText);
+        ApimMessage apimMessage = new AtomApimMessage(messageText);
         String baseUrl = apimMessage.getBaseUrl();
         String methodName = apimMessage.getMethodName();
         String pid = apimMessage.getPID();

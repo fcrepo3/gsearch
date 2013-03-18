@@ -25,20 +25,26 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogDocMergePolicy;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
+//import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.apache.lucene.util.ReaderUtil;
+import org.apache.lucene.util.BytesRef;
+//import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
@@ -46,7 +52,7 @@ import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
-import org.fcrepo.server.utilities.StreamUtility;
+//import org.fcrepo.server.utilities.StreamUtility;
 
 /**
  * performs the Lucene specific parts of the operations
@@ -148,7 +154,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             String resultPageXslt)
     throws java.rmi.RemoteException {
         super.browseIndex(startTerm, termPageSize, fieldName, indexName, resultPageXslt);
-        StringBuffer resultXml = new StringBuffer("<fields>");
+        StringBuffer resultXml = new StringBuffer();
         try {
             getIndexWriter(indexName);
 			optimize(indexName, resultXml);
@@ -158,50 +164,94 @@ public class OperationsImpl extends GenericOperationsImpl {
         int termNo = 0;
         try {
             getIndexReaderAndSearcher(indexName);
-            Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
-            while (fieldNames.hasNext()) {
-                resultXml.append("<field>"+fieldNames.next()+"</field>");
-            }
+//            Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
+            Fields fields;
+			try {
+				fields = MultiFields.getFields(ir);
+			} catch (Exception e) {
+              throw new GenericSearchException("MultiFields.getFields error:\n" + e.toString());
+			}
+            resultXml.append("<fields>");
+            if (fields != null) {
+            	for(String field : fields) {
+                    resultXml.append("<field>"+field+"</field>");
+            	}
+			}
             resultXml.append("</fields>");
             resultXml.append("<terms>");
-            int pageSize = 0;
-            Term beginTerm = new Term(fieldName, "");
-            TermEnum terms;
-            try {
-                terms = ir.terms(beginTerm);
-            } catch (IOException e) {
-                throw new GenericSearchException("IndexReader terms error:\n" + e.toString());
+            if (fields != null && fieldName != null && fieldName.length()>0) {
+                int pageSize = 0;
+        	    Terms terms;
+				try {
+					terms = fields.terms(fieldName);
+				} catch (Exception e) {
+		              throw new GenericSearchException("fields.terms error:\n" + e.toString());
+				}
+        	    TermsEnum termsEnum;
+				try {
+					termsEnum = terms.iterator(null);
+				} catch (Exception e) {
+		              throw new GenericSearchException("terms.iterator error:\n" + e.toString());
+				}
+        	    BytesRef text;
+        	    try {
+					while((text = termsEnum.next()) != null) {
+					    termNo++;
+					    String termString = text.utf8ToString();
+					    if (startTerm.compareTo(termString) <= 0 && pageSize < termPageSize) {
+					        pageSize++;
+					        resultXml.append("<term no=\""+termNo+"\""
+					                +" fieldtermhittotal=\""+termsEnum.docFreq()
+					                +"\">"+encode(termString)+"</term>");
+					    }
+					}
+				} catch (Exception e) {
+		              throw new GenericSearchException("termsEnum.next error:\n" + e.toString());
+				}
             }
-            try {
-                while (terms.term()!=null && terms.term().field().equals(fieldName)
-                        && !"".equals(terms.term().text().trim())) {
-                    termNo++;
-                    if (startTerm.compareTo(terms.term().text()) <= 0 && pageSize < termPageSize) {
-                        pageSize++;
-                        resultXml.append("<term no=\""+termNo+"\""
-                                +" fieldtermhittotal=\""+terms.docFreq()
-                                +"\">"+StreamUtility.enc(terms.term().text())+"</term>");
-                    }
-                    terms.next();
-                }
-            } catch (IOException e) {
-                throw new GenericSearchException("IndexReader terms.next error:\n" + e.toString());
-            }
-            try {
-                terms.close();
-            } catch (IOException e) {
-                throw new GenericSearchException("IndexReader terms close error:\n" + e.toString());
-            }
+            resultXml.append("</terms>");
+//            while (fieldNames.hasNext()) {
+//                resultXml.append("<field>"+fieldNames.next()+"</field>");
+//            }
+//            resultXml.append("</fields>");
+//            resultXml.append("<terms>");
+//            int pageSize = 0;
+//            Term beginTerm = new Term(fieldName, "");
+//            TermEnum terms;
+//            try {
+//                terms = ir.terms(beginTerm);
+//            } catch (IOException e) {
+//                throw new GenericSearchException("IndexReader terms error:\n" + e.toString());
+//            }
+//            try {
+//                while (terms.term()!=null && terms.term().field().equals(fieldName)
+//                        && !"".equals(terms.term().text().trim())) {
+//                    termNo++;
+//                    if (startTerm.compareTo(terms.term().text()) <= 0 && pageSize < termPageSize) {
+//                        pageSize++;
+//                        resultXml.append("<term no=\""+termNo+"\""
+//                                +" fieldtermhittotal=\""+terms.docFreq()
+//                                +"\">"+StreamUtility.enc(terms.term().text())+"</term>");
+//                    }
+//                    terms.next();
+//                }
+//            } catch (IOException e) {
+//                throw new GenericSearchException("IndexReader terms.next error:\n" + e.toString());
+//            }
+//            try {
+//                terms.close();
+//            } catch (IOException e) {
+//                throw new GenericSearchException("IndexReader terms close error:\n" + e.toString());
+//            }
         } catch (IOException e) {
             throw new GenericSearchException("IndexReader open error:\n" + e.toString());
         } finally {
             closeIndexReaderAndSearcher(indexName);
         }
-        resultXml.append("</terms>");
         resultXml.insert(0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<lucenebrowseindex "+
                 "   xmlns:dc=\"http://purl.org/dc/elements/1.1/"+
-                "\" startTerm=\""+StreamUtility.enc(startTerm)+
+                "\" startTerm=\""+encode(startTerm)+
                 "\" termPageSize=\""+termPageSize+
                 "\" fieldName=\""+fieldName+
                 "\" indexName=\""+indexName+
@@ -514,7 +564,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 			StringBuffer untokenizedFields = new StringBuffer(config.getUntokenizedFields(indexName));
 			while (li.hasNext()) {
 				Field f = (Field)li.next();
-				if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
+				if (!f.fieldType().tokenized() && f.fieldType().indexed() && untokenizedFields.indexOf(f.name())<0) {
 					untokenizedFields.append(" "+f.name());
 					config.setUntokenizedFields(indexName, untokenizedFields.toString());
 				}
@@ -547,7 +597,7 @@ public class OperationsImpl extends GenericOperationsImpl {
         	analyzer = new KeywordAnalyzer();
         } else {
     		try {
-    			Version version = Version.LUCENE_36;
+    			Version version = Version.LUCENE_42;
     			Class analyzerClass = Class.forName(analyzerClassName);
                 if (logger.isDebugEnabled())
                     logger.debug("getAnalyzer analyzerClass=" + analyzerClass.toString());
@@ -618,10 +668,10 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private void getIndexReaderAndSearcher(String indexName)
     throws GenericSearchException {
-		IndexReader irreopened = null;
+    	DirectoryReader irreopened = null;
 		if (ir != null) {
 	    	try {
-				irreopened = IndexReader.openIfChanged(ir);
+				irreopened = DirectoryReader.openIfChanged(ir);
 			} catch (Exception e) {
 				throw new GenericSearchException("IndexReader reopen error indexName=" + indexName+ " :\n", e);
 			}
@@ -642,7 +692,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 	        try {
 	        	closeIndexReaderAndSearcher(indexName);
 				Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
-				ir = IndexReader.open(dir);
+				ir = DirectoryReader.open(dir);
 			} catch (Exception e) {
 				throw new GenericSearchException("IndexReader open error indexName=" + indexName+ " :\n", e);
 			}
@@ -655,17 +705,17 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private void closeIndexReaderAndSearcher(String indexName)
     throws GenericSearchException {
-    	if (searcher!=null) {
-    		try {
-    			searcher.close();
-    		} catch (Exception e) {
-                throw new GenericSearchException("IndexSearcher close error indexName=" + indexName+ " :\n", e);
-            } finally {
+//    	if (searcher!=null) {
+//    		try {
+//    			searcher.close();
+//    		} catch (Exception e) {
+//                throw new GenericSearchException("IndexSearcher close error indexName=" + indexName+ " :\n", e);
+//            } finally {
             	searcher = null;
-            	if (logger.isDebugEnabled())
-            		logger.debug("closeIndexSearcher indexName=" + indexName);
-            }
-    	}
+//            	if (logger.isDebugEnabled())
+//            		logger.debug("closeIndexSearcher indexName=" + indexName);
+//            }
+//    	}
 		if (ir != null) {
             docCount = ir.numDocs();
             try {
@@ -689,7 +739,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     		} catch (Exception e) {
                 throw new GenericSearchException("IndexWriter new error indexName=" + indexName+ " :\n", e);
     		}
-    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_36, getQueryAnalyzer(indexName));
+    		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_42, getQueryAnalyzer(indexName));
     		int maxBufferedDocs = config.getMaxBufferedDocs(indexName);
     		if (maxBufferedDocs > 0) {
     			iwconfig.setMaxBufferedDocs(maxBufferedDocs);

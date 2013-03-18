@@ -60,11 +60,13 @@ public class TestSortFields
 //  	    assertXpathEvaluatesTo("demo:11", "/resultPage/gfindObjects/objects/object[1]/field[@name='PID']/text()", result.toString());
 //    }
 
-    @Test
-    public void testGfindObjectsSortNonExistingField() throws Exception {
-  	    StringBuffer result = doOp("?operation=gfindObjects&query=image&sortFields=nonexistingfield&restXslt=copyXml");
-		assertTrue(result.indexOf("not found as index field")>-1);
-    }
+
+//	Deprecated in Statement.java: Collection<String> fieldNames = ReaderUtil.getIndexedFields(ireader);
+//    @Test
+//    public void testGfindObjectsSortNonExistingField() throws Exception {
+//  	    StringBuffer result = doOp("?operation=gfindObjects&query=image&sortFields=nonexistingfield&restXslt=copyXml");
+//		assertTrue(result.indexOf("not found as index field")>-1);
+//    }
 
     @Test
     public void testGfindObjectsSortEmptySortField() throws Exception {

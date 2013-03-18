@@ -34,12 +34,13 @@ import dk.defxws.fedoragsearch.server.errors.FedoraObjectNotFoundException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
@@ -93,8 +94,9 @@ public class GenericOperationsImpl implements Operations {
     protected byte[] ds;
     protected String dsText;
     protected String[] params = null;
-    
-    protected IndexReader ir = null;
+
+//    protected IndexReader ir = null;
+    protected DirectoryReader ir = null;
     protected IndexSearcher searcher = null;
     protected IndexWriter iw = null;
 
@@ -1125,13 +1127,14 @@ public class GenericOperationsImpl implements Operations {
     	indexDocExists = false;
 //    	startTime = new Date();
         try {
-			if (ir.termDocs(new Term("PID", pid)).next()) indexDocExists = true;
+//			if (ir.termDocs(new Term("PID", pid)).next()) indexDocExists = true;
+			if (ir.docFreq(new Term("PID", pid))>0) indexDocExists = true;
 		} catch (IOException e) {
-            throw new GenericSearchException("indexDocExists termDocs "+pid+" exception="+e);
+            throw new GenericSearchException("indexDocExists docFreq "+pid+" exception="+e);
 		}
 //        timeusedms = Long.toString((new Date()).getTime() - startTime.getTime());
         if (logger.isDebugEnabled())
-            logger.debug("indexDocExists termDocs="+pid+" indexDocExists="+indexDocExists);
+            logger.debug("indexDocExists pid="+pid+" indexDocExists="+indexDocExists);
 //        logger.debug("indexDocExists termDocs="+pid+" indexDocExists="+indexDocExists+" timeusedms="+timeusedms);
 		return indexDocExists;
     }
@@ -1144,6 +1147,31 @@ public class GenericOperationsImpl implements Operations {
     		pid = filename.substring(i+filenameStart.length()).replaceAll("%3A", ":");
     	}
     	return pid;
+    }
+
+    public static String encode(String in) {
+        String inStr = in;
+        if (inStr == null) {
+            inStr = "";
+        }
+        StringBuffer out = new StringBuffer();
+        for (int i = 0; i < inStr.length(); i++) {
+            char c = inStr.charAt(i);
+            if (c == '&') {
+                out.append("&amp;");
+            } else if (c == '<') {
+                out.append("&lt;");
+            } else if (c == '>') {
+                out.append("&gt;");
+            } else if (c == '\"') {
+                out.append("&quot;");
+            } else if (c == '\'') {
+                out.append("&apos;");
+            } else {
+                out.append(c);
+            }
+        }
+        return out.toString();
     }
     
 }

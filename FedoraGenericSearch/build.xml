@@ -4,7 +4,7 @@
 <!-- 
 # For reviewing or testing at your ${local.PROTOCOL}://${local.HOSTPORT}, 
 # including test configurations and installation at tomcat, run
-> ant -Dlocal.PROTOCOL=<protocol> -Dlocal.HOSTPORT=<hostport> -Dlocal.FEDORA_HOME=<location> -Dlocal.SOLR_HOME=<location> -Dlocal.SOLR_SERVER=<url> -Dlocal.ZEBRA_SERVER=<url> buildforlocaltest
+> ant -Dlocal.PROTOCOL=<protocol> -Dlocal.HOSTPORT=<hostport> -Dlocal.FEDORA_HOME=<location> -Dlocal.SOLR_HOME=<location> -Dlocal.SOLR_INDEX_PATH=<location> -Dlocal.SOLR_SERVER=<url> -Dlocal.ZEBRA_SERVER=<url> buildforlocaltest
 
 # For building from source, 
 # followed by installation and configuration as in documentation page, run
@@ -22,21 +22,23 @@
 
 	<property name="local.PROTOCOL" 		   value="http" />
 	<property name="local.HOSTPORT" 		   value="localhost:8080" />
-	<property name="local.FEDORA_HOME" 		   location="/Users/gertschmeltzpedersen/f36" />
+	<property name="local.FEDORA_HOME" 		   location="/Users/gertschmeltzpedersen/f362" />
 	<property name="local.FGSCONFIGOBJECTS_HOME" location="${local.FEDORA_HOME}" />
-	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/apache-solr-3.6.1" />
+	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/solr-4.2.0" />
+	<property name="local.SOLR_INDEX_PATH" 	   value="example/solr/collection1" />
 	<property name="local.SOLR_SERVER" 		   value="http://localhost:8983/solr" />
 	<property name="local.ZEBRA_SERVER" 	   value="http://localhost:9999" />
 	
-    <property name="web.xml.file"              value="web-withAuthN.xml"/> <!-- or web-withoutAuthN.xml -->
+    <property name="web.xml.file"              value="web-withoutAuthN.xml"/> <!-- or web-withAuthN.xml -->
     <property name="javac.debug"               value="on"/>
     <property name="javac.deprecation"         value="on"/>
     <property name="javac.maxwarns"            value="100"/>
     <property name="javac.source"              value="1.6"/>
     <property name="javac.target"              value="1.6"/>
 
-    <property name="fedoragsearch.version" value="2.5"/>
-    <property name="fedora.version" value="3.6.1"/>
+    <property name="fedoragsearch.version" value="2.6"/>
+    <property name="fedora.version" value="3.6.2"/>
+    <property name="solr.version" value="4.2.0"/>
 
     <property name="source.dir" location="src/java"/>
     <property name="lib.dir" location="lib"/>
@@ -291,6 +293,9 @@
 		<property name="test" value="gsearch.test.testsonlucene.AllTests"/>
 	</target>
 	
+	<!-- this test requires in fedora.fcfg :
+    <param name="ENFORCE-MODE" value="enforce-policies"/>
+	 -->
 	<target name="junit-searchresultfiltering" depends="junit-set-searchresultfiltering, junit">
 	</target>
 	

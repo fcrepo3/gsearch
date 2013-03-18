@@ -37,6 +37,11 @@
 					<tr>
 						<td>
 							<input type="hidden" name="operation" value="gfindObjects"/>
+							Index name: 
+								<select name="indexName">
+									<option value="">default</option>
+									<option value="FgsIndex">FgsIndex</option>
+								</select>
 							Query: <input type="text" name="query" size="50" value="{$QUERY}"/> 
 							<xsl:text> </xsl:text>Hit page size: <input type="text" name="hitPageSize" size="4" value="{$HITPAGESIZE}"/> 
 							<xsl:text> </xsl:text><input type="submit" value="Search"/>

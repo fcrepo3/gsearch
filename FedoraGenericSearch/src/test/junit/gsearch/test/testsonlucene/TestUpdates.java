@@ -43,6 +43,9 @@ public class TestUpdates
 
     @Test
     public void testUpdateIndexInsertPid() throws Exception {
+	    delay(5000);
+  	    doOp("?operation=updateIndex&action=optimize&restXslt=copyXml");
+	    delay(5000);
   	    StringBuffer result = doOp("?operation=updateIndex&action=fromPid&value=demo:14&restXslt=copyXml");
   	    assertXpathEvaluatesTo("1", "/resultPage/updateIndex/@insertTotal", result.toString());
     }

@@ -22,12 +22,12 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.FieldComparatorSource;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -35,16 +35,18 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.SortField.Type;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Fragmenter;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
-import org.apache.lucene.util.ReaderUtil;
+//import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
+import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-import org.fcrepo.server.utilities.StreamUtility;
+//import org.fcrepo.server.utilities.StreamUtility;
 
 /**
  * queries the Solr index 
@@ -97,7 +99,7 @@ public class Statement {
     	}
     	Query query = null;
     	if (defaultFields.length == 1) {
-    		QueryParser queryParser = new QueryParser(Version.LUCENE_36, defaultFields[0], analyzer);
+    		QueryParser queryParser = new QueryParser(Version.LUCENE_42, defaultFields[0], analyzer);
     		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
     		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
             if (logger.isDebugEnabled())
@@ -111,7 +113,7 @@ public class Statement {
     		}
     	}
     	else {
-    		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_36, defaultFields, analyzer);
+    		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(Version.LUCENE_42, defaultFields, analyzer);
     		queryParser.setAllowLeadingWildcard(allowLeadingWildcard);
     		queryParser.setLowercaseExpandedTerms(lowercaseExpandedTerms);
             if (logger.isDebugEnabled())
@@ -171,7 +173,7 @@ public class Statement {
     		}
     		resultXml.append("<hit no=\""+i+ "\" score=\""+hitsScore+"\">");
     		for (ListIterator li = doc.getFields().listIterator(); li.hasNext(); ) {
-    			Fieldable f = (Fieldable)li.next();
+    			IndexableField f = (IndexableField)li.next();
     			resultXml.append("<field name=\""+f.name()+"\"");
     			String snippets = null;
     			if (snippetsMax > 0) {
@@ -180,14 +182,19 @@ public class Statement {
     				Highlighter highlighter = new Highlighter(formatter, scorer);
     				Fragmenter fragmenter = new SimpleFragmenter(fieldMaxLength);
     				highlighter.setTextFragmenter(fragmenter);
-    				TokenStream tokenStream = analyzer.tokenStream( f.name(), new StringReader(f.stringValue()));
+    				TokenStream tokenStream = null;
+					try {
+						tokenStream = analyzer.tokenStream( f.name(), new StringReader(f.stringValue()));
+					} catch (Exception e) {
+    					errorExit(e.toString());
+					}
     				try {
     					snippets = highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax, " ... ");
     				} catch (Exception e) { // all Exceptions to be caught, not just IOException 
     					errorExit(e.toString());
     				}
     				snippets = checkTruncatedWords(snippets, " ... ");
-    				snippets = StreamUtility.enc(snippets);
+    				snippets = GenericOperationsImpl.encode(snippets);
     				snippets = snippets.replaceAll("!!!SNIPPETBEGIN", snippetBegin);
     				snippets = snippets.replaceAll("!!!SNIPPETEND", snippetEnd);
     				if (snippets!=null && !snippets.equals("")) {
@@ -200,9 +207,9 @@ public class Statement {
     					int iamp = snippet.lastIndexOf("&");
     					if (iamp>-1 && iamp>fieldMaxLength-8)
     						snippet = snippet.substring(0, iamp);
-    					resultXml.append(">"+StreamUtility.enc(snippet)+" ... ");
+    					resultXml.append(">"+GenericOperationsImpl.encode(snippet)+" ... ");
     				} else
-    					resultXml.append(">"+StreamUtility.enc(f.stringValue()));
+    					resultXml.append(">"+GenericOperationsImpl.encode(f.stringValue()));
     			resultXml.append("</field>");
     		}
     		resultXml.append("</hit>");
@@ -222,9 +229,9 @@ public class Statement {
     }
 
     private void errorExit(String message) throws GenericSearchException {
-    	if (searcher!=null) {
+    	if (searcher.getIndexReader()!=null) {
     		try {
-    			searcher.close();
+    			searcher.getIndexReader().close();
     		} catch (IOException e) {
     		}
     	}
@@ -245,8 +252,8 @@ public class Statement {
                     " numHits="+numHits+
                     " sortFields="+sortFields);
     	TopDocs hits = null;
-    	IndexReader ireader = searcher.getIndexReader();
-    	Collection<String> fieldNames = ReaderUtil.getIndexedFields(ireader);
+//    	IndexReader ireader = searcher.getIndexReader();
+//    	Collection<String> fieldNames = ReaderUtil.getIndexedFields(ireader);
     	String sortFieldsString = sortFields;
     	if (sortFields == null) sortFieldsString = "";
     	StringTokenizer st = new StringTokenizer(sortFieldsString, ";");
@@ -254,7 +261,7 @@ public class Statement {
     	int i = 0;
     	while (st.hasMoreTokens()) {
     		SortField sortField = null;
-			int sortType = -1;
+			Type sortType = null;
     		String sortFieldString = st.nextToken().trim();
     		if (sortFieldString.length()==0)
     			errorExit("getHits sortFields='"+sortFields+"' : empty sortField string");
@@ -264,10 +271,10 @@ public class Statement {
     		String sortFieldName = stf.nextToken().trim();
     		if (sortFieldName.length()==0)
     			errorExit("getHits sortFields='"+sortFields+"' : empty sortFieldName string in '" + sortFieldString + "'");
-    		if (!fieldNames.contains(sortFieldName))
-    			errorExit("getHits sortFields='"+sortFields+"' : sortFieldName '" + sortFieldName + "' not found as index field name");
+//    		if (!fieldNames.contains(sortFieldName))
+//    			errorExit("getHits sortFields='"+sortFields+"' : sortFieldName '" + sortFieldName + "' not found as index field name");
     		if (!stf.hasMoreTokens()) {
-    			sortType = SortField.SCORE;
+    			sortType = SortField.Type.SCORE;
 				sortField = new SortField(sortFieldName, sortType);
     		} else {
     			String sortTypeOrLocaleOrCompString = stf.nextToken().trim();
@@ -341,19 +348,19 @@ public class Statement {
     			} else {
     				String sortTypeOrLocaleString = sortTypeOrLocaleOrCompString;
     				Locale locale = null;
-    				if ("BYTE".equals(sortTypeOrLocaleString)) sortType = SortField.BYTE;
-    				else if ("DOC".equals(sortTypeOrLocaleString)) sortType = SortField.DOC;
-    				else if ("DOUBLE".equals(sortTypeOrLocaleString)) sortType = SortField.DOUBLE;
-    				else if ("FLOAT".equals(sortTypeOrLocaleString)) sortType = SortField.FLOAT;
-    				else if ("INT".equals(sortTypeOrLocaleString)) sortType = SortField.INT;
-    				else if ("LONG".equals(sortTypeOrLocaleString)) sortType = SortField.LONG;
+    				if ("BYTE".equals(sortTypeOrLocaleString)) sortType = SortField.Type.BYTE;
+    				else if ("DOC".equals(sortTypeOrLocaleString)) sortType = SortField.Type.DOC;
+    				else if ("DOUBLE".equals(sortTypeOrLocaleString)) sortType = SortField.Type.DOUBLE;
+    				else if ("FLOAT".equals(sortTypeOrLocaleString)) sortType = SortField.Type.FLOAT;
+    				else if ("INT".equals(sortTypeOrLocaleString)) sortType = SortField.Type.INT;
+    				else if ("LONG".equals(sortTypeOrLocaleString)) sortType = SortField.Type.LONG;
     				else if ("SCORE".equals(sortTypeOrLocaleString)) {
-    					sortType = SortField.SCORE;
-    					searcher.setDefaultFieldSortScoring(true, true);
+    					sortType = SortField.Type.SCORE;
+//    					searcher.setDefaultFieldSortScoring(true, true); not in 4.0.0
     				}
-    				else if ("SHORT".equals(sortTypeOrLocaleString)) sortType = SortField.SHORT;
-    				else if ("STRING".equals(sortTypeOrLocaleString)) sortType = SortField.STRING;
-    				else if ("STRING_VAL".equals(sortTypeOrLocaleString)) sortType = SortField.STRING_VAL;
+    				else if ("SHORT".equals(sortTypeOrLocaleString)) sortType = SortField.Type.SHORT;
+    				else if ("STRING".equals(sortTypeOrLocaleString)) sortType = SortField.Type.STRING;
+    				else if ("STRING_VAL".equals(sortTypeOrLocaleString)) sortType = SortField.Type.STRING_VAL;
     				else if (((sortTypeOrLocaleString.substring(0, 1)).compareTo("A") >= 0) && ((sortTypeOrLocaleString.substring(0, 1)).compareTo("Z") <= 0)) {
     					errorExit("getHits sortFields='"+sortFields+"' : unknown sortType string '" + sortTypeOrLocaleString + "' in '" + sortFieldString + "'");
     				}
@@ -385,10 +392,10 @@ public class Statement {
     					}
     				}
     				if (!stf.hasMoreTokens()) {
-    					if (sortType >= 0)
+    					if (sortType != null)
     						sortField = new SortField(sortFieldName, sortType);
-    					else
-    						sortField = new SortField(sortFieldName, locale);
+//    					else
+//    						sortField = new SortField(sortFieldName, locale);
     				} else {
     					String reverseString = stf.nextToken().trim();
     					if (reverseString.length()==0)
@@ -399,11 +406,11 @@ public class Statement {
     					else if ("false".equalsIgnoreCase(reverseString)) reverse = false;
     					else
     						throw new GenericSearchException("getHits sortFields='"+sortFields+"' : unknown reverse string '" + reverseString + "' in '" + sortFieldString + "'");
-    					if (sortType == SortField.SCORE) reverse = !reverse;
-    					if (sortType >= 0)
+    					if (sortType == SortField.Type.SCORE) reverse = !reverse;
+    					if (sortType != null)
     						sortField = new SortField(sortFieldName, sortType, reverse);
-    					else
-    						sortField = new SortField(sortFieldName, locale, reverse);
+//    					else
+//    						sortField = new SortField(sortFieldName, locale, reverse);
     				}
     			}
     		}

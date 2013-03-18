@@ -18,7 +18,7 @@
 			<property name="configName" value="configDemoOnSolr"/>
 			<property name="indexEngine" value="Solr"/>
 			<property name="indexBase" value="${local.SOLR_SERVER}"/>
-			<property name="indexDir" location="${local.SOLR_HOME}/example/solr/data/index"/>
+			<property name="indexDir" location="${local.SOLR_HOME}/${local.SOLR_INDEX_PATH}/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
         </ant>
 		
@@ -52,11 +52,11 @@
 			<property name="configName" value="configDemoOnSolr"/>
 			<property name="indexEngine" value="Solr"/>
 			<property name="indexBase" value="${local.SOLR_SERVER}"/>
-			<property name="indexDir" location="${local.SOLR_HOME}/example/solr/data/index"/>
+			<property name="indexDir" location="${local.SOLR_HOME}/${local.SOLR_INDEX_PATH}/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
         </ant>
-		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-3.6.1-for-fgs-2.5.xml" 
-			tofile="${local.SOLR_HOME}/example/solr/conf/schema.xml" preservelastmodified="true" overwrite="true" />
+		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-${solr.version}-for-fgs-${fedoragsearch.version}.xml" 
+			tofile="${local.SOLR_HOME}/${local.SOLR_INDEX_PATH}/conf/schema.xml" preservelastmodified="true" overwrite="true" />
 		
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnZebra"/>
@@ -104,7 +104,7 @@
 			<property name="configName" value="configTestOnSolrFgs24_1010"/>
 			<property name="indexEngine" value="Solr"/>
 			<property name="indexBase" value="${local.SOLR_SERVER}"/>
-			<property name="indexDir" location="${local.SOLR_HOME}/example/solr/data/index"/>
+			<property name="indexDir" location="${local.SOLR_HOME}/${local.SOLR_INDEX_PATH}/data/index"/>
 			<property name="indexingDocXslt" value="foxmlToSolr"/>
    		</ant>
 		<copy file="FgsConfigIndexTemplate/SolrTest/foxmlToSolr_fgs24_1010.xslt" 
@@ -122,7 +122,12 @@
         </ant>
 		<copy file="test_fgs242_1083/foxmlToLucene_1083.xslt" 
 			tofile="${plugin.dir}/configTestOnLuceneFgs242_1083/index/FgsIndex/foxmlToLucene_1083.xslt" preservelastmodified="true" overwrite="true"/>
+
+		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" overwrite="true" />
 		
+		<replace file="${plugin.dir}/log4j.xml" token="LOGPATH" value="${local.FEDORA_HOME}/server/logs"/>
+		<replace file="${plugin.dir}/log4j.xml" token="LOGLEVEL" value="DEBUG"/>
+
 	</target>
 
 	<target name="configLocal"
@@ -190,14 +195,15 @@
 	</target>
 		
 	<target name="configDemoSearchResultFilteringReloadPolicies"
-	    	description="reload policies">
+	    	description="reload policies for the test junit-searchresultfiltering">
 		
 		<delete dir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
 		<mkdir dir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" />
 		<copy todir="${local.FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/fgs-policies" preservelastmodified="true" overwrite="true">
 			<fileset dir="test_fgs24/fgs-policies"/>
 		</copy>
-		<!-- The environment variables FEDORA_HOME and CATALINA_HOME must be set in the configuration -->
+		<!-- The environment variables FEDORA_HOME and CATALINA_HOME must be set in the configuration of this build
+			 or run this from command line before running the test -->
 		<exec executable="sh" dir="${local.FEDORA_HOME}/server/bin/">
             <arg line=" fedora-reload-policies.sh reloadpolicies http fgsAdmin fgsAdminPassword"/>
 		</exec>
@@ -264,8 +270,6 @@
 			<fileset dir="FgsConfigTemplate"/>
 		</copy>
 
-		<copy file="log4j.xml" todir="${plugin.dir}" preservelastmodified="true" overwrite="true" />
-
 		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSBASE" value="${localBase}"/>
 		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSAPPNAME" value="fedora"/>
 		<replace file="${plugin.dir}/${configName}/fgsconfigObjects.properties" token="FGSCONFIGOBJECTSUSER" value="fgsAdmin"/>
@@ -281,9 +285,6 @@
 		<replace file="${plugin.dir}/${configName}/fedoragsearch.properties" token="INDEXNAMES" value="${namesOfIndexes}"/>
 
 		<replace file="${plugin.dir}/${configName}/rest/adminCommonToHtml.xslt" token="FGSCONFIGNAME" value="${configName}"/>
-	
-		<replace file="${plugin.dir}/log4j.xml" token="LOGPATH" value="${local.FEDORA_HOME}/server/logs"/>
-		<replace file="${plugin.dir}/log4j.xml" token="LOGLEVEL" value="DEBUG"/>
 		
 	</target>
 

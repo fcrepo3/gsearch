@@ -42,6 +42,7 @@ import org.apache.axis.client.AdminClient;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
@@ -562,17 +563,19 @@ public class Config {
     				props.setProperty("fgsindex.untokenizedFields", "");
     			if (indexDirFile != null) {
     				StringBuffer untokenizedFields = new StringBuffer(getProperty(props, "fgsindex.untokenizedFields"));
-    				IndexReader ir = null;
+    				DirectoryReader ir = null;
     				try {
     					Directory dir = new SimpleFSDirectory(indexDirFile);
-    					ir = IndexReader.open(dir);
+//    					ir = IndexReader.open(dir);
+//    					Directory dir = new SimpleFSDirectory(new File(config.getIndexDir(indexName)));
+    					ir = DirectoryReader.open(dir);
     					int max = ir.numDocs();
     					if (max > 10) max = 10;
     					for (int i=0; i<max; i++) {
     						Document doc = ir.document(i);
     						for (ListIterator li = doc.getFields().listIterator(); li.hasNext(); ) {
     							Field f = (Field)li.next();
-    							if (!f.isTokenized() && f.isIndexed() && untokenizedFields.indexOf(f.name())<0) {
+    							if (!f.fieldType().tokenized() && f.fieldType().indexed() && untokenizedFields.indexOf(f.name())<0) {
     								untokenizedFields.append(" "+f.name());
     							}
     						}
@@ -1027,7 +1030,7 @@ public class Config {
         if (logger.isDebugEnabled())
             logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName);
 		try {
-			Version version = Version.LUCENE_36;
+			Version version = Version.LUCENE_42;
 			Class analyzerClass = Class.forName(analyzerClassName);
 	        if (logger.isDebugEnabled())
 	            logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName+ " ok");

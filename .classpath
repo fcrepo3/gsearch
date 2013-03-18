@@ -21,11 +21,6 @@
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/serializer.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/wsdl4j-1.5.1.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/xalan.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-admin-3.5-fedora.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-admin-3.5.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-messaging-3.5.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-common-3.5.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-server-3.5.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/jcl-over-slf4j-1.5.10.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/jul-to-slf4j-1.5.10.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/log4j-over-slf4j-1.5.10.jar"/>
@@ -49,14 +44,20 @@
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/axis-1.4.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fontbox-1.7.1.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/jempbox-1.7.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-analyzers-3.6.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-benchmark-3.6.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-core-3.6.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-demo-3.6.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-highlighter-3.6.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-memory-3.6.1.jar"/>
 	<classpathentry kind="lib" path="FedoraGenericSearch/lib/pdfbox-1.7.1.jar"/>
-	<classpathentry kind="lib" path="FedoraGenericSearch/lib/tika-app-1.2.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-analyzers-common-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-benchmark-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-core-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-demo-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-highlighter-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-memory-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-queryparser-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/tika-app-1.3.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/lucene-queries-4.2.0.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fedora-client-messaging-0.6.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-common-3.5.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-client-admin-3.5-fedora.jar"/>
+	<classpathentry kind="lib" path="FedoraGenericSearch/lib/fcrepo-server-3.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
