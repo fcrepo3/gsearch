@@ -1,8 +1,7 @@
-//$Id$
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fgslucene;
@@ -15,11 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -31,28 +28,23 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Fields;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
-//import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.BytesRef;
-//import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-
-//import org.fcrepo.server.utilities.StreamUtility;
 
 /**
  * performs the Lucene specific parts of the operations
@@ -164,7 +156,6 @@ public class OperationsImpl extends GenericOperationsImpl {
         int termNo = 0;
         try {
             getIndexReaderAndSearcher(indexName);
-//            Iterator fieldNames = (new TreeSet(ReaderUtil.getIndexedFields(ir))).iterator();
             Fields fields;
 			try {
 				fields = MultiFields.getFields(ir);
@@ -210,39 +201,6 @@ public class OperationsImpl extends GenericOperationsImpl {
 				}
             }
             resultXml.append("</terms>");
-//            while (fieldNames.hasNext()) {
-//                resultXml.append("<field>"+fieldNames.next()+"</field>");
-//            }
-//            resultXml.append("</fields>");
-//            resultXml.append("<terms>");
-//            int pageSize = 0;
-//            Term beginTerm = new Term(fieldName, "");
-//            TermEnum terms;
-//            try {
-//                terms = ir.terms(beginTerm);
-//            } catch (IOException e) {
-//                throw new GenericSearchException("IndexReader terms error:\n" + e.toString());
-//            }
-//            try {
-//                while (terms.term()!=null && terms.term().field().equals(fieldName)
-//                        && !"".equals(terms.term().text().trim())) {
-//                    termNo++;
-//                    if (startTerm.compareTo(terms.term().text()) <= 0 && pageSize < termPageSize) {
-//                        pageSize++;
-//                        resultXml.append("<term no=\""+termNo+"\""
-//                                +" fieldtermhittotal=\""+terms.docFreq()
-//                                +"\">"+StreamUtility.enc(terms.term().text())+"</term>");
-//                    }
-//                    terms.next();
-//                }
-//            } catch (IOException e) {
-//                throw new GenericSearchException("IndexReader terms.next error:\n" + e.toString());
-//            }
-//            try {
-//                terms.close();
-//            } catch (IOException e) {
-//                throw new GenericSearchException("IndexReader terms close error:\n" + e.toString());
-//            }
         } catch (IOException e) {
             throw new GenericSearchException("IndexReader open error:\n" + e.toString());
         } finally {
@@ -705,17 +663,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     private void closeIndexReaderAndSearcher(String indexName)
     throws GenericSearchException {
-//    	if (searcher!=null) {
-//    		try {
-//    			searcher.close();
-//    		} catch (Exception e) {
-//                throw new GenericSearchException("IndexSearcher close error indexName=" + indexName+ " :\n", e);
-//            } finally {
-            	searcher = null;
-//            	if (logger.isDebugEnabled())
-//            		logger.debug("closeIndexSearcher indexName=" + indexName);
-//            }
-//    	}
+        searcher = null;
 		if (ir != null) {
             docCount = ir.numDocs();
             try {

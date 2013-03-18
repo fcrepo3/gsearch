@@ -1,8 +1,7 @@
-//$Id$
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fedoragsearch.server;
@@ -43,7 +42,6 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
@@ -1030,7 +1028,6 @@ public class Config {
         if (logger.isDebugEnabled())
             logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName);
 		try {
-			Version version = Version.LUCENE_42;
 			Class analyzerClass = Class.forName(analyzerClassName);
 	        if (logger.isDebugEnabled())
 	            logger.debug("checkAnalyzerClass analyzerClassName=" + analyzerClassName+ " ok");

@@ -1,8 +1,7 @@
-//$Id$
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fgslucene;
@@ -43,9 +42,6 @@ public class IndexDocumentHandler extends DefaultHandler {
     private StringBuffer elementBuffer;
     private String pid;
     private String fieldName;
-//    private Field.Index index;
-//    private Field.Store store;
-//    private Field.TermVector termVector;
     private FieldType fType;
 //    http://lucene.apache.org/core/4_0_0/MIGRATE.html :
 //    If you previously used Document.setBoost, 
@@ -104,9 +100,6 @@ public class IndexDocumentHandler extends DefaultHandler {
         methodName = "";
         parameters = "";
         asOfDateTime = "";
-//        index = Field.Index.ANALYZED;
-//        store = Field.Store.YES;
-//        termVector = Field.TermVector.NO;
         fType = new FieldType();
         fType.setIndexed(true);
         fType.setStored(true);
@@ -145,22 +138,6 @@ public class IndexDocumentHandler extends DefaultHandler {
                 if (aName=="methodName") methodName = val;
                 if (aName=="parameters") parameters = val;
                 if (aName=="asOfDateTime") asOfDateTime = val;
-//                if (aName=="index") 
-//                    if ("ANALYZED".equals(val) || "TOKENIZED".equals(val)) index = Field.Index.ANALYZED;
-//                    else if ("NOT_ANALYZED".equals(val) || "UN_TOKENIZED".equals(val)) index = Field.Index.NOT_ANALYZED;
-//                    else if ("NO".equals(val)) index = Field.Index.NO;
-//                    else if ("NOT_ANALYZED_NO_NORMS".equals(val) || "NO_NORMS".equals(val)) index = Field.Index.NOT_ANALYZED_NO_NORMS;
-//                    else if ("ANALYZED_NO_NORMS".equals(val)) index = Field.Index.ANALYZED_NO_NORMS;
-//                if (aName=="store") 
-//                    if ("YES".equals(val)) store = Field.Store.YES;
-//                    else if ("NO".equals(val)) store = Field.Store.NO;
-////                    else if ("COMPRESS".equals(val)) store = Field.Store.COMPRESS; Deprecated after 2.4
-//                if (aName=="termVector") 
-//                    if ("NO".equals(val)) termVector = Field.TermVector.NO;
-//                    else if ("YES".equals(val)) termVector = Field.TermVector.YES;
-//                    else if ("WITH_OFFSETS".equals(val)) termVector = Field.TermVector.WITH_OFFSETS;
-//                    else if ("WITH_POSITIONS".equals(val)) termVector = Field.TermVector.WITH_POSITIONS;
-//                    else if ("WITH_POSITIONS_OFFSETS".equals(val)) termVector = Field.TermVector.WITH_POSITIONS_OFFSETS;
                 if (aName=="index") 
                     if ("ANALYZED".equals(val) || "TOKENIZED".equals(val)) fType.setTokenized(true);
                     else if ("NOT_ANALYZED".equals(val) || "UN_TOKENIZED".equals(val)) fType.setTokenized(false);

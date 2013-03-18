@@ -1,8 +1,7 @@
-//$Id$
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fgslucene;
@@ -13,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
-import java.util.Collection;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -23,7 +21,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -41,12 +38,10 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.Fragmenter;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
-//import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
-//import org.fcrepo.server.utilities.StreamUtility;
 
 /**
  * queries the Lucene index 
@@ -252,8 +247,6 @@ public class Statement {
                     " numHits="+numHits+
                     " sortFields="+sortFields);
     	TopDocs hits = null;
-//    	IndexReader ireader = searcher.getIndexReader();
-//    	Collection<String> fieldNames = ReaderUtil.getIndexedFields(ireader);
     	String sortFieldsString = sortFields;
     	if (sortFields == null) sortFieldsString = "";
     	StringTokenizer st = new StringTokenizer(sortFieldsString, ";");
@@ -271,8 +264,6 @@ public class Statement {
     		String sortFieldName = stf.nextToken().trim();
     		if (sortFieldName.length()==0)
     			errorExit("getHits sortFields='"+sortFields+"' : empty sortFieldName string in '" + sortFieldString + "'");
-//    		if (!fieldNames.contains(sortFieldName))
-//    			errorExit("getHits sortFields='"+sortFields+"' : sortFieldName '" + sortFieldName + "' not found as index field name");
     		if (!stf.hasMoreTokens()) {
     			sortType = SortField.Type.SCORE;
 				sortField = new SortField(sortFieldName, sortType);

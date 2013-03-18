@@ -1,8 +1,7 @@
-//$Id:  $
 /*
  * <p><b>License and Copyright: </b>The contents of this file is subject to the
  * same open source license as the Fedora Repository System at www.fedora-commons.org
- * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011 by The Technical University of Denmark.
+ * Copyright &copy; 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 by The Technical University of Denmark.
  * All rights reserved.</p>
  */
 package dk.defxws.fedoragsearch.server;
@@ -209,12 +208,13 @@ public class SearchResultFilteringDemoImpl implements SearchResultFiltering {
         final String end = "/services";
         String baseURL = fedoraSoap;
         if (fedoraSoap.endsWith(end)) {
-            return fedoraSoap.substring(0, fedoraSoap.length() - end.length());
+        	baseURL = fedoraSoap.substring(0, fedoraSoap.length() - end.length());
         } else {
             throw new Exception("Unable to determine baseURL from fedoraSoap"
                     + " value (expected it to end with '" + end + "'): "
                     + fedoraSoap);
         }
+        return baseURL;
     }
 
     private static FedoraAPIA getAPIA(
