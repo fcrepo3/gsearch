@@ -182,7 +182,18 @@ public class TransformerToText {
 	        	}
 	        }
 		}
-        return indexFields;
+		StringBuffer docText = new StringBuffer(indexFields);
+//      put space instead of characters not allowed in the indexing stylesheet
+        char c;
+      	for (int i=0; i<docText.length(); i++) {
+      		c = docText.charAt(i);
+        	if (c < 32 && c != 9 && c != 10 && c != 13) {
+                if (logger.isDebugEnabled())
+                	logger.debug("getTextFromTika index="+i+" char="+c+" set to 32");
+                docText.replace(i, i+1, " ");
+        	}
+        }
+        return docText;
     }
     
     public StringBuffer getText(byte[] doc, String mimetype) 
