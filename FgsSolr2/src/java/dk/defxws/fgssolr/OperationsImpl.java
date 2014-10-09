@@ -338,11 +338,14 @@ public class OperationsImpl extends GenericOperationsImpl {
     throws java.rmi.RemoteException {
         if (logger.isDebugEnabled())
             logger.debug("deletePid indexName="+indexName+" pid="+pid);
-        if (pid.length()>0 && indexDocExists(pid)) {
+        if (pid.length()>0) {
+            boolean existed = indexDocExists(pid);
             StringBuffer sb = new StringBuffer("<delete><id>"+pid+"</id></delete>");
             postData(config.getIndexBase(indexName)+"/update", new StringReader(sb.toString()), resultXml);
-            deleteTotal++;
-            docCount--;
+            if (existed) {
+              deleteTotal++;
+              docCount--;
+            }
             resultXml.append("<deletePid pid=\""+pid+"\"/>\n");
         }
     }
