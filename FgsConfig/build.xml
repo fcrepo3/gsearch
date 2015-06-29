@@ -57,6 +57,17 @@
         </ant>
 		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-${solr.version}-for-fgs-${fedoragsearch.version}.xml" 
 			tofile="${local.SOLR_HOME}/${local.SOLR_INDEX_PATH}/conf/schema.xml" preservelastmodified="true" overwrite="true" />
+
+        <ant target="configLocal">
+			<property name="configName" value="configDemoOnSolrRemote"/>
+			<property name="indexEngine" value="Solr"/>
+			<property name="indexBase" value="${local.SOLR_SERVER}"/>
+			<property name="indexDir" value="NOT_USED"/>
+			<property name="indexingDocXslt" value="foxmlToSolrGenerated"/>
+        </ant>
+		<replace file="${plugin.dir}/configDemoOnSolrRemote/index/FgsIndex/index.properties" token="fgssolr" value="fgssolrremote"/>
+		<copy file="${plugin.dir}/configDemoOnSolr/index/FgsIndex/conf/schema-${solr.version}-for-fgs-${fedoragsearch.version}.xml" 
+			tofile="${local.SOLR_HOME}/${local.SOLR_INDEX_PATH}/conf/schema.xml" preservelastmodified="true" overwrite="true" />
 		
         <ant target="configLocal">
 			<property name="configName" value="configDemoOnZebra"/>

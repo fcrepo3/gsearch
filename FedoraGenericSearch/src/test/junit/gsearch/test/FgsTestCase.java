@@ -120,6 +120,30 @@ public abstract class FgsTestCase
         return result;
     }
     
+    protected StringBuffer doIndexOp(String urlString) throws Exception {
+//        Config config = Config.getCurrentConfig();    
+    	StringBuffer result = new StringBuffer();
+        String restUrl = urlString;
+//        int p = restUrl.indexOf("://");
+//        if (p<0)
+//        	restUrl = config.getIndexBase("")+"/"
+//        				+restUrl;
+        URL url = null;
+        url = new URL(restUrl);
+        URLConnection conn = null;
+        conn = url.openConnection();
+        conn.connect();
+        content = null;
+        content = conn.getContent();
+        String line;
+        BufferedReader br = new BufferedReader(new InputStreamReader((InputStream)content));
+        while ((line = br.readLine())!=null)
+            result.append(line);
+//        if (result.indexOf("<error><message>") > -1)
+//        	throw new Exception(result.toString());
+        return result;
+    }
+    
     protected static String getParamValue(String params, String param) throws Exception {
     	String result = "";
         int p = params.indexOf(param+"=");
@@ -146,7 +170,7 @@ public abstract class FgsTestCase
     }
     
     protected void delay(int ms) {
-    	long ctm = System.currentTimeMillis();
-    	while (ctm+ms > System.currentTimeMillis());
+    	try { Thread.sleep(ms); }
+    	catch ( Exception e ) { }
     }
 }

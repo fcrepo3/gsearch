@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  $Id: build.xml 5741 2006-12-11 14:16:26Z cwilper $ -->
+<project name="FedoraGenericSearch" default="pluginbuild" basedir=".">
+	<description>Fedora Generic Search Service plugin for the SolrRemote engine</description>
+
+    <property name="source.dir" location="src/java"/>
+    <property name="lib.dir" location="../FedoraGenericSearch/lib"/>
+    <property name="compile.dir" location="bin"/>
+	<property name="plugin.dir" location="../FgsBuild/webapp/WEB-INF/classes" />
+
+    <path id="compile.classpath">
+        <pathelement path="../FedoraGenericSearch/bin"/>
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>                    
+    </path>
+
+    <target name="clean">
+		<delete dir="${compile.dir}"/>
+    </target>
+
+    <target name="compile"
+    	    depends="clean">
+        <mkdir dir="${compile.dir}"/>
+        <javac classpathref="compile.classpath"
+             debug="true"
+             destdir="${compile.dir}"
+             srcdir="${source.dir}"
+             optimize="off"/>
+    </target>
+
+	<target name="pluginbuild"
+	        description="build the plugin"
+	        depends="compile">
+		<copy todir="${plugin.dir}">
+			<fileset dir="bin"/>
+		</copy>
+	</target>
+
+</project>

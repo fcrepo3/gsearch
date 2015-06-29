@@ -38,7 +38,7 @@
 		<div id="header">
 				<a href="" id="logo"></a>
 				<div id="title">
-				<h1>Fedora Generic Search Service Version 2.7.1</h1>
+				<h1>Fedora Generic Search Service Version 2.8</h1>
 				<h2>compatible with Fedora Version 3.7.1</h2>
 				</div>
 		</div>
@@ -56,9 +56,9 @@
 				<ul>
 					<li>If you are one developer or a small team, you may prefer to take the easiest way, that is the Lucene plugin.
 					</li>
-					<li>If you want all options open, you choose the Solr plugin, where you need to know and do much more.
+					<li>If you want all options open, you choose the Solr or SolrRemote plugin, where you need to know and do much more.
 					</li>
-					<li>You will choose the Solr plugin by using Islandora. Configuration of GSearch for Islandora is now easier.
+					<li>You will choose the Solr or SolrRemote plugin by using Islandora. Configuration of GSearch for Islandora is now easier.
 					</li>
 					<li>The Zebra plugin is the choice that nobody has taken, because it is in a culture different from Fedora.
 					</li>
@@ -102,6 +102,7 @@
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#embeddedqueries">Embedded queries</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#source">Building from source</a></dt>
 				<dt><a href="#HISTORY">V. HISTORY</a></dt>
+				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new28">New features in version 2.8</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new271">New features in version 2.7.1</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new27">New features in version 2.7</a></dt>
 				<dt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#new26">New features in version 2.6</a></dt>
@@ -337,6 +338,15 @@
 				<p>Solr functionality does not include browsing, however, this is offered
 				by the plugin via the browseIndex operation,
 				which also accesses the Lucene index directly.</p>
+				
+				<h4><a href="http://lucene.apache.org/solr">SolrRemote</a></h4>
+				<p>The SolrRemote plugin is very similar to the Solr plugin, see above.</p>
+				<p>The basic difference is that it does not require Solr to be installed on the same server
+				as where Fedora and fedoragsearch are installed.</p>
+				<p>The SolrRemote plugin comes in fedoragsearch.war as the java package dk.defxws.fgssolrremote,
+				this is configured in the index.properties file</p>
+				<p>The SolrRemote plugin does not implement the gfindobjects and browseIndex operations, 
+				you may use the solr admin operations instead.</p>
 				
 				<h4><a href="http://www.indexdata.dk/zebra/">Zebra</a></h4>
 				<p>The Zebra plugin comes in fedoragsearch.war as the java package dk.defxws.fgszebra .</p>
@@ -821,6 +831,14 @@
 		
 		<div>
 			<a name="HISTORY"><h1>V. HISTORY</h1></a>
+		</div>
+			
+		<div>
+			<a name="new28"><h2>New features in version 2.8</h2></a>
+				<ul>
+					<li>The SolrRemote plugin, see <a href="#engines">Search engine plugins</a>. 
+					</li>
+				</ul>
 		</div>
 			
 		<div>

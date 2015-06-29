@@ -26,7 +26,7 @@
 	<property name="local.FGSCONFIGOBJECTS_HOME" location="${local.FEDORA_HOME}" />
 	<property name="local.SOLR_HOME" 		   location="/Users/gertschmeltzpedersen/Downloads/solr-4.6.1" />
 	<property name="local.SOLR_INDEX_PATH" 	   value="example/solr/collection1" />
-	<property name="local.SOLR_SERVER" 		   value="http://localhost:8983/solr" />
+	<property name="local.SOLR_SERVER" 		   value="http://localhost:8983/solr/collection1" />
 	<property name="local.ZEBRA_SERVER" 	   value="http://localhost:9999" />
 	
     <property name="web.xml.file"              value="web-withoutAuthN.xml"/> <!-- or web-withAuthN.xml -->
@@ -36,7 +36,7 @@
     <property name="javac.source"              value="1.6"/>
     <property name="javac.target"              value="1.6"/>
 
-    <property name="fedoragsearch.version" value="2.7.1"/>
+    <property name="fedoragsearch.version" value="2.8"/>
     <property name="fedora.version" value="3.7.1"/>
     <property name="solr.version" value="4.6.1"/>
 
@@ -104,6 +104,7 @@
             description="removes build-generated artifacts">
 		<delete dir="../FgsLucene/bin"/>
 		<delete dir="../FgsSolr2/bin"/>
+		<delete dir="../FgsSolrRemote/bin"/>
 		<delete dir="../FgsZebra/bin"/>
 		<delete dir="${compile.dir}"/>
 		<delete dir="${build.dir}"/>
@@ -222,6 +223,7 @@
     <target name="includeengines" depends="">
         <ant dir="../FgsLucene" inheritAll="false"/>
         <ant dir="../FgsSolr2" inheritAll="false"/>
+        <ant dir="../FgsSolrRemote" inheritAll="false"/>
         <ant dir="../FgsZebra" inheritAll="false"/>
     </target>
 	
@@ -277,6 +279,13 @@
 	
 	<target name="junit-set-solr">
 		<property name="test" value="gsearch.test.solr.AllTests"/>
+	</target>
+	
+	<target name="junit-solrremote" depends="junit-set-solrremote, junit">
+	</target>
+	
+	<target name="junit-set-solrremote">
+		<property name="test" value="gsearch.test.solrremote.AllTests"/>
 	</target>
 	
 	<target name="junit-zebra" depends="junit-set-zebra, junit">
