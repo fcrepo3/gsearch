@@ -32,6 +32,8 @@ import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeXml11;
+
 /**
  * performs the SolrRemote specific parts of the operations
  * 
@@ -271,12 +273,14 @@ public class OperationsImpl extends GenericOperationsImpl {
         {
             try {
                 indexDoc(getPidFromObjectFilename(file.getName()), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
-            } catch (RemoteException e) {
-                resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
-                logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
-            } catch (FileNotFoundException e) {
-              resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
-              logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
+            } catch (RemoteException|FileNotFoundException e) {
+            	String message = String.format("<warning no=\"%d\">file=%s exception=%s</warning>",
+            			++warnCount,
+            			escapeXml11(file.getAbsolutePath()),
+            			escapeXml11(e.toString())
+    			);
+            	resultXml.append(message);
+                logger.warn(message);
             }
         }
     }
