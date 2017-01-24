@@ -272,14 +272,14 @@ public class OperationsImpl extends GenericOperationsImpl {
         else
         {
             try {
-                indexDoc(getPidFromObjectFilename(file.getName()), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
-            } catch (RemoteException|FileNotFoundException e) {
-            	String message = String.format("<warning no=\"%d\">file=%s exception=%s</warning>",
-            			++warnCount,
-            			escapeXml11(file.getAbsolutePath()),
-            			escapeXml11(e.toString())
-    			);
-            	resultXml.append(message);
+                indexDoc(getPidFromObjectFilename(file.getName()), repositoryName, indexName, new FileInputStream(file),
+                        resultXml, indexDocXslt);
+            } catch (RemoteException | FileNotFoundException e) {
+                String message = String.format("<warning no=\"%d\">file=%s exception=%s</warning>", 
+                        ++warnCount,
+                        escapeXml11(file.getAbsolutePath()),
+                        escapeXml11(e.toString()));
+                resultXml.append(message);
                 logger.warn(message);
             }
         }
