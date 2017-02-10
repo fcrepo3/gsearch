@@ -104,9 +104,9 @@ public class OperationsImpl extends GenericOperationsImpl {
         emptyTotal = 0;
         StringBuffer resultXml = new StringBuffer();
         try {
-        	resultXml = sendToSolr("/select?q=*%3A*&rows=0", null);
+        	resultXml = sendToSolr("/select?q=*%3A*&rows=0");
 		} catch (Exception e) {
-	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e);
+	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e, e);
 		}
         int i = resultXml.indexOf("numFound=");
         int j = resultXml.indexOf("\"", i+10);
@@ -199,7 +199,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             try {
             	sendToSolr("/update", sb.toString());
       		} catch (Exception e) {
-      	        throw new GenericSearchException("updateIndex deletePid sendToSolr\n"+e);
+      	        throw new GenericSearchException("updateIndex deletePid sendToSolr\n"+e, e);
       		}
             if (existed) {
               deleteTotal++;
@@ -214,9 +214,9 @@ public class OperationsImpl extends GenericOperationsImpl {
     	boolean indexDocExists = true;
         StringBuffer resultXml = new StringBuffer();
       try {
-      	resultXml = sendToSolr("/select?q=PID%3A\""+pid+"\"&rows=0", null);
+      	resultXml = sendToSolr("/select?q=PID%3A\""+pid+"\"&rows=0");
 		} catch (Exception e) {
-	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e);
+	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e, e);
 		}
       int i = resultXml.indexOf("numFound=");
       int j = resultXml.indexOf("\"", i+10);
@@ -357,7 +357,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             try {
             	sendToSolr("/update", sb.toString());
     		} catch (Exception e) {
-    	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e);
+    	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e, e);
     		}
             if (indexDocExists(pid)) {
                 updateTotal++;
@@ -374,6 +374,10 @@ public class OperationsImpl extends GenericOperationsImpl {
 			logger.warn("IndexDocument "+pid+" does not contain any IndexFields!!! RepositoryName="+repositoryName+" IndexName="+indexName);
 			emptyTotal++;
 		}
+    }
+    
+    private StringBuffer sendToSolr(String solrCommand) throws Exception {
+        return sendToSolr(solrCommand, null);
     }
 	
 	private StringBuffer sendToSolr(String solrCommand, String postParameters) throws Exception {
