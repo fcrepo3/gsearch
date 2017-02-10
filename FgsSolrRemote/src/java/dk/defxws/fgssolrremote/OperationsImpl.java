@@ -382,10 +382,11 @@ public class OperationsImpl extends GenericOperationsImpl {
     	String base = config.getIndexBase(indexName);
 		URL url = new URL(base+solrCommand);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestProperty("Content-type", "text/xml; charset=UTF-8");
+
         if (postParameters != null) {
-    		con.setRequestMethod("POST");
-    		con.setDoOutput(true);
+            con.setRequestProperty("Content-type", "text/xml; charset=UTF-8");
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
             OutputStream out = con.getOutputStream();
             Writer writer = new OutputStreamWriter(out, "UTF-8");
             Reader reader = new StringReader(postParameters);
