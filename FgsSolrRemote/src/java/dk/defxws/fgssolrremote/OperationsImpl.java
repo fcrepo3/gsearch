@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.StringTokenizer;
@@ -214,7 +215,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     	boolean indexDocExists = true;
         StringBuffer resultXml = new StringBuffer();
       try {
-      	resultXml = sendToSolr("/select?q=PID%3A\""+pid+"\"&rows=0");
+      	resultXml = sendToSolr("/select?q=PID%3A%22"+pid+"%22&rows=0");
 		} catch (Exception e) {
 	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e, e);
 		}
@@ -384,7 +385,8 @@ public class OperationsImpl extends GenericOperationsImpl {
     	if (logger.isDebugEnabled())
     		logger.debug("sendToSolr solrCommand="+solrCommand+"\nPost parameters=\n" + postParameters);
     	String base = config.getIndexBase(indexName);
-		URL url = new URL(base+solrCommand);
+    	URI uri = new URI(base+solrCommand);
+		URL url = uri.toURL();
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
         if (postParameters != null) {
