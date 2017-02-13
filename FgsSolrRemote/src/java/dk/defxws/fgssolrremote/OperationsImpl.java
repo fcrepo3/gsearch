@@ -377,6 +377,15 @@ public class OperationsImpl extends GenericOperationsImpl {
 		}
     }
     
+    /**
+     * Send GET request.
+     *
+     * Overloading helper for default parameter.
+     *
+     * @param solrCommand
+     * @return
+     * @throws Exception
+     */
     private StringBuffer sendToSolr(String solrCommand) throws Exception {
         return sendToSolr(solrCommand, null);
     }
