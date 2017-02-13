@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.StringTokenizer;
@@ -31,6 +32,8 @@ import org.apache.log4j.Logger;
 import dk.defxws.fedoragsearch.server.GTransformer;
 import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
+
+import static org.apache.commons.lang3.StringEscapeUtils.escapeXml11;
 
 /**
  * performs the SolrRemote specific parts of the operations
@@ -102,9 +105,9 @@ public class OperationsImpl extends GenericOperationsImpl {
         emptyTotal = 0;
         StringBuffer resultXml = new StringBuffer();
         try {
-        	resultXml = sendToSolr("/select?q=*%3A*&rows=0", null);
+        	resultXml = sendToSolr("/select?q=*%3A*&rows=0");
 		} catch (Exception e) {
-	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e);
+	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e, e);
 		}
         int i = resultXml.indexOf("numFound=");
         int j = resultXml.indexOf("\"", i+10);
@@ -197,7 +200,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             try {
             	sendToSolr("/update", sb.toString());
       		} catch (Exception e) {
-      	        throw new GenericSearchException("updateIndex deletePid sendToSolr\n"+e);
+      	        throw new GenericSearchException("updateIndex deletePid sendToSolr\n"+e, e);
       		}
             if (existed) {
               deleteTotal++;
@@ -212,9 +215,9 @@ public class OperationsImpl extends GenericOperationsImpl {
     	boolean indexDocExists = true;
         StringBuffer resultXml = new StringBuffer();
       try {
-      	resultXml = sendToSolr("/select?q=PID%3A\""+pid+"\"&rows=0", null);
+      	resultXml = sendToSolr("/select?q=PID%3A%22"+pid+"%22&rows=0");
 		} catch (Exception e) {
-	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e);
+	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e, e);
 		}
       int i = resultXml.indexOf("numFound=");
       int j = resultXml.indexOf("\"", i+10);
@@ -270,13 +273,15 @@ public class OperationsImpl extends GenericOperationsImpl {
         else
         {
             try {
-                indexDoc(getPidFromObjectFilename(file.getName()), repositoryName, indexName, new FileInputStream(file), resultXml, indexDocXslt);
-            } catch (RemoteException e) {
-                resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
-                logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
-            } catch (FileNotFoundException e) {
-              resultXml.append("<warning no=\""+(++warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>\n");
-              logger.warn("<warning no=\""+(warnCount)+"\">file="+file.getAbsolutePath()+" exception="+e.toString()+"</warning>");
+                indexDoc(getPidFromObjectFilename(file.getName()), repositoryName, indexName, new FileInputStream(file),
+                        resultXml, indexDocXslt);
+            } catch (RemoteException | FileNotFoundException e) {
+                String message = String.format("<warning no=\"%d\">file=%s exception=%s</warning>", 
+                        ++warnCount,
+                        escapeXml11(file.getAbsolutePath()),
+                        escapeXml11(e.toString()));
+                resultXml.append(message);
+                logger.warn(message);
             }
         }
     }
@@ -353,7 +358,7 @@ public class OperationsImpl extends GenericOperationsImpl {
             try {
             	sendToSolr("/update", sb.toString());
     		} catch (Exception e) {
-    	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e);
+    	        throw new GenericSearchException("updateIndex sendToSolr:\n"+e, e);
     		}
             if (indexDocExists(pid)) {
                 updateTotal++;
@@ -371,17 +376,32 @@ public class OperationsImpl extends GenericOperationsImpl {
 			emptyTotal++;
 		}
     }
+    
+    /**
+     * Send GET request.
+     *
+     * Overloading helper for default parameter.
+     *
+     * @param solrCommand
+     * @return
+     * @throws Exception
+     */
+    private StringBuffer sendToSolr(String solrCommand) throws Exception {
+        return sendToSolr(solrCommand, null);
+    }
 	
 	private StringBuffer sendToSolr(String solrCommand, String postParameters) throws Exception {
     	if (logger.isDebugEnabled())
     		logger.debug("sendToSolr solrCommand="+solrCommand+"\nPost parameters=\n" + postParameters);
     	String base = config.getIndexBase(indexName);
-		URL url = new URL(base+solrCommand);
+    	URI uri = new URI(base+solrCommand);
+		URL url = uri.toURL();
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestProperty("Content-type", "text/xml; charset=UTF-8");
+
         if (postParameters != null) {
-    		con.setRequestMethod("POST");
-    		con.setDoOutput(true);
+            con.setRequestProperty("Content-type", "text/xml; charset=UTF-8");
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
             OutputStream out = con.getOutputStream();
             Writer writer = new OutputStreamWriter(out, "UTF-8");
             Reader reader = new StringReader(postParameters);
