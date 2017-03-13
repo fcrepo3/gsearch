@@ -3,13 +3,5 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FedoraGenericSearch"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/fedora-client-3.1.jar"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-analyzers-3.4.0.jar"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-benchmark-3.4.0.jar"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-core-3.4.0.jar"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-demo-3.4.0.jar"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-highlighter-3.4.0.jar"/>
-	<classpathentry kind="lib" path="/FedoraGenericSearch/lib/lucene-memory-3.4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
